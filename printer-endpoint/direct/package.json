@@ -1,0 +1,17 @@
+{
+  "name": "snd-pe-direct",
+  "version": "0.0.1",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "BigJk",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "node-thermal-printer": "^4.1.2",
+    "printer": "^0.4.0",
+    "puppeteer": "^2.1.0"
+  }
+}

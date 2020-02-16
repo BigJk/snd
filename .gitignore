@@ -13,3 +13,11 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+static/
+node_modules/
+dist/
+.idea/
+.cache/
+
+*.db

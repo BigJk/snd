@@ -9,6 +9,7 @@ import (
 	_ "image/png"
 	"io/ioutil"
 	"math/rand"
+	"net/url"
 	"os"
 	"os/exec"
 	"time"
@@ -27,7 +28,7 @@ func (s *CUPSPrinter) Print(printerEndpoint, html string) error {
 	var imageData []byte
 	if err := chromedp.Run(ctx, chromedp.Tasks{
 		chromedp.EmulateViewport(380, 10000),
-		chromedp.Navigate("data:text/html," + html),
+		chromedp.Navigate("data:text/html," + url.PathEscape(html)),
 		chromedp.WaitVisible("#content", chromedp.ByID),
 		chromedp.Screenshot("body", &imageData, chromedp.NodeVisible, chromedp.ByQuery),
 	}); err != nil {
@@ -41,6 +42,7 @@ func (s *CUPSPrinter) Print(printerEndpoint, html string) error {
 
 	buf := &bytes.Buffer{}
 	epson.Image(buf, img)
+	_, _ = buf.WriteString("\n\n\n")
 
 	fileName := "./temp/" + fmt.Sprint(rand.Int()) + ".bin"
 	if err := ioutil.WriteFile(fileName, buf.Bytes(), 0666); err != nil {

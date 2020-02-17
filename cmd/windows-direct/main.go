@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"net/url"
 	"os"
 	"time"
 
@@ -41,7 +42,7 @@ func (s *DirectPrinter) Print(printerEndpoint, html string) error {
 	var imageData []byte
 	if err := chromedp.Run(ctx, chromedp.Tasks{
 		chromedp.EmulateViewport(380, 10000),
-		chromedp.Navigate("data:text/html," + html),
+		chromedp.Navigate("data:text/html," + url.PathEscape(html)),
 		chromedp.WaitVisible("#content", chromedp.ByID),
 		chromedp.Screenshot("body", &imageData, chromedp.NodeVisible, chromedp.ByQuery),
 	}); err != nil {
@@ -55,6 +56,7 @@ func (s *DirectPrinter) Print(printerEndpoint, html string) error {
 
 	buf := &bytes.Buffer{}
 	epson.Image(buf, img)
+	_, _ = buf.WriteString("\n\n\n")
 
 	if err = p.StartRawDocument(fmt.Sprint(rand.Int())); err != nil {
 		return err

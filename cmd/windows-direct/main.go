@@ -36,8 +36,21 @@ func (s *DirectPrinter) Print(printerEndpoint, html string) error {
 	}
 	defer p.Close()
 
-	ctx, cancel := chromedp.NewContext(context.Background())
-	defer cancel()
+	var ctx context.Context
+	var cancel context.CancelFunc
+
+	if _, err := os.Stat("./data/vendor/chrome-win/chrome.exe"); !os.IsNotExist(err) {
+		aCtx, aCancel := chromedp.NewExecAllocator(context.Background(), append(chromedp.DefaultExecAllocatorOptions[:],
+			chromedp.ExecPath("./data/vendor/chrome-win/chrome.exe"),
+		)...)
+		defer aCancel()
+
+		ctx, cancel = chromedp.NewContext(aCtx)
+		defer cancel()
+	} else {
+		ctx, cancel = chromedp.NewContext(context.Background())
+		defer cancel()
+	}
 
 	var imageData []byte
 	if err := chromedp.Run(ctx, chromedp.Tasks{
@@ -100,6 +113,7 @@ func main() {
 		BaseDirectoryPath:  "./data",
 		DataDirectoryPath:  "./data",
 		AppIconDefaultPath: "icon.png",
+		VersionElectron:    "8.0.1",
 	})
 	defer a.Close()
 	a.Start()

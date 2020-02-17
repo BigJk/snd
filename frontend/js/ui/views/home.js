@@ -278,7 +278,7 @@ export default () => {
 									</div>
 								)}
 							</ListHeader>
-							<div className="preview flex-grow-1 overflow-auto">
+							<div className="preview flex-grow-1">
 								<Preview content={getPreview()} stylesheets={state.settings?.stylesheets} />
 							</div>
 						</div>

@@ -20,7 +20,6 @@
     width: 410px;
     height: 100%;
     background-color: #ececec;
-    padding: 0 15px 0 15px;
 }
 
 .list .list-entry:nth-child(odd) {

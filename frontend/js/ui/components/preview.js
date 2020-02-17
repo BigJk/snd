@@ -6,7 +6,7 @@ const pre = `
   <title> </title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {{CSS}}
-  <body class="sans-serif pv3">
+  <body class="sans-serif pv3" style="padding-left: 15px; padding-right: 15px;">
     <div id="content">`;
 
 const post = `    

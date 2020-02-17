@@ -17,9 +17,13 @@
 static/
 node_modules/
 dist/
+vendor/
+
 .idea/
 .cache/
 
 *.db
 *.bin
 *.png
+
+!data/icon.png

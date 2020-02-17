@@ -93,9 +93,13 @@ func main() {
 		targetWriter = os.Stdout
 	}
 
+	_ = os.Mkdir("./data", 0666)
+
 	var a, _ = astilectron.New(log.New(targetWriter, "", 0), astilectron.Options{
-		AppName:           "Sales & Dungeons",
-		BaseDirectoryPath: "./cache",
+		AppName:            "Sales & Dungeons",
+		BaseDirectoryPath:  "./data",
+		DataDirectoryPath:  "./data",
+		AppIconDefaultPath: "icon.png",
 	})
 	defer a.Close()
 	a.Start()

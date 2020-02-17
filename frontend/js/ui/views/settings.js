@@ -39,7 +39,7 @@ export default () => {
 								<div className="btn btn-primary btn-sm" onclick={() => state.settings.stylesheets.push('http://')}>
 									New Entry
 								</div>
-								{state.settings?.stylesheets.map((e, i) => {
+								{state.settings?.stylesheets?.map((e, i) => {
 									return (
 										<div className="flex justify-between mt2">
 											<input type="text" className="form-input" value={e} oninput={e => (state.settings.stylesheets[i] = e.target.value)} />

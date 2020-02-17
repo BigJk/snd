@@ -1,7 +1,6 @@
 package snd
 
 import (
-	"bytes"
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
@@ -32,7 +31,7 @@ func GetOutboundIP() (net.IP, error) {
 }
 
 // RegisterRPC register the rpc routes for the frontend.
-func RegisterRPC(route *echo.Group, db *storm.DB, scriptEngine *ScriptEngine) {
+func RegisterRPC(route *echo.Group, db *storm.DB, scriptEngine *ScriptEngine, printer Printer) {
 	/*
 		Settings
 	*/
@@ -195,12 +194,7 @@ func RegisterRPC(route *echo.Group, db *storm.DB, scriptEngine *ScriptEngine) {
 			return err
 		}
 
-		resp, err := http.Post(settings.PrinterEndpoint+"/print", "text/plain", bytes.NewBufferString(finalHtml))
-		if err != nil {
-			return err
-		}
-
-		return resp.Body.Close()
+		return printer.Print(settings.PrinterEndpoint, finalHtml)
 	})))
 
 	/*

@@ -1,6 +1,7 @@
 package snd
 
 import (
+	"bytes"
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
@@ -11,12 +12,16 @@ import (
 	"github.com/labstack/echo"
 )
 
+// ServerOption
+type ServerOption func(s *Server) error
+
 // Server represents a instance of the S&D server.
 type Server struct {
 	sync.RWMutex
-	db           *storm.DB
-	e            *echo.Echo
-	scriptEngine *ScriptEngine
+	db               *storm.DB
+	e                *echo.Echo
+	scriptEngine     *ScriptEngine
+	printerOverwrite Printer
 }
 
 // ImageCache represents a image that was cached through the image proxy.
@@ -26,16 +31,24 @@ type ImageCache struct {
 }
 
 // NewServer creates a new instance of the S&D server.
-func NewServer(file string) (*Server, error) {
+func NewServer(file string, options ...ServerOption) (*Server, error) {
 	db, err := storm.Open(file)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Server{
+	s := &Server{
 		db: db,
 		e:  echo.New(),
-	}, nil
+	}
+
+	for i := range options {
+		if err := options[i](s); err != nil {
+			return nil, err
+		}
+	}
+
+	return s, nil
 }
 
 func (s *Server) Start(bind string) error {
@@ -54,7 +67,11 @@ func (s *Server) Start(bind string) error {
 	s.scriptEngine = NewScriptEngine(AttachScriptRuntime(s.db))
 
 	// Register rpc routes
-	RegisterRPC(s.e.Group("/api"), s.db, s.scriptEngine)
+	if s.printerOverwrite != nil {
+		RegisterRPC(s.e.Group("/api"), s.db, s.scriptEngine, s.printerOverwrite)
+	} else {
+		RegisterRPC(s.e.Group("/api"), s.db, s.scriptEngine, s)
+	}
 
 	// Register image proxy route so that the iframes that are used
 	// in the frontend can proxy images that they otherwise couldn't
@@ -110,4 +127,14 @@ ________________________________________`)
 // DB returns a reference to the database
 func (s *Server) DB() *storm.DB {
 	return s.db
+}
+
+// DB returns a reference to the database
+func (s *Server) Print(printerEndpoint, html string) error {
+	resp, err := http.Post(printerEndpoint+"/print", "text/plain", bytes.NewBufferString(html))
+	if err != nil {
+		return err
+	}
+
+	return resp.Body.Close()
 }

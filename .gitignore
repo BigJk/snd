@@ -21,3 +21,5 @@ dist/
 .cache/
 
 *.db
+*.bin
+*.png

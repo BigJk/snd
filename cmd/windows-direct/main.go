@@ -14,6 +14,7 @@ import (
 	"github.com/BigJk/snd/printing/windows"
 
 	"github.com/BigJk/snd"
+	"github.com/asticode/go-astikit"
 	"github.com/asticode/go-astilectron"
 )
 
@@ -51,6 +52,9 @@ func main() {
 		DataDirectoryPath:  "./data",
 		AppIconDefaultPath: "icon.png",
 		VersionElectron:    "8.0.1",
+		ElectronSwitches: []string{
+			"--disable-http-cache",
+		},
 	})
 	defer a.Close()
 	a.Start()

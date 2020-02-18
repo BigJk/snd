@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/BigJk/snd/printing"
+
 	"github.com/asdine/storm"
 	"github.com/labstack/echo"
 )
@@ -15,13 +17,16 @@ import (
 // ServerOption
 type ServerOption func(s *Server) error
 
+// ServerPossiblePrinters
+type ServerPossiblePrinter map[string]printing.Printer
+
 // Server represents a instance of the S&D server.
 type Server struct {
 	sync.RWMutex
-	db               *storm.DB
-	e                *echo.Echo
-	scriptEngine     *ScriptEngine
-	printerOverwrite Printer
+	db           *storm.DB
+	e            *echo.Echo
+	scriptEngine *ScriptEngine
+	printers     ServerPossiblePrinter
 }
 
 // ImageCache represents a image that was cached through the image proxy.
@@ -38,8 +43,9 @@ func NewServer(file string, options ...ServerOption) (*Server, error) {
 	}
 
 	s := &Server{
-		db: db,
-		e:  echo.New(),
+		db:       db,
+		e:        echo.New(),
+		printers: map[string]printing.Printer{},
 	}
 
 	for i := range options {
@@ -49,6 +55,13 @@ func NewServer(file string, options ...ServerOption) (*Server, error) {
 	}
 
 	return s, nil
+}
+
+func WithPrinter(printer printing.Printer) ServerOption {
+	return func(s *Server) error {
+		s.printers[printer.Name()] = printer
+		return nil
+	}
 }
 
 func (s *Server) Start(bind string) error {
@@ -67,11 +80,7 @@ func (s *Server) Start(bind string) error {
 	s.scriptEngine = NewScriptEngine(AttachScriptRuntime(s.db))
 
 	// Register rpc routes
-	if s.printerOverwrite != nil {
-		RegisterRPC(s.e.Group("/api"), s.db, s.scriptEngine, s.printerOverwrite)
-	} else {
-		RegisterRPC(s.e.Group("/api"), s.db, s.scriptEngine, s)
-	}
+	RegisterRPC(s.e.Group("/api"), s.db, s.scriptEngine, s.printers)
 
 	// Register image proxy route so that the iframes that are used
 	// in the frontend can proxy images that they otherwise couldn't

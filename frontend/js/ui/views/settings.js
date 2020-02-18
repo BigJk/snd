@@ -7,15 +7,32 @@ import SideNav from '../components/side-nav';
 
 import { success, error } from '../toast';
 
+import map from 'lodash-es/map';
+
 export default () => {
 	let state = {
-		settings: null
+		settings: null,
+		printer: null
 	};
 
 	let fetchSettings = () => {
-		api.getSettings().then(settings => {
-			state.settings = settings;
-		});
+		api
+			.getPrinter()
+			.then(printer => {
+				state.printer = printer;
+			})
+			.then(() => {
+				api.getSettings().then(settings => {
+					state.settings = settings;
+					console.log(state);
+				});
+			});
+	};
+
+	let getPrinterDescription = () => {
+		if (!state.settings || !state.printer) return null;
+
+		return state.printer[state.settings.printer_type];
 	};
 
 	fetchSettings();
@@ -29,12 +46,20 @@ export default () => {
 					<div className="flex-grow-1 flex overflow-auto">
 						<SideNav page="settings" />
 						<div className="flex-grow-1 overflow-auto ph3 pv2">
-							<div className="form-group mw5 pb2">
+							<div className="form-group mw6 pb2">
 								<label className="form-label">Printer Endpoint</label>
-								<input type="text" className="form-input" value={state.settings?.printer_endpoint} oninput={e => (state.settings.printer_endpoint = e.target.value)} />
+								<div className="flex justify-between pb2">
+									<select className="form-select mr2" value={state.settings?.printer_type} oninput={e => (state.settings.printer_type = e.target.value)}>
+										{map(state.printer, (v, k) => {
+											return <option value={k}>{k}</option>;
+										})}
+									</select>
+									<input type="text" className="form-input" value={state.settings?.printer_endpoint} onInput={e => (state.settings.printer_endpoint = e.target.value)} />
+								</div>
+								<span className="f7 black-50">{getPrinterDescription()}</span>
 							</div>
 							<div className="divider" />
-							<div className="form-group mw6 pb2">
+							<div className="form-group mw6 pb1">
 								<label className="form-label">Global Stylesheets</label>
 								<div className="btn btn-primary btn-sm" onclick={() => state.settings.stylesheets.push('http://')}>
 									New Entry

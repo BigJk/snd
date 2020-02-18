@@ -1,88 +1,21 @@
 package main
 
 import (
-	"bytes"
-	"context"
 	"flag"
-	"fmt"
-	"image"
-	_ "image/png"
 	"io"
 	"io/ioutil"
 	"log"
 	"math/rand"
-	"net/url"
 	"os"
 	"time"
 
-	"github.com/chromedp/chromedp"
-
-	"github.com/alexbrainman/printer"
-
-	"github.com/BigJk/snd/thermalprinter/epson"
-
-	"github.com/asticode/go-astikit"
+	"github.com/BigJk/snd/printing/cups"
+	"github.com/BigJk/snd/printing/remote"
+	"github.com/BigJk/snd/printing/windows"
 
 	"github.com/BigJk/snd"
 	"github.com/asticode/go-astilectron"
 )
-
-type DirectPrinter struct{}
-
-func (s *DirectPrinter) Print(printerEndpoint, html string) error {
-	p, err := printer.Open(printerEndpoint)
-	if err != nil {
-		return err
-	}
-	defer p.Close()
-
-	var ctx context.Context
-	var cancel context.CancelFunc
-
-	if _, err := os.Stat("./data/vendor/chrome-win/chrome.exe"); !os.IsNotExist(err) {
-		aCtx, aCancel := chromedp.NewExecAllocator(context.Background(), append(chromedp.DefaultExecAllocatorOptions[:],
-			chromedp.ExecPath("./data/vendor/chrome-win/chrome.exe"),
-		)...)
-		defer aCancel()
-
-		ctx, cancel = chromedp.NewContext(aCtx)
-		defer cancel()
-	} else {
-		ctx, cancel = chromedp.NewContext(context.Background())
-		defer cancel()
-	}
-
-	var imageData []byte
-	if err := chromedp.Run(ctx, chromedp.Tasks{
-		chromedp.EmulateViewport(380, 10000),
-		chromedp.Navigate("data:text/html," + url.PathEscape(html)),
-		chromedp.WaitVisible("#content", chromedp.ByID),
-		chromedp.Screenshot("body", &imageData, chromedp.NodeVisible, chromedp.ByQuery),
-	}); err != nil {
-		return err
-	}
-
-	img, _, err := image.Decode(bytes.NewBuffer(imageData))
-	if err != nil {
-		return err
-	}
-
-	buf := &bytes.Buffer{}
-	epson.Image(buf, img)
-	_, _ = buf.WriteString("\n\n\n")
-
-	if err = p.StartRawDocument(fmt.Sprint(rand.Int())); err != nil {
-		return err
-	}
-
-	p.Write(buf.Bytes())
-
-	if err = p.EndDocument(); err != nil {
-		return err
-	}
-
-	return nil
-}
 
 func main() {
 	debug := flag.Bool("debug", false, "")
@@ -90,7 +23,11 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 
-	s, err := snd.NewServer("./data.db", snd.WithPrinter(&DirectPrinter{}))
+	s, err := snd.NewServer("./data.db", snd.WithPrinter(&cups.CUPS{}), snd.WithPrinter(&remote.Remote{}), snd.WithPrinter(&windows.Direct{}))
+	if err != nil {
+		panic(err)
+	}
+
 	if err != nil {
 		panic(err)
 	}

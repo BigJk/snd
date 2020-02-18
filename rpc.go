@@ -1,12 +1,17 @@
 package snd
 
 import (
+	"bytes"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"strings"
+
+	"github.com/BigJk/snd/rendering"
+	"github.com/BigJk/snd/thermalprinter/epson"
 
 	"github.com/asdine/storm/q"
 
@@ -31,7 +36,7 @@ func GetOutboundIP() (net.IP, error) {
 }
 
 // RegisterRPC register the rpc routes for the frontend.
-func RegisterRPC(route *echo.Group, db *storm.DB, scriptEngine *ScriptEngine, printer Printer) {
+func RegisterRPC(route *echo.Group, db *storm.DB, scriptEngine *ScriptEngine, printer ServerPossiblePrinter) {
 	/*
 		Settings
 	*/
@@ -124,22 +129,40 @@ func RegisterRPC(route *echo.Group, db *storm.DB, scriptEngine *ScriptEngine, pr
 	/*
 		Printing
 	*/
+	route.POST("/getPrinter", echo.WrapHandler(nra.MustBind(func() (map[string]string, error) {
+		printerNames := map[string]string{}
+
+		for k, v := range printer {
+			printerNames[k] = v.Description()
+		}
+
+		return printerNames, nil
+	})))
+
 	route.POST("/print", echo.WrapHandler(nra.MustBind(func(html string) error {
+		// Get local outbound ip
 		ip, err := GetOutboundIP()
 		if err != nil {
 			return err
 		}
 
+		// Get current settings
 		var settings Settings
 		if err := db.Get("base", "settings", &settings); err != nil {
 			return err
 		}
 
+		// Get printer
+		printer, ok := printer[settings.PrinterType]
+		if !ok {
+			return errors.New("printer not found")
+		}
+
+		// Generate html
 		htmlHead := `<!DOCTYPE html>
 <html lang="en">
   <title>print page</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-`
+  <meta name="viewport" content="width=device-width, initial-scale=1">`
 
 		for i := range settings.Stylesheets {
 			url := settings.Stylesheets[i]
@@ -194,7 +217,17 @@ func RegisterRPC(route *echo.Group, db *storm.DB, scriptEngine *ScriptEngine, pr
 			return err
 		}
 
-		return printer.Print(settings.PrinterEndpoint, finalHtml)
+		// Render the html to image
+		image, err := rendering.RenderHTML(finalHtml)
+		if err != nil {
+			return err
+		}
+
+		// Print
+		buf := &bytes.Buffer{}
+		epson.Image(buf, image)
+
+		return printer.Print(settings.PrinterEndpoint, buf.Bytes())
 	})))
 
 	/*

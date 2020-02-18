@@ -24,7 +24,6 @@ export default () => {
 			.then(() => {
 				api.getSettings().then(settings => {
 					state.settings = settings;
-					console.log(state);
 				});
 			});
 	};
@@ -51,7 +50,11 @@ export default () => {
 								<div className="flex justify-between pb2">
 									<select className="form-select mr2" oninput={e => (state.settings.printer_type = e.target.value)}>
 										{map(state.printer, (v, k) => {
-											return <option value={k} selected={k === state.settings?.printer_type}>{k}</option>;
+											return (
+												<option value={k} selected={k === state.settings?.printer_type}>
+													{k}
+												</option>
+											);
 										})}
 									</select>
 									<input type="text" className="form-input" value={state.settings?.printer_endpoint} onInput={e => (state.settings.printer_endpoint = e.target.value)} />

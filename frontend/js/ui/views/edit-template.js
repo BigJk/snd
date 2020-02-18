@@ -100,6 +100,7 @@ export default () => {
 						state.target.print_template = html;
 						update_render();
 					}}
+					autocomplete_data={state.parsed_data}
 				/>
 			);
 		},

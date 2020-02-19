@@ -1,7 +1,6 @@
 package snd
 
 import (
-	"bytes"
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
@@ -132,19 +131,4 @@ func (s *Server) Start(bind string) error {
  |_____/ \___/\/_____/ 
 ________________________________________`)
 	return s.e.Start(bind)
-}
-
-// DB returns a reference to the database
-func (s *Server) DB() *storm.DB {
-	return s.db
-}
-
-// DB returns a reference to the database
-func (s *Server) Print(printerEndpoint, html string) error {
-	resp, err := http.Post(printerEndpoint+"/print", "text/plain", bytes.NewBufferString(html))
-	if err != nil {
-		return err
-	}
-
-	return resp.Body.Close()
 }

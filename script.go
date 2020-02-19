@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/d5/tengo"
+	"github.com/d5/tengo/v2"
 )
 
 // Script represents a tengo script.

@@ -6,9 +6,10 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/d5/tengo/v2"
+	"github.com/d5/tengo/v2/stdlib"
+
 	"github.com/asdine/storm"
-	"github.com/d5/tengo"
-	"github.com/d5/tengo/stdlib"
 )
 
 // AttachScriptRuntime registers the custom tengo functions to a script.

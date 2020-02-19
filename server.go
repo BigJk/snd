@@ -121,6 +121,7 @@ func (s *Server) Start(bind string) error {
 	s.e.Static("/static", "./static")
 
 	s.e.HideBanner = true
+	s.e.HidePort = true
 
 	fmt.Println(`
    _____        _____  

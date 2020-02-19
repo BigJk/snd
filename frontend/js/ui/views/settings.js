@@ -57,7 +57,7 @@ export default () => {
 											);
 										})}
 									</select>
-									<input type="text" className="form-input" value={state.settings?.printer_endpoint} onInput={e => (state.settings.printer_endpoint = e.target.value)} />
+									<input type="text" className="form-input" value={state.settings?.printer_endpoint} oninput={e => (state.settings.printer_endpoint = e.target.value)} />
 								</div>
 								<span className="f7 black-50">{getPrinterDescription()}</span>
 							</div>

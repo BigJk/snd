@@ -1,3 +1,6 @@
+// Package remote provides printing for Sales & Dungeons via a remote endpoint.
+// The printer commands will be send as http post request to the given
+// endpoint.
 package remote
 
 import (

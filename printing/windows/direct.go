@@ -1,3 +1,6 @@
+// Package windows provides printing for Sales & Dungeons
+// via direct printing on windows. The printer commands will
+// be written directly to the printer as raw document.
 package windows
 
 import (

@@ -1,3 +1,6 @@
+// Package cups provides printing for Sales & Dungeons via cups.
+// The printer commands will be written to a temporary file and
+// then send as raw data to a printer by name.
 package cups
 
 import (

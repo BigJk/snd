@@ -33,7 +33,7 @@ func RenderHTML(html string) (image.Image, error) {
 		}
 	}
 
-	// If no chrome was find let chromedp find it and
+	// If no chrome was found let chromedp find it and
 	// hope that chrome is installed.
 	if ctx == nil {
 		ctx, cancel = chromedp.NewContext(context.Background())

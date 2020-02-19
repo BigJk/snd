@@ -67,4 +67,6 @@ func main() {
 	w.Create()
 
 	a.Wait()
+
+	time.Sleep(time.Second * 1)
 }

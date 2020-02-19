@@ -42,7 +42,7 @@ func RenderHTML(html string) (image.Image, error) {
 
 	var imageData []byte
 	if err := chromedp.Run(ctx, chromedp.Tasks{
-		chromedp.EmulateViewport(380, 10000),
+		chromedp.EmulateViewport(384, 10000),
 		chromedp.Navigate("data:text/html," + url.PathEscape(html)),
 		chromedp.WaitVisible("#content", chromedp.ByID),
 		chromedp.Screenshot("body", &imageData, chromedp.NodeVisible, chromedp.ByQuery),

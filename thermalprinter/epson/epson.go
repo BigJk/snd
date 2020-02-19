@@ -39,7 +39,7 @@ func Image(buf io.Writer, image image.Image) {
 				if a > 255/2 {
 					grayscale := 0.2126*float64(r) + 0.7152*float64(g) + 0.0722*float64(b)
 
-					if grayscale < 128 {
+					if grayscale < 185 {
 						mask := byte(1) << byte(7-bindex)
 						cb |= mask
 					}

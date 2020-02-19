@@ -173,7 +173,7 @@ func RegisterRPC(route *echo.Group, db *storm.DB, scriptEngine *ScriptEngine, pr
 		}
 
 		htmlHead += `<body class="sans-serif">
-		<div id="content" class="pv5">`
+		<div id="content">`
 
 		doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlHead + html + "</div></body></html>"))
 		if err != nil {
@@ -226,6 +226,7 @@ func RegisterRPC(route *echo.Group, db *storm.DB, scriptEngine *ScriptEngine, pr
 		// Print
 		buf := &bytes.Buffer{}
 		epson.Image(buf, image)
+		buf.WriteString("\n\n\n\n\n\n")
 
 		return printer.Print(settings.PrinterEndpoint, buf.Bytes())
 	})))

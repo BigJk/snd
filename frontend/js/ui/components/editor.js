@@ -16,13 +16,17 @@ emmet(CodeMirror);
 
 import get from 'lodash-es/get';
 import map from 'lodash-es/map';
+import debounce from 'lodash-es/debounce';
 
 export default () => {
 	let state = {
 		dom: null,
 		editor: null,
 		onchange: null,
-		autocomplete_data: null
+		autocomplete_data: null,
+		error_provider: null,
+		error_checker: null,
+		error_widgets: []
 	};
 
 	let openHint = () => {
@@ -107,15 +111,39 @@ export default () => {
 			}
 		});
 
+		state.error_checker = debounce(() => {
+			if (!state.error_checker) return;
+
+			let res = state.error_provider(state.editor.getValue());
+			if (res instanceof Promise) {
+				res.then(res => {
+					state.error_widgets.map(w => w.clear());
+					state.error_widgets = res.map(e => {
+						let el = document.createElement('div');
+						el.innerHTML = e.error;
+						el.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';
+						return state.editor.addLineWidget(e.line - 1, el);
+					});
+				});
+			} else {
+				state.error_widgets.map(w => w.clear());
+				state.error_widgets = res.map(e => {
+					return state.editor.getDoc().addLineWidget(e.line, document.createElement('div'));
+				});
+			}
+		}, 1500);
+
 		state.editor.setSize('100%', '100%');
 
 		state.editor.on('change', () => {
 			if (state.autocomplete_data) openHint();
 			state.onchange?.(state.editor.getValue());
+			state.error_checker();
 		});
 
 		state.onchange = vnode.attrs.onchange;
 		state.autocomplete_data = vnode.attrs.autocomplete_data;
+		state.error_provider = vnode.attrs.error_provider;
 	};
 
 	return {
@@ -132,6 +160,7 @@ export default () => {
 		onbeforeupdate(vnode, old) {
 			state.onchange = vnode.attrs.onchange;
 			state.autocomplete_data = vnode.attrs.autocomplete_data;
+			state.error_provider = vnode.attrs.error_provider;
 
 			if (vnode.attrs.content !== state.editor.getValue()) {
 				state.editor.setValue(vnode.attrs.content);

@@ -260,4 +260,8 @@ func RegisterRPC(route *echo.Group, db *storm.DB, scriptEngine *ScriptEngine, pr
 
 		return scriptEngine.Exec(&script)
 	})))
+
+	route.POST("/verifyScript", echo.WrapHandler(nra.MustBind(func(script string) ([]ScriptError, error) {
+		return scriptEngine.Verify(script), nil
+	})))
 }

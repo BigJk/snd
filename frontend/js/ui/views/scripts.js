@@ -33,7 +33,22 @@ export default () => {
 
 		return (
 			<div className="flex-grow-1 overflow-auto relative">
-				<Editor className="h-100" content={target.source} language="go" onchange={code => (target.source = code)} />
+				<Editor
+					className="h-100"
+					content={target.source}
+					language="go"
+					onchange={code => (target.source = code)}
+					error_provider={s => {
+						return new Promise((resolve, reject) => {
+							api.verifyScript(s).then(err => {
+								if (!err) {
+									resolve([]);
+								}
+								resolve(err);
+							});
+						});
+					}}
+				/>
 				<div className="absolute right-0 bottom-0 ma3 flex z-999">
 					{state.new_script ? <input type="text" className="form-input input-sm ml2" placeholder="Script name..." value={target.name} oninput={e => (target.name = e.target.value)} /> : null}
 					<div

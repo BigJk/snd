@@ -12,7 +12,11 @@ import (
 	_ "image/png"
 )
 
-var commonChromePaths = []string{"./data/vendor/chrome-win/chrome.exe"}
+var commonChromePaths = []string{
+	"./data/vendor/chrome-win/chrome.exe",
+	"./data/vendor/chrome-linux/chrome",
+	"./data/vendor/chrome-mac/Chromium.app/Contents/MacOS/Chromium",
+}
 
 // RenderHTML renders the element #content into a image.
 func RenderHTML(html string) (image.Image, error) {

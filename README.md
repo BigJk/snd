@@ -1,6 +1,6 @@
 # Sales &amp; Dungeons
 
-![Discord](https://img.shields.io/discord/678654745803751579?label=discord)
+[![Discord](https://img.shields.io/discord/678654745803751579?label=discord)](https://discord.gg/5MUZEjc)
 
 Thermal Printer as D&amp;D Utility.
 

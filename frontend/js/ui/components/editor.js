@@ -112,7 +112,7 @@ export default () => {
 		});
 
 		state.error_checker = debounce(() => {
-			if (!state.error_checker) return;
+			if (!state.error_provider) return;
 
 			let res = state.error_provider(state.editor.getValue());
 			if (res instanceof Promise) {

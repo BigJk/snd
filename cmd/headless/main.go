@@ -1,19 +1,18 @@
 package main
 
 import (
+	"github.com/BigJk/snd/server"
 	"math/rand"
 	"time"
 
 	"github.com/BigJk/snd/printing/cups"
 	"github.com/BigJk/snd/printing/remote"
-
-	"github.com/BigJk/snd"
 )
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	s, err := snd.NewServer("./data.db", snd.WithPrinter(&cups.CUPS{}), snd.WithPrinter(&remote.Remote{}))
+	s, err := server.NewServer("./data.db", server.WithPrinter(&cups.CUPS{}), server.WithPrinter(&remote.Remote{}))
 	if err != nil {
 		panic(err)
 	}

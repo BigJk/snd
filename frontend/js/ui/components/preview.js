@@ -30,7 +30,7 @@ export default () => {
 		);
 		let doc = iframe.contentWindow.document;
 		doc.open();
-		doc.write(preCss + (content ?? '').replace('src="h', 'src="/image-proxy?url=h') + post);
+		doc.write(preCss + (content ?? '').replace(/src="h/gi, 'src="/image-proxy?url=h') + post);
 		doc.close();
 	};
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/BigJk/snd/server"
 	"io"
 	"io/ioutil"
 	"log"
@@ -13,7 +14,6 @@ import (
 	"github.com/BigJk/snd/printing/remote"
 	"github.com/BigJk/snd/printing/windows"
 
-	"github.com/BigJk/snd"
 	"github.com/asticode/go-astikit"
 	"github.com/asticode/go-astilectron"
 )
@@ -24,7 +24,7 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 
-	s, err := snd.NewServer("./data.db", snd.WithPrinter(&cups.CUPS{}), snd.WithPrinter(&remote.Remote{}), snd.WithPrinter(&windows.Direct{}))
+	s, err := server.NewServer("./data.db", server.WithPrinter(&cups.CUPS{}), server.WithPrinter(&remote.Remote{}), server.WithPrinter(&windows.Direct{}))
 	if err != nil {
 		panic(err)
 	}

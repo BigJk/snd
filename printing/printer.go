@@ -5,3 +5,6 @@ type Printer interface {
 	Description() string
 	Print(printerEndpoint string, data []byte) error
 }
+
+// PossiblePrinters
+type PossiblePrinter map[string]Printer

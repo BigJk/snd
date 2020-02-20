@@ -1,9 +1,9 @@
-package snd
+package server
 
 import (
-	"encoding/base64"
 	"fmt"
-	"io/ioutil"
+	"github.com/BigJk/snd"
+	"github.com/BigJk/snd/rpc"
 	"net/http"
 	"sync"
 
@@ -14,28 +14,19 @@ import (
 )
 
 // ServerOption
-type ServerOption func(s *Server) error
-
-// ServerPossiblePrinters
-type ServerPossiblePrinter map[string]printing.Printer
+type Option func(s *Server) error
 
 // Server represents a instance of the S&D server.
 type Server struct {
 	sync.RWMutex
 	db           *storm.DB
 	e            *echo.Echo
-	scriptEngine *ScriptEngine
-	printers     ServerPossiblePrinter
-}
-
-// ImageCache represents a image that was cached through the image proxy.
-type ImageCache struct {
-	ContentType string
-	Base        string
+	scriptEngine *snd.ScriptEngine
+	printers     printing.PossiblePrinter
 }
 
 // NewServer creates a new instance of the S&D server.
-func NewServer(file string, options ...ServerOption) (*Server, error) {
+func NewServer(file string, options ...Option) (*Server, error) {
 	db, err := storm.Open(file)
 	if err != nil {
 		return nil, err
@@ -56,7 +47,7 @@ func NewServer(file string, options ...ServerOption) (*Server, error) {
 	return s, nil
 }
 
-func WithPrinter(printer printing.Printer) ServerOption {
+func WithPrinter(printer printing.Printer) Option {
 	return func(s *Server) error {
 		s.printers[printer.Name()] = printer
 		return nil
@@ -65,9 +56,9 @@ func WithPrinter(printer printing.Printer) ServerOption {
 
 func (s *Server) Start(bind string) error {
 	// Create default settings if not existing
-	var settings Settings
+	var settings snd.Settings
 	if err := s.db.Get("base", "settings", &settings); err == storm.ErrNotFound {
-		if err := s.db.Set("base", "settings", &Settings{
+		if err := s.db.Set("base", "settings", &snd.Settings{
 			PrinterEndpoint: "http://127.0.0.1:3000",
 			Stylesheets:     []string{},
 		}); err != nil {
@@ -76,43 +67,26 @@ func (s *Server) Start(bind string) error {
 	}
 
 	// Create script engine
-	s.scriptEngine = NewScriptEngine(AttachScriptRuntime(s.db))
+	s.scriptEngine = snd.NewScriptEngine(snd.AttachScriptRuntime(s.db))
 
 	// Register rpc routes
-	RegisterRPC(s.e.Group("/api"), s.db, s.scriptEngine, s.printers)
+	api := s.e.Group("/api")
+	rpc.RegisterBasic(api, s.db)
+	rpc.RegisterTemplate(api, s.db)
+	rpc.RegisterEntry(api, s.db)
+	rpc.RegisterPrint(api, s.db, s.printers)
+	rpc.RegisterScript(api, s.db, s.scriptEngine)
 
 	// Register image proxy route so that the iframes that are used
 	// in the frontend can proxy images that they otherwise couldn't
 	// access because of CORB
 	s.e.GET("/image-proxy", func(c echo.Context) error {
-		url := c.QueryParam("url")
-
-		var image ImageCache
-		if s.db.Get("images", url, &image) == storm.ErrNotFound {
-			resp, err := http.Get(url)
-			if err != nil || resp.StatusCode != http.StatusOK {
-				return c.NoContent(http.StatusBadRequest)
-			}
-
-			data, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				return c.NoContent(http.StatusBadRequest)
-			}
-
-			image.ContentType = resp.Header.Get("Content-Type")
-			image.Base = base64.StdEncoding.EncodeToString(data)
-
-			_ = s.db.Set("images", url, &image)
-			_ = resp.Body.Close()
-			return c.Blob(http.StatusOK, resp.Header.Get("Content-Type"), data)
-		}
-
-		imgData, err := base64.StdEncoding.DecodeString(image.Base)
+		resp, err := http.Get(c.QueryParam("url"))
 		if err != nil {
 			return c.NoContent(http.StatusBadRequest)
 		}
 
-		return c.Blob(http.StatusOK, image.ContentType, imgData)
+		return c.Stream(resp.StatusCode, resp.Header.Get("Content-Type"), resp.Body)
 	})
 
 	// Make frontend and static directory public
@@ -130,10 +104,10 @@ func (s *Server) Start(bind string) error {
   ____) | (_>  < |__| |
  |_____/ \___/\/_____/ 
 ________________________________________`)
-	if len(GitCommitHash) > 0 {
-		fmt.Println("Build Time    :", BuildTime)
-		fmt.Println("Commit Branch :", GitBranch)
-		fmt.Println("Commit Hash   :", GitCommitHash)
+	if len(snd.GitCommitHash) > 0 {
+		fmt.Println("Build Time    :", snd.BuildTime)
+		fmt.Println("Commit Branch :", snd.GitBranch)
+		fmt.Println("Commit Hash   :", snd.GitCommitHash)
 	}
 
 	return s.e.Start(bind)

@@ -12,8 +12,13 @@ import map from 'lodash-es/map';
 export default () => {
 	let state = {
 		settings: null,
-		printer: null
+		printer: null,
+		version: null
 	};
+
+	api.getVersion().then(version => {
+		state.version = version;
+	});
 
 	let fetchSettings = () => {
 		api
@@ -32,6 +37,28 @@ export default () => {
 		if (!state.settings || !state.printer) return null;
 
 		return state.printer[state.settings.printer_type];
+	};
+
+	let version = () => {
+		if (state.version === null || state.version?.git_commit_hash.length === 0) return null;
+
+		return (
+			<div>
+				<div className="divider" />
+				<div className="code">
+					<div>
+						<span className="dib w4">Build </span> : {state.version.build_time}
+					</div>
+					<div>
+						<span className="dib w4">Commit Hash</span> : {state.version.git_commit_hash}
+					</div>
+					<div>
+						<span className="dib w4">Branch</span> : {state.version.git_branch}
+					</div>
+					<div className="black-40 mt1">If you want to submit a bug please provide the above information!</div>
+				</div>
+			</div>
+		);
 	};
 
 	fetchSettings();
@@ -110,6 +137,7 @@ export default () => {
 									www.flaticon.com
 								</a>
 							</div>
+							{version()}
 						</div>
 					</div>
 				</div>

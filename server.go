@@ -130,5 +130,11 @@ func (s *Server) Start(bind string) error {
   ____) | (_>  < |__| |
  |_____/ \___/\/_____/ 
 ________________________________________`)
+	if len(GitCommitHash) > 0 {
+		fmt.Println("Build Time    :", BuildTime)
+		fmt.Println("Commit Branch :", GitBranch)
+		fmt.Println("Commit Hash   :", GitCommitHash)
+	}
+
 	return s.e.Start(bind)
 }

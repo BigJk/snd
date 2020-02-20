@@ -38,6 +38,21 @@ func GetOutboundIP() (net.IP, error) {
 // RegisterRPC register the rpc routes for the frontend.
 func RegisterRPC(route *echo.Group, db *storm.DB, scriptEngine *ScriptEngine, printer ServerPossiblePrinter) {
 	/*
+		Version
+	*/
+	route.POST("/getVersion", echo.WrapHandler(nra.MustBind(func() (interface{}, error) {
+		return struct {
+			BuildTime     string `json:"build_time"`
+			GitCommitHash string `json:"git_commit_hash"`
+			GitBranch     string `json:"git_branch"`
+		}{
+			BuildTime:     BuildTime,
+			GitCommitHash: GitCommitHash,
+			GitBranch:     GitBranch,
+		}, nil
+	})))
+
+	/*
 		Settings
 	*/
 	route.POST("/getSettings", echo.WrapHandler(nra.MustBind(func() (*Settings, error) {

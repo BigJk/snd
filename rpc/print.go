@@ -2,6 +2,9 @@ package rpc
 
 import (
 	"bytes"
+	"net"
+	"strings"
+
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/printing"
@@ -11,8 +14,6 @@ import (
 	"github.com/asdine/storm"
 	"github.com/labstack/echo"
 	"github.com/pkg/errors"
-	"net"
-	"strings"
 )
 
 // GetOutboundIP gets the local ip.
@@ -62,6 +63,7 @@ func RegisterPrint(route *echo.Group, db *storm.DB, printer printing.PossiblePri
 		htmlHead := `<!DOCTYPE html>
 <html lang="en">
   <title>print page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">`
 
 		for i := range settings.Stylesheets {

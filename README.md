@@ -6,11 +6,31 @@ Thermal Printer as D&amp;D Utility.
 
 **Warning:** This is still rough and early version. If you want to get this working the best way is to jump on the Discord and ask for help.
 
-## Currently Tested Printers
+## Printers & Settings
 
-- [Zjiang ZJ-5890K Thermal Printer](http://www.zjiang.com/en/init.php/product/index?id=29)
+If you want to see what printers were already tested and which settings they need please visit the wiki [**HERE**](https://github.com/BigJk/snd/wiki/Printer-Settings)
 
-## Getting Started / Installation
+## Pre-Build Binaries
+
+If you want to get started right away you can just download the pre-build binaries for your OS and get started right away!
+
+### Windows
+
+1. Download the latest Release [**HERE**](http://snd.ftp.sh:2015/windows-amd64/?sort=time&order=desc)
+2. Unpack
+3. Start the "Sales & Dungeons.exe"
+4. Wait for the GUI to show up
+
+### Linux & Mac
+
+1. Download the latest Release for [**Linux**](http://snd.ftp.sh:2015/linux-amd64/?sort=time&order=desc) or [**MacOS**](http://snd.ftp.sh:2015/darwin-386/?sort=time&order=desc)
+2. Unpack
+3. ``cd`` into the folder in your terminal
+4. make it exectuable ``chmod +x ./Sales\ \&\ Dungeons``
+5. run it ``./Sales\ \&\ Dungeons``
+6. Open the web interface in your browser under [http://localhost:7123](http://localhost:7123)
+
+## Building Sales & Dungeons
 
 ### Linux
 This project is written in `go`, so you will need `go` installed on your system to compile `snd`.
@@ -63,7 +83,7 @@ Download the frontend:
 
 go to [http://snd.ftp.sh:2015/frontend-only](http://snd.ftp.sh:2015/frontend-only) and download the latest version.
 
-Then `cd ` to your `snd` folder, and do extract the file there.
+Then `cd` to your `snd` folder, and do extract the file there.
 
 Now to run the `snd` server, just do
 ```

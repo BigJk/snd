@@ -201,7 +201,7 @@ export default () => {
 							</ul>
 							<div className="relative w-100 flex-grow-1 overflow-auto">{tabs[state.selected_tab]()}</div>
 						</div>
-						<div className="w-100 preview flex-shrink-0">
+						<div className="preview flex-shrink-0">
 							<Preview content={state.last_render} stylesheets={vnode.attrs.stylesheets} width={vnode.attrs.previewWidth} />
 						</div>
 					</div>

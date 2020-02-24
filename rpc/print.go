@@ -118,7 +118,7 @@ func RegisterPrint(route *echo.Group, db *storm.DB, printer printing.PossiblePri
 
 		buf.WriteString(strings.Repeat("\n", settings.Commands.LinesBefore))
 		epson.Image(buf, image)
-		buf.WriteString(strings.Repeat("\n", settings.Commands.LinesAfter))
+		buf.WriteString(strings.Repeat("\n", 5+settings.Commands.LinesAfter))
 
 		if settings.Commands.Cut {
 			epson.CutPaper(buf)

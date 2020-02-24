@@ -18,7 +18,7 @@ If you want to get started right away you can just download the pre-build binari
 
 1. Download the latest Release [**HERE**](http://snd.ftp.sh:2015/windows-amd64/?sort=time&order=desc)
 2. Unpack
-3. Start the "Sales & Dungeons.exe"
+3. Start the `Sales & Dungeons.exe`
 4. Wait for the GUI to show up
 
 ### Linux & Mac

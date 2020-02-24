@@ -279,7 +279,7 @@ export default () => {
 								)}
 							</ListHeader>
 							<div className="preview flex-grow-1">
-								<Preview content={getPreview()} stylesheets={state.settings?.stylesheets} />
+								<Preview content={getPreview()} stylesheets={state.settings?.stylesheets} width={state.settings?.printer_width} />
 							</div>
 						</div>
 					</div>
@@ -288,6 +288,7 @@ export default () => {
 				return (
 					<div className="flex-grow-1 flex overflow-auto">
 						<EditTemplate
+							previewWidth={state.settings?.printer_width}
 							stylesheets={state.settings?.stylesheets}
 							editName={state.data.id == null}
 							target={state.data}
@@ -321,6 +322,7 @@ export default () => {
 				return (
 					<div className="flex-grow-1 flex overflow-auto">
 						<EditEntry
+							previewWidth={state.settings?.printer_width}
 							stylesheets={state.settings?.stylesheets}
 							editName={state.data.id == null}
 							template={state.selected_template}

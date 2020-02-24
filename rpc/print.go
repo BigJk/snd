@@ -53,6 +53,10 @@ func RegisterPrint(route *echo.Group, db *storm.DB, printer printing.PossiblePri
 			return err
 		}
 
+		if settings.PrinterWidth < 50 {
+			return errors.New("print width is too low")
+		}
+
 		// Get printer
 		printer, ok := printer[settings.PrinterType]
 		if !ok {
@@ -86,6 +90,7 @@ func RegisterPrint(route *echo.Group, db *storm.DB, printer printing.PossiblePri
 			url := s.AttrOr("src", "")
 			if strings.HasPrefix(url, "/") {
 				url = "http://" + ip.String() + ":7123" + url
+				s.SetAttr("src", url)
 			}
 		})
 
@@ -95,15 +100,29 @@ func RegisterPrint(route *echo.Group, db *storm.DB, printer printing.PossiblePri
 		}
 
 		// Render the html to image
-		image, err := rendering.RenderHTML(finalHtml)
+		image, err := rendering.RenderHTML(finalHtml, settings.PrinterWidth)
 		if err != nil {
 			return err
 		}
 
 		// Print
 		buf := &bytes.Buffer{}
+
+		if settings.Commands.ExplicitInit {
+			epson.InitPrinter(buf)
+		}
+
+		if settings.Commands.ForceStandardMode {
+			epson.SetStandardMode(buf)
+		}
+
+		buf.WriteString(strings.Repeat("\n", settings.Commands.LinesBefore))
 		epson.Image(buf, image)
-		buf.WriteString("\n\n\n\n\n\n")
+		buf.WriteString(strings.Repeat("\n", settings.Commands.LinesAfter))
+
+		if settings.Commands.Cut {
+			epson.CutPaper(buf)
+		}
 
 		return printer.Print(settings.PrinterEndpoint, buf.Bytes())
 	})))

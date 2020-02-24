@@ -257,7 +257,7 @@ export default () => {
 							<div className="flex-grow-1 overflow-auto pt3 pb5">{body()}</div>
 						</div>
 						<div className="preview flex-shrink-0">
-							<Preview content={state.last_render} stylesheets={vnode.attrs.stylesheets} />
+							<Preview content={state.last_render} stylesheets={vnode.attrs.stylesheets} width={vnode.attrs.previewWidth} />
 						</div>
 					</div>
 				</div>

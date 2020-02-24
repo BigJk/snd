@@ -6,7 +6,24 @@ const pre = `
   <title> </title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {{CSS}}
-  <body class="sans-serif pv3" style="padding-left: 15px; padding-right: 15px;">
+  <style>
+  	::-webkit-scrollbar {
+    	width: 3px;
+	}
+	
+	::-webkit-scrollbar-track {
+		background: #f1f1f1;
+	}
+	
+	::-webkit-scrollbar-thumb {
+		background: #c2c2c2;
+	}
+	
+	::-webkit-scrollbar-thumb:hover {
+		background: #d1d1d1;
+	}
+  </style>
+  <body class="sans-serif" style="padding: 15px; overflow-y: overlay;">
     <div id="content">`;
 
 const post = `    
@@ -44,7 +61,8 @@ export default () => {
 		view(vnode) {
 			return (
 				<iframe
-					className="w-100 h-100"
+					style={{width: ((vnode.attrs.width ?? 384) + 30) + 'px'}}
+					className="h-100"
 					name="result"
 					allow="midi *; geolocation *; microphone *; camera *; encrypted-media *;"
 					sandbox="allow-modals allow-forms allow-scripts allow-same-origin allow-popups allow-top-navigation-by-user-activation"

@@ -2,12 +2,12 @@ package server
 
 import (
 	"fmt"
-	"github.com/BigJk/snd"
-	"github.com/BigJk/snd/rpc"
 	"net/http"
 	"sync"
 
+	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/printing"
+	"github.com/BigJk/snd/rpc"
 
 	"github.com/asdine/storm"
 	"github.com/labstack/echo"
@@ -59,6 +59,7 @@ func (s *Server) Start(bind string) error {
 	var settings snd.Settings
 	if err := s.db.Get("base", "settings", &settings); err == storm.ErrNotFound {
 		if err := s.db.Set("base", "settings", &snd.Settings{
+			PrinterWidth:    384,
 			PrinterEndpoint: "http://127.0.0.1:3000",
 			Stylesheets:     []string{},
 		}); err != nil {

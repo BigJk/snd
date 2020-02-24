@@ -6,6 +6,24 @@ import (
 	"math"
 )
 
+// InitPrinter will re-init the printer and aborts any
+// outstanding commands.
+func InitPrinter(buf io.Writer) {
+	_, _ = buf.Write([]byte{0x1B, 0x40})
+}
+
+// SetStandardMode will set the printer into the standard
+// mode. In this mode the printer will instantly print all
+// data it receives.
+func SetStandardMode(buf io.Writer) {
+	_, _ = buf.Write([]byte{0x1B, 0x53})
+}
+
+// CutPaper will cut the paper if the printer supports it.
+func CutPaper(buf io.Writer) {
+	_, _ = buf.Write([]byte{0x1B, 0x6D})
+}
+
 // LineBreak adds a line break to the printer buffer.
 func LineBreak(buf io.Writer) {
 	_, _ = buf.Write([]byte{'\n'})

@@ -19,7 +19,7 @@ var commonChromePaths = []string{
 }
 
 // RenderHTML renders the element #content into a image.
-func RenderHTML(html string) (image.Image, error) {
+func RenderHTML(html string, width int) (image.Image, error) {
 	var ctx context.Context
 	var cancel context.CancelFunc
 
@@ -46,7 +46,7 @@ func RenderHTML(html string) (image.Image, error) {
 
 	var imageData []byte
 	if err := chromedp.Run(ctx, chromedp.Tasks{
-		chromedp.EmulateViewport(384, 10000),
+		chromedp.EmulateViewport(int64(width), 10000),
 		chromedp.Navigate("data:text/html," + url.PathEscape(html)),
 		chromedp.WaitVisible("#content", chromedp.ByID),
 		chromedp.Screenshot("body", &imageData, chromedp.NodeVisible, chromedp.ByQuery),

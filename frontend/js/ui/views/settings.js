@@ -88,6 +88,40 @@ export default () => {
 								</div>
 								<span className="f7 black-50">{getPrinterDescription()}</span>
 							</div>
+							<div className="form-group mw6 pb2">
+								<label className="form-label">Printer Width</label>
+								<div className="flex justify-between pb2">
+									<input type="text" className="form-input" value={state.settings?.printer_width} oninput={e => (state.settings.printer_width = parseInt(e.target.value) | 0)}/>
+								</div>
+								<span className="f7 black-50">This is the width of the printing area (most likely tha dots/line of your printer)</span>
+							</div>
+							<div className="form-group mw6 pb2">
+								<label className="form-label">Additional Printer Commands</label>
+								<label className="form-switch">
+									<input type="checkbox" checked={state.settings?.commands.explicit_init} oninput={e => (state.settings.commands.explicit_init = e.target.checked)}/>
+									<i className="form-icon"/> Explicit Initialization
+								</label>
+								<label className="form-switch">
+									<input type="checkbox" checked={state.settings?.commands.force_standard_mode} oninput={e => (state.settings.commands.force_standard_mode = e.target.checked)}/>
+									<i className="form-icon"/> Force Standard Mode
+								</label>
+								<label className="form-switch">
+									<input type="checkbox" checked={state.settings?.commands.cut} oninput={e => (state.settings.commands.cut = e.target.checked)}/>
+									<i className="form-icon"/> Cut After Printing
+								</label>
+								<div className="flex justify-between pt2">
+									<div className="flex-grow-1 justify-between mr3">
+										<label className="form-label">Empty Lines Before Print</label>
+										<input type="text" className="form-input" value={state.settings?.commands.lines_before}
+											   oninput={e => (state.settings.commands.lines_before = parseInt(e.target.value) | 0)}/>
+									</div>
+									<div className="flex-grow-1 justify-between">
+										<label className="form-label">Empty Lines After Print</label>
+										<input type="text" className="form-input" value={state.settings?.commands.lines_after}
+											   oninput={e => (state.settings.commands.lines_after = parseInt(e.target.value) | 0)}/>
+									</div>
+								</div>
+							</div>
 							<div className="divider" />
 							<div className="form-group mw6 pb1">
 								<label className="form-label">Global Stylesheets</label>

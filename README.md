@@ -23,7 +23,7 @@ If you want to get started right away you can just download the pre-build binari
 
 ### Linux & Mac
 
-1. Download the latest Release for [**Linux**](http://snd.ftp.sh:2015/linux-amd64/?sort=time&order=desc) or [**MacOS**](http://snd.ftp.sh:2015/darwin-386/?sort=time&order=desc)
+1. Download the latest Release for [**Linux (amd64)**](http://snd.ftp.sh:2015/linux-amd64/?sort=time&order=desc), [**MacOS (i386)**](http://snd.ftp.sh:2015/darwin-386/?sort=time&order=desc) or [**MacOS (amd64)**](http://snd.ftp.sh:2015/darwin-amd64/?sort=time&order=desc)
 2. Unpack
 3. ``cd`` into the folder in your terminal
 4. make it exectuable ``chmod +x ./Sales\ \&\ Dungeons``

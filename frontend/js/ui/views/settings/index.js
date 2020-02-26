@@ -44,6 +44,10 @@ export default () => {
 			);
 		}
 
+		if(store.data.settings.stylesheets === null) {
+			store.data.settings.stylesheets = [];
+		}
+
 		return (
 			<div className="overflow-auto flex-grow-1">
 				<div className="flex flex-wrap pa3">
@@ -58,7 +62,7 @@ export default () => {
 							<div className="mt3">{store.data.printer?.[store.data.settings.printer_type]}</div>
 						</Form>
 						<Form className="flex-grow-1 f7 black-70" horizontal={true}>
-							<Input label="Printing Width" labelCol={4} placeholder="e.g. 384" value={store.data.settings.printer_width} oninput={binder.inputString(store.data.settings, 'printer_width')} />
+							<Input label="Printing Width" labelCol={4} placeholder="e.g. 384" value={store.data.settings.printer_width} oninput={binder.inputNumber(store.data.settings, 'printer_width')} />
 							<Input label="Empty Lines Before" labelCol={4} placeholder="e.g. 7" value={store.data.settings.commands.lines_before} oninput={binder.inputNumber(store.data.settings.commands, 'lines_before')} />
 							<Input label="Empty Lines After" labelCol={4} placeholder="e.g. 7" value={store.data.settings.commands.lines_after} oninput={binder.inputNumber(store.data.settings.commands, 'lines_after')} />
 						</Form>

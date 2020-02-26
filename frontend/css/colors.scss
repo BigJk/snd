@@ -1,0 +1,49 @@
+@use "sass:map";
+
+$colours: ( "primary": #5755d9,
+	        "success": #32b643,
+	        "warning": #ffb700,
+	        "error": #e85600,
+	        "dark": #303742,
+            "secondary": #f1f1fc );
+
+@mixin linear-gradient($direction, $color-stops...) {
+  background: nth(nth($color-stops, 1), 1);
+  background: -webkit-linear-gradient(legacy-direction($direction), $color-stops);
+  background: linear-gradient($direction, $color-stops);
+}
+
+@each $i in $colours {
+	.bg-#{nth($i, 1)} {
+		background: nth($i, 2);
+	}
+	.bg-#{nth($i, 1)}-lighten {
+		background: lighten(nth($i, 2), 10%) !important;
+	}
+	.hover-bg-#{nth($i, 1)}-lighten:hover {
+        transition: 200ms ease-in-out;
+		background: lighten(nth($i, 2), 10%) !important;
+	}
+	.hover-bg-#{nth($i, 1)}:hover {
+        transition: 200ms ease-in-out;
+		background: nth($i, 2);
+	}
+	.col-#{nth($i, 1)} {
+		color: nth($i, 2);
+	}
+}
+
+$primary-color: map.get($colours, "primary");
+$success-color: map.get($colours, "success");
+$warning-color: map.get($colours, "warning");
+$error-color: map.get($colours, "error");
+$dark-color: map.get($colours, "dark");
+$secondary-color: map.get($colours, "secondary");
+
+.bg-grad-primary {
+  @include linear-gradient(0deg, transparentize(map.get($colours, "primary"), 0.95), transparentize(map.get($colours, "primary"), 1.0));
+}
+
+.bg-g-dark-trans {
+  @include linear-gradient(0deg, transparentize($dark-color, 0.4%), transparentize(white, 1%));
+}

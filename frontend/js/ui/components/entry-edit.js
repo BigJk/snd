@@ -1,19 +1,20 @@
 import m from 'mithril';
 
-import api from '../../core/api';
+import store from '../../core/store';
 
-import { error, success } from '../toast';
+import binder from '../binder';
 
 import dot from 'dot';
 
-import Preview from '../components/preview';
+import Preview from './preview';
+import Input from './input';
 
 import debounce from 'lodash-es/debounce';
 import map from 'lodash-es/map';
 import startCase from 'lodash-es/startCase';
 import camelCase from 'lodash-es/camelCase';
 import get from 'lodash-es/get';
-import set from 'lodash-es/set';
+import defaultsDeep from 'lodash-es/defaultsDeep';
 
 export default () => {
 	let state = {
@@ -21,60 +22,23 @@ export default () => {
 		target: null,
 		parsed_data: null,
 		last_render: '',
-		selected_tab: ''
+		selected_tab: '',
+		on_render: null
 	};
 
 	let update_render = debounce(() => {
 		try {
 			state.last_render = dot.template(state.template.print_template)(state.parsed_data);
 			m.redraw();
+
+			if (state.on_render) {
+				state.on_render(state.last_render);
+			}
 		} catch (e) {
 			console.log(e);
 		}
+		state.target.data = JSON.stringify(state.parsed_data);
 	}, 250);
-
-	let templateBar = editable => {
-		if (editable) {
-			return (
-				<div className="w5">
-					<input
-						className="form-input"
-						value={state.target.name}
-						placeholder="Entry Name..."
-						onchange={e => {
-							state.target.name = e.target.value;
-						}}
-					/>
-				</div>
-			);
-		}
-		return 'Template: ' + state.target.name;
-	};
-
-	let buttons = (onsave, onclose) => {
-		let buttons = [];
-		if (onsave) {
-			buttons.push(
-				<div
-					className="btn btn-success ml2"
-					onclick={() => {
-						state.target.data = JSON.stringify(state.parsed_data);
-						onsave(state.target);
-					}}
-				>
-					Save Changes
-				</div>
-			);
-		}
-		if (onclose) {
-			buttons.push(
-				<div className="btn btn-error ml2" onclick={onclose}>
-					Abort
-				</div>
-			);
-		}
-		return buttons;
-	};
 
 	let tabs = () => {
 		let entries = [];
@@ -105,39 +69,25 @@ export default () => {
 
 		switch (typeof obj) {
 			case 'number':
-				let oninputNumber = e => {
-					let num = parseInt(e.target.value);
-					if (isNaN(num)) {
-						num = 0;
-					}
-					set(state.parsed_data, curPath, num);
-					update_render();
-				};
 			case 'string':
-				let oninputString = e => {
-					set(state.parsed_data, curPath, e.target.value);
-					update_render();
-				};
-
 				let isNum = typeof obj === 'number';
 
 				return (
 					<div className="form-group mw-50 mr3">
 						<label className="form-label">{startCase(camelCase(name))}</label>
-						{isNum ? <input type="text" className="form-input" value={obj} oninput={oninputNumber} /> : <textarea className="form-input" placeholder={startCase(camelCase(name))} value={obj} rows="3" oninput={oninputString} />}
+						{isNum ? (
+							<input type="text" className="form-input" value={obj} oninput={binder.inputNumber(state.parsed_data, curPath, update_render)} />
+						) : (
+							<textarea className="form-input" placeholder={startCase(camelCase(name))} value={obj} rows="3" oninput={binder.inputString(state.parsed_data, curPath, update_render)} />
+						)}
 					</div>
 				);
 			case 'boolean':
-				let oninputBool = e => {
-					set(state.parsed_data, curPath, e.target.checked);
-					update_render();
-				};
-
 				return (
 					<div className="form-group mw-25 pt1 mr3">
 						<label className="form-label">{startCase(camelCase(name))}</label>
 						<label className="form-switch">
-							<input type="checkbox" checked={obj} oninput={oninputBool} />
+							<input type="checkbox" checked={obj} oninput={binder.checkbox(state.parsed_data, curPath, update_render)} />
 							<i className="form-icon" /> {startCase(camelCase(obj))}
 						</label>
 					</div>
@@ -196,8 +146,14 @@ export default () => {
 		if (isTop) {
 			return (
 				<div>
-					<div className="f5">Globals</div>
-					<div className="divider" />
+					<div className="pr3">
+						<div className="f5">Globals</div>
+						<div className="divider" />
+						<div className="pb2">
+							<Input label="Entry Name" value={state.target.name} oninput={binder.inputString(state.target, 'name')} />
+						</div>
+						<div className="divider" />
+					</div>
 					{map(state.parsed_data, (v, k) => {
 						if (isTop && typeof v == 'object') return null;
 
@@ -214,11 +170,12 @@ export default () => {
 		oninit(vnode) {
 			state.template = vnode.attrs.template;
 			state.target = vnode.attrs.target;
+			state.on_render = vnode.attrs.onrender;
 
 			if (state.target.data.length === 0) {
 				state.parsed_data = JSON.parse(state.template.skeleton_data);
 			} else {
-				state.parsed_data = JSON.parse(state.target.data);
+				state.parsed_data = defaultsDeep(JSON.parse(state.target.data), JSON.parse(state.template.skeleton_data));
 			}
 
 			update_render();
@@ -229,35 +186,14 @@ export default () => {
 			}
 			return (
 				<div className="w-100 h-100 flex flex-column">
-					<div className="flex-shrink-0 bb b--black-10 ph3 pv2 bg-light-gray flex justify-between items-center">
-						{templateBar(vnode.attrs.editName)}
-						<div>
-							<div
-								className="btn btn-primary ml2"
-								onclick={() => {
-									api.print(state.last_render).then(
-										() => {
-											success('Job sent');
-										},
-										err => {
-											error(err);
-										}
-									);
-								}}
-							>
-								Test Print
-							</div>
-							{buttons(vnode.attrs.onsave, vnode.attrs.onclose)}
-						</div>
-					</div>
 					<div className="w-100 h-100 flex-grow-1 overflow-auto flex">
 						<div className="h-100 flex-grow-1 overflow-auto flex">
 							<div className="w4 pl3">{tabs()}</div>
-							<div className="divider-vert"></div>
+							<div className="divider-vert" />
 							<div className="flex-grow-1 overflow-auto pt3 pb5">{body()}</div>
 						</div>
-						<div className="preview flex-shrink-0">
-							<Preview content={state.last_render} stylesheets={vnode.attrs.stylesheets} width={vnode.attrs.previewWidth} />
+						<div className="bl b--black-10 bg-light-gray preview flex-shrink-0">
+							<Preview className="h-100" content={state.last_render} width={340} scale={340.0 / store.data.settings.printer_width} stylesheets={store.data.settings.stylesheets} />
 						</div>
 					</div>
 				</div>

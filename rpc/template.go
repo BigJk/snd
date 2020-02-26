@@ -25,4 +25,12 @@ func RegisterTemplate(route *echo.Group, db *storm.DB) {
 		return templates, nil
 	})))
 
+	route.POST("/getTemplate", echo.WrapHandler(nra.MustBind(func(id int) (*snd.Template, error) {
+		var template snd.Template
+		if err := db.One("ID", id, &template); err != nil {
+			return nil, err
+		}
+
+		return &template, nil
+	})))
 }

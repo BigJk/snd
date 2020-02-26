@@ -1,22 +1,39 @@
 import m from 'mithril';
 
-const dungeonSvg = require('../../../img/dungeon.svg');
-const buySvg = require('../../../img/buy.svg');
-
 export default () => {
+	let breadcrumbs = b => {
+		return (
+			<div className="inline-flex f6">
+				{b.map((e, i) => {
+					if (i < b.length - 1) {
+						if (e.link) {
+							return (
+								<span className="mr1">
+									<span className="black-60 dim pointer mr1" onclick={() => m.route.set(e.link)}>
+										{e.name}
+									</span>
+									/
+								</span>
+							);
+						}
+						return (
+							<span className="mr1">
+								<span className="black-60 mr1">{e.name}</span>/
+							</span>
+						);
+					}
+					return <span className="black-80">{e.name}</span>;
+				})}
+			</div>
+		);
+	};
+
 	return {
-		view() {
+		view(vnode) {
 			return (
-				<div className="w-100 ph3 pv2 header white flex items-center flex-shrink-0">
-					<div className="flex items-center">
-						<img src={dungeonSvg} className="z-1" alt="" height={40} />
-						<img src={buySvg} className="z-0" alt="" height={32} style={{ margin: '-15px 0 0 -20px', transform: 'rotate(25deg)' }} />
-					</div>
-					<span className="f5 lh-solid i">
-						<span className="pl1 f6">Sales &</span>
-						<br />
-						Dungeons
-					</span>
+				<div className="ph3 h3 bg-grad-primary flex justify-between items-center bb b--black-10 flex-shrink-0">
+					{vnode.attrs.breadcrumbs ? breadcrumbs(vnode.attrs.breadcrumbs) : <span className="f6 fw5 black-80">{vnode.attrs.title}</span>}
+					<div>{vnode.children}</div>
 				</div>
 			);
 		}

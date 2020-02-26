@@ -21,6 +21,7 @@ export function newScript() {
 	return {
 		id: null,
 		name: '',
-		source: ''
+		source: '',
+		description: ''
 	};
 }

@@ -12,9 +12,10 @@ import (
 
 // Script represents a tengo script.
 type Script struct {
-	ID     int    `json:"id" storm:"id,increment"`
-	Name   string `json:"name" storm:"unique"`
-	Source string `json:"source"`
+	ID          int    `json:"id" storm:"id,increment"`
+	Name        string `json:"name" storm:"unique"`
+	Description string `json:"description"`
+	Source      string `json:"source"`
 }
 
 type ScriptError struct {

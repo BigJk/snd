@@ -25,6 +25,15 @@ func RegisterScript(route *echo.Group, db *storm.DB, scriptEngine *snd.ScriptEng
 		return scripts, nil
 	})))
 
+	route.POST("/getScript", echo.WrapHandler(nra.MustBind(func(id int) (*snd.Script, error) {
+		var script snd.Script
+		if err := db.One("ID", id, &script); err != nil {
+			return nil, err
+		}
+
+		return &script, nil
+	})))
+
 	route.POST("/runScript", echo.WrapHandler(nra.MustBind(func(id int) error {
 		var script snd.Script
 

@@ -1,16 +1,18 @@
 import m from 'mithril';
 
-import api from '../../core/api';
+import store from '../../core/store';
 
-import { error, success } from '../toast';
-
-import debounce from 'lodash-es/debounce';
-import map from 'lodash-es/map';
+import binder from '../binder';
 
 import dot from 'dot';
 
-import Editor from '../components/editor';
-import Preview from '../components/preview';
+import Editor from './editor';
+import Preview from './preview';
+import TextArea from './textarea';
+import Input from './input';
+
+import debounce from 'lodash-es/debounce';
+import map from 'lodash-es/map';
 
 export default () => {
 	let state = {
@@ -19,7 +21,8 @@ export default () => {
 		last_render: '',
 		last_list_render: '',
 		selected_tab: '',
-		skeleton_data_raw: ''
+		skeleton_data_raw: '',
+		on_render: null
 	};
 
 	let update_render = debounce(() => {
@@ -42,54 +45,23 @@ export default () => {
 		if (rerender) {
 			m.redraw();
 		}
+
+		if (state.on_render) {
+			state.on_render(state.last_render);
+		}
 	}, 250);
-
-	let templateBar = editable => {
-		if (editable) {
-			return (
-				<div className="w5">
-					<input
-						className="form-input"
-						value={state.target.name}
-						placeholder="Template Name..."
-						onchange={e => {
-							state.target.name = e.target.value;
-						}}
-					/>
-				</div>
-			);
-		}
-		return 'Template: ' + state.target.name;
-	};
-
-	let buttons = (onsave, onclose) => {
-		let buttons = [];
-		if (onsave) {
-			buttons.push(
-				<div
-					className="btn btn-success ml2"
-					onclick={() => {
-						state.target.skeleton_data = JSON.stringify(state.parsed_data);
-						onsave(state.target);
-					}}
-				>
-					Save Changes
-				</div>
-			);
-		}
-		if (onclose) {
-			buttons.push(
-				<div className="btn btn-error ml2" onclick={onclose}>
-					Abort
-				</div>
-			);
-		}
-		return buttons;
-	};
 
 	update_render();
 
 	let tabs = {
+		Information: () => {
+			return (
+				<div className="ph3 pt2">
+					<Input label="Name" cols={9} value={state.target.name} oninput={binder.inputString(state.target, 'name')} />
+					<TextArea label="Description" cols={9} value={state.target.description} oninput={binder.inputString(state.target, 'description')} />
+				</div>
+			);
+		},
 		'Print Template': () => {
 			return (
 				<Editor
@@ -115,11 +87,8 @@ export default () => {
 						update_render();
 					}}
 				/>,
-				<div className="absolute right-0 bottom-0 ma3 ph3 pv2 ba b--black-10 bg-white f5 lh-solid w500">
-					<div className="flex justify-between">
-						<span>1.</span>
-						Sample Entry
-					</div>
+				<div className="absolute right-0 bottom-0 ma3 ph3 pv3 ba b--black-10 bg-white f5 lh-solid w500">
+					<div className="fw7">Sample Entry</div>
 					{m.trust(state.last_list_render)}
 				</div>
 			];
@@ -136,15 +105,9 @@ export default () => {
 							state.parsed_data = JSON.parse(data);
 							update_render();
 						} catch (e) {}
+						state.target.skeleton_data = JSON.stringify(state.parsed_data);
 					}}
 				/>
-			);
-		},
-		'Other Information': () => {
-			return (
-				<div className="pa3">
-					<textarea className="form-input" cols="30" rows="10" value={state.target.description} placeholder="Short description..." onchange={e => (state.target.description = e.target.value)} />
-				</div>
 			);
 		}
 	};
@@ -154,6 +117,7 @@ export default () => {
 	return {
 		oninit(vnode) {
 			state.target = vnode.attrs.target;
+			state.on_render = vnode.attrs.onrender;
 			if (state.target.skeleton_data.length > 0) {
 				state.parsed_data = JSON.parse(state.target.skeleton_data);
 			} else {
@@ -167,27 +131,6 @@ export default () => {
 			}
 			return (
 				<div className="w-100 h-100 flex flex-column">
-					<div className="flex-shrink-0 bb b--black-10 ph3 pv2 bg-light-gray flex justify-between items-center">
-						{templateBar(vnode.attrs.editName)}
-						<div>
-							<div
-								className="btn btn-primary ml2"
-								onclick={() => {
-									api.print(state.last_render).then(
-										() => {
-											success('Job sent');
-										},
-										err => {
-											error(err);
-										}
-									);
-								}}
-							>
-								Test Print
-							</div>
-							{buttons(vnode.attrs.onsave, vnode.attrs.onclose)}
-						</div>
-					</div>
 					<div className="w-100 h-100 flex-grow-1 overflow-auto flex">
 						<div className="w-100 h-100 flex flex-column overflow-auto">
 							<ul className="tab tab-block tab-m0 flex-shrink-0">
@@ -201,8 +144,8 @@ export default () => {
 							</ul>
 							<div className="relative w-100 flex-grow-1 overflow-auto">{tabs[state.selected_tab]()}</div>
 						</div>
-						<div className="preview flex-shrink-0">
-							<Preview content={state.last_render} stylesheets={vnode.attrs.stylesheets} width={vnode.attrs.previewWidth} />
+						<div className="bl b--black-10 bg-light-gray preview flex-shrink-0">
+							<Preview className="h-100" content={state.last_render} width={340} scale={340.0 / store.data.settings.printer_width} stylesheets={store.data.settings.stylesheets} />
 						</div>
 					</div>
 				</div>

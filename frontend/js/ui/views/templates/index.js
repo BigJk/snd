@@ -2,7 +2,6 @@ import m from 'mithril';
 
 import * as nunjucks from 'nunjucks';
 
-import api from '../../../core/api';
 import store from '../../../core/store';
 
 import Base from '../../components/base';
@@ -11,6 +10,15 @@ import Header from '../../components/header';
 import Loading from '../../components/loading';
 
 import map from 'lodash-es/map';
+
+let tryParse = (data) => {
+	try {
+		return JSON.parse(data);
+	}  catch (e) {
+
+	}
+	return {};
+};
 
 export default () => {
 	let body = () => {
@@ -25,7 +33,7 @@ export default () => {
 						return (
 							<div className="w-25-l w-50 fl">
 								<div className="pl3 pt3 flex flex-column">
-									<Preview className="no-input h4 br2 br--top bg-secondary" overflow="hidden" width={'100%'} scale={0.5} content={nunjucks.renderString(v.printTemplate, { it: JSON.parse(v.skeletonData) })} stylesheets={store.data.settings.stylesheets} />
+									<Preview className="no-input h4 br2 br--top bg-secondary" overflow="hidden" width={'100%'} scale={0.5} content={nunjucks.renderString(v.printTemplate, { it: tryParse(v.skeletonData) })} stylesheets={store.data.settings.stylesheets} />
 									<div className="pa2 bg-dark hover-bg-dark-lighten lh-solid pointer" onclick={() => m.route.set('/templates/' + v.id)}>
 										<div className="f6 fw7 mb1 white">{v.name}</div>
 										<div className="f7 white-80 cut-text">{v.description}</div>
@@ -39,9 +47,17 @@ export default () => {
 		);
 	};
 
+	let updater = null;
+
 	return {
 		oninit() {
 			store.pub('reload_templates');
+			updater = setInterval(() => {
+				store.pub('reload_templates');
+			}, 5000);
+		},
+		onremove() {
+			clearInterval(updater);
 		},
 		view(vnode) {
 			return (

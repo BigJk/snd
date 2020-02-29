@@ -16,7 +16,7 @@ func (c *CUPS) Name() string {
 }
 
 func (c *CUPS) Description() string {
-	return "Print via CUPS attached printer."
+	return "Print via CUPS attached printer. Use the Name of the printer (not the URI) as Endpoint."
 }
 
 func (c *CUPS) Print(printerEndpoint string, data []byte) error {

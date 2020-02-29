@@ -25,6 +25,34 @@
     height: 100%;
 }
 
+.syntax-error {
+    position: relative;
+    border-bottom: 2px dashed red;
+    background-color: rgba(255, 0, 0, 0.2);
+    z-index: 999 !important;
+}
+
+.syntax-error:hover {
+    cursor: help;
+    position: relative;
+}
+
+.syntax-error[error]:hover:after {
+    content: attr(error);
+    position: absolute;
+    left: 0;
+    top: calc(-100% - 6px);
+    width: max-content;
+    padding: 3px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background-color: #fff;
+}
+
+.cm-nunjucks-variable {
+    padding: 0 !important;
+    border-radius: 0 !important;
+}
+
 /*
     Scrollbar
 */
@@ -47,7 +75,7 @@
 }
 
 /*
-
+    Common
  */
 
 .no-input {

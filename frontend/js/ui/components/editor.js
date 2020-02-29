@@ -5,10 +5,12 @@ import m from 'mithril';
 
 import CodeMirror from 'codemirror/lib/codemirror.js';
 
+require('codemirror/addon/mode/overlay');
 require('codemirror/addon/hint/show-hint');
 require('codemirror/mode/htmlmixed/htmlmixed');
 require('codemirror/mode/javascript/javascript');
 require('codemirror/mode/go/go');
+require('codemirror-nunjucks');
 
 import emmet from '@emmetio/codemirror-plugin';
 
@@ -119,16 +121,15 @@ export default () => {
 				res.then(res => {
 					state.error_widgets.map(w => w.clear());
 					state.error_widgets = res.map(e => {
-						let el = document.createElement('div');
-						el.innerHTML = e.error;
-						el.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';
-						return state.editor.addLineWidget(e.line - 1, el);
+						return state.editor.markText({ line: e.line - 1, ch: e.column - 2 }, { line: e.line - 1, ch: e.column - 1 }, { className: 'syntax-error', attributes: { error: e.error } });
 					});
 				});
 			} else {
 				state.error_widgets.map(w => w.clear());
 				state.error_widgets = res.map(e => {
-					return state.editor.getDoc().addLineWidget(e.line, document.createElement('div'));
+					let from = { line: e.line - 1, ch: e.column - 2 };
+					let to = { line: e.line - 1, ch: e.column - 1 };
+					return state.editor.markText({ line: e.line - 1, ch: e.column - 2 }, { line: e.line - 1, ch: e.column - 1 }, { className: 'syntax-error', attributes: { error: e.error } });
 				});
 			}
 		}, 1500);

@@ -19,8 +19,9 @@ type Script struct {
 }
 
 type ScriptError struct {
-	Line  int    `json:"line"`
-	Error string `json:"error"`
+	Line   int    `json:"line"`
+	Column int    `json:"column"`
+	Error  string `json:"error"`
 }
 
 func toTengoError(err error) tengo.Object {
@@ -121,8 +122,9 @@ func (se *ScriptEngine) Verify(scr string) []ScriptError {
 		lst := errList
 		for i := range lst {
 			errors = append(errors, ScriptError{
-				Line:  lst[i].Pos.Line,
-				Error: lst[i].Msg,
+				Line:   lst[i].Pos.Line,
+				Column: lst[i].Pos.Column,
+				Error:  lst[i].Msg,
 			})
 		}
 	}

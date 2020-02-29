@@ -4,7 +4,7 @@ import store from '../../core/store';
 
 import binder from '../binder';
 
-import dot from 'dot';
+import * as nunjucks from 'nunjucks';
 
 import Editor from './editor';
 import Preview from './preview';
@@ -22,24 +22,47 @@ export default () => {
 		last_list_render: '',
 		selected_tab: '',
 		skeleton_data_raw: '',
-		on_render: null
+		on_render: null,
+		template_errors: [],
+		list_template_errors: []
+	};
+
+	let template_error = e => {
+		let match = /.*\[Line (\d+), Column (\d+)\].*\n[ \t]*(.*)$/gm.exec(e.message);
+		if (match) {
+			return {
+				line: parseInt(match[1]),
+				column: parseInt(match[2]),
+				error: match[3]
+			};
+		}
+		return null;
 	};
 
 	let update_render = debounce(() => {
 		let rerender = false;
 
+		state.template_errors = [];
+		state.list_template_errors = [];
+
 		try {
-			state.last_render = dot.template(state.target.print_template)(state.parsed_data);
+			state.last_render = nunjucks.renderString(state.target.print_template, { it: state.parsed_data });
 			rerender = true;
 		} catch (e) {
-			console.log(e);
+			let err = template_error(e);
+			if (err) {
+				state.template_errors = [err];
+			}
 		}
 
 		try {
-			state.last_list_render = dot.template(state.target.list_template)(state.parsed_data);
+			state.last_list_render = nunjucks.renderString(state.target.list_template, { it: state.parsed_data });
 			rerender = true;
 		} catch (e) {
-			console.log(e);
+			let err = template_error(e);
+			if (err) {
+				state.list_template_errors = [err];
+			}
 		}
 
 		if (rerender) {
@@ -66,13 +89,16 @@ export default () => {
 			return (
 				<Editor
 					className="h-100 w-100"
-					language="htmlmixed"
+					language="nunjucks"
 					content={state.target.print_template}
 					onchange={html => {
 						state.target.print_template = html;
 						update_render();
 					}}
 					autocomplete_data={state.parsed_data}
+					error_provider={() => {
+						return state.template_errors;
+					}}
 				/>
 			);
 		},
@@ -85,6 +111,9 @@ export default () => {
 					onchange={html => {
 						state.target.list_template = html;
 						update_render();
+					}}
+					error_provider={() => {
+						return state.list_template_errors;
 					}}
 				/>,
 				<div className="absolute right-0 bottom-0 ma3 ph3 pv3 ba b--black-10 bg-white f5 lh-solid w500">

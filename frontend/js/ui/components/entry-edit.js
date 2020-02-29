@@ -4,7 +4,7 @@ import store from '../../core/store';
 
 import binder from '../binder';
 
-import dot from 'dot';
+import * as nunjucks from 'nunjucks';
 
 import Preview from './preview';
 import Input from './input';
@@ -28,7 +28,7 @@ export default () => {
 
 	let update_render = debounce(() => {
 		try {
-			state.last_render = dot.template(state.template.print_template)(state.parsed_data);
+			state.last_render = nunjucks.renderString(state.template.print_template, { it: state.parsed_data });
 			m.redraw();
 
 			if (state.on_render) {

@@ -17,17 +17,17 @@ import map from 'lodash-es/map';
 export default () => {
 	let state = {
 		target: null,
-		parsed_data: null,
-		last_render: '',
-		last_list_render: '',
-		selected_tab: '',
-		skeleton_data_raw: '',
-		on_render: null,
-		template_errors: [],
-		list_template_errors: []
+		parsedData: null,
+		lastRender: '',
+		lastListRender: '',
+		selectedTab: '',
+		skeletonDataRaw: '',
+		onRender: null,
+		templateErrors: [],
+		listTemplateErrors: []
 	};
 
-	let template_error = e => {
+	let templateError = e => {
 		let match = /.*\[Line (\d+), Column (\d+)\].*\n[ \t]*(.*)$/gm.exec(e.message);
 		if (match) {
 			return {
@@ -39,29 +39,29 @@ export default () => {
 		return null;
 	};
 
-	let update_render = debounce(() => {
+	let updateRender = debounce(() => {
 		let rerender = false;
 
-		state.template_errors = [];
-		state.list_template_errors = [];
+		state.templateErrors = [];
+		state.listTemplateErrors = [];
 
 		try {
-			state.last_render = nunjucks.renderString(state.target.print_template, { it: state.parsed_data });
+			state.lastRender = nunjucks.renderString(state.target.printTemplate, { it: state.parsedData });
 			rerender = true;
 		} catch (e) {
-			let err = template_error(e);
+			let err = templateError(e);
 			if (err) {
-				state.template_errors = [err];
+				state.templateErrors = [err];
 			}
 		}
 
 		try {
-			state.last_list_render = nunjucks.renderString(state.target.list_template, { it: state.parsed_data });
+			state.lastListRender = nunjucks.renderString(state.target.listTemplate, { it: state.parsedData });
 			rerender = true;
 		} catch (e) {
-			let err = template_error(e);
+			let err = templateError(e);
 			if (err) {
-				state.list_template_errors = [err];
+				state.listTemplateErrors = [err];
 			}
 		}
 
@@ -69,12 +69,12 @@ export default () => {
 			m.redraw();
 		}
 
-		if (state.on_render) {
-			state.on_render(state.last_render);
+		if (state.onRender) {
+			state.onRender(state.lastRender);
 		}
 	}, 250);
 
-	update_render();
+	updateRender();
 
 	let tabs = {
 		Information: () => {
@@ -90,14 +90,14 @@ export default () => {
 				<Editor
 					className="h-100 w-100"
 					language="nunjucks"
-					content={state.target.print_template}
+					content={state.target.printTemplate}
 					onchange={html => {
-						state.target.print_template = html;
-						update_render();
+						state.target.printTemplate = html;
+						updateRender();
 					}}
-					autocomplete_data={state.parsed_data}
-					error_provider={() => {
-						return state.template_errors;
+					autocompleteData={state.parsedData}
+					errorProvider={() => {
+						return state.templateErrors;
 					}}
 				/>
 			);
@@ -107,18 +107,19 @@ export default () => {
 				<Editor
 					className="h-100 w-100"
 					language="htmlmixed"
-					content={state.target.list_template}
+					content={state.target.listTemplate}
 					onchange={html => {
-						state.target.list_template = html;
-						update_render();
+						state.target.listTemplate = html;
+						updateRender();
 					}}
-					error_provider={() => {
-						return state.list_template_errors;
+					autocompleteData={state.parsedData}
+					errorProvider={() => {
+						return state.listTemplateErrors;
 					}}
 				/>,
 				<div className="absolute right-0 bottom-0 ma3 ph3 pv3 ba b--black-10 bg-white f5 lh-solid w500">
 					<div className="fw7">Sample Entry</div>
-					{m.trust(state.last_list_render)}
+					{m.trust(state.lastListRender)}
 				</div>
 			];
 		},
@@ -127,32 +128,32 @@ export default () => {
 				<Editor
 					className="h-100 w-100"
 					language="javascript"
-					content={state.skeleton_data_raw}
+					content={state.skeletonDataRaw}
 					onchange={data => {
-						state.skeleton_data_raw = data;
+						state.skeletonDataRaw = data;
 						try {
-							state.parsed_data = JSON.parse(data);
-							update_render();
+							state.parsedData = JSON.parse(data);
+							updateRender();
 						} catch (e) {}
-						state.target.skeleton_data = JSON.stringify(state.parsed_data);
+						state.target.skeletonData = JSON.stringify(state.parsedData);
 					}}
 				/>
 			);
 		}
 	};
 
-	state.selected_tab = Object.keys(tabs)[0];
+	state.selectedTab = Object.keys(tabs)[0];
 
 	return {
 		oninit(vnode) {
 			state.target = vnode.attrs.target;
-			state.on_render = vnode.attrs.onrender;
-			if (state.target.skeleton_data.length > 0) {
-				state.parsed_data = JSON.parse(state.target.skeleton_data);
+			state.onRender = vnode.attrs.onrender;
+			if (state.target.skeletonData.length > 0) {
+				state.parsedData = JSON.parse(state.target.skeletonData);
 			} else {
-				state.parsed_data = {};
+				state.parsedData = {};
 			}
-			state.skeleton_data_raw = JSON.stringify(state.parsed_data, null, 2);
+			state.skeletonDataRaw = JSON.stringify(state.parsedData, null, 2);
 		},
 		view(vnode) {
 			if (!state.target) {
@@ -165,16 +166,16 @@ export default () => {
 							<ul className="tab tab-block tab-m0 flex-shrink-0">
 								{map(tabs, (v, k) => {
 									return (
-										<li className={'tab-item ' + (k === state.selected_tab ? 'active' : '')} onclick={() => (state.selected_tab = k)}>
+										<li className={'tab-item ' + (k === state.selectedTab ? 'active' : '')} onclick={() => (state.selectedTab = k)}>
 											<a className="pointer">{k}</a>
 										</li>
 									);
 								})}
 							</ul>
-							<div className="relative w-100 flex-grow-1 overflow-auto">{tabs[state.selected_tab]()}</div>
+							<div className="relative w-100 flex-grow-1 overflow-auto">{tabs[state.selectedTab]()}</div>
 						</div>
 						<div className="bl b--black-10 bg-light-gray preview flex-shrink-0">
-							<Preview className="h-100" content={state.last_render} width={340} scale={340.0 / store.data.settings.printer_width} stylesheets={store.data.settings.stylesheets} />
+							<Preview className="h-100" content={state.lastRender} width={340} scale={340.0 / store.data.settings.printerWidth} stylesheets={store.data.settings.stylesheets} />
 						</div>
 					</div>
 				</div>

@@ -4,9 +4,9 @@ package snd
 type Template struct {
 	ID            int    `json:"id" storm:"id,increment"`
 	Name          string `json:"name" storm:"unique"`
-	ForeignName   string `json:"foreign_name" mapstructure:"foreign_name" storm:"index"`
+	ForeignName   string `json:"foreignName" mapstructure:"foreignName" storm:"index"`
 	Description   string `json:"description" mapstructure:"description"`
-	PrintTemplate string `json:"print_template" mapstructure:"print_template"`
-	ListTemplate  string `json:"list_template" mapstructure:"list_template"`
-	SkeletonData  string `json:"skeleton_data" mapstructure:"skeleton_data"`
+	PrintTemplate string `json:"printTemplate" mapstructure:"printTemplate"`
+	ListTemplate  string `json:"listTemplate" mapstructure:"listTemplate"`
+	SkeletonData  string `json:"skeletonData" mapstructure:"skeletonData"`
 }

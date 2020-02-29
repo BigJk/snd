@@ -15,19 +15,19 @@ import { success, error } from '../../toast';
 
 export default () => {
 	let version = () => {
-		if (store.data.version === null || store.data.version?.git_commit_hash.length === 0) return null;
+		if (store.data.version === null || store.data.version?.gitCommitHash.length === 0) return null;
 
 		return (
 			<div className="white mb2 toast">
 				<div className="code f7">
 					<div className="white">
-						<span className="dib w4">Build </span> : {store.data.version.build_time}
+						<span className="dib w4">Build </span> : {store.data.version.buildTime}
 					</div>
 					<div className="white">
-						<span className="dib w4">Commit Hash</span> : {store.data.version.git_commit_hash}
+						<span className="dib w4">Commit Hash</span> : {store.data.version.gitCommitHash}
 					</div>
 					<div className="white">
-						<span className="dib w4">Branch</span> : {store.data.version.git_branch}
+						<span className="dib w4">Branch</span> : {store.data.version.gitBranch}
 					</div>
 					<div className="white-70 mt1">If you want to submit a bug please provide the above information!</div>
 				</div>
@@ -44,7 +44,7 @@ export default () => {
 			);
 		}
 
-		if(store.data.settings.stylesheets === null) {
+		if (store.data.settings.stylesheets === null) {
 			store.data.settings.stylesheets = [];
 		}
 
@@ -57,20 +57,20 @@ export default () => {
 							Printer Settings
 						</div>
 						<Form className="flex-grow-1 mr4-ns mr0 f7 black-70" horizontal={true}>
-							<Select label="Printer Type" keys={Object.keys(store.data.printer)} selected={store.data.settings.printer_type} labelCol={4} oninput={binder.inputString(store.data.settings, 'printer_type')} />
-							<Input label="Endpoint" labelCol={4} placeholder="e.g. POS-80" value={store.data.settings.printer_endpoint} oninput={binder.inputString(store.data.settings, 'printer_endpoint')} />
-							<div className="mt3">{store.data.printer?.[store.data.settings.printer_type]}</div>
+							<Select label="Printer Type" keys={Object.keys(store.data.printer)} selected={store.data.settings.printerType} labelCol={4} oninput={binder.inputString(store.data.settings, 'printerType')} />
+							<Input label="Endpoint" labelCol={4} placeholder="e.g. POS-80" value={store.data.settings.printerEndpoint} oninput={binder.inputString(store.data.settings, 'printerEndpoint')} />
+							<div className="mt3">{store.data.printer?.[store.data.settings.printerType]}</div>
 						</Form>
 						<Form className="flex-grow-1 f7 black-70" horizontal={true}>
-							<Input label="Printing Width" labelCol={4} placeholder="e.g. 384" value={store.data.settings.printer_width} oninput={binder.inputNumber(store.data.settings, 'printer_width')} />
-							<Input label="Empty Lines Before" labelCol={4} placeholder="e.g. 7" value={store.data.settings.commands.lines_before} oninput={binder.inputNumber(store.data.settings.commands, 'lines_before')} />
-							<Input label="Empty Lines After" labelCol={4} placeholder="e.g. 7" value={store.data.settings.commands.lines_after} oninput={binder.inputNumber(store.data.settings.commands, 'lines_after')} />
+							<Input label="Printing Width" labelCol={4} placeholder="e.g. 384" value={store.data.settings.printerWidth} oninput={binder.inputNumber(store.data.settings, 'printerWidth')} />
+							<Input label="Empty Lines Before" labelCol={4} placeholder="e.g. 7" value={store.data.settings.commands.linesBefore} oninput={binder.inputNumber(store.data.settings.commands, 'linesBefore')} />
+							<Input label="Empty Lines After" labelCol={4} placeholder="e.g. 7" value={store.data.settings.commands.linesAfter} oninput={binder.inputNumber(store.data.settings.commands, 'linesAfter')} />
 						</Form>
 						<div className="w-100">
 							<div className="divider" />
 							<Form className="w-100 form-no-margin" horizontal={true}>
-								<Switch label={'Explicit Initialization'} labelCol={4} value={store.data.settings.commands.explicit_init} oninput={binder.checkbox(store.data.settings.commands, 'explicit_init')} />
-								<Switch label={'Force Standard Mode'} labelCol={4} value={store.data.settings.commands.force_standard_mode} oninput={binder.checkbox(store.data.settings.commands, 'force_standard_mode')} />
+								<Switch label={'Explicit Initialization'} labelCol={4} value={store.data.settings.commands.explicitInit} oninput={binder.checkbox(store.data.settings.commands, 'explicitInit')} />
+								<Switch label={'Force Standard Mode'} labelCol={4} value={store.data.settings.commands.forceStandardMode} oninput={binder.checkbox(store.data.settings.commands, 'forceStandardMode')} />
 								<Switch label={'Cut After Printing'} labelCol={4} value={store.data.settings.commands.cut} oninput={binder.checkbox(store.data.settings.commands, 'cut')} />
 							</Form>
 						</div>

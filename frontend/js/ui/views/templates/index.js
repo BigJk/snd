@@ -25,7 +25,7 @@ export default () => {
 						return (
 							<div className="w-25-l w-50 fl">
 								<div className="pl3 pt3 flex flex-column">
-									<Preview className="no-input h4 br2 br--top bg-secondary" overflow="hidden" width={'100%'} scale={0.5} content={nunjucks.renderString(v.print_template, { it: JSON.parse(v.skeleton_data) })} stylesheets={store.data.settings.stylesheets} />
+									<Preview className="no-input h4 br2 br--top bg-secondary" overflow="hidden" width={'100%'} scale={0.5} content={nunjucks.renderString(v.printTemplate, { it: JSON.parse(v.skeletonData) })} stylesheets={store.data.settings.stylesheets} />
 									<div className="pa2 bg-dark hover-bg-dark-lighten lh-solid pointer" onclick={() => m.route.set('/templates/' + v.id)}>
 										<div className="f6 fw7 mb1 white">{v.name}</div>
 										<div className="f7 white-80 cut-text">{v.description}</div>

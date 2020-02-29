@@ -85,7 +85,7 @@ export default () => {
 										<div className="fw6 f5">{e.name}</div>
 										{e.id === state.selected.id ? (
 											<div>
-												<div className="btn btn-success btn-sm mr2" onclick={() => api.print(nunjucks.renderString(state.template.print_template, { it: JSON.parse(e.data) })).then(() => success('Printing send'), error)}>
+												<div className="btn btn-success btn-sm mr2" onclick={() => api.print(nunjucks.renderString(state.template.printTemplate, { it: JSON.parse(e.data) })).then(() => success('Printing send'), error)}>
 													<i className="ion ion-md-print" />
 												</div>
 												<div className="btn btn-primary btn-sm mr2" onclick={() => m.route.set(`/templates/${state.template.id}/edit/${e.id}`)}>
@@ -109,7 +109,7 @@ export default () => {
 											</div>
 										) : null}
 									</div>
-									<div>{m.trust(nunjucks.renderString(state.template.list_template, { it: JSON.parse(e.data) }))}</div>
+									<div>{m.trust(nunjucks.renderString(state.template.listTemplate, { it: JSON.parse(e.data) }))}</div>
 								</div>
 							);
 						})}
@@ -153,9 +153,9 @@ export default () => {
 				<Preview
 					className="bg-light-gray flex-shrink-0"
 					width={340}
-					scale={340.0 / store.data.settings.printer_width}
+					scale={340.0 / store.data.settings.printerWidth}
 					stylesheets={store.data.settings.stylesheets}
-					content={nunjucks.renderString(state.template.print_template, { it: JSON.parse(state.selected.data ?? state.template.skeleton_data) })}
+					content={nunjucks.renderString(state.template.printTemplate, { it: JSON.parse(state.selected.data ?? state.template.skeletonData) })}
 				/>
 			</div>
 		);
@@ -165,8 +165,8 @@ export default () => {
 		oninit(vnode) {
 			let templateId = parseInt(vnode.attrs.id);
 
-			if (store.data.last_template_state?.template.id === templateId) {
-				state = store.data.last_template_state;
+			if (store.data.lastTemplateState?.template.id === templateId) {
+				state = store.data.lastTemplateState;
 			}
 
 			api
@@ -178,7 +178,7 @@ export default () => {
 				});
 		},
 		onremove() {
-			store.set('last_template_state', state);
+			store.set('lastTemplateState', state);
 		},
 		view(vnode) {
 			return (

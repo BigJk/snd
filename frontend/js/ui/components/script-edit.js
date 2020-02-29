@@ -11,7 +11,7 @@ import api from '../../core/api';
 export default () => {
 	let state = {
 		target: null,
-		selected_tab: 'Information'
+		selectedTab: 'Information'
 	};
 
 	let breadcrumbs = [
@@ -41,7 +41,7 @@ export default () => {
 					content={state.target.source}
 					language="go"
 					onchange={code => (state.target.source = code)}
-					error_provider={s => {
+					errorProvider={s => {
 						return new Promise((resolve, reject) => {
 							api.verifyScript(s).then(err => {
 								if (!err) {
@@ -57,7 +57,7 @@ export default () => {
 	};
 
 	let body = () => {
-		return tabs[state.selected_tab]();
+		return tabs[state.selectedTab]();
 	};
 
 	return {
@@ -71,8 +71,8 @@ export default () => {
 						<ul className="tab tab-block tab-m0">
 							{map(tabs, (v, k) => {
 								return (
-									<li className={`tab-item ${k === state.selected_tab ? 'active' : ''} pointer`}>
-										<a onclick={() => (state.selected_tab = k)}>{k}</a>
+									<li className={`tab-item ${k === state.selectedTab ? 'active' : ''} pointer`}>
+										<a onclick={() => (state.selectedTab = k)}>{k}</a>
 									</li>
 								);
 							})}

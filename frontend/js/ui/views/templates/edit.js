@@ -14,7 +14,7 @@ export default () => {
 	let state = {
 		id: null,
 		template: null,
-		last_render: ''
+		lastRender: ''
 	};
 
 	let loadTemplate = () => {
@@ -46,7 +46,7 @@ export default () => {
 
 		return (
 			<div className="flex-grow-1 overflow-auto">
-				<TemplateEdit target={state.template} onrender={r => (state.last_render = r)} />
+				<TemplateEdit target={state.template} onrender={r => (state.lastRender = r)} />
 			</div>
 		);
 	};
@@ -63,7 +63,7 @@ export default () => {
 				<Base active="templates">
 					<div className="h-100 flex flex-column">
 						<Header breadcrumbs={breadcrumbs()}>
-							<div className="btn btn-primary btn-sm mr2" onclick={() => api.print(state.last_render).then(() => success('Printing send'), error)}>
+							<div className="btn btn-primary btn-sm mr2" onclick={() => api.print(state.lastRender).then(() => success('Printing send'), error)}>
 								Test Print
 							</div>
 							<div

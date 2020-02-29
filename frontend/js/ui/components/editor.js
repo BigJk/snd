@@ -25,17 +25,17 @@ export default () => {
 		dom: null,
 		editor: null,
 		onchange: null,
-		autocomplete_data: null,
-		error_provider: null,
-		error_checker: null,
-		error_widgets: []
+		autocompleteData: null,
+		errorProvider: null,
+		errorChecker: null,
+		errorWidgets: []
 	};
 
 	let openHint = () => {
 		state.editor.showHint({
 			completeSingle: false,
 			hint: () => {
-				if (!state.autocomplete_data) return null;
+				if (!state.autocompleteData) return null;
 
 				let cursor = state.editor.getDoc().getCursor();
 				let line = state.editor
@@ -56,7 +56,7 @@ export default () => {
 						path = parts.slice(0, parts.length - 1).join('.');
 					}
 
-					let base = path.length === 0 ? state.autocomplete_data : get(state.autocomplete_data, path);
+					let base = path.length === 0 ? state.autocompleteData : get(state.autocompleteData, path);
 					if (base && typeof base === 'object' && !Array.isArray(base)) {
 						return {
 							from: cursor,
@@ -98,7 +98,7 @@ export default () => {
 		});
 	};
 
-	let setup_codemirror = vnode => {
+	let setupCodemirror = vnode => {
 		state.editor = new CodeMirror(vnode.dom, {
 			value: vnode.attrs.content ?? '',
 			mode: vnode.attrs.language ?? 'text',
@@ -113,20 +113,20 @@ export default () => {
 			}
 		});
 
-		state.error_checker = debounce(() => {
-			if (!state.error_provider) return;
+		state.errorChecker = debounce(() => {
+			if (!state.errorProvider) return;
 
-			let res = state.error_provider(state.editor.getValue());
+			let res = state.errorProvider(state.editor.getValue());
 			if (res instanceof Promise) {
 				res.then(res => {
-					state.error_widgets.map(w => w.clear());
-					state.error_widgets = res.map(e => {
+					state.errorWidgets.map(w => w.clear());
+					state.errorWidgets = res.map(e => {
 						return state.editor.markText({ line: e.line - 1, ch: e.column - 2 }, { line: e.line - 1, ch: e.column - 1 }, { className: 'syntax-error', attributes: { error: e.error } });
 					});
 				});
 			} else {
-				state.error_widgets.map(w => w.clear());
-				state.error_widgets = res.map(e => {
+				state.errorWidgets.map(w => w.clear());
+				state.errorWidgets = res.map(e => {
 					let from = { line: e.line - 1, ch: e.column - 2 };
 					let to = { line: e.line - 1, ch: e.column - 1 };
 					return state.editor.markText({ line: e.line - 1, ch: e.column - 2 }, { line: e.line - 1, ch: e.column - 1 }, { className: 'syntax-error', attributes: { error: e.error } });
@@ -137,31 +137,31 @@ export default () => {
 		state.editor.setSize('100%', '100%');
 
 		state.editor.on('change', () => {
-			if (state.autocomplete_data) openHint();
+			if (state.autocompleteData) openHint();
 			state.onchange?.(state.editor.getValue());
-			state.error_checker();
+			state.errorChecker();
 		});
 
 		state.onchange = vnode.attrs.onchange;
-		state.autocomplete_data = vnode.attrs.autocomplete_data;
-		state.error_provider = vnode.attrs.error_provider;
+		state.autocompleteData = vnode.attrs.autocompleteData;
+		state.errorProvider = vnode.attrs.errorProvider;
 	};
 
 	return {
 		oncreate(vnode) {
-			setup_codemirror(vnode);
+			setupCodemirror(vnode);
 		},
 		onupdate(vnode) {
 			vnode.dom.innerHTML = '';
-			setup_codemirror(vnode);
+			setupCodemirror(vnode);
 		},
 		onremove(vnode) {
 			state.editor = null;
 		},
 		onbeforeupdate(vnode, old) {
 			state.onchange = vnode.attrs.onchange;
-			state.autocomplete_data = vnode.attrs.autocomplete_data;
-			state.error_provider = vnode.attrs.error_provider;
+			state.autocompleteData = vnode.attrs.autocompleteData;
+			state.errorProvider = vnode.attrs.errorProvider;
 
 			if (vnode.attrs.content !== state.editor.getValue()) {
 				state.editor.setValue(vnode.attrs.content);

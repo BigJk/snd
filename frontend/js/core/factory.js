@@ -3,9 +3,9 @@ export function newTemplate() {
 		id: null,
 		name: '',
 		description: '',
-		print_template: '',
-		list_template: '',
-		skeleton_data: '{}'
+		printTemplate: '',
+		listTemplate: '',
+		skeletonData: '{}'
 	};
 }
 

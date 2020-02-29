@@ -10,9 +10,9 @@ import (
 func RegisterBasic(route *echo.Group, db *storm.DB) {
 	route.POST("/getVersion", echo.WrapHandler(nra.MustBind(func() (interface{}, error) {
 		return struct {
-			BuildTime     string `json:"build_time"`
-			GitCommitHash string `json:"git_commit_hash"`
-			GitBranch     string `json:"git_branch"`
+			BuildTime     string `json:"buildTime"`
+			GitCommitHash string `json:"gitCommitHash"`
+			GitBranch     string `json:"gitBranch"`
 		}{
 			BuildTime:     snd.BuildTime,
 			GitCommitHash: snd.GitCommitHash,

@@ -20,34 +20,34 @@ export default () => {
 	let state = {
 		template: null,
 		target: null,
-		parsed_data: null,
-		last_render: '',
-		selected_tab: '',
-		on_render: null
+		parsedData: null,
+		lastRender: '',
+		selectedTab: '',
+		onRender: null
 	};
 
-	let update_render = debounce(() => {
+	let updateRender = debounce(() => {
 		try {
-			state.last_render = nunjucks.renderString(state.template.print_template, { it: state.parsed_data });
+			state.lastRender = nunjucks.renderString(state.template.printTemplate, { it: state.parsedData });
 			m.redraw();
 
-			if (state.on_render) {
-				state.on_render(state.last_render);
+			if (state.onRender) {
+				state.onRender(state.lastRender);
 			}
 		} catch (e) {
 			console.log(e);
 		}
-		state.target.data = JSON.stringify(state.parsed_data);
+		state.target.data = JSON.stringify(state.parsedData);
 	}, 250);
 
 	let tabs = () => {
 		let entries = [];
-		map(state.parsed_data, (v, k) => {
+		map(state.parsedData, (v, k) => {
 			switch (typeof v) {
 				case 'object':
 					entries.push(
-						<li className={'pointer nav-item ' + (state.selected_tab === k ? 'active' : '')}>
-							<a onclick={() => (state.selected_tab = k)}>{startCase(camelCase(k))}</a>
+						<li className={'pointer nav-item ' + (state.selectedTab === k ? 'active' : '')}>
+							<a onclick={() => (state.selectedTab = k)}>{startCase(camelCase(k))}</a>
 						</li>
 					);
 					break;
@@ -56,8 +56,8 @@ export default () => {
 
 		return (
 			<ul className="nav">
-				<li className={'pointer nav-item ' + (state.selected_tab === '' ? 'active' : '')}>
-					<a onclick={() => (state.selected_tab = '')}>Global</a>
+				<li className={'pointer nav-item ' + (state.selectedTab === '' ? 'active' : '')}>
+					<a onclick={() => (state.selectedTab = '')}>Global</a>
 				</li>
 				{entries}
 			</ul>
@@ -65,7 +65,7 @@ export default () => {
 	};
 
 	let walkRecursive = (curPath, name) => {
-		let obj = get(state.parsed_data, curPath);
+		let obj = get(state.parsedData, curPath);
 
 		switch (typeof obj) {
 			case 'number':
@@ -76,9 +76,9 @@ export default () => {
 					<div className="form-group mw-50 mr3">
 						<label className="form-label">{startCase(camelCase(name))}</label>
 						{isNum ? (
-							<input type="text" className="form-input" value={obj} oninput={binder.inputNumber(state.parsed_data, curPath, update_render)} />
+							<input type="text" className="form-input" value={obj} oninput={binder.inputNumber(state.parsedData, curPath, updateRender)} />
 						) : (
-							<textarea className="form-input" placeholder={startCase(camelCase(name))} value={obj} rows="3" oninput={binder.inputString(state.parsed_data, curPath, update_render)} />
+							<textarea className="form-input" placeholder={startCase(camelCase(name))} value={obj} rows="3" oninput={binder.inputString(state.parsedData, curPath, updateRender)} />
 						)}
 					</div>
 				);
@@ -87,7 +87,7 @@ export default () => {
 					<div className="form-group mw-25 pt1 mr3">
 						<label className="form-label">{startCase(camelCase(name))}</label>
 						<label className="form-switch">
-							<input type="checkbox" checked={obj} oninput={binder.checkbox(state.parsed_data, curPath, update_render)} />
+							<input type="checkbox" checked={obj} oninput={binder.checkbox(state.parsedData, curPath, updateRender)} />
 							<i className="form-icon" /> {startCase(camelCase(obj))}
 						</label>
 					</div>
@@ -99,8 +99,8 @@ export default () => {
 							<div
 								className="btn btn-primary mb2"
 								onclick={() => {
-									obj.push(get(JSON.parse(state.template.skeleton_data), curPath)[0]);
-									update_render();
+									obj.push(get(JSON.parse(state.template.skeletonData), curPath)[0]);
+									updateRender();
 								}}
 							>
 								Create New
@@ -114,7 +114,7 @@ export default () => {
 												className="btn btn-error"
 												onclick={() => {
 													obj.splice(k, 1);
-													update_render();
+													updateRender();
 												}}
 											>
 												Delete
@@ -141,7 +141,7 @@ export default () => {
 	};
 
 	let body = () => {
-		let isTop = state.selected_tab.length === 0;
+		let isTop = state.selectedTab.length === 0;
 
 		if (isTop) {
 			return (
@@ -154,7 +154,7 @@ export default () => {
 						</div>
 						<div className="divider" />
 					</div>
-					{map(state.parsed_data, (v, k) => {
+					{map(state.parsedData, (v, k) => {
 						if (isTop && typeof v == 'object') return null;
 
 						return walkRecursive(k, k);
@@ -163,22 +163,22 @@ export default () => {
 			);
 		}
 
-		return walkRecursive(state.selected_tab, state.selected_tab);
+		return walkRecursive(state.selectedTab, state.selectedTab);
 	};
 
 	return {
 		oninit(vnode) {
 			state.template = vnode.attrs.template;
 			state.target = vnode.attrs.target;
-			state.on_render = vnode.attrs.onrender;
+			state.onRender = vnode.attrs.onrender;
 
 			if (state.target.data.length === 0) {
-				state.parsed_data = JSON.parse(state.template.skeleton_data);
+				state.parsedData = JSON.parse(state.template.skeletonData);
 			} else {
-				state.parsed_data = defaultsDeep(JSON.parse(state.target.data), JSON.parse(state.template.skeleton_data));
+				state.parsedData = defaultsDeep(JSON.parse(state.target.data), JSON.parse(state.template.skeletonData));
 			}
 
-			update_render();
+			updateRender();
 		},
 		view(vnode) {
 			if (!state.target) {
@@ -193,7 +193,7 @@ export default () => {
 							<div className="flex-grow-1 overflow-auto pt3 pb5">{body()}</div>
 						</div>
 						<div className="bl b--black-10 bg-light-gray preview flex-shrink-0">
-							<Preview className="h-100" content={state.last_render} width={340} scale={340.0 / store.data.settings.printer_width} stylesheets={store.data.settings.stylesheets} />
+							<Preview className="h-100" content={state.lastRender} width={340} scale={340.0 / store.data.settings.printerWidth} stylesheets={store.data.settings.stylesheets} />
 						</div>
 					</div>
 				</div>

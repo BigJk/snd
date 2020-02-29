@@ -15,7 +15,7 @@ export default () => {
 	let state = {
 		entry: null,
 		template: null,
-		last_render: ''
+		lastRender: ''
 	};
 
 	let saveEntry = () => {
@@ -57,7 +57,7 @@ export default () => {
 
 		return (
 			<div className="flex-grow-1 overflow-auto">
-				<EntryEdit target={state.entry} template={state.template} onrender={r => (state.last_render = r)} />
+				<EntryEdit target={state.entry} template={state.template} onrender={r => (state.lastRender = r)} />
 			</div>
 		);
 	};
@@ -73,7 +73,7 @@ export default () => {
 				<Base active="templates">
 					<div className="h-100 flex flex-column">
 						<Header breadcrumbs={breadcrumbs()}>
-							<div className="btn btn-primary btn-sm mr2" onclick={() => api.print(state.last_render).then(success('Print send'), error)}>
+							<div className="btn btn-primary btn-sm mr2" onclick={() => api.print(state.lastRender).then(success('Print send'), error)}>
 								Test Print
 							</div>
 							<div className="btn btn-success btn-sm" onclick={saveEntry}>

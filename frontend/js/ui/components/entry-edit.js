@@ -6,8 +6,8 @@ import binder from '../binder';
 
 import * as nunjucks from 'nunjucks';
 
-import Preview from './preview';
 import Input from './input';
+import SplitView from './split-view';
 
 import debounce from 'lodash-es/debounce';
 import map from 'lodash-es/map';
@@ -184,19 +184,15 @@ export default () => {
 			if (!state.target) {
 				return null;
 			}
+
 			return (
-				<div className="w-100 h-100 flex flex-column">
-					<div className="w-100 h-100 flex-grow-1 overflow-auto flex">
-						<div className="h-100 flex-grow-1 overflow-auto flex">
-							<div className="w4 pl3">{tabs()}</div>
-							<div className="divider-vert" />
-							<div className="flex-grow-1 overflow-auto pt3 pb5">{body()}</div>
-						</div>
-						<div className="bl b--black-10 bg-light-gray preview flex-shrink-0">
-							<Preview className="h-100" content={state.lastRender} width={340} scale={340.0 / store.data.settings.printerWidth} stylesheets={store.data.settings.stylesheets} />
-						</div>
+				<SplitView content={state.lastRender} width={340} scale={340.0 / store.data.settings.printerWidth} stylesheets={store.data.settings.stylesheets}>
+					<div className="h-100 flex-grow-1 overflow-auto flex">
+						<div className="w4 pl3">{tabs()}</div>
+						<div className="divider-vert" />
+						<div className="flex-grow-1 overflow-auto pt3 pb5">{body()}</div>
 					</div>
-				</div>
+				</SplitView>
 			);
 		}
 	};

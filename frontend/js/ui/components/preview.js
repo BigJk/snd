@@ -37,7 +37,15 @@ const post = `
 `;
 
 export default () => {
+	let lastContent = '';
+
 	let updateContent = (iframe, content, stylesheets, scale, overflow) => {
+		if (content === lastContent) {
+			return;
+		}
+
+		lastContent = content;
+
 		let preCss = pre
 			.replace(
 				'{{CSS}}',

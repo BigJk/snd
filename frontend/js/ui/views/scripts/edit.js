@@ -47,7 +47,11 @@ export default () => {
 	let body = () => {
 		if (!state.script) return <Loading />;
 
-		return <ScriptEdit target={state.script} />;
+		return (
+			<div className="ph3 pb3 flex-grow-1 overflow-auto">
+				<ScriptEdit target={state.script} />
+			</div>
+		);
 	};
 
 	return {
@@ -58,11 +62,11 @@ export default () => {
 			return (
 				<Base active={'scripts'}>
 					<div className="h-100 flex flex-column">
-						<Header breadcrumbs={breadcrumbs()}>
-							<div className="btn btn-primary btn-sm mr2" onclick={saveScript.bind(this, true)}>
+						<Header breadcrumbs={breadcrumbs()} subtitle="Edit this Script">
+							<div className="btn btn-primary mr2" onclick={saveScript.bind(this, true)}>
 								Run
 							</div>
-							<div className="btn btn-success btn-sm" onclick={saveScript.bind(this, false)}>
+							<div className="btn btn-success" onclick={saveScript.bind(this, false)}>
 								Save
 							</div>
 						</Header>

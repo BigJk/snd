@@ -1,7 +1,6 @@
 import m from 'mithril';
 
 import api from '../../../core/api';
-import store from '../../../core/store';
 
 import Base from '../../components/base';
 import Header from '../../components/header';
@@ -24,36 +23,41 @@ export default () => {
 		}
 
 		return (
-			<div className="flex flex-column pa3">
-				{state.scripts.map(s => {
-					return (
-						<div className="mb3 flex justify-between items-center flex-grow-1 bg-secondary ph3 pv2">
-							<div className="lh-solid mw5">
-								<div className="f6 fw7 mb1">{s.name}</div>
-								<div className="f7">{s.description ?? 'This script has no description...'}</div>
+			<div className="flex-grow-1 flex flex-column ph3 pb3 overflow-auto">
+				<div className="h-100 br1 bg-white overflow-auto ba b--black-10">
+					{state.scripts.map(s => {
+						return (
+							<div
+								className="flex justify-between items-center pa2 bb b--black-05 pointer hover-bg-secondary"
+								onclick={e => {
+									if (e.target !== e.currentTarget) return;
+									m.route.set(`/scripts/${s.id}`);
+								}}
+							>
+								<div className="lh-solid mw5">
+									<div className="f6 fw7 mb1">{s.name}</div>
+									<div className="f7 black-50">{s.description ?? 'This script has no description...'}</div>
+								</div>
+								<div className="h2 flex justify-between items-center">
+									<div className="btn btn-success mr2" onclick={() => api.runScript(s.id).then(() => success('Script started'), error)}>
+										<i className="ion ion-md-play" />
+									</div>
+									<div
+										className="btn btn-error"
+										onclick={() =>
+											api.deleteScript(s.id).then(() => {
+												success('Script deleted');
+												getScripts();
+											}, error)
+										}
+									>
+										<i className="ion ion-md-close-circle-outline" />
+									</div>
+								</div>
 							</div>
-							<div className="h2 flex justify-between items-center">
-								<div className="w2 h-75 pointer bg-dark hover-bg-dark-lighten flex-centered mr2" onclick={() => m.route.set(`/scripts/${s.id}`)}>
-									<i className="ion ion-md-search f6" />
-								</div>
-								<div className="w2 h-75 pointer bg-success hover-bg-success-lighten flex-centered mr2" onclick={() => api.runScript(s.id).then(() => success('Script started'), error)}>
-									<i className="ion ion-md-play f6" />
-								</div>
-								<div
-									className="w2 h-75 pointer bg-error hover-bg-error-lighten flex-centered"
-									onclick={() =>
-										api.deleteScript(s.id).then(() => {
-											success('Script deleted');
-											getScripts();
-										}, error)
-									}
-								>
-									<i className="ion ion-md-close-circle-outline f6" />
-								</div>
-							</div>
-						</div>
-					);
-				})}
+						);
+					})}
+				</div>
 			</div>
 		);
 	};
@@ -66,8 +70,8 @@ export default () => {
 			return (
 				<Base active={'scripts'}>
 					<div className="h-100 flex flex-column">
-						<Header title={'Scripts'}>
-							<div className="btn btn-success btn-sm" onclick={() => m.route.set('/scripts/new')}>
+						<Header title="Scripts" subtitle="Create, Edit and Run Scripts">
+							<div className="btn btn-success" onclick={() => m.route.set('/scripts/new')}>
 								New Script
 							</div>
 						</Header>

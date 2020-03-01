@@ -43,9 +43,9 @@ export default () => {
 			return (
 				<Base active="templates">
 					<div className="h-100 flex flex-column">
-						<Header breadcrumbs={breadcrumbs()}>
+						<Header breadcrumbs={breadcrumbs()} subtitle="Create a new Template">
 							<div
-								className="btn btn-success btn-sm"
+								className="btn btn-success"
 								onclick={() => {
 									if (state.template.name.length === 0) {
 										error('Please insert a name');

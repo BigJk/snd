@@ -62,8 +62,8 @@ export default () => {
 			return (
 				<Base active="templates">
 					<div className="h-100 flex flex-column">
-						<Header breadcrumbs={breadcrumbs()}>
-							<div className="btn btn-primary btn-sm mr2" onclick={() => api.print(state.lastRender).then(() => success('Printing send'), error)}>
+						<Header breadcrumbs={breadcrumbs()} title="Edit this Template">
+							<div className="btn btn-primary mr2" onclick={() => api.print(state.lastRender).then(() => success('Printing send'), error)}>
 								Test Print
 							</div>
 							<div

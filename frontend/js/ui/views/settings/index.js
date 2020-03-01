@@ -50,18 +50,20 @@ export default () => {
 
 		return (
 			<div className="overflow-auto flex-grow-1">
-				<div className="flex flex-wrap pa3">
-					<div className="ph3 pt3 pb2 mt2 ba b--black-10 br2 flex-grow-1 lh-solid flex flex-wrap relative">
-						<div className="absolute fw7 left-0 panel-title">
+				<div className="flex flex-wrap ph3 pt1 pb2">
+					<div className="bg-white ph3 pt3 pb2 mt2 ba b--black-10 br1 flex-grow-1 lh-solid flex flex-wrap relative">
+						<div className="br2 br--top bl bt br b--black-10 absolute fw7 left-0 panel-title">
 							<i className="ion ion-md-print mr1" />
 							Printer Settings
 						</div>
-						<Form className="flex-grow-1 mr4-ns mr0 f7 black-70" horizontal={true}>
-							<Select label="Printer Type" keys={Object.keys(store.data.printer)} selected={store.data.settings.printerType} labelCol={4} oninput={binder.inputString(store.data.settings, 'printerType')} />
-							<Input label="Endpoint" labelCol={4} placeholder="e.g. POS-80" value={store.data.settings.printerEndpoint} oninput={binder.inputString(store.data.settings, 'printerEndpoint')} />
-							<div className="mt3">{store.data.printer?.[store.data.settings.printerType]}</div>
-						</Form>
-						<Form className="flex-grow-1 f7 black-70" horizontal={true}>
+						<div className="w-50">
+							<Form className="mr3 f7 black-70" horizontal={true}>
+								<Select label="Printer Type" keys={Object.keys(store.data.printer)} selected={store.data.settings.printerType} labelCol={4} oninput={binder.inputString(store.data.settings, 'printerType')} />
+								<Input label="Endpoint" labelCol={4} placeholder="e.g. POS-80" value={store.data.settings.printerEndpoint} oninput={binder.inputString(store.data.settings, 'printerEndpoint')} />
+								<div className="mt3">{store.data.printer?.[store.data.settings.printerType]}</div>
+							</Form>
+						</div>
+						<Form className="w-50 f7 black-70" horizontal={true}>
 							<Input label="Printing Width" labelCol={4} placeholder="e.g. 384" value={store.data.settings.printerWidth} oninput={binder.inputNumber(store.data.settings, 'printerWidth')} />
 							<Input label="Empty Lines Before" labelCol={4} placeholder="e.g. 7" value={store.data.settings.commands.linesBefore} oninput={binder.inputNumber(store.data.settings.commands, 'linesBefore')} />
 							<Input label="Empty Lines After" labelCol={4} placeholder="e.g. 7" value={store.data.settings.commands.linesAfter} oninput={binder.inputNumber(store.data.settings.commands, 'linesAfter')} />
@@ -77,8 +79,8 @@ export default () => {
 					</div>
 				</div>
 				<div className="flex flex-wrap pa3">
-					<div className="ph3 pt3 pb3 ba b--black-10 br2 flex-grow-1 lh-solid flex flex-wrap relative">
-						<div className="absolute fw7 left-0 panel-title">
+					<div className="bg-white ph3 pt3 pb3 ba b--black-10 br1 flex-grow-1 lh-solid flex flex-wrap relative">
+						<div className="br2 br--top bl bt br b--black-10 absolute fw7 left-0 panel-title">
 							<i className="ion ion-md-code mr1" />
 							Global Stylesheets
 						</div>
@@ -123,9 +125,9 @@ export default () => {
 			return (
 				<Base active={'settings'}>
 					<div className="h-100 flex flex-column">
-						<Header title={'Settings'}>
+						<Header title="Settings" subtitle="Configure various aspects">
 							<div
-								className="btn btn-success btn-sm"
+								className="btn btn-success"
 								onclick={() => {
 									api.saveSettings(store.data.settings).then(
 										() => {

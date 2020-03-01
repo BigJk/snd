@@ -3,7 +3,7 @@ import m from 'mithril';
 export default () => {
 	let breadcrumbs = b => {
 		return (
-			<div className="inline-flex f6">
+			<div className="inline-flex f4">
 				{b.map((e, i) => {
 					if (i < b.length - 1) {
 						if (e.link) {
@@ -31,9 +31,12 @@ export default () => {
 	return {
 		view(vnode) {
 			return (
-				<div className="ph3 h3 bg-grad-primary flex justify-between items-center bb b--black-10 flex-shrink-0">
-					{vnode.attrs.breadcrumbs ? breadcrumbs(vnode.attrs.breadcrumbs) : <span className="f6 fw5 black-80">{vnode.attrs.title}</span>}
-					<div>{vnode.children}</div>
+				<div className="margin-lh-minus ph3 pt3 mb3 flex justify-between items-end">
+					<div className="lh-title">
+						{vnode.attrs.breadcrumbs ? breadcrumbs(vnode.attrs.breadcrumbs) : <span className="f4 fw5 black-70">{vnode.attrs.title}</span>}
+						<div className="f7 black-50">{vnode.attrs.subtitle}</div>
+					</div>
+					<div className="flex">{vnode.children}</div>
 				</div>
 			);
 		}

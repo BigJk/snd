@@ -10,6 +10,7 @@ import Editor from './editor';
 import Preview from './preview';
 import TextArea from './textarea';
 import Input from './input';
+import SplitView from './split-view';
 
 import debounce from 'lodash-es/debounce';
 import map from 'lodash-es/map';
@@ -117,9 +118,9 @@ export default () => {
 						return state.listTemplateErrors;
 					}}
 				/>,
-				<div className="absolute right-0 bottom-0 ma3 ph3 pv3 ba b--black-10 bg-white f5 lh-solid w500">
+				<div className="absolute right-0 bottom-0 ma3 pa2 ba b--black-10 bg-white f5 lh-solid w500">
 					<div className="fw7">Sample Entry</div>
-					{m.trust(state.lastListRender)}
+					<div className="black-50">{m.trust(state.lastListRender)}</div>
 				</div>
 			];
 		},
@@ -160,25 +161,18 @@ export default () => {
 				return;
 			}
 			return (
-				<div className="w-100 h-100 flex flex-column">
-					<div className="w-100 h-100 flex-grow-1 overflow-auto flex">
-						<div className="w-100 h-100 flex flex-column overflow-auto">
-							<ul className="tab tab-block tab-m0 flex-shrink-0">
-								{map(tabs, (v, k) => {
-									return (
-										<li className={'tab-item ' + (k === state.selectedTab ? 'active' : '')} onclick={() => (state.selectedTab = k)}>
-											<a className="pointer">{k}</a>
-										</li>
-									);
-								})}
-							</ul>
-							<div className="relative w-100 flex-grow-1 overflow-auto">{tabs[state.selectedTab]()}</div>
-						</div>
-						<div className="bl b--black-10 bg-light-gray preview flex-shrink-0">
-							<Preview className="h-100" content={state.lastRender} width={340} scale={340.0 / store.data.settings.printerWidth} stylesheets={store.data.settings.stylesheets} />
-						</div>
-					</div>
-				</div>
+				<SplitView content={state.lastRender} width={340} scale={340.0 / store.data.settings.printerWidth} stylesheets={store.data.settings.stylesheets}>
+					<ul className="tab tab-block tab-m0 flex-shrink-0">
+						{map(tabs, (v, k) => {
+							return (
+								<li className={'tab-item ' + (k === state.selectedTab ? 'active' : '')} onclick={() => (state.selectedTab = k)}>
+									<a className="pointer">{k}</a>
+								</li>
+							);
+						})}
+					</ul>
+					<div className="relative w-100 flex-grow-1 overflow-auto">{tabs[state.selectedTab]()}</div>
+				</SplitView>
 			);
 		}
 	};

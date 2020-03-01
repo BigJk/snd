@@ -66,7 +66,7 @@ export default () => {
 		},
 		view(vnode) {
 			return (
-				<div className="w-100 h-100 overflow-auto flex flex-column">
+				<div className="bg-white br1 ba b--black-10 w-100 h-100 overflow-auto flex flex-column">
 					<div className="flex-shrink-0">
 						<ul className="tab tab-block tab-m0">
 							{map(tabs, (v, k) => {

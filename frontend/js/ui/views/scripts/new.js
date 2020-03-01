@@ -42,8 +42,8 @@ export default () => {
 			return (
 				<Base active={'scripts'}>
 					<div className="h-100 flex flex-column">
-						<Header breadcrumbs={breadcrumbs}>
-							<div className="btn btn-success btn-sm" onclick={saveScript}>
+						<Header breadcrumbs={breadcrumbs} subtitle="Create a new Script">
+							<div className="btn btn-success" onclick={saveScript}>
 								Save
 							</div>
 						</Header>

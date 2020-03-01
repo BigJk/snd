@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"fmt"
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
 	"github.com/asdine/storm"
@@ -16,13 +17,28 @@ func RegisterTemplate(route *echo.Group, db *storm.DB) {
 		return db.DeleteStruct(&snd.Template{ID: id})
 	})))
 
-	route.POST("/getTemplates", echo.WrapHandler(nra.MustBind(func() ([]snd.Template, error) {
+	route.POST("/getTemplates", echo.WrapHandler(nra.MustBind(func() (interface{}, error) {
 		var templates []snd.Template
 		if err := db.All(&templates); err != nil && err != storm.ErrNotFound {
 			return nil, err
 		}
 
-		return templates, nil
+		type TemplateEntry struct {
+			snd.Template
+			Count int `json:"count"`
+		}
+
+		var templateListings []TemplateEntry
+		for i := range templates {
+			c, _ := db.From(fmt.Sprint(templates[i].ID)).Count(&snd.Entry{})
+
+			templateListings = append(templateListings, TemplateEntry{
+				Template: templates[i],
+				Count:    c,
+			})
+		}
+
+		return templateListings, nil
 	})))
 
 	route.POST("/getTemplate", echo.WrapHandler(nra.MustBind(func(id int) (*snd.Template, error) {

@@ -90,7 +90,7 @@ export default () => {
 												</div>
 												<div className="flex justify-between items-end">
 													<div className="lh-solid">
-														<div className="f4 b">23</div>
+														<div className="f4 b">{t.count}</div>
 														<span className="fw4 f6 black-50">Entries</span>
 													</div>
 													<div className="btn" onclick={() => m.route.set(`/templates/${t.id}`)}>

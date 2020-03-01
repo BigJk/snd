@@ -30,7 +30,7 @@ export default () => {
 							<div
 								className="flex justify-between items-center pa2 bb b--black-05 pointer hover-bg-secondary"
 								onclick={e => {
-									if (e.target !== e.currentTarget) return;
+									if (e.target.className.indexOf('btn') >= 0 || e.target.className.indexOf('ion') >= 0) return;
 									m.route.set(`/scripts/${s.id}`);
 								}}
 							>

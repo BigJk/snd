@@ -88,7 +88,7 @@ Then `cd` to your `snd` folder, and do extract the file there.
 Now to run the `snd` server, just do
 ```
 cd ~/src/snd/
-go run cmd/main.go
+go run cmd/headless/main.go
 ```
 
 and the web interface is at [http://localhost:7123](http://localhost:7123).

@@ -6,7 +6,6 @@ import store from '../../../core/store';
 import Base from '../../components/base';
 import Header from '../../components/header';
 import TemplateEdit from '../../components/template-edit';
-import Loading from '../../components/loading';
 
 import { success, error } from '../../toast';
 import { newTemplate } from '../../../core/factory';
@@ -29,8 +28,6 @@ export default () => {
 	};
 
 	let body = () => {
-		if (!store.data.templates) return <Loading />;
-
 		return (
 			<div className="flex-grow-1 overflow-auto">
 				<TemplateEdit target={state.template} />

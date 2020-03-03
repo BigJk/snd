@@ -14,6 +14,14 @@ import debounce from 'lodash-es/debounce';
 
 import { success, error } from '../../../toast';
 
+let tryRender = (t, v) => {
+	try {
+		return nunjucks.renderString(t, v);
+	} catch (e) {
+	}
+	return "Template error";
+};
+
 export default () => {
 	let state = {
 		id: null,
@@ -71,7 +79,7 @@ export default () => {
 		}
 
 		return (
-			<SplitView width={340} scale={340.0 / store.data.settings.printerWidth} stylesheets={store.data.settings.stylesheets} content={nunjucks.renderString(state.template.printTemplate, { it: JSON.parse(state.selected.data ?? state.template.skeletonData) })}>
+			<SplitView width={340} scale={340.0 / store.data.settings.printerWidth} stylesheets={store.data.settings.stylesheets} content={tryRender(state.template.printTemplate, { it: JSON.parse(state.selected.data ?? state.template.skeletonData) })}>
 				<div className="flex-grow-1 overflow-auto">
 					{state.entries.map(e => {
 						return (
@@ -84,12 +92,12 @@ export default () => {
 							>
 								<div>
 									<div className="fw6 f5">{e.name}</div>
-									<div className="black-50">{m.trust(nunjucks.renderString(state.template.listTemplate, { it: JSON.parse(e.data) }))}</div>
+									<div className="black-50">{m.trust(tryRender(state.template.listTemplate, { it: JSON.parse(e.data) }))}</div>
 								</div>
 								<div>
 									{e.id === state.selected.id ? (
 										<div>
-											<div className="btn btn-success btn-sm mr2" onclick={() => api.print(nunjucks.renderString(state.template.printTemplate, { it: JSON.parse(e.data) })).then(() => success('Printing send'), error)}>
+											<div className="btn btn-success btn-sm mr2" onclick={() => api.print(tryRender(state.template.printTemplate, { it: JSON.parse(e.data) })).then(() => success('Printing send'), error)}>
 												<i className="ion ion-md-print" />
 											</div>
 											<div className="btn btn-primary btn-sm mr2" onclick={() => m.route.set(`/templates/${state.template.id}/edit/${e.id}`)}>

@@ -20,6 +20,14 @@ let tryParse = data => {
 	return {};
 };
 
+let tryRender = (t, v) => {
+	try {
+		return nunjucks.renderString(t, v);
+	} catch (e) {
+	}
+	return "Template error";
+};
+
 export default () => {
 	let state = { search: '' };
 
@@ -35,7 +43,7 @@ export default () => {
 						return (
 							<div className="w-25-l w-50 fl">
 								<div className="pl3 pt3 flex flex-column">
-									<Preview className="no-input h4 br2 br--top bg-secondary" overflow="hidden" width={'100%'} scale={0.5} content={nunjucks.renderString(v.printTemplate, { it: tryParse(v.skeletonData) })} stylesheets={store.data.settings.stylesheets} />
+									<Preview className="no-input h4 br2 br--top bg-secondary" overflow="hidden" width={'100%'} scale={0.5} content={tryRender(v.printTemplate, { it: tryParse(v.skeletonData) })} stylesheets={store.data.settings.stylesheets} />
 									<div className="pa2 bg-dark hover-bg-dark-lighten lh-solid pointer" onclick={() => m.route.set('/templates/' + v.id)}>
 										<div className="f6 fw7 mb1 white">{v.name}</div>
 										<div className="f7 white-80 cut-text">{v.description}</div>
@@ -81,7 +89,7 @@ export default () => {
 									return (
 										<div className="w-100 flex ba b--black-10 h4 mb2 bg-white">
 											<div className="flex-shrink-0 ph1 mr2 br b--black-05 bg-black-05">
-												<Preview className="h-100" content={nunjucks.renderString(t.printTemplate, { it: tryParse(t.skeletonData) })} stylesheets={store.data.settings.stylesheets} width={150} scale={0.3} />
+												<Preview className="h-100" content={tryRender(t.printTemplate, { it: tryParse(t.skeletonData) })} stylesheets={store.data.settings.stylesheets} width={150} scale={0.3} />
 											</div>
 											<div className="flex-grow-1 pv2 pr2 lh-solid flex flex-column justify-between">
 												<div>

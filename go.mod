@@ -17,6 +17,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang/protobuf v1.3.3 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
+	github.com/google/gousb v0.0.0-20190812193832-18f4c1d8a750
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect

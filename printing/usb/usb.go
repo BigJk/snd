@@ -43,6 +43,10 @@ func (c *USB) openDevice(vendor int64, product int64, endpoint int) error {
 		return fmt.Errorf("usb printer not found")
 	}
 
+	if err := devices[0].SetAutoDetach(true); err != nil {
+		return err
+	}
+
 	// close rest of the devices if there were multiple found.
 	for i := 1; i < len(devices); i++ {
 		_ = devices[i].Close()

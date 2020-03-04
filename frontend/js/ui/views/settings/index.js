@@ -60,7 +60,7 @@ export default () => {
 							<Form className="mr3 f7 black-70" horizontal={true}>
 								<Select label="Printer Type" keys={Object.keys(store.data.printer)} selected={store.data.settings.printerType} labelCol={4} oninput={binder.inputString(store.data.settings, 'printerType')} />
 								<Input label="Endpoint" labelCol={4} placeholder="e.g. POS-80" value={store.data.settings.printerEndpoint} oninput={binder.inputString(store.data.settings, 'printerEndpoint')} />
-								<div className="mt3">{store.data.printer?.[store.data.settings.printerType]}</div>
+								<div className="mt3 lh-copy">{store.data.printer?.[store.data.settings.printerType]}</div>
 							</Form>
 						</div>
 						<Form className="w-50 f7 black-70" horizontal={true}>

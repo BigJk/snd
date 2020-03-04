@@ -32,6 +32,14 @@ $font-size: 0.7rem;
     padding-right: 0.7rem !important;
 }
 
+.modal-body {
+    padding-top: 0 !important;
+}
+
+.form-no-margin .form-group {
+    margin-bottom: 0;
+}
+
 /*
     Code Mirror
 */
@@ -140,10 +148,6 @@ $font-size: 0.7rem;
     left: 13px;
     background: white;
     padding: 5px 6px 0 6px;
-}
-
-.form-no-margin .form-group {
-    margin-bottom: 0;
 }
 
 .cut-text {

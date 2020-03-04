@@ -45,13 +45,13 @@ export default () => {
 					<div className="side-nav--shadow w-100 h-100 absolute bottom-0 left-0 z-0" />
 					<div className="ph2 pv3 header white flex-shrink-0">
 						<div className="flex-centered">
-							<div className="flex items-center z-999">
+							<div className="flex items-center z-5">
 								<img src={dungeonSvg} className="z-1" alt="" height={40} />
 								<img src={buySvg} className="z-0" alt="" height={32} style={{ margin: '-15px 0 0 -20px', transform: 'rotate(25deg)' }} />
 							</div>
 						</div>
 					</div>
-					<div className="flex-grow-1 overflow-auto z-999">{menu(vnode.attrs.active)}</div>
+					<div className="flex-grow-1 overflow-auto z-5">{menu(vnode.attrs.active)}</div>
 				</div>
 			);
 		}

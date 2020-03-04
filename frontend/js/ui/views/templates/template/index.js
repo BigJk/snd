@@ -4,12 +4,16 @@ import store from '../../../../core/store';
 import api from '../../../../core/api';
 
 import * as nunjucks from 'nunjucks';
+import * as msgpack from 'msgpack-lite';
 
 import Base from '../../../components/base';
 import Header from '../../../components/header';
 import Loading from '../../../components/loading';
 import SplitView from '../../../components/split-view';
+import TextArea from '../../../components/textarea';
+import Modal from '../../../components/modal';
 
+import transform from 'lodash-es/transform';
 import debounce from 'lodash-es/debounce';
 
 import { success, error } from '../../../toast';
@@ -17,9 +21,8 @@ import { success, error } from '../../../toast';
 let tryRender = (t, v) => {
 	try {
 		return nunjucks.renderString(t, v);
-	} catch (e) {
-	}
-	return "Template error";
+	} catch (e) {}
+	return 'Template error';
 };
 
 export default () => {
@@ -33,7 +36,9 @@ export default () => {
 		},
 		search: '',
 		page: 0,
-		maxPage: 0
+		maxPage: 0,
+		showExport: false,
+		exportText: ''
 	};
 
 	let loadEntries = () => {
@@ -71,6 +76,17 @@ export default () => {
 				name: state.template?.name ?? '...'
 			}
 		];
+	};
+
+	let modal = () => {
+		if (!state.showExport) return null;
+
+		return (
+			<Modal title="Export" onclose={() => (state.showExport = null)}>
+				<div className="mb2">The following code represents this Template:</div>
+				<TextArea value={state.exportText} rows={15} />
+			</Modal>
+		);
 	};
 
 	let body = vnode => {
@@ -191,9 +207,28 @@ export default () => {
 							<div className="btn btn-success mr2" onclick={() => m.route.set(`/templates/${state.template.id}/new`)}>
 								New Entry
 							</div>
-							<div className="btn btn-primary" onclick={() => m.route.set(`/templates/${state.template.id}/edit`)}>
-								Edit Template
+							<div className="btn btn-primary mr2" onclick={() => m.route.set(`/templates/${state.template.id}/edit`)}>
+								Edit
 							</div>
+							<btn
+								className="btn btn-primary"
+								onclick={() => {
+									state.exportText = msgpack
+										.encode(
+											JSON.stringify(
+												transform(state.template, (res, val, key) => {
+													if (['name', 'description', 'printTemplate', 'listTemplate', 'skeletonData'].some(s => s === key)) {
+														res[key] = val;
+													}
+												})
+											)
+										)
+										.toString('base64');
+									state.showExport = true;
+								}}
+							>
+								<i className="ion ion-md-open" />
+							</btn>
 							<div className="divider-vert" />
 							<div
 								className="btn btn-error"
@@ -209,6 +244,7 @@ export default () => {
 							</div>
 						</Header>
 						{body(vnode)}
+						{modal()}
 					</div>
 				</Base>
 			);

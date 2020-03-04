@@ -7,7 +7,7 @@ export default () => {
 		return (
 			<select className={`form-select ${vnode.attrs.labelCol ? 'col-' + (12 - vnode.attrs.labelCol) : ''}`} oninput={vnode.attrs.oninput}>
 				<option value="" selected={!vnode.attrs.selected || vnode.attrs.selected.length === 0}>
-					Choose an option...
+					{vnode.attrs.default ?? 'Choose an option...'}
 				</option>
 				{vnode.attrs.keys.map((k, i) => {
 					let text = k;

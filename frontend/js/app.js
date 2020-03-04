@@ -24,7 +24,7 @@ api.getVersion().then(version => {
 
 store.sub(['reload_templates'], () => {
 	api.getTemplates().then(templates => {
-		store.set('templates', templates);
+		store.set('templates', templates ?? []);
 	});
 });
 

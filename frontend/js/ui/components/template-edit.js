@@ -8,7 +8,7 @@ import * as nunjucks from 'nunjucks';
 
 import Editor from './editor';
 import Preview from './preview';
-import TextArea from './textarea';
+import TextArea from './text-area';
 import Input from './input';
 import SplitView from './split-view';
 

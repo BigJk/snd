@@ -64,7 +64,7 @@ export default () => {
 								Test Print
 							</div>
 							<div
-								className="btn btn-success btn-sm"
+								className="btn btn-success"
 								onclick={() =>
 									api.saveTemplate(state.template).then(() => {
 										success('Template saved');

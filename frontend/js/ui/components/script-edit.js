@@ -1,7 +1,7 @@
 import m from 'mithril';
 
 import Input from './input';
-import TextArea from './textarea';
+import TextArea from './text-area';
 import Editor from './editor';
 
 import map from 'lodash-es/map';

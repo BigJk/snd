@@ -82,19 +82,7 @@ export default () => {
 				width = vnode.attrs.width;
 			}
 
-			return (
-				<iframe
-					style={{ width: width }}
-					className={vnode.attrs.className}
-					name="result"
-					allow="midi *; geolocation *; microphone *; camera *; encrypted-media *;"
-					sandbox="allow-modals allow-forms allow-scripts allow-same-origin allow-popups allow-top-navigation-by-user-activation"
-					allowfullscreen=""
-					allowpaymentrequest=""
-					frameborder="0"
-					src=""
-				/>
-			);
+			return <iframe style={{ width: width }} className={vnode.attrs.className} name="result" sandbox="allow-scripts allow-same-origin" allowfullscreen="false" allowpaymentrequest="false" frameborder="0" src="" />;
 		}
 	};
 };

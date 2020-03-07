@@ -6,7 +6,7 @@
       "pragmaFrag": "'['"
     }],
     ["module-resolver", {
-      "root": ["./src"],
+      "root": ["./"],
       "alias": {
         "core": "./js/core",
         "components": "./js/ui/components",

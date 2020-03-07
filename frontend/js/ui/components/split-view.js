@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-import store from '../../core/store';
+import store from 'core/store';
 
 import Preview from './preview';
 

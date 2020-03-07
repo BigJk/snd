@@ -1,12 +1,10 @@
 import m from 'mithril';
 
-import api from '../../../core/api';
+import api from 'core/api';
 
-import Base from '../../components/base';
-import Header from '../../components/header';
-import Loading from '../../components/loading';
+import { Base, Header, Loading } from 'components/*'
 
-import { error, success } from '../../toast';
+import { error, success } from 'ui/toast';
 
 export default () => {
 	let state = {

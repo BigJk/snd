@@ -1,17 +1,12 @@
 import m from 'mithril';
 
-import api from '../../../core/api';
-import store from '../../../core/store';
-import binder from '../../binder';
+import api from 'core/api';
+import store from 'core/store';
+import binder from 'ui/binder';
 
-import Base from '../../components/base';
-import Header from '../../components/header';
-import Input from '../../components/input';
-import Switch from '../../components/switch';
-import Select from '../../components/select';
-import Form from '../../components/form';
+import { Base, Header, Input, Switch, Select, Form } from 'components/*';
 
-import { success, error } from '../../toast';
+import { success, error } from 'ui/toast';
 
 export default () => {
 	let version = () => {

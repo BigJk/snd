@@ -1,22 +1,17 @@
 import m from 'mithril';
 
-import store from '../../../../core/store';
-import api from '../../../../core/api';
+import store from 'core/store';
+import api from 'core/api';
 
 import * as nunjucks from 'nunjucks';
 import * as msgpack from 'msgpack-lite';
 
-import Base from '../../../components/base';
-import Header from '../../../components/header';
-import Loading from '../../../components/loading';
-import SplitView from '../../../components/split-view';
-import TextArea from '../../../components/textarea';
-import Modal from '../../../components/modal';
+import { Base, Header, SplitView, Loading, TextArea, Modal } from 'components/*';
 
 import transform from 'lodash-es/transform';
 import debounce from 'lodash-es/debounce';
 
-import { success, error } from '../../../toast';
+import { success, error } from 'ui/toast';
 
 let tryRender = (t, v) => {
 	try {

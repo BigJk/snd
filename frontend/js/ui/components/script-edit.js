@@ -6,7 +6,7 @@ import Editor from './editor';
 
 import map from 'lodash-es/map';
 import binder from '../binder';
-import api from '../../core/api';
+import api from 'core/api';
 
 export default () => {
 	let state = {

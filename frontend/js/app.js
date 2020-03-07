@@ -7,8 +7,8 @@ import '../css/style.scss';
 
 // Pre-Load Settings
 
-import api from './core/api';
-import store from './core/store';
+import api from 'core/api';
+import store from 'core/store';
 
 api.getSettings().then(settings => {
 	store.set('settings', settings);

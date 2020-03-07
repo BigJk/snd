@@ -1,28 +1,19 @@
 import m from 'mithril';
 
-import api from '../../../core/api';
+import api from 'core/api';
 
 import * as nunjucks from 'nunjucks';
 import * as msgpack from 'msgpack-lite';
 
-import store from '../../../core/store';
-import binder from '../../binder';
+import store from 'core/store';
+import binder from 'ui/binder';
 
-import Base from '../../components/base';
-import Preview from '../../components/preview';
-import Header from '../../components/header';
-import Loading from '../../components/loading';
-import Input from '../../components/input';
-import Modal from '../../components/modal';
-import TextArea from '../../components/textarea';
-import Select from '../../components/select';
-import Switch from '../../components/switch';
-import Form from '../../components/form';
+import { Base, Preview, Header, Loading, Input, Modal, TextArea, Select, Switch, Form } from 'components/*';
 
 import transform from 'lodash-es/transform';
 import merge from 'lodash-es/merge';
 
-import { error, success } from '../../toast';
+import { error, success } from 'ui/toast';
 
 let tryParse = data => {
 	try {

@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"regexp"
 )
 
 type CUPS struct{}
@@ -19,8 +20,21 @@ func (c *CUPS) Description() string {
 	return "Print via CUPS attached printer. Use the Name of the printer (not the URI) as Endpoint."
 }
 
+var devicesRegex = regexp.MustCompile(`(?mU)device for (.+):`)
+
 func (c *CUPS) AvailableEndpoints() (map[string]string, error) {
-	return map[string]string{}, nil
+	output, err := exec.Command("lpstat", "-s").CombinedOutput()
+	if err != nil {
+		return nil, err
+	}
+
+	found := devicesRegex.FindAllStringSubmatch(string(output), -1)
+	available := map[string]string{}
+	for i := range found {
+		available[found[i][1]] = found[i][1]
+	}
+
+	return available, nil
 }
 
 func (c *CUPS) Print(printerEndpoint string, data []byte) error {

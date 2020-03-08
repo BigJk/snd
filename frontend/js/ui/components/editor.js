@@ -109,7 +109,12 @@ export default () => {
 				Tab: 'emmetExpandAbbreviation',
 				Enter: 'emmetInsertLineBreak',
 				'Ctrl-Space': openHint,
-				'Cmd-Space': openHint
+				'Cmd-Space': openHint,
+				'Ctrl-K': () => {
+					if (vnode.attrs.formatter) {
+						state.editor.setValue(vnode.attrs.formatter(state.editor.getValue()));
+					}
+				}
 			}
 		});
 

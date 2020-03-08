@@ -7,7 +7,6 @@ import binder from '../binder';
 import * as nunjucks from 'nunjucks';
 
 import Editor from './editor';
-import Preview from './preview';
 import TextArea from './text-area';
 import Input from './input';
 import SplitView from './split-view';
@@ -130,6 +129,12 @@ export default () => {
 					className="h-100 w-100"
 					language="javascript"
 					content={state.skeletonDataRaw}
+					formatter={data => {
+						try {
+							return JSON.stringify(JSON.parse(data), null, '\t');
+						} catch (e) {}
+						return data;
+					}}
 					onchange={data => {
 						state.skeletonDataRaw = data;
 						try {

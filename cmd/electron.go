@@ -1,40 +1,34 @@
+// +build ELECTRON
+
 package main
 
 import (
 	"flag"
-	"github.com/BigJk/snd/server"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"os"
 	"time"
-
-	"github.com/BigJk/snd/printing/cups"
-	"github.com/BigJk/snd/printing/remote"
-	"github.com/BigJk/snd/printing/windows"
 
 	"github.com/asticode/go-astikit"
 	"github.com/asticode/go-astilectron"
 )
 
-func main() {
+// This will change the starting routine
+// so that a additional Electron window
+// will open with the frontend in it.
+func init() {
+	startFunc = startElectron
+}
+
+func startElectron() {
 	debug := flag.Bool("debug", false, "")
 	flag.Parse()
 
-	rand.Seed(time.Now().UnixNano())
-
-	s, err := server.NewServer("./data.db", server.WithPrinter(&cups.CUPS{}), server.WithPrinter(&remote.Remote{}), server.WithPrinter(&windows.Direct{}))
-	if err != nil {
-		panic(err)
-	}
-
-	if err != nil {
-		panic(err)
-	}
-
+	// Start the S&D Backend in separate go-routine.
 	go func() {
-		_ = s.Start(":7123")
+		startServer()
 	}()
 
 	var targetWriter io.Writer
@@ -45,6 +39,9 @@ func main() {
 	}
 
 	_ = os.Mkdir("./data", 0666)
+
+	time.Sleep(time.Millisecond * 500)
+	fmt.Println("If no window is opening please wait a few seconds for the dependencies to download...")
 
 	var a, _ = astilectron.New(log.New(targetWriter, "", 0), astilectron.Options{
 		AppName:            "Sales & Dungeons",
@@ -67,6 +64,5 @@ func main() {
 	w.Create()
 
 	a.Wait()
-
 	time.Sleep(time.Second * 1)
 }

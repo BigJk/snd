@@ -27,3 +27,4 @@ vendor/
 *.png
 
 !data/icon.png
+!data/round_icon.png

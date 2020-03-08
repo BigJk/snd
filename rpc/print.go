@@ -40,6 +40,17 @@ func RegisterPrint(route *echo.Group, db *storm.DB, printer printing.PossiblePri
 		return printerNames, nil
 	})))
 
+	route.POST("/getAvailablePrinter", echo.WrapHandler(nra.MustBind(func() (map[string]map[string]string, error) {
+		available := map[string]map[string]string{}
+
+		for k, v := range printer {
+			a, _ := v.AvailableEndpoints()
+			available[k] = a
+		}
+
+		return available, nil
+	})))
+
 	route.POST("/print", echo.WrapHandler(nra.MustBind(func(html string) error {
 		// Get local outbound ip
 		ip, err := GetOutboundIP()

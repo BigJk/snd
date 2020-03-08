@@ -48,7 +48,7 @@ import Scripts from './ui/views/scripts/index';
 import ScriptsNew from './ui/views/scripts/new';
 import ScriptsEdit from './ui/views/scripts/edit';
 
-import USB from './ui/views/usb/index';
+import Devices from './ui/views/devices/index';
 
 m.route(document.getElementById('app'), '/', {
 	'/': Templates,
@@ -62,7 +62,7 @@ m.route(document.getElementById('app'), '/', {
 	'/scripts/new': ScriptsNew,
 	'/scripts/:id': ScriptsEdit,
 	'/settings': Settings,
-	'/usb': USB
+	'/devices': Devices
 });
 
 if (module.hot) {

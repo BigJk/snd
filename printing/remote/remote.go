@@ -18,6 +18,10 @@ func (r *Remote) Description() string {
 	return "Print via a remote server."
 }
 
+func (r *Remote) AvailableEndpoints() (map[string]string, error) {
+	return map[string]string{}, nil
+}
+
 func (r *Remote) Print(printerEndpoint string, data []byte) error {
 	resp, err := http.Post(printerEndpoint, "application/octet-stream", bytes.NewBuffer(data))
 	if err != nil {

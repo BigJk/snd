@@ -20,6 +20,20 @@ func (dp *Direct) Description() string {
 	return "Directly print to a attached printer. Use the Name of the printer as Endpoint."
 }
 
+func (dp *Direct) AvailableEndpoints() (map[string]string, error) {
+	names, err := printer.ReadNames()
+	if err != nil {
+		return nil, err
+	}
+
+	available := map[string]string{}
+	for i := range names {
+		available[names[i]] = names[i]
+	}
+
+	return available, nil
+}
+
 func (dp *Direct) Print(printerEndpoint string, data []byte) error {
 	p, err := printer.Open(printerEndpoint)
 	if err != nil {

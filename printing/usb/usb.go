@@ -25,11 +25,6 @@ type USB struct {
 	out      *gousb.OutEndpoint
 }
 
-type USBOption struct {
-	Name     string `json:"name"`
-	Endpoint string `json:"endpoint"`
-}
-
 func (c *USB) Name() string {
 	return "Raw USB Printing"
 }
@@ -38,12 +33,12 @@ func (c *USB) Description() string {
 	return "Print directly to a USB attached printer. Use {vendor_id}:{product_id}:{endpoint_address} like 0416:5011:03. To find out how to get these values please take a look at the S&D documentation."
 }
 
-func (c *USB) GetAvailableEndpoints() ([]USBOption, error) {
+func (c *USB) AvailableEndpoints() (map[string]string, error) {
 	if c.ctx == nil {
 		c.ctx = gousb.NewContext()
 	}
 
-	var opts []USBOption
+	available := map[string]string{}
 	if _, err := c.ctx.OpenDevices(func(desc *gousb.DeviceDesc) bool {
 		for _, cfg := range desc.Configs {
 			if len(cfg.Interfaces) > 0 && len(cfg.Interfaces[0].AltSettings) > 0 {
@@ -51,10 +46,7 @@ func (c *USB) GetAvailableEndpoints() ([]USBOption, error) {
 				if set.Class == gousb.ClassPrinter {
 					for _, end := range set.Endpoints {
 						if end.Direction == gousb.EndpointDirectionOut {
-							opts = append(opts, USBOption{
-								Name:     usbid.Describe(desc),
-								Endpoint: fmt.Sprintf("%v:%v:%02x", desc.Vendor, desc.Product, uint8(end.Address)),
-							})
+							available[fmt.Sprintf("#%d #%d %s", desc.Port, desc.Bus, usbid.Describe(desc))] = fmt.Sprintf("%v:%v:%02x", desc.Vendor, desc.Product, uint8(end.Address))
 						}
 					}
 				}
@@ -70,7 +62,7 @@ func (c *USB) GetAvailableEndpoints() ([]USBOption, error) {
 		return nil, err
 	}
 
-	return opts, nil
+	return available, nil
 }
 
 func (c *USB) reset() {

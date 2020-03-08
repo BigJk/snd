@@ -19,6 +19,10 @@ func (c *CUPS) Description() string {
 	return "Print via CUPS attached printer. Use the Name of the printer (not the URI) as Endpoint."
 }
 
+func (c *CUPS) AvailableEndpoints() (map[string]string, error) {
+	return map[string]string{}, nil
+}
+
 func (c *CUPS) Print(printerEndpoint string, data []byte) error {
 	file, err := ioutil.TempFile("", "print_*.bin")
 	if err != nil {

@@ -26,6 +26,7 @@ export default () => {
 		editor: null,
 		onchange: null,
 		autocompleteData: null,
+		snippets: [],
 		errorProvider: null,
 		errorChecker: null,
 		errorWidgets: []
@@ -75,12 +76,12 @@ export default () => {
 										const wrapper = document.createElement('div');
 										m.render(
 											wrapper,
-											<div className="flex justify-between">
+											<div className='flex justify-between'>
 												<span>
 													<b>{filter}</b>
 													{rest}
 												</span>
-												<span className="pl2 o-50">{Object.prototype.toString.call(v).slice(8, -1)}</span>
+												<span className='pl2 o-50'>{Object.prototype.toString.call(v).slice(8, -1)}</span>
 											</div>
 										);
 										elt.appendChild(wrapper);
@@ -98,6 +99,36 @@ export default () => {
 		});
 	};
 
+	let openSnippets = () => {
+		if (!state.snippets || state.snippets.length === 0) return;
+
+		state.editor.showHint({
+			completeSingle: false,
+			hint: () => {
+				let cursor = state.editor.getDoc().getCursor();
+				let line = state.editor
+					.getDoc()
+					.getLine(cursor.line)
+					.slice(0, cursor.ch);
+
+				return {
+					from: cursor,
+					to: cursor,
+					list: map(state.snippets, v => {
+						return {
+							text: v.content,
+							render: function(elt) {
+								const wrapper = document.createElement('div');
+								m.render(wrapper, <div>{v.name}</div>);
+								elt.appendChild(wrapper);
+							}
+						};
+					})
+				};
+			}
+		});
+	};
+
 	let setupCodemirror = vnode => {
 		state.editor = new CodeMirror(vnode.dom, {
 			value: vnode.attrs.content ?? '',
@@ -110,6 +141,7 @@ export default () => {
 				Enter: 'emmetInsertLineBreak',
 				'Ctrl-Space': openHint,
 				'Cmd-Space': openHint,
+				'Ctrl-X': openSnippets,
 				'Ctrl-K': () => {
 					if (vnode.attrs.formatter) {
 						state.editor.setValue(vnode.attrs.formatter(state.editor.getValue()));
@@ -150,6 +182,7 @@ export default () => {
 		state.onchange = vnode.attrs.onchange;
 		state.autocompleteData = vnode.attrs.autocompleteData;
 		state.errorProvider = vnode.attrs.errorProvider;
+		state.snippets = vnode.attrs.snippets;
 	};
 
 	return {

@@ -27,19 +27,19 @@ export default () => {
 	let tabs = {
 		Information: () => {
 			return (
-				<div className="ph3 pv2 flex justify-between">
-					<Input label="Name" value={state.target.name} oninput={binder.inputString(state.target, 'name')} />
-					<div className="w2" />
-					<TextArea label="Description" value={state.target.description} oninput={binder.inputString(state.target, 'description')} />
+				<div className='ph3 pv2 flex justify-between'>
+					<Input label='Name' value={state.target.name} oninput={binder.inputString(state.target, 'name')} />
+					<div className='w2' />
+					<TextArea label='Description' value={state.target.description} oninput={binder.inputString(state.target, 'description')} />
 				</div>
 			);
 		},
 		Code: () => {
 			return (
 				<Editor
-					className="h-100 flex-grow-1 overflow-auto"
+					className='h-100 flex-grow-1 overflow-auto'
 					content={state.target.source}
-					language="go"
+					language='go'
 					onchange={code => (state.target.source = code)}
 					errorProvider={s => {
 						return new Promise((resolve, reject) => {
@@ -66,9 +66,9 @@ export default () => {
 		},
 		view(vnode) {
 			return (
-				<div className="bg-white br1 ba b--black-10 w-100 h-100 overflow-auto flex flex-column">
-					<div className="flex-shrink-0">
-						<ul className="tab tab-block tab-m0">
+				<div className='bg-white br1 ba b--black-10 w-100 h-100 overflow-auto flex flex-column'>
+					<div className='flex-shrink-0'>
+						<ul className='tab tab-block tab-m0'>
 							{map(tabs, (v, k) => {
 								return (
 									<li className={`tab-item ${k === state.selectedTab ? 'active' : ''} pointer`}>

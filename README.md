@@ -1,22 +1,57 @@
+<img align="right" width="120px" alt="Sales &amp; Dungeons" src="./data/preview.png">
 <img width="100" alt="Sales &amp; Dungeons" src="./data/round_icon.png">
 
 [![Discord](https://img.shields.io/discord/678654745803751579?label=discord)](https://discord.gg/5MUZEjc)
 
-Thermal Printer as D&amp;D Utility.
+**Sales & Dungeons** — Thermal Printer as D&amp;D Utility.
+
+With Sales & Dungeons you can create highly customizable handouts, quick reference and much more for your Dungeons and Dragons (or other PnP) Sessions.
+Most Thermal Printer are small in size and can be taken with you and kept right at the gaming table. Use-cases range from printing out magic items, spells
+or a letter that the group found to little character sheets of your players to use as DM note. The possibilities are nearly endless!
 
 **Warning:** This is still rough and early version. If you want to get this working the best way is to jump on the Discord and ask for help.
 
-## Printers & Settings
+## Features
 
-If you want to see what printers were already tested and which settings they need please visit the wiki [**HERE**](https://github.com/BigJk/snd/wiki/Printer-Settings)
+- Works on Windows, Mac and Linux
+- Extensive Templating system through [Nunjucks](https://mozilla.github.io/nunjucks/)
+- Extendable through Scripts
+  - Import hundreds of Monsters, Magic Items, Spells and more from API's like Open5e
+- Various connection methods
+  - Windows Direct Printing
+  - Raw USB Printing
+  - CUPS
+  - Serial (coming in the future)
+
+## How It Works
+
+<img align="left" alt="Sales &amp; Dungeons" src="./data/work_graph.svg">
+
+**Templates:** Templates are created in HTML (and CSS) in combination with the Nunjucks templating language. You can imagine
+the templates as little websites. That makes it possible to use all the nice and convenient layout options that HTML and CSS
+has to offer and even include any common framework you might need (e.g. Fontawesome for Icons).
+
+**Rendered HTML:** After creating a template you can create entries with the data you want and print them.
+Nunjucks will create the rendered HTML from the data you want to print.
+
+**Rendered Image:** Then this HTML get's converted to a image. Currently this conversion is done by Chrome via the
+Chrome Debug Protocol. Although Chrome seems like a huge overkill for just HTML-To-Image conversion it's the standard solution at the
+moment because it supports most of the modern HTML and CSS features.
+
+**ESC / POS Commands:** The last step before our awesome template hits the Printer is the conversion from the rendered image
+to the "draw image" command of the printer.
+
+**Printer:** The generated command will then be sent to the printer and printed. Now your template is ready to be used!
+
+:tada: :tada: :tada:
 
 ## Pre-Build Binaries
 
-If you want to get started right away you can just download the pre-build binaries for your OS and get started right away!
+If you don't want to mess with compiling the code yourself you can just download the pre-build binaries for your OS and get started right away!
 
 ### Windows
 
-1. Download the latest Release [**HERE**](http://snd.ftp.sh:2015/windows-amd64/?sort=time&order=desc)
+1. Download the latest Release for [**Windows (amd64)**](http://snd.ftp.sh:2015/windows-amd64/?sort=time&order=desc)
 2. Unpack
 3. Start the `Sales & Dungeons.exe`
 4. Wait for the GUI to show up
@@ -30,70 +65,7 @@ If you want to get started right away you can just download the pre-build binari
 5. run it ``./Sales\ \&\ Dungeons``
 6. Open the web interface in your browser under [http://localhost:7123](http://localhost:7123)
 
-## Building Sales & Dungeons
 
-### Linux
-This project is written in `go`, so you will need `go` installed on your system to compile `snd`.
+## Printers, Templating & Building
 
-#### Installing golang
-Go to [https://golang.org/doc/install](https://golang.org/doc/install) for complete instructions, but the following will probably work:
-
-Download the Linux tarball
-```
-cd ~/Downloads
-wget -c https://dl.google.com/go/go1.13.8.linux-amd64.tar.gz
-```
-
-Extract it into `/usr/local` (Note: this will put `go` files in `/usr/local/go/`, not `/usr/local/bin/go`. Apparently that is how `go` is expecting to be.)
-
-```
-sudo tar -C /usr/local -xvzf go1.13.8.linux-amd64.tar.gz
-```
-
-Now setup your Go workspace by creating a directory `~/go` which is the root of your workspace. The workspace is made of three directories namely:
-- `bin` which will contain Go executable binaries.
-- `src` which will store your source files and
-- `pkg` which will store package objects.
-
-```
-mkdir -p ~/go/{bin,src,pkg}
-```
-
-Now we add `/usr/local/go/bin` to PATH (here we're doing a local user installation):
-```
-echo 'export  PATH=$PATH:/usr/local/go/bin' >> ~/.profile
-```
-
-(You might need to `source ~/.profile` if you're about to use `go` in the same terminal window you have running right now.)
-
-##### Installing `snd`
-
-Decide where you want your source files to be (I put mine in `~/src`) and `cd` there. Then
-```
-git clone https://github.com/BigJk/snd
-```
-
-Download all the dependencies for `snd`:
-```
-go mod tidy
-go mod download
-```
-
-Download the frontend:
-
-go to [http://snd.ftp.sh:2015/frontend-only](http://snd.ftp.sh:2015/frontend-only) and download the latest version.
-
-Then `cd` to your `snd` folder, and do extract the file there.
-
-Now to run the `snd` server, just do
-```
-cd ~/src/snd/
-go run cmd/headless/main.go
-```
-
-and the web interface is at [http://localhost:7123](http://localhost:7123).
-
-### Windows
-(Instructions will be added here soon)
-### macOS
-(Instructions will be added here soon)
+If you want to see what printers were already tested, which settings they need, how the templates work or how you can build Sales & Dungeons yourself please visit the [**wiki**](https://github.com/BigJk/snd/wiki).

@@ -26,5 +26,5 @@ vendor/
 *.bin
 *.png
 
-!data/icon.png
-!data/round_icon.png
+!data/*.png
+!data/*.svg

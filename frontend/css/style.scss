@@ -178,3 +178,12 @@ $font-size: 0.7rem;
 .margin-lh-minus {
     margin-top: -0.15rem;
 }
+
+.fade-in {
+    animation: fadein 2s;
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}

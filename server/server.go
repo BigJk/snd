@@ -1,7 +1,9 @@
 package server
 
 import (
+	"errors"
 	"fmt"
+	"github.com/BigJk/nra"
 	"net/http"
 	"sync"
 
@@ -19,10 +21,11 @@ type Option func(s *Server) error
 // Server represents a instance of the S&D server.
 type Server struct {
 	sync.RWMutex
-	db           *storm.DB
-	e            *echo.Echo
-	scriptEngine *snd.ScriptEngine
-	printers     printing.PossiblePrinter
+	db            *storm.DB
+	e             *echo.Echo
+	scriptEngine  *snd.ScriptEngine
+	printers      printing.PossiblePrinter
+	additionalRpc map[string]interface{}
 }
 
 // NewServer creates a new instance of the S&D server.
@@ -33,9 +36,10 @@ func NewServer(file string, options ...Option) (*Server, error) {
 	}
 
 	s := &Server{
-		db:       db,
-		e:        echo.New(),
-		printers: map[string]printing.Printer{},
+		db:            db,
+		e:             echo.New(),
+		printers:      map[string]printing.Printer{},
+		additionalRpc: map[string]interface{}{},
 	}
 
 	for i := range options {
@@ -50,6 +54,13 @@ func NewServer(file string, options ...Option) (*Server, error) {
 func WithPrinter(printer printing.Printer) Option {
 	return func(s *Server) error {
 		s.printers[printer.Name()] = printer
+		return nil
+	}
+}
+
+func WithAdditionalRPC(fnName string, fn interface{}) Option {
+	return func(s *Server) error {
+		s.additionalRpc[fnName] = fn
 		return nil
 	}
 }
@@ -77,6 +88,20 @@ func (s *Server) Start(bind string) error {
 	rpc.RegisterEntry(api, s.db)
 	rpc.RegisterPrint(api, s.db, s.printers)
 	rpc.RegisterScript(api, s.db, s.scriptEngine)
+
+	// Register additional routes
+	for k, v := range s.additionalRpc {
+		api.POST(fmt.Sprintf("/%s", k), echo.WrapHandler(nra.MustBind(v)))
+	}
+
+	// Makes it possible to check in frontend if a
+	// additional function has been registered.
+	api.POST("/hasExt", echo.WrapHandler(nra.MustBind(func(name string) error {
+		if _, ok := s.additionalRpc[name]; ok {
+			return nil
+		}
+		return errors.New("function not available")
+	})))
 
 	// Register image proxy route so that the iframes that are used
 	// in the frontend can proxy images that they otherwise couldn't

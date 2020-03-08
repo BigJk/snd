@@ -15,6 +15,10 @@ let pages = {
 		name: 'Scripts',
 		icon: 'code-working'
 	},
+	usb: {
+		name: 'USB Devices',
+		icon: 'outlet'
+	},
 	settings: {
 		name: 'Settings',
 		icon: 'settings'

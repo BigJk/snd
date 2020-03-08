@@ -12,5 +12,6 @@ import (
 // and executed when "-tags LIBUSB" is specified in
 // building and requires libusb-1.0 as dependency.
 func init() {
-	serverOptions = append(serverOptions, server.WithPrinter(&usb.USB{}))
+	u := &usb.USB{}
+	serverOptions = append(serverOptions, server.WithPrinter(u), server.WithAdditionalRPC("usbDevices", u.GetAvailableEndpoints))
 }

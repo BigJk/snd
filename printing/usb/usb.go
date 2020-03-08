@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/gousb"
+	"github.com/google/gousb/usbid"
 	"strconv"
 	"strings"
 	"sync"
@@ -14,10 +15,18 @@ import (
 
 type USB struct {
 	sync.Mutex
-	ctx    *gousb.Context
-	device *gousb.Device
-	iface  *gousb.Interface
-	out    *gousb.OutEndpoint
+	vendor   int64
+	product  int64
+	endpoint int
+	ctx      *gousb.Context
+	device   *gousb.Device
+	iface    *gousb.Interface
+	out      *gousb.OutEndpoint
+}
+
+type USBOption struct {
+	Name     string `json:"name"`
+	Endpoint string `json:"endpoint"`
 }
 
 func (c *USB) Name() string {
@@ -26,6 +35,41 @@ func (c *USB) Name() string {
 
 func (c *USB) Description() string {
 	return "Print directly to a USB attached printer. Use {vendor_id}:{product_id}:{endpoint_address} like 0416:5011:03. To find out how to get these values please take a look at the S&D documentation."
+}
+
+func (c *USB) GetAvailableEndpoints() ([]USBOption, error) {
+	if c.ctx == nil {
+		c.ctx = gousb.NewContext()
+	}
+
+	var opts []USBOption
+	if _, err := c.ctx.OpenDevices(func(desc *gousb.DeviceDesc) bool {
+		for _, cfg := range desc.Configs {
+			if len(cfg.Interfaces) > 0 && len(cfg.Interfaces[0].AltSettings) > 0 {
+				set := cfg.Interfaces[0].AltSettings[0]
+				if set.Class == gousb.ClassPrinter {
+					for _, end := range set.Endpoints {
+						if end.Direction == gousb.EndpointDirectionOut {
+							opts = append(opts, USBOption{
+								Name:     usbid.Describe(desc),
+								Endpoint: fmt.Sprintf("%v:%v:%02x", desc.Vendor, desc.Product, uint8(end.Address)),
+							})
+						}
+					}
+				}
+			}
+
+			// Only check the first config for now as most
+			// thermal printer are simple virtual com port
+			// devices with a single config.
+			break
+		}
+		return false
+	}); err != nil {
+		return nil, err
+	}
+
+	return opts, nil
 }
 
 func (c *USB) openDevice(vendor int64, product int64, endpoint int) error {
@@ -66,6 +110,10 @@ func (c *USB) openDevice(vendor int64, product int64, endpoint int) error {
 	c.iface = iface
 	c.out = out
 
+	c.product = product
+	c.vendor = vendor
+	c.endpoint = endpoint
+
 	return nil
 }
 
@@ -95,7 +143,9 @@ func (c *USB) Print(printerEndpoint string, data []byte) error {
 		c.ctx = gousb.NewContext()
 	}
 
-	if c.device == nil {
+	// Open the device if not opened already
+	// or if the target device changed.
+	if c.device == nil || vendor != c.vendor || product != c.product || int(endpoint) != c.endpoint {
 		if err := c.openDevice(vendor, product, int(endpoint)); err != nil {
 			return err
 		}

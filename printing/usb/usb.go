@@ -6,11 +6,12 @@ package usb
 import (
 	"errors"
 	"fmt"
-	"github.com/google/gousb"
-	"github.com/google/gousb/usbid"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/google/gousb"
+	"github.com/google/gousb/usbid"
 )
 
 type USB struct {
@@ -65,11 +66,21 @@ func (c *USB) GetAvailableEndpoints() ([]USBOption, error) {
 			break
 		}
 		return false
-	}); err != nil {
+	}); err != nil && err != gousb.ErrorNotFound {
 		return nil, err
 	}
 
 	return opts, nil
+}
+
+func (c *USB) reset() {
+	if c.device != nil {
+		_ = c.device.Close()
+	}
+
+	c.device = nil
+	c.iface = nil
+	c.out = nil
 }
 
 func (c *USB) openDevice(vendor int64, product int64, endpoint int) error {
@@ -79,11 +90,15 @@ func (c *USB) openDevice(vendor int64, product int64, endpoint int) error {
 		return desc.Product == pid && desc.Vendor == vid
 	})
 
-	if err != nil {
-		return err
-	}
-
+	// On windows there will be a error thrown even
+	// if the device is opened and len(devices) > 0.
+	// That's why the error is only checked if no
+	// device is found.
 	if len(devices) == 0 {
+		if err != nil {
+			return err
+		}
+
 		return fmt.Errorf("usb printer not found")
 	}
 
@@ -147,6 +162,7 @@ func (c *USB) Print(printerEndpoint string, data []byte) error {
 	// or if the target device changed.
 	if c.device == nil || vendor != c.vendor || product != c.product || int(endpoint) != c.endpoint {
 		if err := c.openDevice(vendor, product, int(endpoint)); err != nil {
+			c.reset()
 			return err
 		}
 	}
@@ -162,6 +178,7 @@ func (c *USB) Print(printerEndpoint string, data []byte) error {
 			// when the device was replugged.
 			if err == gousb.ErrorNoDevice {
 				if err := c.openDevice(vendor, product, int(endpoint)); err != nil {
+					c.reset()
 					return err
 				}
 

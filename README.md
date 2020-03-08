@@ -1,4 +1,4 @@
-# Sales &amp; Dungeons
+<img width="100" alt="Sales &amp; Dungeons" src="./data/round_icon.png">
 
 [![Discord](https://img.shields.io/discord/678654745803751579?label=discord)](https://discord.gg/5MUZEjc)
 

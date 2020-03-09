@@ -5,6 +5,8 @@ import (
 	"net"
 	"strings"
 
+	"errors"
+
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/printing"
@@ -13,7 +15,6 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/asdine/storm"
 	"github.com/labstack/echo"
-	"github.com/pkg/errors"
 )
 
 // GetOutboundIP gets the local ip.

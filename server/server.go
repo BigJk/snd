@@ -3,9 +3,10 @@ package server
 import (
 	"errors"
 	"fmt"
-	"github.com/BigJk/nra"
 	"net/http"
 	"sync"
+
+	"github.com/BigJk/nra"
 
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/printing"

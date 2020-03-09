@@ -6,6 +6,7 @@ import (
 
 	"github.com/BigJk/snd/printing/cups"
 	"github.com/BigJk/snd/printing/remote"
+	"github.com/BigJk/snd/printing/serial"
 
 	"github.com/BigJk/snd/server"
 )
@@ -16,7 +17,7 @@ var startFunc = startServer
 func startServer() {
 	rand.Seed(time.Now().UnixNano())
 
-	s, err := server.NewServer("./data.db", append(serverOptions, server.WithPrinter(&cups.CUPS{}), server.WithPrinter(&remote.Remote{}))...)
+	s, err := server.NewServer("./data.db", append(serverOptions, server.WithPrinter(&cups.CUPS{}), server.WithPrinter(&remote.Remote{}), server.WithPrinter(&serial.Serial{}))...)
 	if err != nil {
 		panic(err)
 	}

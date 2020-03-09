@@ -4,8 +4,6 @@ import store from 'core/store';
 
 import binder from '../binder';
 
-import * as nunjucks from 'nunjucks';
-
 import Input from './input';
 import SplitView from './split-view';
 
@@ -15,6 +13,8 @@ import startCase from 'lodash-es/startCase';
 import camelCase from 'lodash-es/camelCase';
 import get from 'lodash-es/get';
 import defaultsDeep from 'lodash-es/defaultsDeep';
+
+import { render } from 'core/templating';
 
 export default () => {
 	let state = {
@@ -28,15 +28,13 @@ export default () => {
 
 	let updateRender = debounce(() => {
 		try {
-			state.lastRender = nunjucks.renderString(state.template.printTemplate, { it: state.parsedData });
+			state.lastRender = render(state.template.printTemplate, state.parsedData);
 			m.redraw();
 
 			if (state.onRender) {
 				state.onRender(state.lastRender);
 			}
-		} catch (e) {
-			console.log(e);
-		}
+		} catch (e) {}
 		state.target.data = JSON.stringify(state.parsedData);
 	}, 250);
 
@@ -55,7 +53,7 @@ export default () => {
 		});
 
 		return (
-			<ul className="nav">
+			<ul className='nav'>
 				<li className={'pointer nav-item ' + (state.selectedTab === '' ? 'active' : '')}>
 					<a onclick={() => (state.selectedTab = '')}>Global</a>
 				</li>
@@ -73,31 +71,31 @@ export default () => {
 				let isNum = typeof obj === 'number';
 
 				return (
-					<div className="form-group mw-50 mr3">
-						<label className="form-label">{startCase(camelCase(name))}</label>
+					<div className='form-group mw-50 mr3'>
+						<label className='form-label'>{startCase(camelCase(name))}</label>
 						{isNum ? (
-							<input type="text" className="form-input" value={obj} oninput={binder.inputNumber(state.parsedData, curPath, updateRender)} />
+							<input type='text' className='form-input' value={obj} oninput={binder.inputNumber(state.parsedData, curPath, updateRender)} />
 						) : (
-							<textarea className="form-input" placeholder={startCase(camelCase(name))} value={obj} rows="3" oninput={binder.inputString(state.parsedData, curPath, updateRender)} />
+							<textarea className='form-input' placeholder={startCase(camelCase(name))} value={obj} rows='3' oninput={binder.inputString(state.parsedData, curPath, updateRender)} />
 						)}
 					</div>
 				);
 			case 'boolean':
 				return (
-					<div className="form-group mw-25 pt1 mr3">
-						<label className="form-label">{startCase(camelCase(name))}</label>
-						<label className="form-switch">
-							<input type="checkbox" checked={obj} oninput={binder.checkbox(state.parsedData, curPath, updateRender)} />
-							<i className="form-icon" /> {startCase(camelCase(obj))}
+					<div className='form-group mw-25 pt1 mr3'>
+						<label className='form-label'>{startCase(camelCase(name))}</label>
+						<label className='form-switch'>
+							<input type='checkbox' checked={obj} oninput={binder.checkbox(state.parsedData, curPath, updateRender)} />
+							<i className='form-icon' /> {startCase(camelCase(obj))}
 						</label>
 					</div>
 				);
 			case 'object':
 				if (Array.isArray(obj)) {
 					return (
-						<div className="pr3">
+						<div className='pr3'>
 							<div
-								className="btn btn-primary mb2"
+								className='btn btn-primary mb2'
 								onclick={() => {
 									obj.push(get(JSON.parse(state.template.skeletonData), curPath)[0]);
 									updateRender();
@@ -107,11 +105,11 @@ export default () => {
 							</div>
 							{map(obj, (v, k) => {
 								return (
-									<div className="panel mb2 pt2">
-										<div className="panel-body">{walkRecursive(curPath + '[' + k + ']', k)}</div>
-										<div className="panel-footer">
+									<div className='panel mb2 pt2'>
+										<div className='panel-body'>{walkRecursive(curPath + '[' + k + ']', k)}</div>
+										<div className='panel-footer'>
 											<div
-												className="btn btn-error"
+												className='btn btn-error'
 												onclick={() => {
 													obj.splice(k, 1);
 													updateRender();
@@ -128,8 +126,8 @@ export default () => {
 				}
 				return (
 					<div>
-						<div className="f5">{startCase(camelCase(name))}</div>
-						<div className="divider" />
+						<div className='f5'>{startCase(camelCase(name))}</div>
+						<div className='divider' />
 						{map(obj, (v, k) => {
 							return walkRecursive(curPath + '.' + k, k);
 						})}
@@ -146,13 +144,13 @@ export default () => {
 		if (isTop) {
 			return (
 				<div>
-					<div className="pr3">
-						<div className="f5">Globals</div>
-						<div className="divider" />
-						<div className="pb2">
-							<Input label="Entry Name" value={state.target.name} oninput={binder.inputString(state.target, 'name')} />
+					<div className='pr3'>
+						<div className='f5'>Globals</div>
+						<div className='divider' />
+						<div className='pb2'>
+							<Input label='Entry Name' value={state.target.name} oninput={binder.inputString(state.target, 'name')} />
 						</div>
-						<div className="divider" />
+						<div className='divider' />
 					</div>
 					{map(state.parsedData, (v, k) => {
 						if (isTop && typeof v == 'object') return null;
@@ -187,10 +185,10 @@ export default () => {
 
 			return (
 				<SplitView content={state.lastRender} width={340} scale={340.0 / store.data.settings.printerWidth} stylesheets={store.data.settings.stylesheets}>
-					<div className="h-100 flex-grow-1 overflow-auto flex">
-						<div className="w4 pl3">{tabs()}</div>
-						<div className="divider-vert" />
-						<div className="flex-grow-1 overflow-auto pt3 pb5">{body()}</div>
+					<div className='h-100 flex-grow-1 overflow-auto flex'>
+						<div className='w4 pl3'>{tabs()}</div>
+						<div className='divider-vert' />
+						<div className='flex-grow-1 overflow-auto pt3 pb5'>{body()}</div>
 					</div>
 				</SplitView>
 			);

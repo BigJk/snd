@@ -2,7 +2,6 @@ import m from 'mithril';
 
 import api from 'core/api';
 
-import * as nunjucks from 'nunjucks';
 import * as msgpack from 'msgpack-lite';
 
 import store from 'core/store';
@@ -14,19 +13,13 @@ import transform from 'lodash-es/transform';
 import merge from 'lodash-es/merge';
 
 import { error, success } from 'ui/toast';
+import { tryRender } from 'core/templating';
 
 let tryParse = data => {
 	try {
 		return JSON.parse(data);
 	} catch (e) {}
 	return {};
-};
-
-let tryRender = (t, v) => {
-	try {
-		return nunjucks.renderString(t, v);
-	} catch (e) {}
-	return 'Template error';
 };
 
 export default () => {
@@ -55,27 +48,34 @@ export default () => {
 
 			return (
 				<div>
-					<div className="pt1">
-						<div className="divider" />
-						<div className="flex justify-between">
+					<div className='pt1'>
+						<div className='divider' />
+						<div className='flex justify-between'>
 							<div>
-								<div className="f5">{state.importing.parsed.name}</div>
-								<div className="f7 pb1 black-50">{state.importing.parsed.description}</div>
+								<div className='f5'>{state.importing.parsed.name}</div>
+								<div className='f7 pb1 black-50'>{state.importing.parsed.description}</div>
 							</div>
-							<Form horizontal={true} className="w-40 form-no-margin">
-								<Switch label="Name" labelCol={9} value={state.importing.types.name} oninput={binder.checkbox(state.importing.types, 'name')} />
-								<Switch label="Description" labelCol={9} value={state.importing.types.description} oninput={binder.checkbox(state.importing.types, 'description')} />
-								<Switch label="Print Template" labelCol={9} value={state.importing.types.printTemplate} oninput={binder.checkbox(state.importing.types, 'printTemplate')} />
-								<Switch label="List Template" labelCol={9} value={state.importing.types.listTemplate} oninput={binder.checkbox(state.importing.types, 'listTemplate')} />
-								<Switch label="Data Skeleton" labelCol={9} value={state.importing.types.skeletonData} oninput={binder.checkbox(state.importing.types, 'skeletonData')} />
+							<Form horizontal={true} className='w-40 form-no-margin'>
+								<Switch label='Name' labelCol={9} value={state.importing.types.name} oninput={binder.checkbox(state.importing.types, 'name')} />
+								<Switch label='Description' labelCol={9} value={state.importing.types.description} oninput={binder.checkbox(state.importing.types, 'description')} />
+								<Switch label='Print Template' labelCol={9} value={state.importing.types.printTemplate} oninput={binder.checkbox(state.importing.types, 'printTemplate')} />
+								<Switch label='List Template' labelCol={9} value={state.importing.types.listTemplate} oninput={binder.checkbox(state.importing.types, 'listTemplate')} />
+								<Switch label='Data Skeleton' labelCol={9} value={state.importing.types.skeletonData} oninput={binder.checkbox(state.importing.types, 'skeletonData')} />
 							</Form>
 						</div>
-						<div className="divider" />
+						<div className='divider' />
 					</div>
 
-					<Select label="Target" default="New Template..." keys={store.data.templates.map(t => t.id)} names={store.data.templates.map(t => t.name)} selected={state.importing.target} oninput={binder.inputNumber(state.importing, 'target')} />
+					<Select
+						label='Target'
+						default='New Template...'
+						keys={store.data.templates.map(t => t.id)}
+						names={store.data.templates.map(t => t.name)}
+						selected={state.importing.target}
+						oninput={binder.inputNumber(state.importing, 'target')}
+					/>
 					<div
-						className="btn btn-primary"
+						className='btn btn-primary'
 						onclick={() => {
 							if (!state.importing.parsed) {
 								return;
@@ -114,16 +114,16 @@ export default () => {
 
 		return (
 			<Modal
-				title="Import"
+				title='Import'
 				onclose={() => {
 					state.importing.text = '';
 					state.importing.parsed = null;
 					state.importing.show = null;
 				}}
 			>
-				<div className="mb2">Template Code</div>
+				<div className='mb2'>Template Code</div>
 				<TextArea
-					placeholder="dmVyeSBsb25nIGNvZGUuLi4..."
+					placeholder='dmVyeSBsb25nIGNvZGUuLi4...'
 					rows={4}
 					oninput={binder.inputString(state.importing, 'text', () => {
 						try {
@@ -153,7 +153,7 @@ export default () => {
 		}
 
 		return (
-			<div className="ph3 pb3 flex flex-wrap">
+			<div className='ph3 pb3 flex flex-wrap'>
 				{store.data.templates
 					?.filter(t => {
 						return state.search.length === 0 || t.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0;
@@ -161,21 +161,21 @@ export default () => {
 					.map((t, i) => {
 						return (
 							<div className={`w-50 ${(i & 1) == 0 ? 'pr2' : ''}`}>
-								<div className="flex ba b--black-10 h4 mb2 bg-white">
-									<div className="flex-shrink-0 ph1 mr2 br b--black-05 bg-black-05">
-										<Preview className="h-100" content={tryRender(t.printTemplate, { it: tryParse(t.skeletonData) })} stylesheets={store.data.settings.stylesheets} width={150} scale={0.3} />
+								<div className='flex ba b--black-10 h4 mb2 bg-white'>
+									<div className='flex-shrink-0 ph1 mr2 br b--black-05 bg-black-05'>
+										<Preview className='h-100' content={tryRender(t.printTemplate, tryParse(t.skeletonData))} stylesheets={store.data.settings.stylesheets} width={150} scale={0.3} />
 									</div>
-									<div className="flex-grow-1 pv2 pr2 lh-solid flex flex-column justify-between">
+									<div className='flex-grow-1 pv2 pr2 lh-solid flex flex-column justify-between'>
 										<div>
-											<div className="f5 mb1">{t.name}</div>
-											<div className="fw4 f7 black-50">{t.description}</div>
+											<div className='f5 mb1'>{t.name}</div>
+											<div className='fw4 f7 black-50'>{t.description}</div>
 										</div>
-										<div className="flex justify-between items-end">
-											<div className="lh-solid">
-												<div className="f4 b">{t.count}</div>
-												<span className="fw4 f6 black-50">Entries</span>
+										<div className='flex justify-between items-end'>
+											<div className='lh-solid'>
+												<div className='f4 b'>{t.count}</div>
+												<span className='fw4 f6 black-50'>Entries</span>
 											</div>
-											<div className="btn" onclick={() => m.route.set(`/templates/${t.id}`)}>
+											<div className='btn' onclick={() => m.route.set(`/templates/${t.id}`)}>
 												Open Template
 											</div>
 										</div>
@@ -203,16 +203,16 @@ export default () => {
 		view(vnode) {
 			return (
 				<Base active={'templates'}>
-					<div className="w-100 h-100">
-						<Header title="Templates" subtitle="List all your awesome Templates">
-							<div className="btn btn-success mr2" onclick={() => m.route.set('/templates/new')}>
+					<div className='w-100 h-100'>
+						<Header title='Templates' subtitle='List all your awesome Templates'>
+							<div className='btn btn-success mr2' onclick={() => m.route.set('/templates/new')}>
 								Create New
 							</div>
-							<div className="btn btn-primary" onclick={() => (state.importing.show = true)}>
-								<i className="ion ion-md-log-in" />
+							<div className='btn btn-primary' onclick={() => (state.importing.show = true)}>
+								<i className='ion ion-md-log-in' />
 							</div>
-							<div className="divider-vert" />
-							<Input placeholder="Search..." value={state.search} oninput={binder.inputString(state, 'search')} />
+							<div className='divider-vert' />
+							<Input placeholder='Search...' value={state.search} oninput={binder.inputString(state, 'search')} />
 						</Header>
 						{body()}
 						{modal()}

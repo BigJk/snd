@@ -4,7 +4,7 @@ import store from 'core/store';
 
 import binder from '../binder';
 
-import * as nunjucks from 'nunjucks';
+import { renderAsync } from '../../core/templating';
 
 import Editor from './editor';
 import TextArea from './text-area';
@@ -74,43 +74,35 @@ export default () => {
 		listTemplateErrors: []
 	};
 
-	let templateError = e => {
-		let match = /.*\[Line (\d+), Column (\d+)\].*\n[ \t]*(.*)$/gm.exec(e.message);
-		if (match) {
-			return {
-				line: parseInt(match[1]),
-				column: parseInt(match[2]),
-				error: match[3]
-			};
-		}
-		return null;
-	};
-
 	let updateRender = debounce(() => {
 		let rerender = false;
 
 		state.templateErrors = [];
 		state.listTemplateErrors = [];
 
-		try {
-			state.lastRender = nunjucks.renderString(state.target.printTemplate, { it: state.parsedData });
-			rerender = true;
-		} catch (e) {
-			let err = templateError(e);
-			if (err) {
+		renderAsync(
+			state.target.printTemplate,
+			state.parsedData,
+			res => {
+				rerender = true;
+				state.lastRender = res;
+			},
+			err => {
 				state.templateErrors = [err];
 			}
-		}
+		);
 
-		try {
-			state.lastListRender = nunjucks.renderString(state.target.listTemplate, { it: state.parsedData });
-			rerender = true;
-		} catch (e) {
-			let err = templateError(e);
-			if (err) {
+		renderAsync(
+			state.target.printTemplate,
+			state.parsedData,
+			res => {
+				rerender = true;
+				state.lastListRender = res;
+			},
+			err => {
 				state.listTemplateErrors = [err];
 			}
-		}
+		);
 
 		if (rerender) {
 			m.redraw();

@@ -3,7 +3,6 @@ import m from 'mithril';
 import store from 'core/store';
 import api from 'core/api';
 
-import * as nunjucks from 'nunjucks';
 import * as msgpack from 'msgpack-lite';
 
 import { Base, Header, SplitView, Loading, TextArea, Modal } from 'components/*';
@@ -12,13 +11,7 @@ import transform from 'lodash-es/transform';
 import debounce from 'lodash-es/debounce';
 
 import { success, error } from 'ui/toast';
-
-let tryRender = (t, v) => {
-	try {
-		return nunjucks.renderString(t, v);
-	} catch (e) {}
-	return 'Template error';
-};
+import { tryRender } from 'core/templating';
 
 export default () => {
 	let state = {
@@ -77,8 +70,8 @@ export default () => {
 		if (!state.showExport) return null;
 
 		return (
-			<Modal title="Export" onclose={() => (state.showExport = null)}>
-				<div className="mb2">The following code represents this Template:</div>
+			<Modal title='Export' onclose={() => (state.showExport = null)}>
+				<div className='mb2'>The following code represents this Template:</div>
 				<TextArea value={state.exportText} rows={15} />
 			</Modal>
 		);
@@ -90,8 +83,13 @@ export default () => {
 		}
 
 		return (
-			<SplitView width={340} scale={340.0 / store.data.settings.printerWidth} stylesheets={store.data.settings.stylesheets} content={tryRender(state.template.printTemplate, { it: JSON.parse(state.selected.data ?? state.template.skeletonData) })}>
-				<div className="flex-grow-1 overflow-auto">
+			<SplitView
+				width={340}
+				scale={340.0 / store.data.settings.printerWidth}
+				stylesheets={store.data.settings.stylesheets}
+				content={tryRender(state.template.printTemplate, JSON.parse(state.selected.data ?? state.template.skeletonData))}
+			>
+				<div className='flex-grow-1 overflow-auto'>
 					{state.entries.map(e => {
 						return (
 							<div
@@ -102,21 +100,21 @@ export default () => {
 								}}
 							>
 								<div>
-									<div className="fw6 f5">{e.name}</div>
-									<div className="black-50">{m.trust(tryRender(state.template.listTemplate, { it: JSON.parse(e.data) }))}</div>
+									<div className='fw6 f5'>{e.name}</div>
+									<div className='black-50'>{m.trust(tryRender(state.template.listTemplate, JSON.parse(e.data)))}</div>
 								</div>
 								<div>
 									{e.id === state.selected.id ? (
 										<div>
-											<div className="btn btn-success btn-sm mr2" onclick={() => api.print(tryRender(state.template.printTemplate, { it: JSON.parse(e.data) })).then(() => success('Printing send'), error)}>
-												<i className="ion ion-md-print" />
+											<div className='btn btn-success btn-sm mr2' onclick={() => api.print(tryRender(state.template.printTemplate, JSON.parse(e.data))).then(() => success('Printing send'), error)}>
+												<i className='ion ion-md-print' />
 											</div>
-											<div className="btn btn-primary btn-sm mr2" onclick={() => m.route.set(`/templates/${state.template.id}/edit/${e.id}`)}>
-												<i className="ion ion-md-create" />
+											<div className='btn btn-primary btn-sm mr2' onclick={() => m.route.set(`/templates/${state.template.id}/edit/${e.id}`)}>
+												<i className='ion ion-md-create' />
 											</div>
-											<div className="btn btn-error btn-sm">
+											<div className='btn btn-error btn-sm'>
 												<i
-													className="ion ion-md-close-circle-outline"
+													className='ion ion-md-close-circle-outline'
 													onclick={() =>
 														api
 															.deleteEntry(state.template.id, e.id)
@@ -136,9 +134,9 @@ export default () => {
 						);
 					})}
 				</div>
-				<div className="ph3 pv2 flex-shrink-0 bt b--black-10 bg-light-gray flex justify-between items-center">
+				<div className='ph3 pv2 flex-shrink-0 bt b--black-10 bg-light-gray flex justify-between items-center'>
 					<i
-						className="ion ion-md-arrow-dropleft f3 pointer dim"
+						className='ion ion-md-arrow-dropleft f3 pointer dim'
 						onclick={() => {
 							if (state.page > 0) {
 								state.page--;
@@ -146,14 +144,14 @@ export default () => {
 							loadEntries();
 						}}
 					/>
-					<div className="w4 tc">
+					<div className='w4 tc'>
 						Page {state.page + 1} / {state.maxPage}
 					</div>
-					<div className="w-50">
+					<div className='w-50'>
 						<input
-							className="form-input"
-							placeholder="Search..."
-							type="text"
+							className='form-input'
+							placeholder='Search...'
+							type='text'
 							value={state.search}
 							onInput={e => {
 								state.search = e.target.value;
@@ -162,7 +160,7 @@ export default () => {
 						/>
 					</div>
 					<i
-						className="ion ion-md-arrow-dropright f3 pointer dim"
+						className='ion ion-md-arrow-dropright f3 pointer dim'
 						onclick={() => {
 							if (state.page < state.maxPage - 1) {
 								state.page++;
@@ -196,17 +194,17 @@ export default () => {
 		},
 		view(vnode) {
 			return (
-				<Base active="templates">
-					<div className="h-100 flex flex-column">
-						<Header breadcrumbs={breadcrumbs()} subtitle="Create, Edit and Print Entries">
-							<div className="btn btn-success mr2" onclick={() => m.route.set(`/templates/${state.template.id}/new`)}>
+				<Base active='templates'>
+					<div className='h-100 flex flex-column'>
+						<Header breadcrumbs={breadcrumbs()} subtitle='Create, Edit and Print Entries'>
+							<div className='btn btn-success mr2' onclick={() => m.route.set(`/templates/${state.template.id}/new`)}>
 								New Entry
 							</div>
-							<div className="btn btn-primary mr2" onclick={() => m.route.set(`/templates/${state.template.id}/edit`)}>
+							<div className='btn btn-primary mr2' onclick={() => m.route.set(`/templates/${state.template.id}/edit`)}>
 								Edit
 							</div>
 							<btn
-								className="btn btn-primary"
+								className='btn btn-primary'
 								onclick={() => {
 									state.exportText = msgpack
 										.encode(
@@ -222,11 +220,11 @@ export default () => {
 									state.showExport = true;
 								}}
 							>
-								<i className="ion ion-md-open" />
+								<i className='ion ion-md-open' />
 							</btn>
-							<div className="divider-vert" />
+							<div className='divider-vert' />
 							<div
-								className="btn btn-error"
+								className='btn btn-error'
 								onclick={() =>
 									api.deleteTemplate(state.template.id).then(() => {
 										success('Template deleted');
@@ -235,7 +233,7 @@ export default () => {
 									}, error)
 								}
 							>
-								<i className="ion ion-md-close-circle-outline" />
+								<i className='ion ion-md-close-circle-outline' />
 							</div>
 						</Header>
 						{body(vnode)}

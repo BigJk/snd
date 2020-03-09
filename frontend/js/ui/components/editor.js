@@ -141,7 +141,7 @@ export default () => {
 				Enter: 'emmetInsertLineBreak',
 				'Ctrl-Space': openHint,
 				'Cmd-Space': openHint,
-				'Ctrl-X': openSnippets,
+				'Ctrl-G': openSnippets,
 				'Ctrl-K': () => {
 					if (vnode.attrs.formatter) {
 						state.editor.setValue(vnode.attrs.formatter(state.editor.getValue()));

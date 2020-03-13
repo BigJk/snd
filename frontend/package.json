@@ -27,6 +27,7 @@
     "eslint": "^6.8.0",
     "ionicons": "^4.0.0",
     "lodash-es": "^4.17.15",
+    "markdown-it": "^10.0.0",
     "mithril": "^2.0.4",
     "msgpack-lite": "^0.1.26",
     "nunjucks": "^3.2.0",

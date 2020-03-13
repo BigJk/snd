@@ -1,4 +1,5 @@
 import * as nunjucks from 'nunjucks';
+import MarkdownIt from 'markdown-it';
 
 // DataImportExtension
 //
@@ -29,8 +30,12 @@ function DataImportExtension() {
 }
 
 let env = new nunjucks.Environment();
+let markdown = new MarkdownIt();
 
 env.addExtension('DataImportExtension', new DataImportExtension());
+env.addFilter('markdown', md => {
+	return new nunjucks.runtime.SafeString(markdown.renderInline(md));
+});
 
 // Exports
 //

@@ -6,15 +6,57 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/BigJk/snd/log"
 	"github.com/d5/tengo/v2"
 	"github.com/d5/tengo/v2/stdlib"
 
 	"github.com/asdine/storm"
 )
 
+func getPrintArgs(args []tengo.Object) ([]interface{}, error) {
+	var printArgs []interface{}
+	l := 0
+	for _, arg := range args {
+		s, _ := tengo.ToString(arg)
+		slen := len(s)
+		if l+slen > tengo.MaxStringLen {
+			return nil, tengo.ErrStringLimit
+		}
+		l += slen
+		printArgs = append(printArgs, s)
+	}
+	return printArgs, nil
+}
+
 // AttachScriptRuntime registers the custom tengo functions to a script.
 func AttachScriptRuntime(db *storm.DB) ScriptAttachFunc {
-	return func(script *tengo.Script) {
+	return func(script *tengo.Script, name string) {
+		script.Add("Log", &tengo.UserFunction{
+			Name: "Log",
+			Value: func(args ...tengo.Object) (ret tengo.Object, err error) {
+				printArgs, err := getPrintArgs(args)
+				if err != nil {
+					return nil, err
+				}
+
+				log.Info(fmt.Sprint(printArgs...), log.WithValue("script", name))
+				return tengo.UndefinedValue, nil
+			},
+		})
+
+		script.Add("Error", &tengo.UserFunction{
+			Name: "Error",
+			Value: func(args ...tengo.Object) (ret tengo.Object, err error) {
+				printArgs, err := getPrintArgs(args)
+				if err != nil {
+					return nil, err
+				}
+
+				_ = log.ErrorString(fmt.Sprint(printArgs...), log.WithValue("script", name))
+				return tengo.UndefinedValue, nil
+			},
+		})
+
 		script.Add("CreateTemplateIfNotExist", &tengo.UserFunction{
 			Name: "CreateTemplateIfNotExist",
 			Value: func(args ...tengo.Object) (ret tengo.Object, err error) {

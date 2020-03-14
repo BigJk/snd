@@ -14,16 +14,6 @@ export default () => {
 		selectedTab: 'Information'
 	};
 
-	let breadcrumbs = [
-		{
-			name: 'Scripts',
-			link: '/scripts'
-		},
-		{
-			name: 'New'
-		}
-	];
-
 	let tabs = {
 		Information: () => {
 			return (

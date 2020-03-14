@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/BigJk/nra"
-
 	"github.com/BigJk/snd"
+	"github.com/BigJk/snd/log"
 	"github.com/BigJk/snd/printing"
 	"github.com/BigJk/snd/rpc"
 
@@ -136,6 +137,13 @@ ________________________________________`)
 		fmt.Println("Commit Branch :", snd.GitBranch)
 		fmt.Println("Commit Hash   :", snd.GitCommitHash)
 	}
+
+	// Save all logs
+	log.AddHook(func(e log.Entry) {
+		_ = s.db.Set("logs", e.Time.Format(time.RFC3339), &e)
+	})
+
+	log.Info("Server started", log.WithValue("bind", bind))
 
 	return s.e.Start(bind)
 }

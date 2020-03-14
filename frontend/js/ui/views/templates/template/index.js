@@ -153,7 +153,7 @@ export default () => {
 							placeholder='Search...'
 							type='text'
 							value={state.search}
-							onInput={e => {
+							oninput={e => {
 								state.search = e.target.value;
 								runSearch();
 							}}

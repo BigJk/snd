@@ -3,9 +3,10 @@ package snd
 import (
 	"context"
 	"errors"
-	"fmt"
+	"strings"
 	"sync"
 
+	"github.com/BigJk/snd/log"
 	"github.com/d5/tengo/v2"
 	"github.com/d5/tengo/v2/parser"
 )
@@ -41,7 +42,7 @@ type ScriptContext struct {
 
 // ScriptAttachFunc is called before a script is executed
 // and is used to register custom functions.
-type ScriptAttachFunc func(script *tengo.Script)
+type ScriptAttachFunc func(script *tengo.Script, name string)
 
 // ScriptEngine keeps track of running scripts.
 type ScriptEngine struct {
@@ -72,12 +73,12 @@ func (se *ScriptEngine) Exec(scr *Script) error {
 
 	tscr := tengo.NewScript([]byte(scr.Source))
 	if se.attach != nil {
-		se.attach(tscr)
+		se.attach(tscr, scr.Name)
 	}
 
 	compiled, err := tscr.Compile()
 	if err != nil {
-		return errors.New(err.Error())
+		return log.ErrorUser(err, "script compile error", log.WithValue("script", scr.Name))
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -88,7 +89,7 @@ func (se *ScriptEngine) Exec(scr *Script) error {
 
 	go func() {
 		if err := compiled.RunContext(ctx); err != nil {
-			fmt.Println("script", scr.Name, "finished with error: ", err)
+			_ = log.Error(err, log.WithValue("script", scr.Name))
 		}
 
 		se.Lock()
@@ -103,17 +104,23 @@ func (se *ScriptEngine) Exec(scr *Script) error {
 // if something is wrong.
 func (se *ScriptEngine) Verify(scr string) []ScriptError {
 	tscr := tengo.NewScript([]byte(scr))
+	se.attach(tscr, "compile_verify")
+
 	_, err := tscr.Compile()
 	if err == nil {
 		return nil
 	}
 
 	if errLocation, ok := err.(*tengo.CompilerError); ok {
-		return []ScriptError{
-			{
-				Line:  errLocation.FileSet.Base - 10,
-				Error: errLocation.Err.Error(),
-			},
+		pos := errLocation.Node.Pos()
+		if pos.IsValid() {
+			return []ScriptError{
+				{
+					Line:   strings.Count(scr[:pos], "\n") + 1,
+					Column: int(pos) - strings.LastIndex(scr[:pos], "\n"),
+					Error:  errLocation.Err.Error(),
+				},
+			}
 		}
 	}
 
@@ -128,5 +135,6 @@ func (se *ScriptEngine) Verify(scr string) []ScriptError {
 			})
 		}
 	}
+
 	return errors
 }

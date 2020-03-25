@@ -76,12 +76,12 @@ export default () => {
 										const wrapper = document.createElement('div');
 										m.render(
 											wrapper,
-											<div className='flex justify-between'>
+											<div className="flex justify-between">
 												<span>
 													<b>{filter}</b>
 													{rest}
 												</span>
-												<span className='pl2 o-50'>{Object.prototype.toString.call(v).slice(8, -1)}</span>
+												<span className="pl2 o-50">{Object.prototype.toString.call(v).slice(8, -1)}</span>
 											</div>
 										);
 										elt.appendChild(wrapper);
@@ -164,8 +164,6 @@ export default () => {
 			} else {
 				state.errorWidgets.map(w => w.clear());
 				state.errorWidgets = res.map(e => {
-					let from = { line: e.line - 1, ch: e.column - 2 };
-					let to = { line: e.line - 1, ch: e.column - 1 };
 					return state.editor.markText({ line: e.line - 1, ch: e.column - 2 }, { line: e.line - 1, ch: e.column - 1 }, { className: 'syntax-error', attributes: { error: e.error } });
 				});
 			}

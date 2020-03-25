@@ -5,10 +5,9 @@ import (
 	"net"
 	"strings"
 
-	"errors"
-
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
+	"github.com/BigJk/snd/log"
 	"github.com/BigJk/snd/printing"
 	"github.com/BigJk/snd/rendering"
 	"github.com/BigJk/snd/thermalprinter/epson"
@@ -45,7 +44,10 @@ func RegisterPrint(route *echo.Group, db *storm.DB, printer printing.PossiblePri
 		available := map[string]map[string]string{}
 
 		for k, v := range printer {
-			a, _ := v.AvailableEndpoints()
+			a, err := v.AvailableEndpoints()
+			if err != nil {
+				_ = log.Error(err, log.WithValue("printer", k))
+			}
 			available[k] = a
 		}
 
@@ -66,13 +68,13 @@ func RegisterPrint(route *echo.Group, db *storm.DB, printer printing.PossiblePri
 		}
 
 		if settings.PrinterWidth < 50 {
-			return errors.New("print width is too low")
+			return log.ErrorString("print width is too low", log.WithValue("width", settings.PrinterWidth))
 		}
 
 		// Get printer
 		printer, ok := printer[settings.PrinterType]
 		if !ok {
-			return errors.New("printer not found")
+			return log.ErrorString("print not found", log.WithValue("printer", settings.PrinterType))
 		}
 
 		// Generate html
@@ -95,7 +97,7 @@ func RegisterPrint(route *echo.Group, db *storm.DB, printer printing.PossiblePri
 
 		doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlHead + html + "</div></body></html>"))
 		if err != nil {
-			return err
+			return log.ErrorUser(err, "html parsing failed")
 		}
 
 		doc.Find("img").Each(func(i int, s *goquery.Selection) {
@@ -108,13 +110,13 @@ func RegisterPrint(route *echo.Group, db *storm.DB, printer printing.PossiblePri
 
 		finalHtml, err := doc.Html()
 		if err != nil {
-			return err
+			return log.ErrorUser(err, "html rendering failed")
 		}
 
 		// Render the html to image
 		image, err := rendering.RenderHTML(finalHtml, settings.PrinterWidth)
 		if err != nil {
-			return err
+			return log.ErrorUser(err, "html to image rendering failed")
 		}
 
 		// Print
@@ -136,6 +138,11 @@ func RegisterPrint(route *echo.Group, db *storm.DB, printer printing.PossiblePri
 			epson.CutPaper(buf)
 		}
 
-		return printer.Print(settings.PrinterEndpoint, buf.Bytes())
+		err = printer.Print(settings.PrinterEndpoint, buf.Bytes())
+		if err != nil {
+			return log.ErrorUser(err, "printer wasn't able to print", log.WithValue("printer", settings.PrinterType), log.WithValue("endpoint", settings.PrinterEndpoint))
+		}
+
+		return nil
 	})))
 }

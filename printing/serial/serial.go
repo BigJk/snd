@@ -83,6 +83,7 @@ func (s *Serial) Print(printerEndpoint string, data []byte) error {
 	if err != nil {
 		return err
 	}
+	defer p.Close()
 
 	n, err := p.Write(data)
 	if err != nil {

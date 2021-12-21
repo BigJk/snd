@@ -47,24 +47,7 @@ to the "draw image" command of the printer.
 
 ## Pre-Build Binaries
 
-If you don't want to mess with compiling the code yourself you can just download the pre-build binaries for your OS and get started right away!
-
-### Windows
-
-1. Download the latest Release for [**Windows (amd64)**](http://snd.ftp.sh:2015/windows-amd64/?sort=time&order=desc)
-2. Unpack
-3. Start the `Sales & Dungeons.exe`
-4. Wait for the GUI to show up
-
-### Linux & Mac
-
-1. Download the latest Release for [**Linux (amd64)**](http://snd.ftp.sh:2015/linux-amd64/?sort=time&order=desc), [**MacOS (i386)**](http://snd.ftp.sh:2015/darwin-386/?sort=time&order=desc) or [**MacOS (amd64)**](http://snd.ftp.sh:2015/darwin-amd64/?sort=time&order=desc)
-2. Unpack
-3. ``cd`` into the folder in your terminal
-4. make it exectuable ``chmod +x ./Sales\ \&\ Dungeons``
-5. run it ``./Sales\ \&\ Dungeons``
-6. Open the web interface in your browser under [http://localhost:7123](http://localhost:7123)
-
+Unavailable at the moment.
 
 ## Printers, Templating & Building
 

@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/labstack/echo/middleware"
+
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/log"
@@ -120,6 +122,7 @@ func (s *Server) Start(bind string) error {
 	// Make frontend and static directory public
 	s.e.Static("/", "./frontend/dist")
 	s.e.Static("/static", "./static")
+	s.e.Use(middleware.CORS())
 
 	s.e.HideBanner = true
 	s.e.HidePort = true

@@ -2,55 +2,39 @@ package rendering
 
 import (
 	"bytes"
-	"context"
 	"image"
 	"net/url"
 	"os"
 
-	"github.com/chromedp/chromedp"
+	"github.com/go-rod/rod/lib/launcher"
+
+	"github.com/go-rod/rod"
+	"github.com/go-rod/rod/lib/proto"
 
 	_ "image/png"
 )
 
-var commonChromePaths = []string{
-	"./data/vendor/chrome-win/chrome.exe",
-	"./data/vendor/chrome-linux/chrome",
-	"./data/vendor/chrome-mac/Chromium.app/Contents/MacOS/Chromium",
+var browser *rod.Browser
+
+func init() {
+	if os.Getenv("SND_DEBUG") == "1" {
+		l := launcher.New().
+			Headless(false).
+			Devtools(true)
+
+		browser = rod.New().ControlURL(l.MustLaunch()).MustConnect()
+	} else {
+		browser = rod.New().MustConnect()
+	}
 }
 
 // RenderHTML renders the element #content into a image.
 func RenderHTML(html string, width int) (image.Image, error) {
-	var ctx context.Context
-	var cancel context.CancelFunc
+	page := browser.MustPage("data:text/html," + url.PathEscape(html))
+	page.MustWaitLoad()
 
-	// Check for common chrome executable locations and use
-	// these instead of letting chromedp search for it.
-	for i := range commonChromePaths {
-		if _, err := os.Stat(commonChromePaths[i]); !os.IsNotExist(err) {
-			aCtx, aCancel := chromedp.NewExecAllocator(context.Background(), append(chromedp.DefaultExecAllocatorOptions[:],
-				chromedp.ExecPath(commonChromePaths[i]),
-			)...)
-			defer aCancel()
-
-			ctx, cancel = chromedp.NewContext(aCtx)
-			defer cancel()
-		}
-	}
-
-	// If no chrome was found let chromedp find it and
-	// hope that chrome is installed.
-	if ctx == nil {
-		ctx, cancel = chromedp.NewContext(context.Background())
-		defer cancel()
-	}
-
-	var imageData []byte
-	if err := chromedp.Run(ctx, chromedp.Tasks{
-		chromedp.EmulateViewport(int64(width), 10000),
-		chromedp.Navigate("data:text/html," + url.PathEscape(html)),
-		chromedp.WaitVisible("#content", chromedp.ByID),
-		chromedp.Screenshot("body", &imageData, chromedp.NodeVisible, chromedp.ByQuery),
-	}); err != nil {
+	imageData, err := page.MustSetViewport(500, 100000, 1.0, false).MustElement("body").Screenshot(proto.PageCaptureScreenshotFormatPng, 100)
+	if err != nil {
 		return nil, err
 	}
 

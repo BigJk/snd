@@ -15,7 +15,9 @@ require (
 	github.com/chromedp/chromedp v0.5.3
 	github.com/d5/tengo/v2 v2.0.5
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/fatih/color v1.9.0
+	github.com/go-rod/rod v0.101.8
 	github.com/golang/protobuf v1.3.3 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/gousb v0.0.0-20190812193832-18f4c1d8a750

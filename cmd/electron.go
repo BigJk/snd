@@ -63,6 +63,10 @@ func startElectron() {
 	})
 	w.Create()
 
+	if *debug {
+		w.OpenDevTools()
+	}
+
 	a.Wait()
 	time.Sleep(time.Second * 1)
 }

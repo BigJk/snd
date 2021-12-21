@@ -118,17 +118,17 @@ export default () => {
 	let tabs = {
 		Information: () => {
 			return (
-				<div className="ph3 pt2">
-					<Input label="Name" cols={9} value={state.target.name} oninput={binder.inputString(state.target, 'name')} />
-					<TextArea label="Description" cols={9} value={state.target.description} oninput={binder.inputString(state.target, 'description')} />
+				<div className='ph3 pt2'>
+					<Input label='Name' cols={9} value={state.target.name} oninput={binder.inputString(state.target, 'name')} />
+					<TextArea label='Description' cols={9} value={state.target.description} oninput={binder.inputString(state.target, 'description')} />
 				</div>
 			);
 		},
 		'Print Template': () => {
 			return (
 				<Editor
-					className="h-100 w-100"
-					language="nunjucks"
+					className='h-100 w-100'
+					language='nunjucks'
 					content={state.target.printTemplate}
 					onchange={html => {
 						state.target.printTemplate = html;
@@ -145,8 +145,8 @@ export default () => {
 		'List Template': () => {
 			return [
 				<Editor
-					className="h-100 w-100"
-					language="htmlmixed"
+					className='h-100 w-100'
+					language='htmlmixed'
 					content={state.target.listTemplate}
 					onchange={html => {
 						state.target.listTemplate = html;
@@ -158,17 +158,17 @@ export default () => {
 						return state.listTemplateErrors;
 					}}
 				/>,
-				<div className="absolute right-0 bottom-0 ma3 pa2 ba b--black-10 bg-white f5 lh-solid w500">
-					<div className="fw7">Sample Entry</div>
-					<div className="black-50">{m.trust(state.lastListRender)}</div>
+				<div className='absolute right-0 bottom-0 ma3 pa2 ba b--black-10 bg-white f5 lh-solid w500'>
+					<div className='fw7'>Sample Entry</div>
+					<div className='black-50'>{m.trust(state.lastListRender)}</div>
 				</div>
 			];
 		},
 		'Data Skeleton': () => {
 			return (
 				<Editor
-					className="h-100 w-100"
-					language="javascript"
+					className='h-100 w-100'
+					language='javascript'
 					content={state.skeletonDataRaw}
 					formatter={data => {
 						try {
@@ -208,16 +208,16 @@ export default () => {
 			}
 			return (
 				<SplitView content={state.lastRender} width={340} scale={340.0 / store.data.settings.printerWidth} stylesheets={store.data.settings.stylesheets}>
-					<ul className="tab tab-block tab-m0 flex-shrink-0">
+					<ul className='tab tab-block tab-m0 flex-shrink-0'>
 						{map(tabs, (v, k) => {
 							return (
 								<li className={'tab-item ' + (k === state.selectedTab ? 'active' : '')} onclick={() => (state.selectedTab = k)}>
-									<a className="pointer">{k}</a>
+									<a className='pointer'>{k}</a>
 								</li>
 							);
 						})}
 					</ul>
-					<div className="relative w-100 flex-grow-1 overflow-auto">{tabs[state.selectedTab]()}</div>
+					<div className='relative w-100 flex-grow-1 overflow-auto'>{tabs[state.selectedTab]()}</div>
 				</SplitView>
 			);
 		}

@@ -34,6 +34,10 @@ let markdown = new MarkdownIt();
 
 env.addExtension('DataImportExtension', new DataImportExtension());
 env.addFilter('markdown', md => {
+	return new nunjucks.runtime.SafeString(markdown.render(md));
+});
+
+env.addFilter('markdowni', md => {
 	return new nunjucks.runtime.SafeString(markdown.renderInline(md));
 });
 

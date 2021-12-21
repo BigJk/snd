@@ -76,12 +76,12 @@ export default () => {
 										const wrapper = document.createElement('div');
 										m.render(
 											wrapper,
-											<div className="flex justify-between">
+											<div className='flex justify-between'>
 												<span>
 													<b>{filter}</b>
 													{rest}
 												</span>
-												<span className="pl2 o-50">{Object.prototype.toString.call(v).slice(8, -1)}</span>
+												<span className='pl2 o-50'>{Object.prototype.toString.call(v).slice(8, -1)}</span>
 											</div>
 										);
 										elt.appendChild(wrapper);

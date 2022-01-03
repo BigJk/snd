@@ -1,3 +1,4 @@
+//go:build ELECTRON
 // +build ELECTRON
 
 package main
@@ -43,25 +44,35 @@ func startElectron() {
 	time.Sleep(time.Millisecond * 500)
 	fmt.Println("If no window is opening please wait a few seconds for the dependencies to download...")
 
-	var a, _ = astilectron.New(log.New(targetWriter, "", 0), astilectron.Options{
-		AppName:            "Sales & Dungeons",
+	var a, err = astilectron.New(log.New(targetWriter, "", 0), astilectron.Options{
+		AppName:            "SND",
 		BaseDirectoryPath:  "./data",
 		DataDirectoryPath:  "./data",
 		AppIconDefaultPath: "icon.png",
-		VersionElectron:    "8.0.1",
+		VersionAstilectron: "0.49.0",
+		VersionElectron:    "11.1.0",
+		SingleInstance:     true,
 		ElectronSwitches: []string{
 			"--disable-http-cache",
 		},
 	})
+	if err != nil {
+		panic(err)
+	}
+
 	defer a.Close()
-	a.Start()
+	if err := a.Start(); err != nil {
+		panic(err)
+	}
 
 	var w, _ = a.NewWindow("http://127.0.0.1:7123", &astilectron.WindowOptions{
 		Center: astikit.BoolPtr(true),
 		Height: astikit.IntPtr(720),
 		Width:  astikit.IntPtr(1280),
 	})
-	w.Create()
+	if err := w.Create(); err != nil {
+		panic(err)
+	}
 
 	if *debug {
 		w.OpenDevTools()

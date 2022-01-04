@@ -31,7 +31,7 @@ func init() {
 // RenderHTML renders the element #content into a image.
 func RenderHTML(html string, width int) (image.Image, error) {
 	page := browser.MustPage("data:text/html," + url.PathEscape(html))
-	page.MustWaitLoad()
+	page.MustWaitLoad().MustWaitIdle()
 
 	imageData, err := page.MustSetViewport(width, 100000, 1.0, false).MustElement("body").Screenshot(proto.PageCaptureScreenshotFormatPng, 100)
 	if err != nil {

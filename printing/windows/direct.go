@@ -5,6 +5,7 @@ package windows
 
 import (
 	"fmt"
+	"image"
 	"math/rand"
 
 	"github.com/alexbrainman/printer"
@@ -34,7 +35,7 @@ func (dp *Direct) AvailableEndpoints() (map[string]string, error) {
 	return available, nil
 }
 
-func (dp *Direct) Print(printerEndpoint string, data []byte) error {
+func (dp *Direct) Print(printerEndpoint string, image image.Image, data []byte) error {
 	p, err := printer.Open(printerEndpoint)
 	if err != nil {
 		return err

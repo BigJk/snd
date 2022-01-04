@@ -6,6 +6,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/BigJk/snd/printing/preview"
+	"github.com/BigJk/snd/server"
 	"io"
 	"io/ioutil"
 	"log"
@@ -16,11 +18,14 @@ import (
 	"github.com/asticode/go-astilectron"
 )
 
+var prev preview.Preview
+
 // This will change the starting routine
 // so that a additional Electron window
 // will open with the frontend in it.
 func init() {
 	startFunc = startElectron
+	serverOptions = append(serverOptions, server.WithPrinter(&prev))
 }
 
 func startElectron() {
@@ -59,6 +64,7 @@ func startElectron() {
 	if err != nil {
 		panic(err)
 	}
+	prev.Asti = a
 
 	defer a.Close()
 	if err := a.Start(); err != nil {

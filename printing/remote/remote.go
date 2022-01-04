@@ -5,6 +5,7 @@ package remote
 
 import (
 	"bytes"
+	"image"
 	"net/http"
 )
 
@@ -22,7 +23,7 @@ func (r *Remote) AvailableEndpoints() (map[string]string, error) {
 	return map[string]string{}, nil
 }
 
-func (r *Remote) Print(printerEndpoint string, data []byte) error {
+func (r *Remote) Print(printerEndpoint string, image image.Image, data []byte) error {
 	resp, err := http.Post(printerEndpoint, "application/octet-stream", bytes.NewBuffer(data))
 	if err != nil {
 		return err

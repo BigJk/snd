@@ -145,7 +145,7 @@ func RegisterPrint(route *echo.Group, db *storm.DB, printer printing.PossiblePri
 			epson.CutPaper(buf)
 		}
 
-		err = printer.Print(settings.PrinterEndpoint, buf.Bytes())
+		err = printer.Print(settings.PrinterEndpoint, image, buf.Bytes())
 		if err != nil {
 			return log.ErrorUser(err, "printer wasn't able to print", log.WithValue("printer", settings.PrinterType), log.WithValue("endpoint", settings.PrinterEndpoint))
 		}

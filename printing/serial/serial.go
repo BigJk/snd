@@ -3,6 +3,7 @@ package serial
 import (
 	"errors"
 	"fmt"
+	"image"
 	"strings"
 
 	"go.bug.st/serial"
@@ -32,7 +33,7 @@ func (s *Serial) AvailableEndpoints() (map[string]string, error) {
 	return available, nil
 }
 
-func (s *Serial) Print(printerEndpoint string, data []byte) error {
+func (s *Serial) Print(printerEndpoint string, image image.Image, data []byte) error {
 	split := strings.Split(printerEndpoint, ":")
 	if len(split) != 2 {
 		return errors.New("wrong endpoint syntax")

@@ -13,15 +13,18 @@ let pages = {
 	},
 	scripts: {
 		name: 'Scripts',
-		icon: 'code-working'
+		icon: 'code-working',
+		url: 'scripts'
 	},
 	devices: {
 		name: 'Devices',
-		icon: 'outlet'
+		icon: 'outlet',
+		url: 'devices'
 	},
 	settings: {
 		name: 'Settings',
-		icon: 'settings'
+		icon: 'settings',
+		url: 'settings'
 	}
 };
 

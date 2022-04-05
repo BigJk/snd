@@ -148,20 +148,6 @@ func (s *Server) Start(bind string) error {
 	s.e.HideBanner = true
 	s.e.HidePort = true
 
-	fmt.Println(`
-   _____        _____  
-  / ____| ___  |  __ \ 
- | (___  ( _ ) | |  | |
-  \___ \ / _ \/\ |  | |
-  ____) | (_>  < |__| |
- |_____/ \___/\/_____/ 
-________________________________________`)
-	if len(snd.GitCommitHash) > 0 {
-		fmt.Println("Build Time    :", snd.BuildTime)
-		fmt.Println("Commit Branch :", snd.GitBranch)
-		fmt.Println("Commit Hash   :", snd.GitCommitHash)
-	}
-
 	// Save all logs
 	log.AddHook(func(e log.Entry) {
 		_ = s.db.Set("logs", e.Time.Format(time.RFC3339), &e)

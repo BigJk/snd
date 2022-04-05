@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"github.com/BigJk/snd"
 	"math/rand"
 	"time"
 
@@ -32,6 +34,20 @@ func startServer(debug bool) {
 func main() {
 	debug := flag.Bool("debug", false, "")
 	flag.Parse()
+
+	fmt.Println(`
+   _____        _____  
+  / ____| ___  |  __ \ 
+ | (___  ( _ ) | |  | |
+  \___ \ / _ \/\ |  | |
+  ____) | (_>  < |__| |
+ |_____/ \___/\/_____/ 
+________________________________________`)
+	if len(snd.GitCommitHash) > 0 {
+		fmt.Println("Build Time    :", snd.BuildTime)
+		fmt.Println("Commit Branch :", snd.GitBranch)
+		fmt.Println("Commit Hash   :", snd.GitCommitHash)
+	}
 
 	startFunc(*debug)
 }

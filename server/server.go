@@ -3,13 +3,12 @@ package server
 import (
 	"errors"
 	"fmt"
+	"github.com/BigJk/snd/database/storm"
+	"github.com/labstack/echo/middleware"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
-	"time"
-
-	"github.com/labstack/echo/middleware"
 
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
@@ -17,7 +16,6 @@ import (
 	"github.com/BigJk/snd/printing"
 	"github.com/BigJk/snd/rpc"
 
-	"github.com/asdine/storm"
 	"github.com/labstack/echo"
 )
 
@@ -28,7 +26,7 @@ type Option func(s *Server) error
 type Server struct {
 	sync.RWMutex
 	debug         bool
-	db            *storm.DB
+	db            *storm.Storm
 	e             *echo.Echo
 	scriptEngine  *snd.ScriptEngine
 	printers      printing.PossiblePrinter
@@ -36,12 +34,7 @@ type Server struct {
 }
 
 // New creates a new instance of the S&D server.
-func New(file string, options ...Option) (*Server, error) {
-	db, err := storm.Open(file)
-	if err != nil {
-		return nil, err
-	}
-
+func New(db *storm.Storm, options ...Option) (*Server, error) {
 	s := &Server{
 		db:            db,
 		e:             echo.New(),
@@ -81,9 +74,8 @@ func WithAdditionalRPC(fnName string, fn interface{}) Option {
 
 func (s *Server) Start(bind string) error {
 	// Create default settings if not existing
-	var settings snd.Settings
-	if err := s.db.Get("base", "settings", &settings); err == storm.ErrNotFound {
-		if err := s.db.Set("base", "settings", &snd.Settings{
+	if _, err := s.db.GetSettings(); err != nil {
+		if err := s.db.SaveSettings(snd.Settings{
 			PrinterWidth:    384,
 			PrinterEndpoint: "http://127.0.0.1:3000",
 			Stylesheets:     []string{},
@@ -93,7 +85,9 @@ func (s *Server) Start(bind string) error {
 	}
 
 	// Create script engine
-	s.scriptEngine = snd.NewScriptEngine(snd.AttachScriptRuntime(s.db))
+	// TODO: make script engine decoupled from storm db so that Server can take
+	//       database.Database interface instead of *storm.Storm
+	s.scriptEngine = snd.NewScriptEngine(snd.AttachScriptRuntime(s.db.DB()))
 
 	// Register rpc routes
 	api := s.e.Group("/api")
@@ -150,7 +144,7 @@ func (s *Server) Start(bind string) error {
 
 	// Save all logs
 	log.AddHook(func(e log.Entry) {
-		_ = s.db.Set("logs", e.Time.Format(time.RFC3339), &e)
+		_ = s.db.AddLog(e)
 	})
 
 	log.Info("Server started", log.WithValue("bind", bind))

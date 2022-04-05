@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/BigJk/snd"
+	"github.com/BigJk/snd/database/storm"
 	"math/rand"
 	"time"
 
@@ -19,7 +20,12 @@ var startFunc = startServer
 func startServer(debug bool) {
 	rand.Seed(time.Now().UnixNano())
 
-	s, err := server.New("./data.db", append(serverOptions, server.WithDebug(debug), server.WithPrinter(&cups.CUPS{}), server.WithPrinter(&remote.Remote{}), server.WithPrinter(&serial.Serial{}))...)
+	db, err := storm.New("./data.db")
+	if err != nil {
+		panic(err)
+	}
+
+	s, err := server.New(db, append(serverOptions, server.WithDebug(debug), server.WithPrinter(&cups.CUPS{}), server.WithPrinter(&remote.Remote{}), server.WithPrinter(&serial.Serial{}))...)
 	if err != nil {
 		panic(err)
 	}

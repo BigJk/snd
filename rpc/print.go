@@ -2,17 +2,16 @@ package rpc
 
 import (
 	"bytes"
+	"github.com/BigJk/snd/database"
 	"net"
 	"strings"
 
 	"github.com/BigJk/nra"
-	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/log"
 	"github.com/BigJk/snd/printing"
 	"github.com/BigJk/snd/rendering"
 	"github.com/BigJk/snd/thermalprinter/epson"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/asdine/storm"
 	"github.com/labstack/echo"
 )
 
@@ -29,7 +28,7 @@ func GetOutboundIP() (net.IP, error) {
 	return localAddr.IP, nil
 }
 
-func RegisterPrint(route *echo.Group, db *storm.DB, printer printing.PossiblePrinter) {
+func RegisterPrint(route *echo.Group, db database.Database, printer printing.PossiblePrinter) {
 	route.POST("/getPrinter", echo.WrapHandler(nra.MustBind(func() (map[string]string, error) {
 		printerNames := map[string]string{}
 
@@ -62,8 +61,8 @@ func RegisterPrint(route *echo.Group, db *storm.DB, printer printing.PossiblePri
 		}
 
 		// Get current settings
-		var settings snd.Settings
-		if err := db.Get("base", "settings", &settings); err != nil {
+		settings, err := db.GetSettings()
+		if err != nil {
 			return err
 		}
 

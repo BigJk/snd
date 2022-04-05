@@ -4,7 +4,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"github.com/BigJk/snd/printing/preview"
 	"github.com/BigJk/snd/server"
@@ -28,17 +27,14 @@ func init() {
 	serverOptions = append(serverOptions, server.WithPrinter(&prev))
 }
 
-func startElectron() {
-	debug := flag.Bool("debug", false, "")
-	flag.Parse()
-
+func startElectron(debug bool) {
 	// Start the S&D Backend in separate go-routine.
 	go func() {
-		startServer()
+		startServer(debug)
 	}()
 
 	var targetWriter io.Writer
-	if !*debug {
+	if !debug {
 		targetWriter = ioutil.Discard
 	} else {
 		targetWriter = os.Stdout
@@ -80,7 +76,7 @@ func startElectron() {
 		panic(err)
 	}
 
-	if *debug {
+	if debug {
 		w.OpenDevTools()
 	}
 

@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -25,6 +27,7 @@ type Option func(s *Server) error
 // Server represents a instance of the S&D server.
 type Server struct {
 	sync.RWMutex
+	debug         bool
 	db            *storm.DB
 	e             *echo.Echo
 	scriptEngine  *snd.ScriptEngine
@@ -32,8 +35,8 @@ type Server struct {
 	additionalRpc map[string]interface{}
 }
 
-// NewServer creates a new instance of the S&D server.
-func NewServer(file string, options ...Option) (*Server, error) {
+// New creates a new instance of the S&D server.
+func New(file string, options ...Option) (*Server, error) {
 	db, err := storm.Open(file)
 	if err != nil {
 		return nil, err
@@ -53,6 +56,13 @@ func NewServer(file string, options ...Option) (*Server, error) {
 	}
 
 	return s, nil
+}
+
+func WithDebug(value bool) Option {
+	return func(s *Server) error {
+		s.debug = value
+		return nil
+	}
 }
 
 func WithPrinter(printer printing.Printer) Option {
@@ -120,7 +130,18 @@ func (s *Server) Start(bind string) error {
 	})
 
 	// Make frontend and static directory public
-	s.e.Static("/", "./frontend/dist")
+	if s.debug {
+		viteUrl, err := url.Parse("http://127.0.0.1:3000")
+		if err != nil {
+			return err
+		}
+
+		s.e.Use(middleware.ProxyWithConfig(middleware.ProxyConfig{Skipper: func(c echo.Context) bool {
+			return strings.HasPrefix(c.Request().URL.Path, "/api")
+		}, Balancer: middleware.NewRoundRobinBalancer([]*middleware.ProxyTarget{{URL: viteUrl}})}))
+	} else {
+		s.e.Static("/", "./frontend/dist")
+	}
 	s.e.Static("/static", "./static")
 	s.e.Use(middleware.CORS())
 

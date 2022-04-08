@@ -30,7 +30,7 @@ type proxyCacheEntry struct {
 // ServerOption
 type Option func(s *Server) error
 
-// Server represents a instance of the S&D server.
+// Server represents an instance of the S&D server.
 type Server struct {
 	sync.RWMutex
 	debug         bool
@@ -93,9 +93,6 @@ func (s *Server) Start(bind string) error {
 		}
 	}
 
-	// Create script engine
-	// TODO: scripting
-
 	// Register rpc routes
 	api := s.e.Group("/api")
 	rpc.RegisterBasic(api, s.db)
@@ -110,7 +107,7 @@ func (s *Server) Start(bind string) error {
 		api.POST(fmt.Sprintf("/%s", k), echo.WrapHandler(nra.MustBind(v)))
 	}
 
-	// Makes it possible to check in frontend if a
+	// Makes it possible to check in frontend if an
 	// additional function has been registered.
 	api.POST("/hasExt", echo.WrapHandler(nra.MustBind(func(name string) error {
 		if _, ok := s.additionalRpc[name]; ok {
@@ -119,9 +116,9 @@ func (s *Server) Start(bind string) error {
 		return errors.New("function not available")
 	})))
 
-	// Register image proxy route so that the iframes that are used
-	// in the frontend can proxy images that they otherwise couldn't
-	// access because of CORB
+	// Register proxy route so that the iframes that are used
+	// in the frontend can proxy images and other data that they
+	// otherwise couldn't access because of CORB
 	s.e.GET("/proxy", func(c echo.Context) error {
 		reqUrl := c.QueryParam("url")
 		hit, ok := s.cache.Get(reqUrl)
@@ -156,6 +153,8 @@ func (s *Server) Start(bind string) error {
 	})
 
 	// Make frontend and static directory public
+	//
+	// If debug is enabled pass frontend requests to vite dev server.
 	if s.debug {
 		viteUrl, err := url.Parse("http://127.0.0.1:3000")
 		if err != nil {

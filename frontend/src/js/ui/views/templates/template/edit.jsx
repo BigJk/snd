@@ -59,12 +59,13 @@ export default () => {
 
 	return {
 		oninit(vnode) {
-			api.getEntry(parseInt(vnode.attrs.id), parseInt(vnode.attrs.eid)).then((entry) => {
+			api.getEntry(vnode.attrs.id, vnode.attrs.eid).then((entry) => {
 				state.entry = entry;
 			});
 
-			api.getTemplate(parseInt(vnode.attrs.id)).then((template) => {
+			api.getTemplate(vnode.attrs.id).then((template) => {
 				state.template = template;
+				state.template.id = vnode.attrs.id;
 			});
 
 			store.pub('reload_templates');
@@ -73,7 +74,7 @@ export default () => {
 			return (
 				<Base active="templates">
 					<div className="h-100 flex flex-column">
-						<Header breadcrumbs={breadcrumbs()} subtitle="Edit this Template">
+						<Header breadcrumbs={breadcrumbs()} subtitle="Edit this Template" pt={2}>
 							<div className="btn btn-primary mr2" onclick={() => api.print(state.lastRender).then(() => success('Print send'), error)}>
 								Test Print
 							</div>

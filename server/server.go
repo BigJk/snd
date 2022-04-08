@@ -3,7 +3,7 @@ package server
 import (
 	"errors"
 	"fmt"
-	"github.com/BigJk/snd/database/storm"
+	"github.com/BigJk/snd/database"
 	"github.com/labstack/echo/middleware"
 	"net/http"
 	"net/url"
@@ -26,15 +26,14 @@ type Option func(s *Server) error
 type Server struct {
 	sync.RWMutex
 	debug         bool
-	db            *storm.Storm
+	db            database.Database
 	e             *echo.Echo
-	scriptEngine  *snd.ScriptEngine
 	printers      printing.PossiblePrinter
 	additionalRpc map[string]interface{}
 }
 
 // New creates a new instance of the S&D server.
-func New(db *storm.Storm, options ...Option) (*Server, error) {
+func New(db database.Database, options ...Option) (*Server, error) {
 	s := &Server{
 		db:            db,
 		e:             echo.New(),
@@ -85,17 +84,16 @@ func (s *Server) Start(bind string) error {
 	}
 
 	// Create script engine
-	// TODO: make script engine decoupled from storm db so that Server can take
-	//       database.Database interface instead of *storm.Storm
-	s.scriptEngine = snd.NewScriptEngine(snd.AttachScriptRuntime(s.db.DB()))
+	// TODO: scripting
 
 	// Register rpc routes
 	api := s.e.Group("/api")
 	rpc.RegisterBasic(api, s.db)
 	rpc.RegisterTemplate(api, s.db)
 	rpc.RegisterEntry(api, s.db)
+	rpc.RegisterSources(api, s.db)
 	rpc.RegisterPrint(api, s.db, s.printers)
-	rpc.RegisterScript(api, s.db, s.scriptEngine)
+	rpc.RegisterScript(api, s.db)
 
 	// Register additional routes
 	for k, v := range s.additionalRpc {
@@ -114,7 +112,9 @@ func (s *Server) Start(bind string) error {
 	// Register image proxy route so that the iframes that are used
 	// in the frontend can proxy images that they otherwise couldn't
 	// access because of CORB
-	s.e.GET("/image-proxy", func(c echo.Context) error {
+	s.e.GET("/proxy", func(c echo.Context) error {
+		log.Info("proxy url", log.WithValue("url", c.QueryParam("url")))
+
 		resp, err := http.Get(c.QueryParam("url"))
 		if err != nil {
 			return c.NoContent(http.StatusBadRequest)
@@ -131,7 +131,7 @@ func (s *Server) Start(bind string) error {
 		}
 
 		s.e.Use(middleware.ProxyWithConfig(middleware.ProxyConfig{Skipper: func(c echo.Context) bool {
-			return strings.HasPrefix(c.Request().URL.Path, "/api")
+			return strings.HasPrefix(c.Request().URL.Path, "/api") || strings.HasPrefix(c.Request().URL.Path, "/proxy")
 		}, Balancer: middleware.NewRoundRobinBalancer([]*middleware.ProxyTarget{{URL: viteUrl}})}))
 	} else {
 		s.e.Static("/", "./frontend/dist")

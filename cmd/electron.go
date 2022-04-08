@@ -71,6 +71,9 @@ func startElectron(debug bool) {
 		Center: astikit.BoolPtr(true),
 		Height: astikit.IntPtr(720),
 		Width:  astikit.IntPtr(1280),
+		WebPreferences: &astilectron.WebPreferences{
+			EnableRemoteModule: astikit.BoolPtr(true),
+		},
 	})
 	if err := w.Create(); err != nil {
 		panic(err)

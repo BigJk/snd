@@ -1,9 +1,9 @@
 import set from 'lodash-es/set';
 
 export default {
-	inputString: (base, path, callback) => {
+	inputString: (base, path, callback, filter) => {
 		return (e) => {
-			set(base, path, e.target.value);
+			set(base, path, filter ? filter(e.target.value) : e.target.value);
 			callback?.();
 		};
 	},

@@ -1,16 +1,12 @@
+import api from '/js/core/api';
 import store from '/js/core/store';
-
 import binder from '/js/ui/binder';
 
 import { renderAsync } from '/js/core/templating';
 
-import Editor from '/js/ui/components/editor';
-import TextArea from '/js/ui/components/text-area';
-import Input from '/js/ui/components/input';
-import SplitView from '/js/ui/components/split-view';
+import { Editor, TextArea, Input, SplitView, Select } from '/js/ui/components';
 
-import debounce from 'lodash-es/debounce';
-import map from 'lodash-es/map';
+import { chunk, debounce, map, uniq } from 'lodash-es';
 
 const snippets = [
 	{
@@ -62,14 +58,18 @@ const snippets = [
 export default () => {
 	let state = {
 		target: null,
-		parsedData: null,
+		editMode: false,
 		lastRender: '',
 		lastListRender: '',
 		selectedTab: '',
+		selectedSource: '',
 		skeletonDataRaw: '',
 		onRender: null,
 		templateErrors: [],
 		listTemplateErrors: [],
+		entries: [],
+		entriesSearch: '',
+		entriesSelected: null,
 	};
 
 	let updateRender = debounce(() => {
@@ -80,7 +80,7 @@ export default () => {
 
 		renderAsync(
 			state.target.printTemplate,
-			state.parsedData,
+			state.target.skeletonData,
 			(res) => {
 				rerender = true;
 				state.lastRender = res;
@@ -92,7 +92,7 @@ export default () => {
 
 		renderAsync(
 			state.target.listTemplate,
-			state.parsedData,
+			state.target.skeletonData,
 			(res) => {
 				rerender = true;
 				state.lastListRender = res;
@@ -118,7 +118,65 @@ export default () => {
 			return (
 				<div className="ph3 pt2">
 					<Input label="Name" cols={9} value={state.target.name} oninput={binder.inputString(state.target, 'name')} />
+					{!state.editMode ? (
+						<Input
+							label="Author"
+							cols={9}
+							value={state.target.author}
+							oninput={binder.inputString(state.target, 'author', null, (txt) => txt.replace(/[^a-z0-9\-]/gi, ''))}
+						/>
+					) : null}
+					{!state.editMode ? (
+						<Input
+							label="Slug"
+							cols={9}
+							value={state.target.slug}
+							oninput={binder.inputString(state.target, 'slug', null, (txt) => txt.replace(/[^a-z0-9\-]/gi, ''))}
+						/>
+					) : null}
 					<TextArea label="Description" cols={9} value={state.target.description} oninput={binder.inputString(state.target, 'description')} />
+				</div>
+			);
+		},
+		Sources: () => {
+			return (
+				<div className="ph3">
+					<Select
+						label="Add Sources"
+						selected={state.selectedSource}
+						keys={store.data.sources?.map((s) => `ds:${s.author}+${s.slug}`)}
+						names={store.data.sources?.map((s) => `${s.name} (${s.author})`)}
+						oninput={(e) => (state.selectedSource = e.target.value)}
+					/>
+					<div
+						className="btn btn-primary mb1"
+						onclick={() => {
+							if (state.selectedSource.length === 0) {
+								return;
+							}
+
+							if (!state.target.dataSources) {
+								state.target.dataSources = [];
+							}
+
+							state.target.dataSources.push(state.selectedSource);
+							state.target.dataSources = uniq(state.target.dataSources);
+							state.selectedSource = '';
+						}}
+					>
+						Add Source
+					</div>
+
+					<div className="divider" />
+
+					{state.target.dataSources?.map((d, i) => {
+						return (
+							<span className="chip">
+								{d}
+								<div className="btn btn-clear" aria-label="Close" role="button" onclick={() => state.target.dataSources.splice(i, 1)} />
+							</span>
+						);
+					})}
 				</div>
 			);
 		},
@@ -133,7 +191,7 @@ export default () => {
 						updateRender();
 					}}
 					snippets={snippets}
-					autocompleteData={state.parsedData}
+					autocompleteData={state.target.skeletonData}
 					errorProvider={() => {
 						return state.templateErrors;
 					}}
@@ -151,7 +209,7 @@ export default () => {
 						updateRender();
 					}}
 					snippets={snippets}
-					autocompleteData={state.parsedData}
+					autocompleteData={state.target.skeletonData}
 					errorProvider={() => {
 						return state.listTemplateErrors;
 					}}
@@ -164,25 +222,50 @@ export default () => {
 		},
 		'Data Skeleton': () => {
 			return (
-				<Editor
-					className="h-100 w-100"
-					language="javascript"
-					content={state.skeletonDataRaw}
-					formatter={(data) => {
-						try {
-							return JSON.stringify(JSON.parse(data), null, '\t');
-						} catch (e) {}
-						return data;
-					}}
-					onchange={(data) => {
-						state.skeletonDataRaw = data;
-						try {
-							state.parsedData = JSON.parse(data);
-							updateRender();
-						} catch (e) {}
-						state.target.skeletonData = JSON.stringify(state.parsedData);
-					}}
-				/>
+				<div className="h-100 flex flex-column overflow-auto">
+					<Editor
+						className="flex-grow-1 w-100 bb b--black-10 overflow-auto"
+						language="javascript"
+						content={state.skeletonDataRaw}
+						formatter={(data) => {
+							try {
+								return JSON.stringify(JSON.parse(data), null, '\t');
+							} catch (e) {}
+							return data;
+						}}
+						onchange={(data) => {
+							state.skeletonDataRaw = data;
+							try {
+								state.target.skeletonData = JSON.parse(data);
+								updateRender();
+							} catch (e) {}
+						}}
+					/>
+					{state.editMode ? (
+						<div className="flex-shrink-0 h3 flex items-center ph3 flex">
+							<div className="mr3 w4">
+								<Input placeholder="Search..." value={state.entriesSearch} oninput={binder.inputString(state, 'entriesSearch')} />
+							</div>
+							<div className="mr3 w4">
+								<Select
+									selected={state.entriesSelected}
+									keys={state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0).map((_, i) => i)}
+									names={state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0).map((e) => e.name)}
+									oninput={(e) => (state.entriesSelected = parseInt(e.target.value))}
+								/>
+							</div>
+							<div
+								className="btn btn-primary"
+								onclick={() => {
+									state.skeletonDataRaw = JSON.stringify(state.entries[state.entriesSelected].data, null, '\t');
+									state.target.skeletonData = state.entries[state.entriesSelected].data;
+								}}
+							>
+								Load as Skeleton
+							</div>
+						</div>
+					) : null}
+				</div>
 			);
 		},
 	};
@@ -192,13 +275,15 @@ export default () => {
 	return {
 		oninit(vnode) {
 			state.target = vnode.attrs.target;
+			state.editMode = vnode.attrs.editmode ?? false;
 			state.onRender = vnode.attrs.onrender;
-			if (state.target.skeletonData.length > 0) {
-				state.parsedData = JSON.parse(state.target.skeletonData);
-			} else {
-				state.parsedData = {};
+			state.skeletonDataRaw = JSON.stringify(state.target.skeletonData, null, 2);
+
+			if (state.editMode) {
+				api.getEntriesWithSources(`tmpl:${state.target.author}+${state.target.slug}`).then((entries) => {
+					state.entries = entries ?? [];
+				});
 			}
-			state.skeletonDataRaw = JSON.stringify(state.parsedData, null, 2);
 		},
 		view(vnode) {
 			if (!state.target) {

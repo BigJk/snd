@@ -10,6 +10,11 @@ type TemplateEntry struct {
 	Count int `json:"count"`
 }
 
+type DataSourceEntry struct {
+	snd.DataSource
+	Count int `json:"count"`
+}
+
 type Database interface {
 	GetSettings() (snd.Settings, error)
 	SaveSettings(settings snd.Settings) error
@@ -17,19 +22,25 @@ type Database interface {
 	GetLogs(hours int) ([]log.Entry, error)
 	AddLog(e log.Entry) error
 
-	GetEntries(id int, page int, search string) ([]snd.Entry, error)
-	GetEntriesPages(id int, search string) (int, error)
-	SaveEntry(id int, e snd.Entry) error
-	DeleteEntry(id int, eid int) error
-	GetEntry(id int, eid int) (snd.Entry, error)
-
-	SaveTemplate(t snd.Template) error
-	DeleteTemplate(id int) error
+	GetTemplate(id string) (snd.Template, error)
+	SaveTemplate(template snd.Template) error
+	DeleteTemplate(id string) error
 	GetTemplates() ([]TemplateEntry, error)
-	GetTemplate(id int) (snd.Template, error)
+
+	GetEntries(id string) ([]snd.Entry, error)
+	GetEntry(id string, eid string) (snd.Entry, error)
+	CountEntries(id string) (int, error)
+	SaveEntry(id string, entry snd.Entry) error
+	DeleteEntry(id string, eid string) error
+	DeleteEntries(id string) error
+
+	SaveSource(ds snd.DataSource) error
+	DeleteSource(id string) error
+	GetSource(id string) (snd.DataSource, error)
+	GetSources() ([]DataSourceEntry, error)
 
 	SaveScript(s snd.Script) error
-	DeleteScript(id int) error
+	DeleteScript(id string) error
 	GetScripts() ([]snd.Script, error)
-	GetScript(id int) (snd.Script, error)
+	GetScript(id string) (snd.Script, error)
 }

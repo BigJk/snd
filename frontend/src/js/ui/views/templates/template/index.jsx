@@ -1,45 +1,38 @@
 import store from '/js/core/store';
 import api from '/js/core/api';
 
-import * as msgpack from 'msgpack-lite';
+import { openFolderDialog } from '/js/electron';
 
 import { Base, Header, SplitView, Loading, TextArea, Modal } from '/js/ui/components';
 
-import { transform, debounce } from 'lodash-es';
+import { transform, debounce, chunk, flatten } from 'lodash-es';
 
 import { success, error } from '/js/ui/toast';
 import { tryRender } from '/js/core/templating';
 
 export default () => {
 	let state = {
-		id: null,
 		template: null,
 		entries: [],
+		filtered: [],
 		selected: {
 			id: null,
 			data: null,
 		},
 		search: '',
 		page: 0,
-		maxPage: 0,
 		showExport: false,
-		exportText: '',
 	};
 
 	let loadEntries = () => {
-		api.getEntries(state.template.id, state.page, state.search).then((entries) => {
+		api.getEntriesWithSources(state.template.id).then((entries) => {
 			state.entries = entries ?? [];
 			state.entries.forEach((e) => {
 				if (state.selected.id === e.id) {
 					state.selected.data = e.data;
 				}
 			});
-		});
-	};
-
-	let loadPages = () => {
-		api.getEntriesPages(state.template.id, state.search).then((maxPage) => {
-			state.maxPage = maxPage;
+			state.filtered = chunk(state.entries, 25);
 		});
 	};
 
@@ -47,8 +40,19 @@ export default () => {
 		state.selected.id = null;
 		state.selected.data = null;
 		state.page = 0;
-		loadPages();
-		loadEntries();
+
+		if (state.search.length === 0) {
+			state.filtered = chunk(state.entries, 25);
+		} else {
+			state.filtered = chunk(
+				state.entries.filter((e) => {
+					return e.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0;
+				}),
+				50
+			);
+		}
+
+		m.redraw();
 	}, 250);
 
 	let breadcrumbs = () => {
@@ -68,8 +72,51 @@ export default () => {
 
 		return (
 			<Modal title="Export" onclose={() => (state.showExport = null)}>
-				<div className="mb2">The following code represents this Template:</div>
-				<TextArea value={state.exportText} rows={15} />
+				<div className="mb3">
+					You can export this template in multiple formats. This will only export the template itself and entries in the template and not in any
+					associated data sources!
+				</div>
+				<div
+					className="btn btn-primary mr2"
+					onclick={() => {
+						openFolderDialog().then((folder) => {
+							api
+								.exportTemplateZip(state.template.id, folder)
+								.then((file) => {
+									success('Wrote ' + file);
+								})
+								.catch((err) => {
+									error(err);
+								});
+						});
+					}}
+				>
+					Export as{' '}
+					<b>
+						{state.template.author}_{state.template.slug}.zip
+					</b>
+				</div>
+				<div
+					className="btn btn-primary"
+					onclick={() => {
+						openFolderDialog().then((folder) => {
+							api
+								.exportTemplateFolder(state.template.id, folder)
+								.then((file) => {
+									success('Wrote ' + file);
+								})
+								.catch((err) => {
+									error(err);
+								});
+						});
+					}}
+				>
+					Export to{' '}
+					<b>
+						{state.template.author}_{state.template.slug}
+					</b>{' '}
+					folder
+				</div>
 			</Modal>
 		);
 	};
@@ -84,59 +131,68 @@ export default () => {
 				width={340}
 				scale={340.0 / store.data.settings.printerWidth}
 				stylesheets={store.data.settings.stylesheets}
-				content={tryRender(state.template.printTemplate, JSON.parse(state.selected.data ?? state.template.skeletonData))}
+				content={tryRender(state.template.printTemplate, state.selected.data ?? state.template.skeletonData)}
 			>
 				<div className="flex-grow-1 overflow-auto">
-					{state.entries.map((e) => {
-						return (
-							<div
-								className={`w-100 bb b--black-10 pa2 flex justify-between items-center ${
-									e.id !== state.selected.id ? 'hover-bg-secondary pointer' : 'bg-secondary'
-								}`}
-								onclick={() => {
-									state.selected.data = e.data;
-									state.selected.id = e.id;
-								}}
-							>
-								<div>
-									<div className="fw6 f5">{e.name}</div>
-									<div className="black-50">{m.trust(tryRender(state.template.listTemplate, JSON.parse(e.data)))}</div>
-								</div>
-								<div>
-									{e.id === state.selected.id ? (
+					{state.filtered.length === 0
+						? null
+						: state.filtered[state.page].map((e) => {
+								return (
+									<div
+										className={`w-100 bb b--black-10 mh55 pa2 flex justify-between items-center ${
+											e.id !== state.selected.id ? 'hover-bg-secondary pointer' : 'bg-secondary'
+										}`}
+										onclick={() => {
+											state.selected.data = e.data;
+											state.selected.id = e.id;
+										}}
+									>
 										<div>
-											<div
-												className="btn btn-success btn-sm mr2"
-												onclick={() =>
-													api.print(tryRender(state.template.printTemplate, JSON.parse(e.data))).then(() => success('Printing send'), error)
-												}
-											>
-												<i className="ion ion-md-print" />
-											</div>
-											<div className="btn btn-primary btn-sm mr2" onclick={() => m.route.set(`/templates/${state.template.id}/edit/${e.id}`)}>
-												<i className="ion ion-md-create" />
-											</div>
-											<div className="btn btn-error btn-sm">
-												<i
-													className="ion ion-md-close-circle-outline"
-													onclick={() =>
-														api
-															.deleteEntry(state.template.id, e.id)
-															.then(() => {
-																success('Entry deleted');
-																state.selected.id = null;
-																state.selected.data = null;
-															}, error)
-															.then(loadEntries)
-													}
-												/>
-											</div>
+											<div className="fw6 f5">{e.name}</div>
+											<div className="black-50">{m.trust(tryRender(state.template.listTemplate, e.data))}</div>
 										</div>
-									) : null}
-								</div>
-							</div>
-						);
-					})}
+										<div>
+											{e.id === state.selected.id ? (
+												<div>
+													<div
+														className="btn btn-success btn-sm mr2"
+														onclick={() => api.print(tryRender(state.template.printTemplate, e.data)).then(() => success('Printing send'), error)}
+													>
+														<i className="ion ion-md-print" />
+													</div>
+													{e.source === state.template.id ? (
+														<div>
+															<div
+																className="btn btn-primary btn-sm mr2"
+																onclick={() => m.route.set(`/templates/${state.template.id}/edit/${state.selected.id}`)}
+															>
+																<i className="ion ion-md-create" />
+															</div>
+															<div
+																className="btn btn-error btn-sm"
+																onclick={() =>
+																	api
+																		.deleteEntry(state.template.id, e.id)
+																		.then(() => {
+																			success('Entry deleted');
+																			state.selected.id = null;
+																			state.selected.data = null;
+																		}, error)
+																		.then(loadEntries)
+																}
+															>
+																<i className="ion ion-md-close-circle-outline" />
+															</div>
+														</div>
+													) : (
+														''
+													)}
+												</div>
+											) : null}
+										</div>
+									</div>
+								);
+						  })}
 				</div>
 				<div className="ph3 pv2 flex-shrink-0 bt b--black-10 bg-light-gray flex justify-between items-center">
 					<i
@@ -149,7 +205,7 @@ export default () => {
 						}}
 					/>
 					<div className="w4 tc">
-						Page {state.page + 1} / {state.maxPage}
+						Page {state.page + 1} / {state.filtered.length}
 					</div>
 					<div className="w-50">
 						<input
@@ -166,7 +222,7 @@ export default () => {
 					<i
 						className="ion ion-md-arrow-dropright f3 pointer dim"
 						onclick={() => {
-							if (state.page < state.maxPage - 1) {
+							if (state.page < state.filtered.length - 1) {
 								state.page++;
 							}
 							loadEntries();
@@ -179,7 +235,7 @@ export default () => {
 
 	return {
 		oninit(vnode) {
-			let templateId = parseInt(vnode.attrs.id);
+			let templateId = vnode.attrs.id;
 
 			if (store.data.lastTemplateState?.template.id === templateId) {
 				state = store.data.lastTemplateState;
@@ -187,11 +243,11 @@ export default () => {
 
 			api
 				.getTemplate(templateId)
-				.then((template) => (state.template = template))
-				.then(() => {
-					loadPages();
-					loadEntries();
-				});
+				.then((template) => {
+					state.template = template;
+					state.template.id = vnode.attrs.id;
+				})
+				.then(loadEntries);
 		},
 		onremove() {
 			store.set('lastTemplateState', state);
@@ -200,32 +256,21 @@ export default () => {
 			return (
 				<Base active="templates">
 					<div className="h-100 flex flex-column">
-						<Header breadcrumbs={breadcrumbs()} subtitle="Create, Edit and Print Entries">
+						<Header breadcrumbs={breadcrumbs()} subtitle="Create, Edit and Print Entries" pt={2}>
 							<div className="btn btn-success mr2" onclick={() => m.route.set(`/templates/${state.template.id}/new`)}>
 								New Entry
 							</div>
 							<div className="btn btn-primary mr2" onclick={() => m.route.set(`/templates/${state.template.id}/edit`)}>
 								Edit
 							</div>
-							<btn
+							<div
 								className="btn btn-primary"
 								onclick={() => {
-									state.exportText = msgpack
-										.encode(
-											JSON.stringify(
-												transform(state.template, (res, val, key) => {
-													if (['name', 'description', 'printTemplate', 'listTemplate', 'skeletonData'].some((s) => s === key)) {
-														res[key] = val;
-													}
-												})
-											)
-										)
-										.toString('base64');
 									state.showExport = true;
 								}}
 							>
 								<i className="ion ion-md-open" />
-							</btn>
+							</div>
 							<div className="divider-vert" />
 							<div
 								className="btn btn-error"

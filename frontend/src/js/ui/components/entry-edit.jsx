@@ -21,19 +21,18 @@ export default () => {
 
 	let updateRender = debounce(() => {
 		try {
-			state.lastRender = render(state.template.printTemplate, state.parsedData);
+			state.lastRender = render(state.template.printTemplate, state.template.skeletonData);
 			m.redraw();
 
 			if (state.onRender) {
 				state.onRender(state.lastRender);
 			}
 		} catch (e) {}
-		state.target.data = JSON.stringify(state.parsedData);
 	}, 250);
 
 	let tabs = () => {
 		let entries = [];
-		map(state.parsedData, (v, k) => {
+		map(state.template.skeletonData, (v, k) => {
 			switch (typeof v) {
 				case 'object':
 					entries.push(
@@ -56,7 +55,7 @@ export default () => {
 	};
 
 	let walkRecursive = (curPath, name) => {
-		let obj = get(state.parsedData, curPath);
+		let obj = get(state.template.skeletonData, curPath);
 
 		switch (typeof obj) {
 			case 'number':
@@ -67,14 +66,19 @@ export default () => {
 					<div className="form-group mw-50 mr3">
 						<label className="form-label">{startCase(camelCase(name))}</label>
 						{isNum ? (
-							<input type="text" className="form-input" value={obj} oninput={binder.inputNumber(state.parsedData, curPath, updateRender)} />
+							<input
+								type="text"
+								className="form-input"
+								value={obj}
+								oninput={binder.inputNumber(state.template.skeletonData, curPath, updateRender)}
+							/>
 						) : (
 							<textarea
 								className="form-input"
 								placeholder={startCase(camelCase(name))}
 								value={obj}
 								rows="3"
-								oninput={binder.inputString(state.parsedData, curPath, updateRender)}
+								oninput={binder.inputString(state.template.skeletonData, curPath, updateRender)}
 							/>
 						)}
 					</div>
@@ -84,7 +88,7 @@ export default () => {
 					<div className="form-group mw-25 pt1 mr3">
 						<label className="form-label">{startCase(camelCase(name))}</label>
 						<label className="form-switch">
-							<input type="checkbox" checked={obj} oninput={binder.checkbox(state.parsedData, curPath, updateRender)} />
+							<input type="checkbox" checked={obj} oninput={binder.checkbox(state.template.skeletonData, curPath, updateRender)} />
 							<i className="form-icon" /> {startCase(camelCase(obj))}
 						</label>
 					</div>
@@ -96,7 +100,7 @@ export default () => {
 							<div
 								className="btn btn-primary mb2"
 								onclick={() => {
-									obj.push(get(JSON.parse(state.template.skeletonData), curPath)[0]);
+									obj.push(get(state.template.skeletonData, curPath)[0]);
 									updateRender();
 								}}
 							>
@@ -151,7 +155,7 @@ export default () => {
 						</div>
 						<div className="divider" />
 					</div>
-					{map(state.parsedData, (v, k) => {
+					{map(state.template.skeletonData, (v, k) => {
 						if (isTop && typeof v == 'object') return null;
 
 						return walkRecursive(k, k);
@@ -169,10 +173,10 @@ export default () => {
 			state.target = vnode.attrs.target;
 			state.onRender = vnode.attrs.onrender;
 
-			if (state.target.data.length === 0) {
-				state.parsedData = JSON.parse(state.template.skeletonData);
+			if (state.target.data === null) {
+				state.parsedData = state.template.skeletonData;
 			} else {
-				state.parsedData = defaultsDeep(JSON.parse(state.target.data), JSON.parse(state.template.skeletonData));
+				state.parsedData = defaultsDeep(state.target.data, state.template.skeletonData);
 			}
 
 			updateRender();

@@ -41,14 +41,14 @@ export default () => {
 
 		return (
 			<div className="flex-grow-1 overflow-auto">
-				<TemplateEdit target={state.template} onrender={(r) => (state.lastRender = r)} />
+				<TemplateEdit target={state.template} editmode={true} onrender={(r) => (state.lastRender = r)} />
 			</div>
 		);
 	};
 
 	return {
 		oninit(vnode) {
-			state.id = parseInt(vnode.attrs.id);
+			state.id = vnode.attrs.id;
 			loadTemplate();
 		},
 		view(vnode) {
@@ -57,7 +57,7 @@ export default () => {
 			return (
 				<Base active="templates">
 					<div className="h-100 flex flex-column">
-						<Header breadcrumbs={breadcrumbs()} title="Edit this Template">
+						<Header breadcrumbs={breadcrumbs()} subtitle="Edit this Template" pt={2}>
 							<div className="btn btn-primary mr2" onclick={() => api.print(state.lastRender).then(() => success('Printing send'), error)}>
 								Test Print
 							</div>

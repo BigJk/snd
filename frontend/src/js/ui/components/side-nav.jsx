@@ -9,10 +9,10 @@ let pages = {
 		icon: 'list-box',
 		url: 'templates',
 	},
-	scripts: {
-		name: 'Scripts',
-		icon: 'code-working',
-		url: 'scripts',
+	dataSources: {
+		name: 'Data Sources',
+		icon: 'analytics',
+		url: 'data-sources',
 	},
 	devices: {
 		name: 'Devices',

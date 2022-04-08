@@ -2,6 +2,8 @@ import api from '/js/core/api';
 import store from '/js/core/store';
 import binder from '/js/ui/binder';
 
+import { shell } from '/js/electron';
+
 import { Base, Header, Input, Switch, Select, Form } from '/js/ui/components';
 
 import { success, error } from '/js/ui/toast';
@@ -140,19 +142,22 @@ export default () => {
 					</div>
 				</div>
 				<div className="ph3 mt2">{version()}</div>
-				<div className="ph3 mt2 pb4">
+				<div className="ph3 mt2 mb1">
 					Logo Icons made by
-					<a href="https://www.flaticon.com/authors/smashicons" title="Smashicons" className="ml1">
+					<a onclick={() => shell.openExternal('https://www.flaticon.com/authors/smashicons')} title="Smashicons" className="ml1">
 						Smashicons
 					</a>
 					,
-					<a href="https://www.flaticon.com/authors/good-ware" title="Good Ware" className="mh1">
+					<a onclick={() => shell.openExternal('https://www.flaticon.com/authors/good-ware')} title="Good Ware" className="mh1">
 						Good Ware
 					</a>
 					from
-					<a href="https://www.flaticon.com/" title="Flaticon" className="mh1">
+					<a onclick={() => shell.openExternal('https://www.flaticon.com/')} title="Flaticon" className="mh1">
 						www.flaticon.com
 					</a>
+				</div>
+				<div className="ph3 pb4">
+					Software made with <i className="ion ion-md-heart red" /> by <a onclick={() => shell.openExternal('https://github.com/BigJk')}>BigJk</a>
 				</div>
 			</div>
 		);

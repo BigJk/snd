@@ -2,21 +2,19 @@ import api from '/js/core/api';
 import store from '/js/core/store';
 import binder from '/js/ui/binder';
 
-import { Base, Preview, Header, Loading, Input, Modal, TextArea, Select, Switch, Form } from '/js/ui/components';
+import { Base, Header, Input, Modal } from '/js/ui/components';
 
-import { transform, merge, groupBy, map } from 'lodash-es';
-
-import { error, success } from '/js/ui/toast';
-import { tryRender } from '/js/core/templating';
 import { openFolderDialog, openFileDialog } from '/js/electron';
+import { groupBy, map } from 'lodash-es';
+import { success } from '/js/ui/toast';
 
 export default () => {
 	let state = {
 		search: '',
 		importing: {
 			show: false,
-			loading: false,
 			url: '',
+			loading: false,
 		},
 	};
 
@@ -44,10 +42,10 @@ export default () => {
 			>
 				<div className="mb3 lh-copy">
 					<div className="mb2">
-						<b>Import templates either locally (e.g. .zip, folder) or from the internet via a URL</b>
+						<b>Import data sources either locally (e.g. .zip, folder) or from the internet via a URL</b>
 					</div>
 					<div>
-						<b>Warning:</b> A template with the same author and identification name will overwrite any previous imported version!
+						<b>Warning:</b> A data source with the same author and identification name will overwrite any previous imported version!
 					</div>
 				</div>
 				<div className="mb3">
@@ -56,10 +54,10 @@ export default () => {
 						onclick={() => {
 							openFileDialog().then((file) => {
 								state.importing.loading = true;
-								api.importTemplateZip(file).then((name) => {
+								api.importSourceZip(file).then((name) => {
 									success(`Imported '${name}' successful`);
 
-									store.pub('reload_templates');
+									store.pub('reload_sources');
 
 									state.importing.show = false;
 									state.importing.loading = false;
@@ -74,10 +72,10 @@ export default () => {
 						onclick={() => {
 							openFolderDialog().then((folder) => {
 								state.importing.loading = true;
-								api.importTemplateFolder(folder).then((name) => {
+								api.importSourceFolder(folder).then((name) => {
 									success(`Imported '${name}' successful`);
 
-									store.pub('reload_templates');
+									store.pub('reload_sources');
 
 									state.importing.show = false;
 									state.importing.loading = false;
@@ -90,15 +88,15 @@ export default () => {
 				</div>
 				<div className="divider" />
 				<div>
-					<Input label="Import URL" placeholder="http://example.com/cool_template.zip" oninput={binder.inputString(state.importing, 'url')} />
+					<Input label="Import URL" placeholder="http://example.com/cool_data.zip" oninput={binder.inputString(state.importing, 'url')} />
 					<div
 						className="btn btn-primary"
 						onclick={() => {
 							state.importing.loading = true;
-							api.importTemplateUrl(state.importing.url).then((name) => {
+							api.importSourceUrl(state.importing.url).then((name) => {
 								success(`Imported '${name}' successful`);
 
-								store.pub('reload_templates');
+								store.pub('reload_sources');
 
 								state.importing.show = false;
 								state.importing.loading = false;
@@ -113,15 +111,11 @@ export default () => {
 	};
 
 	let body = () => {
-		if (!store.there('templates')) {
-			return <Loading />;
-		}
-
 		return (
 			<div className="ph3 pb3">
 				{map(
 					groupBy(
-						store.data.templates?.filter((t) => {
+						store.data.sources?.filter((t) => {
 							return state.search.length === 0 || t.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0;
 						}),
 						'author'
@@ -130,23 +124,14 @@ export default () => {
 						return (
 							<div className="w-100 mb3">
 								<div className="mb2 f5">
-									Templates by <b>{key}</b>
+									Sources by <b>{key}</b>
 								</div>
 								<div className="flex flex-wrap">
 									{val.map((t, i) => {
 										return (
 											<div className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}>
 												<div className="flex ba b--black-10 h4 mb2 bg-white">
-													<div className="flex-shrink-0 ph1 mr2 br b--black-05 bg-black-05">
-														<Preview
-															className="h-100"
-															content={tryRender(t.printTemplate, t.skeletonData)}
-															stylesheets={store.data.settings.stylesheets}
-															width={150}
-															scale={150 / store.data.settings.printerWidth}
-														/>
-													</div>
-													<div className="flex-grow-1 pv2 pr2 lh-solid flex flex-column justify-between">
+													<div className="flex-grow-1 pv2 ph2 lh-solid flex flex-column justify-between">
 														<div>
 															<div className="f5 mb2 flex justify-between items-center">
 																{t.name}
@@ -163,8 +148,15 @@ export default () => {
 																<div className="f4 b">{t.count}</div>
 																<span className="fw4 f6 black-50">Entries</span>
 															</div>
-															<div className="btn" onclick={() => m.route.set(`/templates/tmpl:${t.author}+${t.slug}`)}>
-																Open Template
+															<div
+																className="btn btn-error"
+																onclick={() =>
+																	api.deleteSource(`ds:${t.author}+${t.slug}`).then(() => {
+																		store.pub('reload_sources');
+																	})
+																}
+															>
+																<i className="ion ion-md-close-circle-outline" />
 															</div>
 														</div>
 													</div>
@@ -185,9 +177,9 @@ export default () => {
 
 	return {
 		oninit() {
-			store.pub('reload_templates');
+			store.pub('reload_sources');
 			updater = setInterval(() => {
-				store.pub('reload_templates');
+				store.pub('reload_sources');
 			}, 5000);
 		},
 		onremove() {
@@ -195,12 +187,9 @@ export default () => {
 		},
 		view(vnode) {
 			return (
-				<Base active={'templates'}>
-					<div className="w-100 h-100">
-						<Header title="Templates" subtitle="List all awesome Templates" classes="pt2">
-							<div className="btn btn-success mr2" onclick={() => m.route.set('/templates/new')}>
-								Create New
-							</div>
+				<Base active={'dataSources'}>
+					<div className="h-100 flex flex-column">
+						<Header title="Data Sources" subtitle="Manage collection of data.">
 							<div className="btn btn-primary" onclick={() => (state.importing.show = true)}>
 								<i className="ion ion-md-log-in" />
 							</div>

@@ -1,26 +1,37 @@
-export function newTemplate() {
+export function NewTemplate() {
 	return {
-		id: null,
 		name: '',
+		slug: '',
+		author: '',
 		description: '',
 		printTemplate: '',
 		listTemplate: '',
-		skeletonData: '{}',
+		skeletonData: {},
 	};
 }
 
-export function newEntry() {
+export function NewDataSource() {
 	return {
-		id: null,
 		name: '',
-		data: '',
+		slug: '',
+		author: '',
+		url: '',
 	};
 }
 
-export function newScript() {
+export function NewEntry() {
 	return {
-		id: null,
+		id: 'ENT-' + Math.ceil(Math.random() * 999999).toString() + '-' + Math.ceil(Math.random() * 999999).toString(),
 		name: '',
+		data: {},
+	};
+}
+
+export function NewScript() {
+	return {
+		name: '',
+		slug: '',
+		author: '',
 		source: '',
 		description: '',
 	};

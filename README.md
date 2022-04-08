@@ -14,14 +14,14 @@ or a letter that the group found to little character sheets of your players to u
 ## Features
 
 - Works on Windows, Mac and Linux
-- Extensive Templating system through [Nunjucks](https://mozilla.github.io/nunjucks/)
-- Extendable through Scripts
-  - Import hundreds of Monsters, Magic Items, Spells and more from API's like Open5e
+- Extensive templating system through [Nunjucks](https://mozilla.github.io/nunjucks/)
 - Various connection methods
   - Windows Direct Printing
   - Raw USB Printing
   - CUPS
-  - Serial (coming in the future)
+  - Serial
+- Import & Export templates and data sources
+  - Fast access to external data sources like Open5e (instant access to SRD monsters, spells and more)
 
 ## How It Works
 

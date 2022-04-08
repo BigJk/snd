@@ -4,11 +4,11 @@ import store from '/js/core/store';
 import { Base, Header, TemplateEdit } from '/js/ui/components';
 
 import { success, error } from '/js/ui/toast';
-import { newTemplate } from '/js/core/factory';
+import { NewTemplate } from '/js/core/factory';
 
 export default () => {
 	let state = {
-		template: newTemplate(),
+		template: NewTemplate(),
 	};
 
 	let breadcrumbs = () => {
@@ -36,7 +36,7 @@ export default () => {
 			return (
 				<Base active="templates">
 					<div className="h-100 flex flex-column">
-						<Header breadcrumbs={breadcrumbs()} subtitle="Create a new Template">
+						<Header breadcrumbs={breadcrumbs()} subtitle="Create a new Template" pt={2}>
 							<div
 								className="btn btn-success"
 								onclick={() => {

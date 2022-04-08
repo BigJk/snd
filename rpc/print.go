@@ -119,6 +119,13 @@ func RegisterPrint(route *echo.Group, db database.Database, printer printing.Pos
 		finalHtml = strings.Replace(finalHtml, `url('static/`, `url('http://`+ip.String()+`:7123/static/`, -1)
 		finalHtml = strings.Replace(finalHtml, `url(static/`, `url(http://`+ip.String()+`:7123/static/`, -1)
 
+		finalHtml = strings.Replace(finalHtml, `url("/proxy?url=`, `url("http://`+ip.String()+`:7123/proxy?url=`, -1)
+		finalHtml = strings.Replace(finalHtml, `url('/proxy?url=`, `url('http://`+ip.String()+`:7123/proxy?url=`, -1)
+		finalHtml = strings.Replace(finalHtml, `url(/proxy?url=`, `url(http://`+ip.String()+`:7123/proxy?url=`, -1)
+		finalHtml = strings.Replace(finalHtml, `url("proxy?url=`, `url("http://`+ip.String()+`:7123/proxy?url=`, -1)
+		finalHtml = strings.Replace(finalHtml, `url('proxy?url=`, `url('http://`+ip.String()+`:7123/proxy?url=`, -1)
+		finalHtml = strings.Replace(finalHtml, `url(proxy?url=`, `url(http://`+ip.String()+`:7123/proxy?url=`, -1)
+
 		// Render the html to image
 		image, err := rendering.RenderHTML(finalHtml, settings.PrinterWidth)
 		if err != nil {

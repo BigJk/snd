@@ -2,16 +2,14 @@ package snd
 
 import "fmt"
 
-// Script represents a script.
-type Script struct {
+type DataSource struct {
 	Name        string `json:"name"`
 	Slug        string `json:"slug"`
 	Author      string `json:"author"`
 	Description string `json:"description"`
-	Source      string `json:"source"`
 	URL         string `json:"url"`
 }
 
-func (s Script) ID() string {
-	return fmt.Sprintf("scrpt:%s+%s", s.Author, s.Slug)
+func (ds DataSource) ID() string {
+	return fmt.Sprintf("ds:%s+%s", ds.Author, ds.Slug)
 }

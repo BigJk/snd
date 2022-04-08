@@ -33,7 +33,14 @@ store.sub(['reload_templates'], () => {
 	});
 });
 
+store.sub(['reload_sources'], () => {
+	api.getSources().then((sources) => {
+		store.set('sources', sources ?? []);
+	});
+});
+
 store.pub('reload_templates');
+store.pub('reload_sources');
 
 // Routing
 
@@ -47,9 +54,7 @@ import Template from '/js/ui/views/templates/template';
 import TemplateEdit from '/js/ui/views/templates/template/edit';
 import TemplateNew from '/js/ui/views/templates/template/new';
 
-import Scripts from '/js/ui/views/scripts';
-import ScriptsNew from '/js/ui/views/scripts/new';
-import ScriptsEdit from '/js/ui/views/scripts/edit';
+import DataSources from '/js/ui/views/data-sources';
 
 import Devices from '/js/ui/views/devices';
 
@@ -61,9 +66,7 @@ m.route(document.getElementById('app'), '/', {
 	'/templates/:id/edit': TemplatesEdit,
 	'/templates/:id/edit/:eid': TemplateEdit,
 	'/templates/:id/new': TemplateNew,
-	'/scripts': Scripts,
-	'/scripts/new': ScriptsNew,
-	'/scripts/:id': ScriptsEdit,
+	'/data-sources': DataSources,
 	'/settings': Settings,
 	'/devices': Devices,
 });

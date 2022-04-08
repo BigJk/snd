@@ -1,3 +1,5 @@
+import store from '/js/core/store';
+
 import * as nunjucks from 'nunjucks';
 import MarkdownIt from 'markdown-it';
 
@@ -59,6 +61,7 @@ export const parseError = (e) => {
 export const render = (template, data) => {
 	let state = {
 		it: data,
+		settings: store.data.settings,
 	};
 
 	return env.renderString(template, state);

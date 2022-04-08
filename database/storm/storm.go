@@ -2,14 +2,22 @@ package storm
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/log"
 	"github.com/asdine/storm"
-	"github.com/asdine/storm/q"
 	"go.etcd.io/bbolt"
 	"time"
+)
+
+const (
+	BucketBase      = "BASE"
+	BucketTemplates = "TEMPLATES"
+	BucketSources   = "DATA_SOURCES"
+	BucketEntries   = "ENTRIES"
+	BucketScripts   = "SCRIPTS"
+
+	KeySettings = "SETTINGS"
 )
 
 type Storm struct {
@@ -30,15 +38,11 @@ func (s *Storm) DB() *storm.DB {
 }
 
 func (s *Storm) GetSettings() (snd.Settings, error) {
-	var settings snd.Settings
-	if err := s.db.Get("base", "settings", &settings); err != nil {
-		return snd.Settings{}, err
-	}
-	return settings, nil
+	return fetchSingle[snd.Settings](s.db, BucketBase, KeySettings)
 }
 
 func (s *Storm) SaveSettings(settings snd.Settings) error {
-	return s.db.Set("base", "settings", &s)
+	return s.db.Set(BucketBase, KeySettings, &settings)
 }
 
 func (s *Storm) GetLogs(hours int) ([]log.Entry, error) {
@@ -70,114 +74,109 @@ func (s *Storm) AddLog(e log.Entry) error {
 	return s.db.Set("logs", e.Time.Format(time.RFC3339), &e)
 }
 
-func (s *Storm) GetEntries(id int, page int, search string) ([]snd.Entry, error) {
-	var entries []snd.Entry
-
-	if len(search) == 0 {
-		if err := s.db.From(fmt.Sprint(id)).Select().Skip(page * 50).Limit(50).Find(&entries); err != nil && err != storm.ErrNotFound {
-			return nil, err
-		}
-	} else {
-		if err := s.db.From(fmt.Sprint(id)).Select(q.Re("Data", "(?i)"+search)).Skip(page * 50).Limit(50).Find(&entries); err != nil && err != storm.ErrNotFound {
-			return nil, err
-		}
-	}
-
-	return entries, nil
+func (s *Storm) GetTemplate(id string) (snd.Template, error) {
+	return fetchSingle[snd.Template](s.db, BucketTemplates, id)
 }
 
-func (s *Storm) GetEntriesPages(id int, search string) (int, error) {
-	var c int
-	var err error
-
-	if len(search) == 0 {
-		if c, err = s.db.From(fmt.Sprint(id)).Select().Count(&snd.Entry{}); err != nil && err != storm.ErrNotFound {
-			return 0, err
-		}
-	} else {
-		if c, err = s.db.From(fmt.Sprint(id)).Select(q.Re("Data", "(?i)"+search)).Count(&snd.Entry{}); err != nil && err != storm.ErrNotFound {
-			return 0, err
-		}
-	}
-
-	return (c / 50) + 1, nil
+func (s *Storm) SaveTemplate(template snd.Template) error {
+	return s.db.Set(BucketTemplates, template.ID(), &template)
 }
 
-func (s *Storm) SaveEntry(id int, e snd.Entry) error {
-	return s.db.From(fmt.Sprint(id)).Save(&e)
-}
-
-func (s *Storm) DeleteEntry(id int, eid int) error {
-	return s.db.From(fmt.Sprint(id)).DeleteStruct(&snd.Entry{ID: eid})
-}
-
-func (s *Storm) GetEntry(id int, eid int) (snd.Entry, error) {
-	var entry snd.Entry
-	if err := s.db.From(fmt.Sprint(id)).One("ID", eid, &entry); err != nil {
-		return snd.Entry{}, err
-	}
-
-	return entry, nil
-}
-
-func (s *Storm) SaveTemplate(t snd.Template) error {
-	return s.db.Save(&t)
-}
-
-func (s *Storm) DeleteTemplate(id int) error {
-	return s.db.DeleteStruct(&snd.Template{ID: id})
+func (s *Storm) DeleteTemplate(id string) error {
+	return s.db.Delete(BucketTemplates, id)
 }
 
 func (s *Storm) GetTemplates() ([]database.TemplateEntry, error) {
-	var templates []snd.Template
-	if err := s.db.All(&templates); err != nil && err != storm.ErrNotFound {
+	templates, err := fetchFromBucket[database.TemplateEntry](s.db, "", BucketTemplates)
+	if err != nil {
 		return nil, err
 	}
 
-	var templateListings []database.TemplateEntry
 	for i := range templates {
-		c, _ := s.db.From(fmt.Sprint(templates[i].ID)).Count(&snd.Entry{})
+		sum, _ := s.CountEntries(templates[i].ID())
 
-		templateListings = append(templateListings, database.TemplateEntry{
-			Template: templates[i],
-			Count:    c,
-		})
+		for j := range templates[i].DataSources {
+			c, _ := s.CountEntries(templates[i].DataSources[j])
+			sum += c
+		}
+
+		templates[i].Count = sum
 	}
 
-	return templateListings, nil
+	return templates, err
 }
 
-func (s *Storm) GetTemplate(id int) (snd.Template, error) {
-	var template snd.Template
-	if err := s.db.One("ID", id, &template); err != nil {
-		return snd.Template{}, err
+func (s *Storm) GetEntries(id string) ([]snd.Entry, error) {
+	return fetchFromBucket[snd.Entry](s.db, id, BucketEntries)
+}
+
+func (s *Storm) GetEntry(id string, eid string) (snd.Entry, error) {
+	return fetchSingle[snd.Entry](s.db, BucketEntries, eid, id)
+}
+
+func (s *Storm) CountEntries(id string) (int, error) {
+	return countFromBucket(s.db, id, BucketEntries)
+}
+
+func (s *Storm) SaveEntry(id string, entry snd.Entry) error {
+	return s.db.From(id).Set(BucketEntries, entry.ID, &entry)
+}
+
+func (s *Storm) DeleteEntry(id string, eid string) error {
+	return s.db.From(id).Delete(BucketEntries, eid)
+}
+
+func (s *Storm) DeleteEntries(id string) error {
+	return s.db.Bolt.Update(func(tx *bbolt.Tx) error {
+		b := s.db.From(id).GetBucket(tx)
+		if b == nil {
+			return nil
+		}
+		return b.DeleteBucket([]byte(BucketEntries))
+	})
+}
+
+func (s *Storm) SaveSource(ds snd.DataSource) error {
+	return s.db.Set(BucketSources, ds.ID(), ds)
+}
+
+func (s *Storm) DeleteSource(id string) error {
+	return s.db.Delete(BucketSources, id)
+}
+
+func (s *Storm) GetSource(id string) (snd.DataSource, error) {
+	return fetchSingle[snd.DataSource](s.db, BucketSources, id)
+}
+
+func (s *Storm) GetSources() ([]database.DataSourceEntry, error) {
+	sources, err := fetchFromBucket[database.DataSourceEntry](s.db, "", BucketSources)
+	if err != nil {
+		return nil, err
 	}
 
-	return template, nil
+	for i := range sources {
+		c, err := s.CountEntries(sources[i].ID())
+		if err != nil {
+			return nil, err
+		}
+		sources[i].Count = c
+	}
+
+	return sources, nil
 }
 
 func (s *Storm) SaveScript(script snd.Script) error {
-	return s.db.Save(&script)
+	return s.db.Set(BucketScripts, script.ID(), &script)
 }
 
-func (s *Storm) DeleteScript(id int) error {
-	return s.db.DeleteStruct(&snd.Script{ID: id})
+func (s *Storm) DeleteScript(id string) error {
+	return s.db.Delete(BucketScripts, id)
 }
 
 func (s *Storm) GetScripts() ([]snd.Script, error) {
-	var scripts []snd.Script
-	if err := s.db.All(&scripts); err != nil && err != storm.ErrNotFound {
-		return nil, err
-	}
-
-	return scripts, nil
+	return fetchFromBucket[snd.Script](s.db, "", BucketScripts)
 }
 
-func (s *Storm) GetScript(id int) (snd.Script, error) {
-	var script snd.Script
-	if err := s.db.One("ID", id, &script); err != nil {
-		return snd.Script{}, err
-	}
-
-	return script, nil
+func (s *Storm) GetScript(id string) (snd.Script, error) {
+	return fetchSingle[snd.Script](s.db, BucketScripts, id)
 }

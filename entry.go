@@ -1,9 +1,8 @@
 package snd
 
-// Entry represents one data entry in a template.
+// Entry represents one data entry in a template or data source.
 type Entry struct {
-	ID        int    `json:"id" storm:"id,increment"`
-	Name      string `json:"name" storm:"unique"`
-	ForeignID string `json:"foreignId" storm:"index"`
-	Data      string `json:"data"`
+	ID   string                 `json:"id"`
+	Name string                 `json:"name"`
+	Data map[string]interface{} `json:"data"`
 }

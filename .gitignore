@@ -18,6 +18,7 @@ static/
 node_modules/
 dist/
 vendor/
+templates/
 
 .idea/
 .cache/

@@ -4,7 +4,7 @@ import store from '/js/core/store';
 import { Base, Header, EntryEdit, Loading } from '/js/ui/components';
 
 import { success, error } from '/js/ui/toast';
-import { newEntry } from '/js/core/factory';
+import { NewEntry } from '/js/core/factory';
 
 export default () => {
 	let state = {
@@ -59,15 +59,18 @@ export default () => {
 
 	return {
 		oninit(vnode) {
-			state.entry = newEntry();
+			state.entry = NewEntry();
 
-			api.getTemplate(parseInt(vnode.attrs.id)).then((template) => (state.template = template));
+			api.getTemplate(vnode.attrs.id).then((template) => {
+				state.template = template;
+				state.template.id = vnode.attrs.id;
+			});
 		},
 		view(vnode) {
 			return (
 				<Base active="templates">
 					<div className="h-100 flex flex-column">
-						<Header breadcrumbs={breadcrumbs()} subtitle="Create a new Entry">
+						<Header breadcrumbs={breadcrumbs()} subtitle="Create a new Entry" pt={2}>
 							<div className="btn btn-primary mr2" onclick={() => api.print(state.lastRender).then(success('Print send'), error)}>
 								Test Print
 							</div>

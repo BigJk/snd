@@ -109,9 +109,13 @@ $font-size: 0.7rem;
     Common
  */
 
- body {
+body {
     background-color: #f4f8f9;
- }
+}
+
+.f8 {
+    font-size: .6rem;
+}
 
 .no-input {
   -webkit-touch-callout: none;
@@ -166,7 +170,7 @@ $font-size: 0.7rem;
     background-position-y: -10px;
     background-position-x: -10px;
     background-color: #0D1B2A;
-    width: 170px;
+    width: 200px;
     overflow: auto;
     overflow-y: overlay;
 }
@@ -186,4 +190,8 @@ $font-size: 0.7rem;
 @keyframes fadein {
     from { opacity: 0; }
     to   { opacity: 1; }
+}
+
+.mh55 {
+    min-height: 55px;
 }

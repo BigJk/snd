@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"github.com/BigJk/snd/database"
 	"github.com/labstack/echo/middleware"
+	"github.com/patrickmn/go-cache"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
@@ -19,6 +22,11 @@ import (
 	"github.com/labstack/echo"
 )
 
+type proxyCacheEntry struct {
+	ContentType string
+	Data        []byte
+}
+
 // ServerOption
 type Option func(s *Server) error
 
@@ -28,6 +36,7 @@ type Server struct {
 	debug         bool
 	db            database.Database
 	e             *echo.Echo
+	cache         *cache.Cache
 	printers      printing.PossiblePrinter
 	additionalRpc map[string]interface{}
 }
@@ -37,6 +46,7 @@ func New(db database.Database, options ...Option) (*Server, error) {
 	s := &Server{
 		db:            db,
 		e:             echo.New(),
+		cache:         cache.New(time.Minute*10, time.Minute),
 		printers:      map[string]printing.Printer{},
 		additionalRpc: map[string]interface{}{},
 	}
@@ -113,14 +123,36 @@ func (s *Server) Start(bind string) error {
 	// in the frontend can proxy images that they otherwise couldn't
 	// access because of CORB
 	s.e.GET("/proxy", func(c echo.Context) error {
+		reqUrl := c.QueryParam("url")
+		hit, ok := s.cache.Get(reqUrl)
+		if ok {
+			log.Info("proxy url from cache", log.WithValue("url", c.QueryParam("url")))
+
+			entry := hit.(*proxyCacheEntry)
+			return c.Blob(http.StatusOK, entry.ContentType, entry.Data)
+		}
+
 		log.Info("proxy url", log.WithValue("url", c.QueryParam("url")))
 
-		resp, err := http.Get(c.QueryParam("url"))
+		resp, err := http.Get(reqUrl)
+		if err != nil {
+			return c.NoContent(http.StatusBadRequest)
+		}
+		defer resp.Body.Close()
+
+		data, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return c.NoContent(http.StatusBadRequest)
 		}
 
-		return c.Stream(resp.StatusCode, resp.Header.Get("Content-Type"), resp.Body)
+		if resp.StatusCode == http.StatusOK {
+			s.cache.SetDefault(reqUrl, &proxyCacheEntry{
+				ContentType: resp.Header.Get("Content-Type"),
+				Data:        data,
+			})
+		}
+
+		return c.Blob(resp.StatusCode, resp.Header.Get("Content-Type"), data)
 	})
 
 	// Make frontend and static directory public

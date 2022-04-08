@@ -160,6 +160,18 @@ export default () => {
 													>
 														<i className="ion ion-md-print" />
 													</div>
+													<div
+														className="btn btn-primary btn-sm mr2"
+														onclick={() => {
+															openFolderDialog().then((folder) => {
+																api
+																	.screenshot(tryRender(state.template.printTemplate, e.data), folder + '/' + e.data.name + '.png')
+																	.then(() => success('Screenshot created'), error);
+															});
+														}}
+													>
+														<i className="ion ion-md-camera" />
+													</div>
 													{e.source === state.template.id ? (
 														<div>
 															<div

@@ -2,7 +2,10 @@ package rpc
 
 import (
 	"bytes"
+	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
+	"image/png"
+	"io/ioutil"
 	"net"
 	"strings"
 
@@ -26,6 +29,66 @@ func GetOutboundIP() (net.IP, error) {
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
 
 	return localAddr.IP, nil
+}
+
+func fixHtml(html string, settings snd.Settings) (string, error) {
+	// Get local outbound ip
+	ip, err := GetOutboundIP()
+	if err != nil {
+		return "", err
+	}
+
+	// Generate html
+	htmlHead := `<!DOCTYPE html>
+<html lang="en">
+  <title>print page</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">`
+
+	for i := range settings.Stylesheets {
+		url := settings.Stylesheets[i]
+		if strings.HasPrefix(url, "/") {
+			url = "http://" + ip.String() + ":7123" + url
+		}
+		htmlHead += `<link rel="stylesheet" href="` + settings.Stylesheets[i] + `">` + "\n"
+	}
+
+	htmlHead += `<body class="sans-serif">
+		<div id="content">`
+
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlHead + html + "</div></body></html>"))
+	if err != nil {
+		return "", log.ErrorUser(err, "html parsing failed")
+	}
+
+	doc.Find("img").Each(func(i int, s *goquery.Selection) {
+		url := s.AttrOr("src", "")
+		if strings.HasPrefix(url, "/") {
+			url = "http://" + ip.String() + ":7123" + url
+			s.SetAttr("src", url)
+		}
+	})
+
+	finalHtml, err := doc.Html()
+	if err != nil {
+		return "", log.ErrorUser(err, "html rendering failed")
+	}
+
+	finalHtml = strings.Replace(finalHtml, `url("/static/`, `url("http://`+ip.String()+`:7123/static/`, -1)
+	finalHtml = strings.Replace(finalHtml, `url('/static/`, `url('http://`+ip.String()+`:7123/static/`, -1)
+	finalHtml = strings.Replace(finalHtml, `url(/static/`, `url(http://`+ip.String()+`:7123/static/`, -1)
+	finalHtml = strings.Replace(finalHtml, `url("static/`, `url("http://`+ip.String()+`:7123/static/`, -1)
+	finalHtml = strings.Replace(finalHtml, `url('static/`, `url('http://`+ip.String()+`:7123/static/`, -1)
+	finalHtml = strings.Replace(finalHtml, `url(static/`, `url(http://`+ip.String()+`:7123/static/`, -1)
+
+	finalHtml = strings.Replace(finalHtml, `url("/proxy?url=`, `url("http://`+ip.String()+`:7123/proxy?url=`, -1)
+	finalHtml = strings.Replace(finalHtml, `url('/proxy?url=`, `url('http://`+ip.String()+`:7123/proxy?url=`, -1)
+	finalHtml = strings.Replace(finalHtml, `url(/proxy?url=`, `url(http://`+ip.String()+`:7123/proxy?url=`, -1)
+	finalHtml = strings.Replace(finalHtml, `url("proxy?url=`, `url("http://`+ip.String()+`:7123/proxy?url=`, -1)
+	finalHtml = strings.Replace(finalHtml, `url('proxy?url=`, `url('http://`+ip.String()+`:7123/proxy?url=`, -1)
+	finalHtml = strings.Replace(finalHtml, `url(proxy?url=`, `url(http://`+ip.String()+`:7123/proxy?url=`, -1)
+
+	return finalHtml, nil
 }
 
 func RegisterPrint(route *echo.Group, db database.Database, printer printing.PossiblePrinter) {
@@ -54,12 +117,6 @@ func RegisterPrint(route *echo.Group, db database.Database, printer printing.Pos
 	})))
 
 	route.POST("/print", echo.WrapHandler(nra.MustBind(func(html string) error {
-		// Get local outbound ip
-		ip, err := GetOutboundIP()
-		if err != nil {
-			return err
-		}
-
 		// Get current settings
 		settings, err := db.GetSettings()
 		if err != nil {
@@ -76,55 +133,10 @@ func RegisterPrint(route *echo.Group, db database.Database, printer printing.Pos
 			return log.ErrorString("print not found", log.WithValue("printer", settings.PrinterType))
 		}
 
-		// Generate html
-		htmlHead := `<!DOCTYPE html>
-<html lang="en">
-  <title>print page</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1">`
-
-		for i := range settings.Stylesheets {
-			url := settings.Stylesheets[i]
-			if strings.HasPrefix(url, "/") {
-				url = "http://" + ip.String() + ":7123" + url
-			}
-			htmlHead += `<link rel="stylesheet" href="` + settings.Stylesheets[i] + `">` + "\n"
-		}
-
-		htmlHead += `<body class="sans-serif">
-		<div id="content">`
-
-		doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlHead + html + "</div></body></html>"))
+		finalHtml, err := fixHtml(html, settings)
 		if err != nil {
-			return log.ErrorUser(err, "html parsing failed")
+			return err
 		}
-
-		doc.Find("img").Each(func(i int, s *goquery.Selection) {
-			url := s.AttrOr("src", "")
-			if strings.HasPrefix(url, "/") {
-				url = "http://" + ip.String() + ":7123" + url
-				s.SetAttr("src", url)
-			}
-		})
-
-		finalHtml, err := doc.Html()
-		if err != nil {
-			return log.ErrorUser(err, "html rendering failed")
-		}
-
-		finalHtml = strings.Replace(finalHtml, `url("/static/`, `url("http://`+ip.String()+`:7123/static/`, -1)
-		finalHtml = strings.Replace(finalHtml, `url('/static/`, `url('http://`+ip.String()+`:7123/static/`, -1)
-		finalHtml = strings.Replace(finalHtml, `url(/static/`, `url(http://`+ip.String()+`:7123/static/`, -1)
-		finalHtml = strings.Replace(finalHtml, `url("static/`, `url("http://`+ip.String()+`:7123/static/`, -1)
-		finalHtml = strings.Replace(finalHtml, `url('static/`, `url('http://`+ip.String()+`:7123/static/`, -1)
-		finalHtml = strings.Replace(finalHtml, `url(static/`, `url(http://`+ip.String()+`:7123/static/`, -1)
-
-		finalHtml = strings.Replace(finalHtml, `url("/proxy?url=`, `url("http://`+ip.String()+`:7123/proxy?url=`, -1)
-		finalHtml = strings.Replace(finalHtml, `url('/proxy?url=`, `url('http://`+ip.String()+`:7123/proxy?url=`, -1)
-		finalHtml = strings.Replace(finalHtml, `url(/proxy?url=`, `url(http://`+ip.String()+`:7123/proxy?url=`, -1)
-		finalHtml = strings.Replace(finalHtml, `url("proxy?url=`, `url("http://`+ip.String()+`:7123/proxy?url=`, -1)
-		finalHtml = strings.Replace(finalHtml, `url('proxy?url=`, `url('http://`+ip.String()+`:7123/proxy?url=`, -1)
-		finalHtml = strings.Replace(finalHtml, `url(proxy?url=`, `url(http://`+ip.String()+`:7123/proxy?url=`, -1)
 
 		// Render the html to image
 		image, err := rendering.RenderHTML(finalHtml, settings.PrinterWidth)
@@ -157,5 +169,34 @@ func RegisterPrint(route *echo.Group, db database.Database, printer printing.Pos
 		}
 
 		return nil
+	})))
+
+	route.POST("/screenshot", echo.WrapHandler(nra.MustBind(func(html string, file string) error {
+		// Get current settings
+		settings, err := db.GetSettings()
+		if err != nil {
+			return err
+		}
+
+		if settings.PrinterWidth < 50 {
+			return log.ErrorString("print width is too low", log.WithValue("width", settings.PrinterWidth))
+		}
+
+		finalHtml, err := fixHtml(html, settings)
+		if err != nil {
+			return err
+		}
+
+		img, err := rendering.RenderHTML(finalHtml, settings.PrinterWidth)
+		if err != nil {
+			return err
+		}
+
+		buf := &bytes.Buffer{}
+		if err := png.Encode(buf, img); err != nil {
+			return err
+		}
+
+		return ioutil.WriteFile(file, buf.Bytes(), 0666)
 	})))
 }

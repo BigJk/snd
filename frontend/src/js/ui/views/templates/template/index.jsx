@@ -22,6 +22,7 @@ export default () => {
 		search: '',
 		page: 0,
 		showExport: false,
+		printing: false,
 	};
 
 	let loadEntries = () => {
@@ -121,6 +122,22 @@ export default () => {
 		);
 	};
 
+	let printingLoading = () => {
+		if (!state.printing) {
+			return;
+		}
+
+		return (
+			<div className="modal active relative">
+				<div className="modal-overlay" />
+				<div className="absolute flex flex-column">
+					<div className="loading loading-lg mb2" />
+					<div className="black-70">Printing...</div>
+				</div>
+			</div>
+		);
+	};
+
 	let body = (vnode) => {
 		if (!state.template || !store.data.settings) {
 			return <Loading />;
@@ -156,7 +173,13 @@ export default () => {
 												<div>
 													<div
 														className="btn btn-success btn-sm mr2"
-														onclick={() => api.print(tryRender(state.template.printTemplate, e.data)).then(() => success('Printing send'), error)}
+														onclick={() => {
+															state.printing = true;
+															api
+																.print(tryRender(state.template.printTemplate, e.data))
+																.then(() => success('Printing send'), error)
+																.then(() => (state.printing = false));
+														}}
 													>
 														<i className="ion ion-md-print" />
 													</div>
@@ -299,6 +322,7 @@ export default () => {
 						</Header>
 						{body(vnode)}
 						{modal()}
+						{printingLoading()}
 					</div>
 				</Base>
 			);

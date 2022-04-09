@@ -1,6 +1,8 @@
 import store from '/js/core/store';
 import api from '/js/core/api';
 
+import { keepOpen, on } from '/js/core/ws';
+
 import { openFolderDialog } from '/js/electron';
 
 import { Base, Header, SplitView, Loading, TextArea, Modal } from '/js/ui/components';
@@ -19,9 +21,11 @@ export default () => {
 			id: null,
 			data: null,
 		},
+		syncActive: false,
 		search: '',
 		page: 0,
 		showExport: false,
+		showSync: false,
 		printing: false,
 	};
 
@@ -68,7 +72,7 @@ export default () => {
 		];
 	};
 
-	let modal = () => {
+	let modalExport = () => {
 		if (!state.showExport) return null;
 
 		return (
@@ -118,6 +122,51 @@ export default () => {
 					</b>{' '}
 					folder
 				</div>
+			</Modal>
+		);
+	};
+
+	let modalSync = () => {
+		if (!state.showSync) return null;
+
+		return (
+			<Modal title="Live Sync" onclose={() => (state.showSync = false)}>
+				<div className="mb3">You can synchronise a template to a folder so that you are able to edit it in an external editor.</div>
+				{state.syncActive ? (
+					<div
+						className="btn btn-error"
+						onclick={() => {
+							api
+								.syncStop(state.template.id)
+								.then(() => {
+									success(`Synced stopped`);
+									state.syncActive = false;
+									state.showSync = false;
+								})
+								.catch(error);
+						}}
+					>
+						Stop Sync
+					</div>
+				) : (
+					<div
+						className="btn btn-primary"
+						onclick={() => {
+							openFolderDialog().then((folder) => {
+								api
+									.syncStart(state.template.id, folder)
+									.then((folder) => {
+										success(`Synced to '${folder}'`);
+										state.syncActive = true;
+										state.showSync = false;
+									})
+									.catch(error);
+							});
+						}}
+					>
+						Start Sync
+					</div>
+				)}
 			</Modal>
 		);
 	};
@@ -268,6 +317,9 @@ export default () => {
 		);
 	};
 
+	let wsOnRemove = null;
+	let keepOpenRemove = null;
+
 	return {
 		oninit(vnode) {
 			let templateId = vnode.attrs.id;
@@ -283,8 +335,28 @@ export default () => {
 					state.template.id = vnode.attrs.id;
 				})
 				.then(loadEntries);
+
+			// check if sync is active
+			api.syncActive(templateId).then((active) => (state.syncActive = active));
+
+			// websocket events
+			wsOnRemove = on('TemplateUpdated/' + templateId, () => {
+				console.log('update got');
+
+				api.getTemplate(templateId).then((template) => {
+					state.template = template;
+					state.template.id = vnode.attrs.id;
+				});
+			});
+			keepOpenRemove = keepOpen(templateId);
 		},
 		onremove() {
+			if (state.syncActive) {
+				api.syncStop(state.template.id);
+			}
+
+			keepOpenRemove();
+			wsOnRemove();
 			store.set('lastTemplateState', state);
 		},
 		view(vnode) {
@@ -298,13 +370,11 @@ export default () => {
 							<div className="btn btn-primary mr2" onclick={() => m.route.set(`/templates/${state.template.id}/edit`)}>
 								Edit
 							</div>
-							<div
-								className="btn btn-primary"
-								onclick={() => {
-									state.showExport = true;
-								}}
-							>
+							<div className="btn btn-primary mr2" onclick={() => (state.showExport = true)}>
 								<i className="ion ion-md-open" />
+							</div>
+							<div className={`btn ${state.syncActive ? 'btn-success' : 'btn-primary'}`} onclick={() => (state.showSync = true)}>
+								<i className="ion ion-md-sync" />
 							</div>
 							<div className="divider-vert" />
 							<div
@@ -321,7 +391,8 @@ export default () => {
 							</div>
 						</Header>
 						{body(vnode)}
-						{modal()}
+						{modalExport()}
+						{modalSync()}
 						{printingLoading()}
 					</div>
 				</Base>

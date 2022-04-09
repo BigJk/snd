@@ -38,9 +38,4 @@ type Database interface {
 	DeleteSource(id string) error
 	GetSource(id string) (snd.DataSource, error)
 	GetSources() ([]DataSourceEntry, error)
-
-	SaveScript(s snd.Script) error
-	DeleteScript(id string) error
-	GetScripts() ([]snd.Script, error)
-	GetScript(id string) (snd.Script, error)
 }

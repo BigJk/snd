@@ -164,19 +164,3 @@ func (s *Storm) GetSources() ([]database.DataSourceEntry, error) {
 
 	return sources, nil
 }
-
-func (s *Storm) SaveScript(script snd.Script) error {
-	return s.db.Set(BucketScripts, script.ID(), &script)
-}
-
-func (s *Storm) DeleteScript(id string) error {
-	return s.db.Delete(BucketScripts, id)
-}
-
-func (s *Storm) GetScripts() ([]snd.Script, error) {
-	return fetchFromBucket[snd.Script](s.db, "", BucketScripts)
-}
-
-func (s *Storm) GetScript(id string) (snd.Script, error) {
-	return fetchSingle[snd.Script](s.db, BucketScripts, id)
-}

@@ -6,6 +6,7 @@ import (
 	"github.com/BigJk/snd/database"
 	"github.com/labstack/echo/middleware"
 	"github.com/patrickmn/go-cache"
+	"gopkg.in/olahol/melody.v1"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -36,6 +37,7 @@ type Server struct {
 	debug         bool
 	db            database.Database
 	e             *echo.Echo
+	m             *melody.Melody
 	cache         *cache.Cache
 	printers      printing.PossiblePrinter
 	additionalRpc map[string]interface{}
@@ -46,6 +48,7 @@ func New(db database.Database, options ...Option) (*Server, error) {
 	s := &Server{
 		db:            db,
 		e:             echo.New(),
+		m:             melody.New(),
 		cache:         cache.New(time.Minute*10, time.Minute),
 		printers:      map[string]printing.Printer{},
 		additionalRpc: map[string]interface{}{},
@@ -100,7 +103,7 @@ func (s *Server) Start(bind string) error {
 	rpc.RegisterEntry(api, s.db)
 	rpc.RegisterSources(api, s.db)
 	rpc.RegisterPrint(api, s.db, s.printers)
-	rpc.RegisterScript(api, s.db)
+	rpc.RegisterSync(api, s.m, s.db)
 
 	// Register additional routes
 	for k, v := range s.additionalRpc {
@@ -150,6 +153,10 @@ func (s *Server) Start(bind string) error {
 		}
 
 		return c.Blob(resp.StatusCode, resp.Header.Get("Content-Type"), data)
+	})
+
+	api.GET("/ws", func(c echo.Context) error {
+		return s.m.HandleRequest(c.Response().Writer, c.Request())
 	})
 
 	// Make frontend and static directory public

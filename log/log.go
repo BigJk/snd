@@ -58,7 +58,7 @@ func printToStd(e Entry) {
 
 	// Check for multiline log output.
 	if strings.Count(e.Text, "\n") > 0 {
-		_, _ = fmt.Fprintf(output, "%s [%-35s] [%s]", col.Sprintf("%-6s", e.Level), e.Caller, e.Time.Format(time.RFC1123Z))
+		_, _ = fmt.Fprintf(output, "%s [ %-35s ] [%s]", col.Sprintf("%-6s", e.Level), e.Caller, e.Time.Format(time.RFC1123Z))
 
 		for i := range e.Values {
 			_, _ = fmt.Fprintf(output, " %s=%s", col.Sprint(e.Values[i].Name), e.Values[i].Value)
@@ -71,7 +71,7 @@ func printToStd(e Entry) {
 			_, _ = fmt.Fprintf(output, "%s %v\n", col.Sprintf("%-6s", "|"), lines[i])
 		}
 	} else {
-		_, _ = fmt.Fprintf(output, "%s [%-35s] [%s] %-50v", col.Sprintf("%-6s", e.Level), e.Caller, e.Time.Format(time.RFC1123Z), e.Text)
+		_, _ = fmt.Fprintf(output, "%s [ %-35s ] [%s] %-50v", col.Sprintf("%-6s", e.Level), e.Caller, e.Time.Format(time.RFC1123Z), e.Text)
 		for i := range e.Values {
 			_, _ = fmt.Fprintf(output, " %s=%s", col.Sprint(e.Values[i].Name), e.Values[i].Value)
 		}
@@ -127,13 +127,13 @@ func Error(err error, values ...Value) error {
 	return ErrorUser(err, "", values...)
 }
 
-// Error logs the error with the given values and
+// ErrorString logs the error with the given values and
 // returns a new err with string as it's content.
 func ErrorString(err string, values ...Value) error {
 	return ErrorUser(errors.New(err), "", values...)
 }
 
-// Error logs the error with the given values and
+// ErrorUser logs the error with the given values and
 // returns err as it is was passed if len(userError) == 0
 // or a new error with userError as content. This is
 // useful if you want to return a more user friendly error

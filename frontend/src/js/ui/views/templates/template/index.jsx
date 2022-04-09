@@ -38,6 +38,9 @@ export default () => {
 				}
 			});
 			state.filtered = chunk(state.entries, 25);
+			if (state.search.length > 0) {
+				runSearch();
+			}
 		});
 	};
 

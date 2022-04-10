@@ -3,10 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/BigJk/snd"
-	"github.com/BigJk/snd/database/storm"
 	"math/rand"
 	"time"
+
+	"github.com/BigJk/snd"
+	"github.com/BigJk/snd/database/storm"
 
 	"github.com/BigJk/snd/printing/cups"
 	"github.com/BigJk/snd/printing/remote"

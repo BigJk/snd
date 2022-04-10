@@ -2,7 +2,9 @@ package storm
 
 import (
 	"bytes"
+
 	"github.com/asdine/storm"
+
 	"go.etcd.io/bbolt"
 )
 

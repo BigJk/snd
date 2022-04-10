@@ -3,6 +3,7 @@ package rendering
 import (
 	"bytes"
 	"image"
+	_ "image/png"
 	"net/url"
 	"os"
 
@@ -10,8 +11,6 @@ import (
 
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/proto"
-
-	_ "image/png"
 )
 
 var browser *rod.Browser

@@ -3,10 +3,11 @@ package inexport
 import (
 	"archive/zip"
 	"fmt"
-	"github.com/BigJk/snd"
 	"io"
 	"io/ioutil"
 	"os"
+
+	"github.com/BigJk/snd"
 )
 
 // ZipImportReader represents a reader that reads files from a zip.

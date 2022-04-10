@@ -5,13 +5,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/BigJk/snd/printing/preview"
-	"github.com/BigJk/snd/server"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"time"
+
+	"github.com/BigJk/snd/printing/preview"
+	"github.com/BigJk/snd/server"
 
 	"github.com/asticode/go-astikit"
 	"github.com/asticode/go-astilectron"

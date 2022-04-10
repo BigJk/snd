@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/BigJk/snd"
 	"io"
+
+	"github.com/BigJk/snd"
 )
 
 type templateMeta struct {

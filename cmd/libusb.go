@@ -1,3 +1,4 @@
+//go:build LIBUSB
 // +build LIBUSB
 
 package main

@@ -2,10 +2,11 @@ package inexport
 
 import (
 	"fmt"
-	"github.com/BigJk/snd"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/BigJk/snd"
 )
 
 type FolderImportReader struct {

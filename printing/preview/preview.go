@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/base64"
 	"errors"
-	"github.com/asticode/go-astikit"
-	"github.com/asticode/go-astilectron"
 	"image"
 	"image/png"
+
+	"github.com/asticode/go-astikit"
+	"github.com/asticode/go-astilectron"
 )
 
 type Preview struct {

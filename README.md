@@ -50,7 +50,7 @@ to the "draw image" command of the printer.
 
 ## Pre-Build Binaries
 
-Unavailable at the moment.
+Check our github release page: https://github.com/BigJk/snd/releases
 
 ## Printers, Templating & Building
 

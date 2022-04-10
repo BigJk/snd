@@ -18,18 +18,20 @@ var BaseDir = os.Getenv("SND_DIR")
 var Go = "go"
 
 type Build struct {
-	Package string
-	Arch    string
-	OS      string
-	Tags    string
+	Package         string
+	Arch            string
+	OS              string
+	Tags            string
+	AdditionalFiles []string
 }
 
 var Builds = []Build{
 	{
-		Package: "/cmd",
-		Arch:    "amd64",
-		OS:      "windows",
-		Tags:    "ELECTRON LIBUSB",
+		Package:         "/cmd",
+		Arch:            "amd64",
+		OS:              "windows",
+		Tags:            "ELECTRON LIBUSB",
+		AdditionalFiles: []string{os.Getenv("SND_LIBUSB_DLL")},
 	},
 	{
 		Package: "/cmd",
@@ -156,6 +158,12 @@ func main() {
 			data, err := ioutil.ReadFile(filepath.Join(cmd.Dir, "/Sales & Dungeons"+ext))
 			failOnErr(err)
 			failOnErr(ioutil.WriteFile(filepath.Join(target, "/Sales & Dungeons"+ext), data, 0666))
+
+			if len(b.AdditionalFiles) > 0 {
+				for i := range b.AdditionalFiles {
+					failOnErr(copy.Copy(b.AdditionalFiles[i], filepath.Join(target, filepath.Base(b.AdditionalFiles[i]))))
+				}
+			}
 
 			_ = os.Remove(filepath.Join(cmd.Dir, "/Sales & Dungeons"+ext))
 

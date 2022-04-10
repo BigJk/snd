@@ -12,7 +12,7 @@ type Template struct {
 	ListTemplate  string                 `json:"listTemplate"`
 	SkeletonData  map[string]interface{} `json:"skeletonData"`
 	DataSources   []string               `json:"dataSources"`
-	URL           string                 `json:"url"`
+	Version       string                 `json:"version"`
 }
 
 func (t Template) ID() string {

@@ -7,7 +7,7 @@ type DataSource struct {
 	Slug        string `json:"slug"`
 	Author      string `json:"author"`
 	Description string `json:"description"`
-	URL         string `json:"url"`
+	Version     string `json:"version"`
 }
 
 func (ds DataSource) ID() string {

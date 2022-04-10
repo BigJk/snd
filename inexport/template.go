@@ -81,7 +81,6 @@ func ImportTemplate(reader ImportReader) (snd.Template, []snd.Entry, error) {
 		ListTemplate:  "",
 		SkeletonData:  nil,
 		DataSources:   meta.DataSources,
-		URL:           "",
 	}
 
 	if len(tmpl.Slug) == 0 || len(tmpl.Author) == 0 || len(tmpl.Name) == 0 {

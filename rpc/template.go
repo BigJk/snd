@@ -2,15 +2,16 @@ package rpc
 
 import (
 	"bytes"
-	"github.com/BigJk/snd/database"
-	"github.com/BigJk/snd/inexport"
-	"github.com/mattetti/filebuffer"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
 
+	"github.com/BigJk/snd/database"
+	"github.com/BigJk/snd/inexport"
+	"github.com/mattetti/filebuffer"
+
 	"github.com/BigJk/nra"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func RegisterTemplate(route *echo.Group, db database.Database) {

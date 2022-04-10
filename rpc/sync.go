@@ -4,16 +4,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"path/filepath"
+	"sync"
+	"time"
+
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/inexport"
 	"github.com/BigJk/snd/log"
 	"github.com/fsnotify/fsnotify"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"gopkg.in/olahol/melody.v1"
-	"path/filepath"
-	"sync"
-	"time"
 )
 
 func RegisterSync(route *echo.Group, m *melody.Melody, db database.Database) {

@@ -2,12 +2,13 @@ package rpc
 
 import (
 	"bytes"
-	"github.com/BigJk/snd"
-	"github.com/BigJk/snd/database"
 	"image/png"
 	"io/ioutil"
 	"net"
 	"strings"
+
+	"github.com/BigJk/snd"
+	"github.com/BigJk/snd/database"
 
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd/log"
@@ -15,7 +16,7 @@ import (
 	"github.com/BigJk/snd/rendering"
 	"github.com/BigJk/snd/thermalprinter/epson"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 // GetOutboundIP gets the local ip.

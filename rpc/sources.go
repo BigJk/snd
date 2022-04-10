@@ -1,13 +1,14 @@
 package rpc
 
 import (
+	"io/ioutil"
+	"net/http"
+
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/inexport"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/mattetti/filebuffer"
-	"io/ioutil"
-	"net/http"
 )
 
 func RegisterSources(route *echo.Group, db database.Database) {

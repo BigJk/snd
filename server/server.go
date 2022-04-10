@@ -3,16 +3,18 @@ package server
 import (
 	"errors"
 	"fmt"
-	"github.com/BigJk/snd/database"
-	"github.com/labstack/echo/middleware"
-	"github.com/patrickmn/go-cache"
-	"gopkg.in/olahol/melody.v1"
 	"io/ioutil"
+	"mime"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/BigJk/snd/database"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/patrickmn/go-cache"
+	"gopkg.in/olahol/melody.v1"
 
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
@@ -20,8 +22,16 @@ import (
 	"github.com/BigJk/snd/printing"
 	"github.com/BigJk/snd/rpc"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
+
+// To fix issue on Windows with reporting .js files as text/plain
+// we force the content type for .js to 'application/javascript'.
+//
+// https://github.com/labstack/echo/issues/1038
+func init() {
+	_ = mime.AddExtensionType(".js", "application/javascript")
+}
 
 type proxyCacheEntry struct {
 	ContentType string

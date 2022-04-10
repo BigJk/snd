@@ -22,6 +22,8 @@ templates/
 
 .idea/
 .cache/
+cache/
+release/
 
 *.db
 *.bin

@@ -380,7 +380,7 @@ export default () => {
 								<i className="ion ion-md-open" />
 							</div>
 							<div className={`btn ${state.syncActive ? 'btn-success' : 'btn-primary'}`} onclick={() => (state.showSync = true)}>
-								<i className="ion ion-md-sync" />
+								<i className={`ion ion-md-sync ${state.syncActive ? 'rotating' : ''}`} />
 							</div>
 							<div className="divider-vert" />
 							<div

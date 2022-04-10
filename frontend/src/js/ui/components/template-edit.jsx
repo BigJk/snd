@@ -200,7 +200,7 @@ export default () => {
 		},
 		Sources: () => {
 			return (
-				<div className="ph3">
+				<div className="ph3 pt2">
 					<Select
 						label="Add Sources"
 						selected={state.selectedSource}

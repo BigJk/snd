@@ -16,7 +16,7 @@ func (s *Serial) Name() string {
 }
 
 func (s *Serial) Description() string {
-	return "Printing over Serial-Port (e.g. RS232). Endpoint is defined %PORT_NAME%:9600_N81_1. This specifies 8 data bits, no parity, 1 stop bit and a baudrate of 9600 and a 1 second delay between data chunks."
+	return "Printing over Serial-Port (e.g. RS232). Endpoint is defined %PORT_NAME%:9600_N81_1. This specifies no parity, 8 data bits, 1 stop bit, a baudrate of 9600 and a 1 second delay between data chunks."
 }
 
 func (s *Serial) AvailableEndpoints() (map[string]string, error) {

@@ -119,7 +119,8 @@ export default () => {
 	let tabs = {
 		Information: () => {
 			return (
-				<div className="ph3 pt2">
+				<div className="pa3">
+					<div className="toast toast-primary lh-copy mb1">Here you can set basic information about the template.</div>
 					<Input label="Name" cols={9} value={state.target.name} oninput={binder.inputString(state.target, 'name')} />
 					{!state.editMode ? (
 						<Input
@@ -144,6 +145,13 @@ export default () => {
 		Images: () => {
 			return (
 				<div className="pa3">
+					<div className="toast toast-primary lh-copy mb3">
+						Here you can add images that are available in the templates. If you export or import a template the images will be included as well.
+						<br /> <br /> You can access a image in the template via: <br />
+						<div className="mt1">
+							<code>&#123;&#123; images[IMAGE_NAME.png] &#125;&#125;</code>
+						</div>
+					</div>
 					<input
 						className="mb1"
 						type="file"
@@ -200,7 +208,11 @@ export default () => {
 		},
 		Sources: () => {
 			return (
-				<div className="ph3 pt2">
+				<div className="ph3 pt3">
+					<div className="toast toast-primary lh-copy mb2">
+						Here you can add data sources to this template. If you add a data source the entries in the data source will be available in this
+						template.
+					</div>
 					<Select
 						label="Add Sources"
 						selected={state.selectedSource}

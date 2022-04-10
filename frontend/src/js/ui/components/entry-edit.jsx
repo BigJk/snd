@@ -5,7 +5,7 @@ import binder from '/js/ui/binder';
 import Input from '/js/ui/components/input';
 import SplitView from '/js/ui/components/split-view';
 
-import { debounce, map, startCase, camelCase, get, defaultsDeep } from 'lodash-es';
+import { debounce, map, startCase, camelCase, get, set, defaultsDeep } from 'lodash-es';
 
 import { render } from '/js/core/templating';
 
@@ -21,7 +21,7 @@ export default () => {
 
 	let updateRender = debounce(() => {
 		try {
-			state.lastRender = render(state.template.printTemplate, state.template.skeletonData);
+			state.lastRender = render(state.template.printTemplate, state.parsedData);
 			m.redraw();
 
 			if (state.onRender) {
@@ -32,7 +32,7 @@ export default () => {
 
 	let tabs = () => {
 		let entries = [];
-		map(state.template.skeletonData, (v, k) => {
+		map(state.parsedData, (v, k) => {
 			switch (typeof v) {
 				case 'object':
 					entries.push(
@@ -55,30 +55,73 @@ export default () => {
 	};
 
 	let walkRecursive = (curPath, name) => {
-		let obj = get(state.template.skeletonData, curPath);
+		let obj = get(state.parsedData, curPath);
 
 		switch (typeof obj) {
 			case 'number':
 			case 'string':
+				if (get(state.template.skeletonData, curPath) === '!IMAGE') {
+					return (
+						<div>
+							<label className="form-label">{startCase(camelCase(name))}</label>
+							<input
+								className="mb1"
+								type="file"
+								id="files"
+								name="files[]"
+								onchange={(e) => {
+									let files = e.target.files;
+
+									for (let i = 0, f; (f = files[i]); i++) {
+										if (!f.type.match('image.*')) {
+											continue;
+										}
+
+										let reader = new FileReader();
+
+										reader.onload = (e) => {
+											set(state.parsedData, curPath, e.target.result);
+											m.redraw();
+										};
+
+										reader.readAsDataURL(f);
+									}
+								}}
+							/>
+
+							{obj.indexOf('data:image') === 0 ? (
+								<div className="flex justify-between items-center">
+									<div className="flex items-center">
+										<img src={obj} alt="" width={64} className="mr2" />
+									</div>
+									<div
+										className="btn btn-error mr3"
+										onclick={() => {
+											set(state.parsedData, curPath, '');
+										}}
+									>
+										Delete
+									</div>
+								</div>
+							) : null}
+						</div>
+					);
+				}
+
 				let isNum = typeof obj === 'number';
 
 				return (
 					<div className="form-group mw-50 mr3">
 						<label className="form-label">{startCase(camelCase(name))}</label>
 						{isNum ? (
-							<input
-								type="text"
-								className="form-input"
-								value={obj}
-								oninput={binder.inputNumber(state.template.skeletonData, curPath, updateRender)}
-							/>
+							<input type="text" className="form-input" value={obj} oninput={binder.inputNumber(state.parsedData, curPath, updateRender)} />
 						) : (
 							<textarea
 								className="form-input"
 								placeholder={startCase(camelCase(name))}
 								value={obj}
 								rows="3"
-								oninput={binder.inputString(state.template.skeletonData, curPath, updateRender)}
+								oninput={binder.inputString(state.parsedData, curPath, updateRender)}
 							/>
 						)}
 					</div>
@@ -88,7 +131,7 @@ export default () => {
 					<div className="form-group mw-25 pt1 mr3">
 						<label className="form-label">{startCase(camelCase(name))}</label>
 						<label className="form-switch">
-							<input type="checkbox" checked={obj} oninput={binder.checkbox(state.template.skeletonData, curPath, updateRender)} />
+							<input type="checkbox" checked={obj} oninput={binder.checkbox(state.parsedData, curPath, updateRender)} />
 							<i className="form-icon" /> {startCase(camelCase(obj))}
 						</label>
 					</div>
@@ -100,7 +143,7 @@ export default () => {
 							<div
 								className="btn btn-primary mb2"
 								onclick={() => {
-									obj.push(get(state.template.skeletonData, curPath)[0]);
+									obj.push(get(state.parsedData, curPath)[0]);
 									updateRender();
 								}}
 							>
@@ -155,7 +198,7 @@ export default () => {
 						</div>
 						<div className="divider" />
 					</div>
-					{map(state.template.skeletonData, (v, k) => {
+					{map(state.parsedData, (v, k) => {
 						if (isTop && typeof v == 'object') return null;
 
 						return walkRecursive(k, k);

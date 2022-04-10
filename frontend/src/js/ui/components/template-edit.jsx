@@ -70,6 +70,7 @@ export default () => {
 		entries: [],
 		entriesSearch: '',
 		entriesSelected: null,
+		imagesToUpload: [],
 	};
 
 	let updateRender = debounce(() => {
@@ -81,6 +82,7 @@ export default () => {
 		renderAsync(
 			state.target.printTemplate,
 			state.target.skeletonData,
+			state.target.images,
 			(res) => {
 				rerender = true;
 				state.lastRender = res;
@@ -93,6 +95,7 @@ export default () => {
 		renderAsync(
 			state.target.listTemplate,
 			state.target.skeletonData,
+			state.target.images,
 			(res) => {
 				rerender = true;
 				state.lastListRender = res;
@@ -135,6 +138,63 @@ export default () => {
 						/>
 					) : null}
 					<TextArea label="Description" cols={9} value={state.target.description} oninput={binder.inputString(state.target, 'description')} />
+				</div>
+			);
+		},
+		Images: () => {
+			return (
+				<div className="pa3">
+					<input
+						className="mb1"
+						type="file"
+						id="files"
+						name="files[]"
+						multiple
+						onchange={(e) => {
+							let files = e.target.files;
+
+							for (let i = 0, f; (f = files[i]); i++) {
+								if (!f.type.match('image.*')) {
+									continue;
+								}
+
+								let reader = new FileReader();
+
+								reader.onload = ((name) => {
+									return (e) => {
+										if (!state.target.images) {
+											state.target.images = {};
+										}
+										state.target.images[name] = e.target.result;
+										m.redraw();
+									};
+								})(f.name);
+
+								reader.readAsDataURL(f);
+							}
+						}}
+					/>
+					<div className="divider" />
+					<div className="mt1">
+						{map(state.target.images, (val, key) => {
+							return (
+								<div className="flex items-center justify-between mb2">
+									<div className="flex items-center">
+										<img src={val} alt="" width={64} className="mr2" />
+										{key}
+									</div>
+									<div
+										className="btn btn-error"
+										onclick={() => {
+											delete state.target.images[key];
+										}}
+									>
+										Delete
+									</div>
+								</div>
+							);
+						})}
+					</div>
 				</div>
 			);
 		},

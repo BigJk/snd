@@ -11,6 +11,7 @@ type Template struct {
 	PrintTemplate string                 `json:"printTemplate"`
 	ListTemplate  string                 `json:"listTemplate"`
 	SkeletonData  map[string]interface{} `json:"skeletonData"`
+	Images        map[string]string      `json:"images"`
 	DataSources   []string               `json:"dataSources"`
 	Version       string                 `json:"version"`
 }

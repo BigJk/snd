@@ -200,7 +200,7 @@ export default () => {
 				width={340}
 				scale={340.0 / store.data.settings.printerWidth}
 				stylesheets={store.data.settings.stylesheets}
-				content={tryRender(state.template.printTemplate, state.selected.data ?? state.template.skeletonData)}
+				content={tryRender(state.template.printTemplate, state.selected.data ?? state.template.skeletonData, state.template.images)}
 			>
 				<div className="flex-grow-1 overflow-auto">
 					{state.filtered.length === 0
@@ -218,17 +218,17 @@ export default () => {
 									>
 										<div>
 											<div className="fw6 f5">{e.name}</div>
-											<div className="black-50">{m.trust(tryRender(state.template.listTemplate, e.data))}</div>
+											<div className="black-50">{m.trust(tryRender(state.template.listTemplate, e.data, null))}</div>
 										</div>
 										<div>
 											{e.id === state.selected.id ? (
-												<div>
+												<div className="flex">
 													<div
 														className="btn btn-success btn-sm mr2"
 														onclick={() => {
 															state.printing = true;
 															api
-																.print(tryRender(state.template.printTemplate, e.data))
+																.print(tryRender(state.template.printTemplate, e.data, state.template.images))
 																.then(() => success('Printing send'), error)
 																.then(() => (state.printing = false));
 														}}
@@ -240,7 +240,10 @@ export default () => {
 														onclick={() => {
 															openFolderDialog().then((folder) => {
 																api
-																	.screenshot(tryRender(state.template.printTemplate, e.data), folder + '/' + e.data.name + '.png')
+																	.screenshot(
+																		tryRender(state.template.printTemplate, e.data, state.template.images),
+																		folder + '/' + e.data.name + '.png'
+																	)
 																	.then(() => success('Screenshot created'), error);
 															});
 														}}

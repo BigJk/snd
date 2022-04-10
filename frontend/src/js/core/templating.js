@@ -58,18 +58,19 @@ export const parseError = (e) => {
 	return null;
 };
 
-export const render = (template, data) => {
+export const render = (template, data, images) => {
 	let state = {
 		it: data,
 		settings: store.data.settings,
+		images: images,
 	};
 
 	return env.renderString(template, state);
 };
 
-export const renderAsync = (template, data, success, error) => {
+export const renderAsync = (template, data, images, success, error) => {
 	try {
-		success(render(template, data));
+		success(render(template, data, images));
 	} catch (e) {
 		if (error) {
 			error(parseError(e));
@@ -77,9 +78,9 @@ export const renderAsync = (template, data, success, error) => {
 	}
 };
 
-export const tryRender = (template, data) => {
+export const tryRender = (template, data, images) => {
 	try {
-		return render(template, data);
+		return render(template, data, images);
 	} catch (e) {}
 	return 'Template error...';
 };

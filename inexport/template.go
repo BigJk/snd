@@ -10,11 +10,12 @@ import (
 )
 
 type templateMeta struct {
-	Name        string   `json:"name"`
-	Slug        string   `json:"slug"`
-	Author      string   `json:"author"`
-	Description string   `json:"description"`
-	DataSources []string `json:"dataSources"`
+	Name        string            `json:"name"`
+	Slug        string            `json:"slug"`
+	Author      string            `json:"author"`
+	Description string            `json:"description"`
+	DataSources []string          `json:"dataSources"`
+	Images      map[string]string `json:"images"`
 }
 
 func writeMeta(writer io.Writer, tmpl snd.Template) error {
@@ -22,7 +23,7 @@ func writeMeta(writer io.Writer, tmpl snd.Template) error {
 	enc.SetIndent("", "\t")
 	enc.SetEscapeHTML(true)
 	if err := enc.Encode(&templateMeta{
-		tmpl.Name, tmpl.Slug, tmpl.Author, tmpl.Description, tmpl.DataSources,
+		tmpl.Name, tmpl.Slug, tmpl.Author, tmpl.Description, tmpl.DataSources, tmpl.Images,
 	}); err != nil {
 		return err
 	}
@@ -81,6 +82,7 @@ func ImportTemplate(reader ImportReader) (snd.Template, []snd.Entry, error) {
 		ListTemplate:  "",
 		SkeletonData:  nil,
 		DataSources:   meta.DataSources,
+		Images:        meta.Images,
 	}
 
 	if len(tmpl.Slug) == 0 || len(tmpl.Author) == 0 || len(tmpl.Name) == 0 {

@@ -140,7 +140,7 @@ export default () => {
 													<div className="flex-shrink-0 ph1 mr2 br b--black-05 bg-black-05">
 														<Preview
 															className="h-100"
-															content={tryRender(t.printTemplate, t.skeletonData)}
+															content={tryRender(t.printTemplate, t.skeletonData, t.images)}
 															stylesheets={store.data.settings.stylesheets}
 															width={150}
 															scale={150 / store.data.settings.printerWidth}

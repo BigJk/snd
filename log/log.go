@@ -1,3 +1,5 @@
+// Package log provides logging utilities for S&D and makes it possible to hook into
+// the logging to save the logs somewhere else.
 package log
 
 import (

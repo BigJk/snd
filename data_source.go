@@ -2,6 +2,7 @@ package snd
 
 import "fmt"
 
+// DataSource represents a data source in S&D.
 type DataSource struct {
 	Name        string `json:"name"`
 	Slug        string `json:"slug"`

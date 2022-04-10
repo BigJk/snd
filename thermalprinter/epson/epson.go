@@ -1,3 +1,5 @@
+// Package epson implements the protocol used by most thermal printer,
+//also commonly referred to as ESC or POS commands.
 package epson
 
 import (

@@ -2,7 +2,7 @@ package snd
 
 import "fmt"
 
-// Template represents one S&D template
+// Template represents one S&D template.
 type Template struct {
 	Name          string                 `json:"name"`
 	Slug          string                 `json:"slug"`

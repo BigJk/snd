@@ -15,7 +15,9 @@ require (
 	github.com/google/gousb v0.0.0-20190812193832-18f4c1d8a750
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/mattetti/filebuffer v1.0.1
+	github.com/otiai10/copy v1.7.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/pierrre/archivefile v0.0.0-20170218184037-e2d100bc74f5
 	github.com/samber/lo v1.11.0
 	go.bug.st/serial v1.3.5
 	go.etcd.io/bbolt v1.3.3
@@ -35,8 +37,6 @@ require (
 	github.com/mattn/go-colorable v0.1.11 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
-	github.com/otiai10/copy v1.7.0 // indirect
-	github.com/pierrre/archivefile v0.0.0-20170218184037-e2d100bc74f5 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect

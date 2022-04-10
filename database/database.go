@@ -1,3 +1,4 @@
+// Package database represents the data layer of S&D.
 package database
 
 import (
@@ -5,16 +6,19 @@ import (
 	"github.com/BigJk/snd/log"
 )
 
+// TemplateEntry represents a S&D template together with the amount of entries it has.
 type TemplateEntry struct {
 	snd.Template
 	Count int `json:"count"`
 }
 
+// DataSourceEntry represents a S&D data source together with the amount of entries it has.
 type DataSourceEntry struct {
 	snd.DataSource
 	Count int `json:"count"`
 }
 
+// Database represents all database functions that are needed for S&D to work.
 type Database interface {
 	GetSettings() (snd.Settings, error)
 	SaveSettings(settings snd.Settings) error

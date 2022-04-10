@@ -1,3 +1,4 @@
+// Package server represents the webserver that powers S&D.
 package server
 
 import (
@@ -38,7 +39,7 @@ type proxyCacheEntry struct {
 	Data        []byte
 }
 
-// ServerOption
+// Option represent an configuration option for the server.
 type Option func(s *Server) error
 
 // Server represents an instance of the S&D server.
@@ -73,6 +74,7 @@ func New(db database.Database, options ...Option) (*Server, error) {
 	return s, nil
 }
 
+// WithDebug sets the debug state of the Server.
 func WithDebug(value bool) Option {
 	return func(s *Server) error {
 		s.debug = value
@@ -80,6 +82,7 @@ func WithDebug(value bool) Option {
 	}
 }
 
+// WithPrinter registers a printer in the Server.
 func WithPrinter(printer printing.Printer) Option {
 	return func(s *Server) error {
 		s.printers[printer.Name()] = printer
@@ -87,6 +90,7 @@ func WithPrinter(printer printing.Printer) Option {
 	}
 }
 
+// WithAdditionalRPC adds an RPC function to the Server.
 func WithAdditionalRPC(fnName string, fn interface{}) Option {
 	return func(s *Server) error {
 		s.additionalRpc[fnName] = fn
@@ -94,12 +98,18 @@ func WithAdditionalRPC(fnName string, fn interface{}) Option {
 	}
 }
 
+// Start starts the server with the given bind address.
+//
+// Examples:
+// - ":7232" will accept all connections on port 7232
+// - "127.0.0.1:7232" will only accept local connections on port 7232
 func (s *Server) Start(bind string) error {
 	// Create default settings if not existing
 	if _, err := s.db.GetSettings(); err != nil {
 		if err := s.db.SaveSettings(snd.Settings{
 			PrinterWidth:    384,
-			PrinterEndpoint: "http://127.0.0.1:3000",
+			PrinterType:     "preview",
+			PrinterEndpoint: "window",
 			Stylesheets:     []string{},
 		}); err != nil {
 			return err
@@ -170,9 +180,7 @@ func (s *Server) Start(bind string) error {
 	})
 
 	// Make frontend and static directory public
-	//
-	// If debug is enabled pass frontend requests to vite dev server.
-	if s.debug {
+	if s.debug { // If debug is enabled pass frontend requests to vite dev server.
 		viteUrl, err := url.Parse("http://127.0.0.1:3000")
 		if err != nil {
 			return err

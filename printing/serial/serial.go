@@ -3,10 +3,10 @@ package serial
 import (
 	"errors"
 	"fmt"
+	"go.bug.st/serial"
 	"image"
 	"strings"
-
-	"go.bug.st/serial"
+	"time"
 )
 
 type Serial struct{}
@@ -16,7 +16,7 @@ func (s *Serial) Name() string {
 }
 
 func (s *Serial) Description() string {
-	return "Printing over Serial-Port (e.g. RS232). Endpoint is defined %PORT_NAME%:9600_N81. This specifies 8 data bits, no parity, 1 stop bit and a baudrate of 9600."
+	return "Printing over Serial-Port (e.g. RS232). Endpoint is defined %PORT_NAME%:9600_N81_1. This specifies 8 data bits, no parity, 1 stop bit and a baudrate of 9600 and a 1 second delay between data chunks."
 }
 
 func (s *Serial) AvailableEndpoints() (map[string]string, error) {
@@ -33,6 +33,23 @@ func (s *Serial) AvailableEndpoints() (map[string]string, error) {
 	return available, nil
 }
 
+func chunkData(slice []byte, chunkSize int) [][]byte {
+	var chunks [][]byte
+	for i := 0; i < len(slice); i += chunkSize {
+		end := i + chunkSize
+
+		// necessary check to avoid slicing beyond
+		// slice capacity
+		if end > len(slice) {
+			end = len(slice)
+		}
+
+		chunks = append(chunks, slice[i:end])
+	}
+
+	return chunks
+}
+
 func (s *Serial) Print(printerEndpoint string, image image.Image, data []byte) error {
 	split := strings.Split(printerEndpoint, ":")
 	if len(split) != 2 {
@@ -43,7 +60,8 @@ func (s *Serial) Print(printerEndpoint string, image image.Image, data []byte) e
 	var parity string
 	var dataBits int
 	var stopBits int
-	if read, err := fmt.Sscanf(split[1], "%d_%1s%1d%1d", &baudrate, &parity, &dataBits, &stopBits); read != 4 || err != nil {
+	var waitSecs int
+	if read, err := fmt.Sscanf(split[1], "%d_%1s%1d%1d_%1d", &baudrate, &parity, &dataBits, &stopBits, &waitSecs); read != 5 || err != nil {
 		return errors.New("wrong endpoint syntax")
 	}
 
@@ -86,13 +104,22 @@ func (s *Serial) Print(printerEndpoint string, image image.Image, data []byte) e
 	}
 	defer p.Close()
 
-	n, err := p.Write(data)
-	if err != nil {
-		return err
-	}
+	bytePerSecond := baudrate / 8
 
-	if n != len(data) {
-		return errors.New("not all data was written")
+	chunks := chunkData(data, bytePerSecond)
+	for i := range chunks {
+		n, err := p.Write(chunks[i])
+		if err != nil {
+			return err
+		}
+
+		if n != len(chunks[i]) {
+			return errors.New("not all data was written")
+		}
+
+		if waitSecs > 0 {
+			time.Sleep(time.Second * time.Duration(waitSecs))
+		}
 	}
 
 	return nil

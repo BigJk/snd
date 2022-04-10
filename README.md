@@ -11,6 +11,8 @@ or a letter that the group found to little character sheets of your players to u
 
 **Warning:** This is still rough and early version. If you want to get this working the best way is to jump on the Discord and ask for help.
 
+![Screenshot](./data/screenshot.png)
+
 ## Features
 
 - Works on Windows, Mac and Linux

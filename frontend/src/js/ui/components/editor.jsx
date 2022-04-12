@@ -31,6 +31,8 @@ export default () => {
 	};
 
 	let openHint = () => {
+		let hintObjects = Object.keys(state.autocompleteData);
+
 		state.editor.showHint({
 			completeSingle: false,
 			hint: () => {
@@ -39,53 +41,55 @@ export default () => {
 				let cursor = state.editor.getDoc().getCursor();
 				let line = state.editor.getDoc().getLine(cursor.line).slice(0, cursor.ch);
 
-				let match = /it\.(\S*)$/gm.exec(line);
-				if (match) {
-					let filter = '';
+				for (let i = 0; i < hintObjects.length; i++) {
+					let match = new RegExp(hintObjects[i] + '\\.(\\S*)', 'gm').exec(line);
+					if (match) {
+						let filter = '';
 
-					let path = match[1];
-					if (path[path.length - 1] === '.') {
-						path = path.slice(0, path.length - 1);
-					} else if (path.length > 0) {
-						let parts = path.split('.');
-						filter = parts[parts.length - 1];
-						path = parts.slice(0, parts.length - 1).join('.');
-					}
+						let path = match[1];
+						if (path[path.length - 1] === '.') {
+							path = path.slice(0, path.length - 1);
+						} else if (path.length > 0) {
+							let parts = path.split('.');
+							filter = parts[parts.length - 1];
+							path = parts.slice(0, parts.length - 1).join('.');
+						}
 
-					let base = path.length === 0 ? state.autocompleteData : get(state.autocompleteData, path);
-					if (base && typeof base === 'object' && !Array.isArray(base)) {
-						return {
-							from: cursor,
-							to: cursor,
-							list: map(base, (v, k) => {
-								if (filter.length > 0 && k.indexOf(filter) !== 0) {
-									return null;
-								}
+						let base = path.length === 0 ? state.autocompleteData[hintObjects[i]] : get(state.autocompleteData[hintObjects[i]], path);
+						if (base && typeof base === 'object' && !Array.isArray(base)) {
+							return {
+								from: cursor,
+								to: cursor,
+								list: map(base, (v, k) => {
+									if (filter.length > 0 && k.indexOf(filter) !== 0) {
+										return null;
+									}
 
-								let rest = k.slice(filter.length);
-								if (rest.length === 0) return null;
+									let rest = k.slice(filter.length);
+									if (rest.length === 0) return null;
 
-								return {
-									text: rest + (typeof v === 'object' && !Array.isArray(v) ? '.' : ''),
-									render: function (elt, data, cur) {
-										const wrapper = document.createElement('div');
-										m.render(
-											wrapper,
-											<div className="flex justify-between">
-												<span>
-													<b>{filter}</b>
-													{rest}
-												</span>
-												<span className="pl2 o-50">{Object.prototype.toString.call(v).slice(8, -1)}</span>
-											</div>
-										);
-										elt.appendChild(wrapper);
-									},
-								};
-							}).filter((e) => {
-								return e;
-							}),
-						};
+									return {
+										text: rest + (typeof v === 'object' && !Array.isArray(v) ? '.' : ''),
+										render: function (elt, data, cur) {
+											const wrapper = document.createElement('div');
+											m.render(
+												wrapper,
+												<div className="flex justify-between">
+													<span>
+														<b>{filter}</b>
+														{rest}
+													</span>
+													<span className="pl2 o-50">{Object.prototype.toString.call(v).slice(8, -1)}</span>
+												</div>
+											);
+											elt.appendChild(wrapper);
+										},
+									};
+								}).filter((e) => {
+									return e;
+								}),
+							};
+						}
 					}
 				}
 
@@ -132,7 +136,6 @@ export default () => {
 				Tab: 'emmetExpandAbbreviation',
 				Enter: 'emmetInsertLineBreak',
 				'Ctrl-Space': openHint,
-				'Cmd-Space': openHint,
 				'Ctrl-G': openSnippets,
 				'Ctrl-K': () => {
 					if (vnode.attrs.formatter) {

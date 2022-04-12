@@ -8,7 +8,6 @@ export { default as Input } from './input';
 export { default as Loading } from './loading';
 export { default as Modal } from './modal';
 export { default as Preview } from './preview';
-export { default as ScriptEdit } from './script-edit';
 export { default as Select } from './select';
 export { default as SideNav } from './side-nav';
 export { default as SplitView } from './split-view';

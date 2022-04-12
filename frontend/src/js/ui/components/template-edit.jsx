@@ -263,7 +263,7 @@ export default () => {
 						updateRender();
 					}}
 					snippets={snippets}
-					autocompleteData={state.target.skeletonData}
+					autocompleteData={{ it: state.target.skeletonData, settings: store.data.settings }}
 					errorProvider={() => {
 						return state.templateErrors;
 					}}
@@ -274,14 +274,14 @@ export default () => {
 			return [
 				<Editor
 					className="h-100 w-100"
-					language="htmlmixed"
+					language="nunjucks"
 					content={state.target.listTemplate}
 					onchange={(html) => {
 						state.target.listTemplate = html;
 						updateRender();
 					}}
 					snippets={snippets}
-					autocompleteData={state.target.skeletonData}
+					autocompleteData={{ it: state.target.skeletonData, settings: store.data.settings }}
 					errorProvider={() => {
 						return state.listTemplateErrors;
 					}}

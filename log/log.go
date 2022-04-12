@@ -5,6 +5,7 @@ package log
 import (
 	"errors"
 	"fmt"
+	"github.com/jwalton/go-supportscolor"
 	"io"
 	"os"
 	"runtime"
@@ -44,6 +45,10 @@ var mtx sync.Mutex
 
 func init() {
 	output = os.Stdout
+
+	if !supportscolor.Stdout().SupportsColor {
+		color.NoColor = true
+	}
 }
 
 func printToStd(e Entry) {

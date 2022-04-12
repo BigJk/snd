@@ -14,3 +14,4 @@ export { default as SplitView } from './split-view';
 export { default as Switch } from './switch';
 export { default as TemplateEdit } from './template-edit';
 export { default as TextArea } from './text-area';
+export { default as AdvancedSearch } from './advanced-search';

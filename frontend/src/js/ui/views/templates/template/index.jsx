@@ -1,13 +1,14 @@
 import store from '/js/core/store';
+import binder from '/js/ui/binder';
 import api from '/js/core/api';
 
 import { keepOpen, on } from '/js/core/ws';
 
 import { openFolderDialog } from '/js/electron';
 
-import { Base, Header, SplitView, Loading, TextArea, Modal } from '/js/ui/components';
+import { Base, Header, SplitView, Loading, Modal, AdvancedSearch, Input } from '/js/ui/components';
 
-import { transform, debounce, chunk, flatten } from 'lodash-es';
+import { debounce, chunk } from 'lodash-es';
 
 import { success, error } from '/js/ui/toast';
 import { tryRender } from '/js/core/templating';
@@ -17,12 +18,15 @@ export default () => {
 		template: null,
 		entries: [],
 		filtered: [],
+		found: 0,
 		selected: {
 			id: null,
 			data: null,
 		},
 		syncActive: false,
+		advancedSearch: false,
 		search: '',
+		searchFn: null,
 		page: 0,
 		showExport: false,
 		showSync: false,
@@ -37,6 +41,7 @@ export default () => {
 					state.selected.data = e.data;
 				}
 			});
+			state.found = state.entries.length;
 			state.filtered = chunk(state.entries, 25);
 			if (state.search.length > 0) {
 				runSearch();
@@ -49,15 +54,18 @@ export default () => {
 		state.selected.data = null;
 		state.page = 0;
 
-		if (state.search.length === 0) {
+		if (state.search.length === 0 && state.searchFn === null && state.advancedSearch) {
 			state.filtered = chunk(state.entries, 25);
 		} else {
-			state.filtered = chunk(
-				state.entries.filter((e) => {
-					return e.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0;
-				}),
-				50
-			);
+			let found = state.entries.filter((e) => {
+				if (state.searchFn && state.advancedSearch) {
+					return state.searchFn(e.name, e.data);
+				}
+
+				return e.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0;
+			});
+			state.filtered = chunk(found, 25);
+			state.found = found.length;
 		}
 
 		m.redraw();
@@ -201,6 +209,26 @@ export default () => {
 				scale={340.0 / store.data.settings.printerWidth}
 				stylesheets={store.data.settings.stylesheets}
 				content={tryRender(state.template.printTemplate, state.selected.data ?? state.template.skeletonData, state.template.images)}
+				extraChildren={
+					state.advancedSearch
+						? [
+								<div className="h-100 bg-light-gray br1 ba b--black-10 ph3 pt2 pb3 overflow-auto" style={{ width: '370px' }}>
+									<AdvancedSearch
+										target={state.template.skeletonData}
+										onchange={(fn) => {
+											state.searchFn = fn;
+											runSearch();
+										}}
+										onclose={() => {
+											state.search = '';
+											state.advancedSearch = false;
+											runSearch();
+										}}
+									/>
+								</div>,
+						  ]
+						: []
+				}
 			>
 				<div className="flex-grow-1 overflow-auto" id="entry-page">
 					{state.filtered.length === 0
@@ -292,24 +320,19 @@ export default () => {
 								state.page--;
 								document.getElementById('entry-page').scrollTop = 0;
 							}
-							loadEntries();
 						}}
 					/>
-					<div className="w4 tc">
-						Page {state.page + 1} / {state.filtered.length}
+					<div className="w5 tc">
+						Page {state.page + 1} / {state.filtered.length} <span className="ml2 o-50">({state.found} Found)</span>
 					</div>
-					<div className="w-50">
-						<input
-							className="form-input"
-							placeholder="Search..."
-							type="text"
-							value={state.search}
-							oninput={(e) => {
-								state.search = e.target.value;
-								runSearch();
-							}}
-						/>
-					</div>
+					{!state.advancedSearch ? (
+						<div className="w-40 flex items-center justify-center">
+							<div className="flex-grow-1">
+								<Input placeholder="Search..." value={state.search} oninput={binder.inputString(state, 'search', runSearch)} />
+							</div>
+							<i className="ion ion-md-cog ml2 f6 dim pointer" onclick={() => (state.advancedSearch = true)} />
+						</div>
+					) : null}
 					<i
 						className="ion ion-md-arrow-dropright f3 pointer dim"
 						onclick={() => {
@@ -317,7 +340,6 @@ export default () => {
 								state.page++;
 								document.getElementById('entry-page').scrollTop = 0;
 							}
-							loadEntries();
 						}}
 					/>
 				</div>

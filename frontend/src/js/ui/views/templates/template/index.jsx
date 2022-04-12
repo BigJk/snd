@@ -375,9 +375,11 @@ export default () => {
 							<div className="btn btn-success mr2" onclick={() => m.route.set(`/templates/${state.template.id}/new`)}>
 								New Entry
 							</div>
-							<div className="btn btn-primary mr2" onclick={() => m.route.set(`/templates/${state.template.id}/edit`)}>
-								Edit
-							</div>
+							{!state.syncActive ? (
+								<div className="btn btn-primary mr2" onclick={() => m.route.set(`/templates/${state.template.id}/edit`)}>
+									Edit
+								</div>
+							) : null}
 							<div className="btn btn-primary mr2" onclick={() => (state.showExport = true)}>
 								<i className="ion ion-md-open" />
 							</div>

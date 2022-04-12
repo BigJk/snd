@@ -6,7 +6,23 @@ import { renderAsync } from '/js/core/templating';
 
 import { Editor, TextArea, Input, SplitView, Select } from '/js/ui/components';
 
-import { chunk, debounce, map, uniq } from 'lodash-es';
+import { chunk, debounce, map, uniq, mergeWith, isArray } from 'lodash-es';
+
+function entryMerger(objValue, srcValue) {
+	if (typeof objValue === 'string' && typeof srcValue === 'string') {
+		return objValue;
+	}
+	if (!isArray(objValue) && isArray(srcValue)) {
+		return srcValue;
+	}
+	if (isArray(objValue) && !isArray(srcValue)) {
+		return objValue;
+	}
+	if (isArray(objValue) && isArray(srcValue)) {
+		return objValue.length > srcValue.length ? objValue : srcValue;
+	}
+	return undefined;
+}
 
 const snippets = [
 	{
@@ -315,10 +331,10 @@ export default () => {
 					/>
 					{state.editMode ? (
 						<div className="flex-shrink-0 h3 flex items-center ph3 flex">
-							<div className="mr3 w4">
+							<div className="mr2 w4">
 								<Input placeholder="Search..." value={state.entriesSearch} oninput={binder.inputString(state, 'entriesSearch')} />
 							</div>
-							<div className="mr3 w4">
+							<div className="mr2 w4">
 								<Select
 									selected={state.entriesSelected}
 									keys={state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0).map((_, i) => i)}
@@ -327,13 +343,40 @@ export default () => {
 								/>
 							</div>
 							<div
-								className="btn btn-primary"
+								className="btn btn-primary mr2"
 								onclick={() => {
-									state.skeletonDataRaw = JSON.stringify(state.entries[state.entriesSelected].data, null, '\t');
-									state.target.skeletonData = state.entries[state.entriesSelected].data;
+									state.skeletonDataRaw = JSON.stringify(
+										state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0)[state.entriesSelected].data,
+										null,
+										'\t'
+									);
+									state.target.skeletonData = state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0)[
+										state.entriesSelected
+									].data;
+									state.entriesSearch = '';
+									state.entriesSelected = null;
 								}}
 							>
 								Load as Skeleton
+							</div>
+							<div
+								className="btn btn-primary"
+								onclick={() => {
+									state.target.skeletonData = mergeWith(state.target.skeletonData, ...[state.entries[state.entriesSelected].data], entryMerger);
+									state.skeletonDataRaw = JSON.stringify(state.target.skeletonData, null, '\t');
+								}}
+							>
+								Merge Into
+							</div>
+							<div className="divider divider-vert btn" />
+							<div
+								className="btn btn-error"
+								onclick={() => {
+									state.target.skeletonData = mergeWith({}, ...state.entries.map((e) => e.data), entryMerger);
+									state.skeletonDataRaw = JSON.stringify(state.target.skeletonData, null, '\t');
+								}}
+							>
+								Merge All
 							</div>
 						</div>
 					) : null}

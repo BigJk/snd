@@ -1,5 +1,5 @@
 import 'tachyons/css/tachyons.css';
-
+import 'tippy.js/dist/tippy.css';
 import 'ionicons/dist/css/ionicons-core.css';
 import 'ionicons/dist/css/ionicons.css';
 

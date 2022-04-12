@@ -4,7 +4,7 @@ import binder from '/js/ui/binder';
 
 import { renderAsync } from '/js/core/templating';
 
-import { Editor, TextArea, Input, SplitView, Select } from '/js/ui/components';
+import { Editor, TextArea, Input, SplitView, Select, Tooltip } from '/js/ui/components';
 
 import { chunk, debounce, map, uniq, mergeWith, isArray } from 'lodash-es';
 
@@ -129,8 +129,6 @@ export default () => {
 			state.onRender(state.lastRender);
 		}
 	}, 250);
-
-	updateRender();
 
 	let tabs = {
 		Information: () => {
@@ -342,42 +340,56 @@ export default () => {
 									oninput={(e) => (state.entriesSelected = parseInt(e.target.value))}
 								/>
 							</div>
-							<div
-								className="btn btn-primary mr2"
-								onclick={() => {
-									state.skeletonDataRaw = JSON.stringify(
-										state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0)[state.entriesSelected].data,
-										null,
-										'\t'
-									);
-									state.target.skeletonData = state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0)[
-										state.entriesSelected
-									].data;
-									state.entriesSearch = '';
-									state.entriesSelected = null;
-								}}
-							>
-								Load as Skeleton
-							</div>
-							<div
-								className="btn btn-primary"
-								onclick={() => {
-									state.target.skeletonData = mergeWith(state.target.skeletonData, ...[state.entries[state.entriesSelected].data], entryMerger);
-									state.skeletonDataRaw = JSON.stringify(state.target.skeletonData, null, '\t');
-								}}
-							>
-								Merge Into
-							</div>
+							<Tooltip content="Loads the selected entry as skeleton data.">
+								<div
+									className="btn btn-primary mr2"
+									onclick={() => {
+										if (state.entriesSelected === null) {
+											return;
+										}
+
+										state.skeletonDataRaw = JSON.stringify(
+											state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0)[state.entriesSelected].data,
+											null,
+											'\t'
+										);
+										state.target.skeletonData = state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0)[
+											state.entriesSelected
+										].data;
+										state.entriesSearch = '';
+										state.entriesSelected = null;
+									}}
+								>
+									Load as Skeleton
+								</div>
+							</Tooltip>
+							<Tooltip content="Merges the selected entry into the current skeleton.">
+								<div
+									className="btn btn-primary"
+									onclick={() => {
+										if (state.entriesSelected === null) {
+											return;
+										}
+
+										state.target.skeletonData = mergeWith(state.target.skeletonData, ...[state.entries[state.entriesSelected].data], entryMerger);
+										state.skeletonDataRaw = JSON.stringify(state.target.skeletonData, null, '\t');
+									}}
+								>
+									Merge Into
+								</div>
+							</Tooltip>
 							<div className="divider divider-vert btn" />
-							<div
-								className="btn btn-error"
-								onclick={() => {
-									state.target.skeletonData = mergeWith({}, ...state.entries.map((e) => e.data), entryMerger);
-									state.skeletonDataRaw = JSON.stringify(state.target.skeletonData, null, '\t');
-								}}
-							>
-								Merge All
-							</div>
+							<Tooltip content="Merges all entries and tries to build a full skeleton from it.">
+								<div
+									className="btn btn-error"
+									onclick={() => {
+										state.target.skeletonData = mergeWith({}, ...state.entries.map((e) => e.data), entryMerger);
+										state.skeletonDataRaw = JSON.stringify(state.target.skeletonData, null, '\t');
+									}}
+								>
+									Merge All
+								</div>
+							</Tooltip>
 						</div>
 					) : null}
 				</div>
@@ -389,6 +401,8 @@ export default () => {
 
 	return {
 		oninit(vnode) {
+			updateRender();
+
 			state.target = vnode.attrs.target;
 			state.editMode = vnode.attrs.editmode ?? false;
 			state.onRender = vnode.attrs.onrender;

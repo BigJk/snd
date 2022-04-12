@@ -202,7 +202,7 @@ export default () => {
 				stylesheets={store.data.settings.stylesheets}
 				content={tryRender(state.template.printTemplate, state.selected.data ?? state.template.skeletonData, state.template.images)}
 			>
-				<div className="flex-grow-1 overflow-auto">
+				<div className="flex-grow-1 overflow-auto" id="entry-page">
 					{state.filtered.length === 0
 						? null
 						: state.filtered[state.page].map((e) => {
@@ -290,6 +290,7 @@ export default () => {
 						onclick={() => {
 							if (state.page > 0) {
 								state.page--;
+								document.getElementById('entry-page').scrollTop = 0;
 							}
 							loadEntries();
 						}}
@@ -314,6 +315,7 @@ export default () => {
 						onclick={() => {
 							if (state.page < state.filtered.length - 1) {
 								state.page++;
+								document.getElementById('entry-page').scrollTop = 0;
 							}
 							loadEntries();
 						}}

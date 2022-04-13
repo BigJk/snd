@@ -8,6 +8,7 @@ package rendering
 
 import (
 	"bytes"
+	"errors"
 	"image"
 	_ "image/png"
 	"net/url"
@@ -33,12 +34,13 @@ func init() {
 	}
 }
 
-// RenderHTML renders the element #content into a image.
+// RenderHTML renders the element #content into an image.
 func RenderHTML(html string, width int) (image.Image, error) {
 	page := browser.MustPage("data:text/html," + url.PathEscape(html))
 	page.MustWaitLoad().MustWaitIdle()
+	defer page.Close()
 
-	imageData, err := page.MustSetViewport(width, 100000, 1.0, false).MustElement("body").Screenshot(proto.PageCaptureScreenshotFormatPng, 100)
+	imageData, err := page.MustSetViewport(width, 10000, 1.0, false).MustElement("body").Screenshot(proto.PageCaptureScreenshotFormatPng, 100)
 	if err != nil {
 		return nil, err
 	}
@@ -46,6 +48,10 @@ func RenderHTML(html string, width int) (image.Image, error) {
 	img, _, err := image.Decode(bytes.NewBuffer(imageData))
 	if err != nil {
 		return nil, err
+	}
+
+	if img.Bounds().Max.Y >= 9500 {
+		return nil, errors.New("too large")
 	}
 
 	return img, nil

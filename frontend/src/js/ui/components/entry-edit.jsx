@@ -21,7 +21,7 @@ export default () => {
 
 	let updateRender = debounce(() => {
 		try {
-			state.lastRender = render(state.template.printTemplate, state.parsedData);
+			state.lastRender = render(state.template.printTemplate, state.parsedData, state.template.images);
 			m.redraw();
 
 			if (state.onRender) {

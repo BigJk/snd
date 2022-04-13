@@ -266,46 +266,6 @@ export default () => {
 				</div>
 			);
 		},
-		'Print Template': () => {
-			return (
-				<Editor
-					className="h-100 w-100"
-					language="nunjucks"
-					content={state.target.printTemplate}
-					onchange={(html) => {
-						state.target.printTemplate = html;
-						updateRender();
-					}}
-					snippets={snippets}
-					autocompleteData={{ it: state.target.skeletonData, settings: store.data.settings }}
-					errorProvider={() => {
-						return state.templateErrors;
-					}}
-				/>
-			);
-		},
-		'List Template': () => {
-			return [
-				<Editor
-					className="h-100 w-100"
-					language="nunjucks"
-					content={state.target.listTemplate}
-					onchange={(html) => {
-						state.target.listTemplate = html;
-						updateRender();
-					}}
-					snippets={snippets}
-					autocompleteData={{ it: state.target.skeletonData, settings: store.data.settings }}
-					errorProvider={() => {
-						return state.listTemplateErrors;
-					}}
-				/>,
-				<div className="absolute right-0 bottom-0 ma3 pa2 ba b--black-10 bg-white f5 lh-solid w500">
-					<div className="fw7">Sample Entry</div>
-					<div className="black-50">{m.trust(state.lastListRender)}</div>
-				</div>,
-			];
-		},
 		'Data Skeleton': () => {
 			return (
 				<div className="h-100 flex flex-column overflow-auto">
@@ -394,6 +354,46 @@ export default () => {
 					) : null}
 				</div>
 			);
+		},
+		'Print Template': () => {
+			return (
+				<Editor
+					className="h-100 w-100"
+					language="nunjucks"
+					content={state.target.printTemplate}
+					onchange={(html) => {
+						state.target.printTemplate = html;
+						updateRender();
+					}}
+					snippets={snippets}
+					autocompleteData={{ it: state.target.skeletonData, settings: store.data.settings }}
+					errorProvider={() => {
+						return state.templateErrors;
+					}}
+				/>
+			);
+		},
+		'List Template': () => {
+			return [
+				<Editor
+					className="h-100 w-100"
+					language="nunjucks"
+					content={state.target.listTemplate}
+					onchange={(html) => {
+						state.target.listTemplate = html;
+						updateRender();
+					}}
+					snippets={snippets}
+					autocompleteData={{ it: state.target.skeletonData, settings: store.data.settings }}
+					errorProvider={() => {
+						return state.listTemplateErrors;
+					}}
+				/>,
+				<div className="absolute right-0 bottom-0 ma3 pa2 ba b--black-10 bg-white f5 lh-solid w500">
+					<div className="fw7">Sample Entry</div>
+					<div className="black-50">{m.trust(state.lastListRender)}</div>
+				</div>,
+			];
 		},
 	};
 

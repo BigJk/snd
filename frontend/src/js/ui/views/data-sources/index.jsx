@@ -2,7 +2,7 @@ import api from '/js/core/api';
 import store from '/js/core/store';
 import binder from '/js/ui/binder';
 
-import { Base, Header, Input, Modal } from '/js/ui/components';
+import { Base, Header, Input, Modal, Tooltip } from '/js/ui/components';
 
 import { openFolderDialog, openFileDialog } from '/js/electron';
 import { groupBy, map } from 'lodash-es';
@@ -190,9 +190,11 @@ export default () => {
 				<Base active={'dataSources'}>
 					<div className="h-100 flex flex-column">
 						<Header title="Data Sources" subtitle="Manage collection of data.">
-							<div className="btn btn-primary" onclick={() => (state.importing.show = true)}>
-								<i className="ion ion-md-log-in" />
-							</div>
+							<Tooltip content="Import">
+								<div className="btn btn-primary" onclick={() => (state.importing.show = true)}>
+									<i className="ion ion-md-log-in" />
+								</div>
+							</Tooltip>
 							<div className="divider-vert" />
 							<Input placeholder="Search..." value={state.search} oninput={binder.inputString(state, 'search')} />
 						</Header>

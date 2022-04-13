@@ -6,7 +6,7 @@ import { keepOpen, on } from '/js/core/ws';
 
 import { openFolderDialog } from '/js/electron';
 
-import { Base, Header, SplitView, Loading, Modal, AdvancedSearch, Input } from '/js/ui/components';
+import { Base, Header, SplitView, Loading, Modal, AdvancedSearch, Input, Tooltip } from '/js/ui/components';
 
 import { debounce, chunk } from 'lodash-es';
 
@@ -402,25 +402,31 @@ export default () => {
 									Edit
 								</div>
 							) : null}
-							<div className="btn btn-primary mr2" onclick={() => (state.showExport = true)}>
-								<i className="ion ion-md-open" />
-							</div>
-							<div className={`btn ${state.syncActive ? 'btn-success' : 'btn-primary'}`} onclick={() => (state.showSync = true)}>
-								<i className={`ion ion-md-sync ${state.syncActive ? 'rotating' : ''}`} />
-							</div>
+							<Tooltip content="Import & Export">
+								<div className="btn btn-primary mr2" onclick={() => (state.showExport = true)}>
+									<i className="ion ion-md-open" />
+								</div>
+							</Tooltip>
+							<Tooltip content="Template sync">
+								<div className={`btn ${state.syncActive ? 'btn-success' : 'btn-primary'}`} onclick={() => (state.showSync = true)}>
+									<i className={`ion ion-md-sync ${state.syncActive ? 'rotating' : ''}`} />
+								</div>
+							</Tooltip>
 							<div className="divider-vert" />
-							<div
-								className="btn btn-error"
-								onclick={() =>
-									api.deleteTemplate(state.template.id).then(() => {
-										success('Template deleted');
-										store.pub('reload_templates');
-										m.route.set('/templates');
-									}, error)
-								}
-							>
-								<i className="ion ion-md-close-circle-outline" />
-							</div>
+							<Tooltip content="Delete the template">
+								<div
+									className="btn btn-error"
+									onClick={() =>
+										api.deleteTemplate(state.template.id).then(() => {
+											success('Template deleted');
+											store.pub('reload_templates');
+											m.route.set('/templates');
+										}, error)
+									}
+								>
+									<i className="ion ion-md-close-circle-outline" />
+								</div>
+							</Tooltip>
 						</Header>
 						{body(vnode)}
 						{modalExport()}

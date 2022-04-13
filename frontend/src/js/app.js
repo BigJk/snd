@@ -2,6 +2,7 @@ import 'tachyons/css/tachyons.css';
 import 'tippy.js/dist/tippy.css';
 import 'ionicons/dist/css/ionicons-core.css';
 import 'ionicons/dist/css/ionicons.css';
+import 'highlight.js/styles/default.css';
 
 import '/css/style.scss';
 
@@ -54,6 +55,8 @@ import Template from '/js/ui/views/templates/template';
 import TemplateEdit from '/js/ui/views/templates/template/edit';
 import TemplateNew from '/js/ui/views/templates/template/new';
 
+import Help from '/js/ui/views/help';
+
 import DataSources from '/js/ui/views/data-sources';
 
 import Devices from '/js/ui/views/devices';
@@ -66,6 +69,7 @@ m.route(document.getElementById('app'), '/', {
 	'/templates/:id/edit': TemplatesEdit,
 	'/templates/:id/edit/:eid': TemplateEdit,
 	'/templates/:id/new': TemplateNew,
+	'/help': Help,
 	'/data-sources': DataSources,
 	'/settings': Settings,
 	'/devices': Devices,

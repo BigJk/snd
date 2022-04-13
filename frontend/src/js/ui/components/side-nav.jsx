@@ -1,7 +1,6 @@
 import { map } from 'lodash-es';
 
-import dungeonSvg from '/img/dungeon.svg';
-import buySvg from '/img/buy.svg';
+import { Logo } from './index';
 
 let pages = {
 	templates: {
@@ -13,6 +12,12 @@ let pages = {
 		name: 'Data Sources',
 		icon: 'analytics',
 		url: 'data-sources',
+	},
+	help: {
+		name: 'Help',
+		icon: 'help',
+		url: 'help',
+		newPage: true,
 	},
 	devices: {
 		name: 'Devices',
@@ -32,7 +37,11 @@ export default () => {
 			return (
 				<div
 					onclick={() => {
-						m.route.set('/' + (v.url ?? k));
+						if (v.newPage) {
+							window.open('http://127.0.0.1:7123/#!/' + (v.url ?? k));
+						} else {
+							m.route.set('/' + (v.url ?? k));
+						}
 					}}
 					className={`mh3 mb2 br2 ph2 pv1 hover-bg-primary hover-white pointer z-999 flex items-center justify-between mb1 f7 ${
 						active === k ? 'white bg-primary' : 'bg-white-05 white-60'
@@ -48,14 +57,11 @@ export default () => {
 	return {
 		view(vnode) {
 			return (
-				<div className="side-nav relative flex flex-column flex-shrink-0">
+				<div className="side-nav grid-bg relative flex flex-column flex-shrink-0">
 					<div className="side-nav--shadow w-100 h-100 absolute bottom-0 left-0 z-0" />
 					<div className="ph2 pv3 header white flex-shrink-0">
 						<div className="flex-centered">
-							<div className="flex items-center z-5">
-								<img src={dungeonSvg} className="z-1" alt="" height={40} />
-								<img src={buySvg} className="z-0" alt="" height={32} style={{ margin: '-15px 0 0 -20px', transform: 'rotate(25deg)' }} />
-							</div>
+							<Logo />
 						</div>
 					</div>
 					<div className="flex-grow-1 overflow-auto z-5">{menu(vnode.attrs.active)}</div>

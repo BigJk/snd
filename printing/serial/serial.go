@@ -27,7 +27,7 @@ func (s *Serial) AvailableEndpoints() (map[string]string, error) {
 
 	available := map[string]string{}
 	for i := range ports {
-		available[ports[i]] = ports[i] + ":9600_N81"
+		available[ports[i]] = ports[i] + ":9600_N81_2"
 	}
 
 	return available, nil

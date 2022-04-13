@@ -23,7 +23,7 @@ or a letter that the group found to little character sheets of your players to u
   - CUPS
   - Serial
 - Import & Export templates and data sources
-  - Fast access to external data sources like Open5e (instant access to SRD monsters, spells and more)
+- Fast access to external data sources like Open5e (instant access to SRD monsters, spells and more)
 - Edit templates in your favorite editor (e.g. Visual Studio Code) and get live preview
 
 ## How It Works

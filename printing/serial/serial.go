@@ -3,10 +3,11 @@ package serial
 import (
 	"errors"
 	"fmt"
-	"go.bug.st/serial"
 	"image"
 	"strings"
 	"time"
+
+	"go.bug.st/serial"
 )
 
 type Serial struct{}
@@ -121,6 +122,8 @@ func (s *Serial) Print(printerEndpoint string, image image.Image, data []byte) e
 			time.Sleep(time.Second * time.Duration(waitSecs))
 		}
 	}
+
+	_ = p.ResetOutputBuffer()
 
 	return nil
 }

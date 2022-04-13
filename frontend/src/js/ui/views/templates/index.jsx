@@ -202,7 +202,7 @@ export default () => {
 								Create New
 							</div>
 							<Tooltip content="Import">
-								<div className="btn btn-primary" onClick={() => (state.importing.show = true)}>
+								<div className="btn btn-primary" onclick={() => (state.importing.show = true)}>
 									<i className="ion ion-md-log-in" />
 								</div>
 							</Tooltip>

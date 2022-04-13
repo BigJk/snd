@@ -416,7 +416,7 @@ export default () => {
 							<Tooltip content="Delete the template">
 								<div
 									className="btn btn-error"
-									onClick={() =>
+									onclick={() =>
 										api.deleteTemplate(state.template.id).then(() => {
 											success('Template deleted');
 											store.pub('reload_templates');

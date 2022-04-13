@@ -2,13 +2,18 @@ package rpc
 
 import (
 	"bytes"
+	"fmt"
 	"image/png"
 	"io/ioutil"
+	"math/rand"
 	"net"
+	"net/http"
 	"strings"
+	"time"
 
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
+	"github.com/patrickmn/go-cache"
 
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd/log"
@@ -93,6 +98,17 @@ func fixHtml(html string, settings snd.Settings) (string, error) {
 }
 
 func RegisterPrint(route *echo.Group, db database.Database, printer printing.PossiblePrinter) {
+	renderCache := cache.New(time.Second*30, time.Minute)
+
+	route.GET("/html/:id", func(c echo.Context) error {
+		val, ok := renderCache.Get(c.Param("id"))
+		if !ok {
+			return c.NoContent(http.StatusNotFound)
+		}
+
+		return c.HTML(http.StatusOK, val.(string))
+	})
+
 	route.POST("/getPrinter", echo.WrapHandler(nra.MustBind(func() (map[string]string, error) {
 		printerNames := map[string]string{}
 
@@ -139,8 +155,12 @@ func RegisterPrint(route *echo.Group, db database.Database, printer printing.Pos
 			return err
 		}
 
+		// Save rendered html to temporary cache
+		tempId := fmt.Sprint(rand.Int63())
+		renderCache.SetDefault(tempId, finalHtml)
+
 		// Render the html to image
-		image, err := rendering.RenderHTML(finalHtml, settings.PrinterWidth)
+		image, err := rendering.RenderURL(fmt.Sprintf("http://127.0.0.1:7123/api/html/%s", tempId), settings.PrinterWidth)
 		if err != nil {
 			return log.ErrorUser(err, "html to image rendering failed")
 		}

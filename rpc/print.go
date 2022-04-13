@@ -208,7 +208,11 @@ func RegisterPrint(route *echo.Group, db database.Database, printer printing.Pos
 			return err
 		}
 
-		img, err := rendering.RenderHTML(finalHtml, settings.PrinterWidth)
+		// Save rendered html to temporary cache
+		tempId := fmt.Sprint(rand.Int63())
+		renderCache.SetDefault(tempId, finalHtml)
+
+		img, err := rendering.RenderURL(fmt.Sprintf("http://127.0.0.1:7123/api/html/%s", tempId), settings.PrinterWidth)
 		if err != nil {
 			return err
 		}

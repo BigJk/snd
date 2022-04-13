@@ -270,7 +270,7 @@ export default () => {
 																api
 																	.screenshot(
 																		tryRender(state.template.printTemplate, e.data, state.template.images),
-																		folder + '/' + e.data.name + '.png'
+																		folder + '/' + e.name + '.png'
 																	)
 																	.then(() => success('Screenshot created'), error);
 															});

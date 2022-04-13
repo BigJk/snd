@@ -6,7 +6,7 @@ import (
 
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd/database"
-	"github.com/BigJk/snd/inexport"
+	"github.com/BigJk/snd/imexport"
 	"github.com/labstack/echo/v4"
 	"github.com/mattetti/filebuffer"
 )
@@ -18,7 +18,7 @@ func RegisterSources(route *echo.Group, db database.Database) {
 	route.POST("/getSource", echo.WrapHandler(nra.MustBind(db.GetSource)))
 
 	route.POST("/importSourceFolder", echo.WrapHandler(nra.MustBind(func(folder string) (string, error) {
-		ds, entries, err := inexport.ImportSourceFolder(folder)
+		ds, entries, err := imexport.ImportSourceFolder(folder)
 		if err != nil {
 			return "", err
 		}
@@ -36,7 +36,7 @@ func RegisterSources(route *echo.Group, db database.Database) {
 	})))
 
 	route.POST("/importSourceZip", echo.WrapHandler(nra.MustBind(func(file string) (string, error) {
-		ds, entries, err := inexport.ImportSourceZIPFile(file)
+		ds, entries, err := imexport.ImportSourceZIPFile(file)
 		if err != nil {
 			return "", err
 		}
@@ -63,7 +63,7 @@ func RegisterSources(route *echo.Group, db database.Database) {
 		buf := filebuffer.New(data)
 		defer buf.Close()
 
-		ds, entries, err := inexport.ImportSourceZIP(buf, int64(len(data)))
+		ds, entries, err := imexport.ImportSourceZIP(buf, int64(len(data)))
 		if err != nil {
 			return "", err
 		}

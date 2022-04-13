@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/BigJk/snd/database"
-	"github.com/BigJk/snd/inexport"
+	"github.com/BigJk/snd/imexport"
 	"github.com/mattetti/filebuffer"
 
 	"github.com/BigJk/nra"
@@ -32,7 +32,7 @@ func RegisterTemplate(route *echo.Group, db database.Database) {
 		}
 
 		buf := &bytes.Buffer{}
-		file, err := inexport.ExportTemplateZIP(tmpl, entries, buf)
+		file, err := imexport.ExportTemplateZIP(tmpl, entries, buf)
 		if err != nil {
 			return "", err
 		}
@@ -50,7 +50,7 @@ func RegisterTemplate(route *echo.Group, db database.Database) {
 			return "", err
 		}
 
-		folderName, err := inexport.ExportTemplateFolder(tmpl, entries, path)
+		folderName, err := imexport.ExportTemplateFolder(tmpl, entries, path)
 		if err != nil {
 			return "", err
 		}
@@ -58,7 +58,7 @@ func RegisterTemplate(route *echo.Group, db database.Database) {
 	})))
 
 	route.POST("/importTemplateZip", echo.WrapHandler(nra.MustBind(func(file string) (string, error) {
-		tmpl, entries, err := inexport.ImportTemplateZIPFile(file)
+		tmpl, entries, err := imexport.ImportTemplateZIPFile(file)
 		if err != nil {
 			return "", err
 		}
@@ -75,7 +75,7 @@ func RegisterTemplate(route *echo.Group, db database.Database) {
 	})))
 
 	route.POST("/importTemplateFolder", echo.WrapHandler(nra.MustBind(func(folder string) (string, error) {
-		tmpl, entries, err := inexport.ImportTemplateFolder(folder)
+		tmpl, entries, err := imexport.ImportTemplateFolder(folder)
 		if err != nil {
 			return "", err
 		}
@@ -101,7 +101,7 @@ func RegisterTemplate(route *echo.Group, db database.Database) {
 		buf := filebuffer.New(data)
 		defer buf.Close()
 
-		tmpl, entries, err := inexport.ImportTemplateZIP(buf, int64(len(data)))
+		tmpl, entries, err := imexport.ImportTemplateZIP(buf, int64(len(data)))
 		if err != nil {
 			return "", err
 		}

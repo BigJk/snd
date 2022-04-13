@@ -1,6 +1,6 @@
-// Package inexport provides functions to import and export S&D templates and data sources.
+// Package imexport provides functions to import and export S&D templates and data sources.
 // Folder and .zip archive imports and exports are supported at the moment.
-package inexport
+package imexport
 
 import (
 	"errors"

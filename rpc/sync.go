@@ -10,7 +10,7 @@ import (
 
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd/database"
-	"github.com/BigJk/snd/inexport"
+	"github.com/BigJk/snd/imexport"
 	"github.com/BigJk/snd/log"
 	"github.com/fsnotify/fsnotify"
 	"github.com/labstack/echo/v4"
@@ -77,7 +77,7 @@ func RegisterSync(route *echo.Group, m *melody.Melody, db database.Database) {
 			return "", err
 		}
 
-		tmplFolder, err := inexport.ExportTemplateFolder(tmpl, nil, folder)
+		tmplFolder, err := imexport.ExportTemplateFolder(tmpl, nil, folder)
 		if err != nil {
 			return "", err
 		}
@@ -109,7 +109,7 @@ func RegisterSync(route *echo.Group, m *melody.Melody, db database.Database) {
 						return
 					}
 					if event.Op&fsnotify.Write == fsnotify.Write {
-						updated, _, err := inexport.ImportTemplateFolder(session.folder)
+						updated, _, err := imexport.ImportTemplateFolder(session.folder)
 						if err != nil {
 							_ = log.ErrorString(fmt.Sprintf("error in '%s' watcher: %s", session.folder, err))
 							continue

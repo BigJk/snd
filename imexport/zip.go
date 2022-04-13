@@ -1,4 +1,4 @@
-package inexport
+package imexport
 
 import (
 	"archive/zip"

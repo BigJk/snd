@@ -18,6 +18,8 @@ let pages = {
 		icon: 'help',
 		url: 'help',
 		newPage: true,
+		width: 1000,
+		height: 700,
 	},
 	devices: {
 		name: 'Devices',
@@ -38,7 +40,7 @@ export default () => {
 				<div
 					onclick={() => {
 						if (v.newPage) {
-							window.open('http://127.0.0.1:7123/#!/' + (v.url ?? k));
+							window.open('http://127.0.0.1:7123/#!/' + (v.url ?? k), 'targetWindow', `width=${v.width},height=${v.height}`);
 						} else {
 							m.route.set('/' + (v.url ?? k));
 						}

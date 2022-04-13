@@ -32,7 +32,7 @@ type Build struct {
 // Builds represents the currently needed build configurations.
 var Builds = []Build{
 	{
-		Package: "/cmd",
+		Package: "/cmd/app",
 		Arch:    "amd64",
 		OS:      "windows",
 		Tags:    "ELECTRON LIBUSB",
@@ -41,25 +41,25 @@ var Builds = []Build{
 		AdditionalFiles: []string{os.Getenv("SND_LIBUSB_DLL")},
 	},
 	{
-		Package: "/cmd",
+		Package: "/cmd/app",
 		Arch:    "amd64",
 		OS:      "linux",
 		Tags:    "ELECTRON",
 	},
 	{
-		Package: "/cmd",
+		Package: "/cmd/app",
 		Arch:    "amd64",
 		OS:      "darwin",
 		Tags:    "ELECTRON",
 	},
 	{
-		Package: "/cmd",
+		Package: "/cmd/app",
 		Arch:    "386",
 		OS:      "darwin",
 		Tags:    "ELECTRON",
 	},
 	{
-		Package: "/cmd",
+		Package: "/cmd/app",
 		Arch:    "arm64",
 		OS:      "darwin",
 		Tags:    "ELECTRON",

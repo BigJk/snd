@@ -108,7 +108,7 @@ func (s *Server) Start(bind string) error {
 	if _, err := s.db.GetSettings(); err != nil {
 		if err := s.db.SaveSettings(snd.Settings{
 			PrinterWidth:    384,
-			PrinterType:     "preview",
+			PrinterType:     "Preview Printing",
 			PrinterEndpoint: "window",
 			Stylesheets:     []string{},
 		}); err != nil {

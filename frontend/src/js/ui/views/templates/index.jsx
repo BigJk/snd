@@ -2,11 +2,11 @@ import api from '/js/core/api';
 import store from '/js/core/store';
 import binder from '/js/ui/binder';
 
-import { Base, Preview, Header, Loading, Input, Modal, TextArea, Select, Switch, Form } from '/js/ui/components';
+import { Base, Preview, Header, Loading, Input, Modal, Tooltip } from '/js/ui/components';
 
-import { transform, merge, groupBy, map } from 'lodash-es';
+import { groupBy, map } from 'lodash-es';
 
-import { error, success } from '/js/ui/toast';
+import { success } from '/js/ui/toast';
 import { tryRender } from '/js/core/templating';
 import { openFolderDialog, openFileDialog } from '/js/electron';
 
@@ -201,9 +201,11 @@ export default () => {
 							<div className="btn btn-success mr2" onclick={() => m.route.set('/templates/new')}>
 								Create New
 							</div>
-							<div className="btn btn-primary" onclick={() => (state.importing.show = true)}>
-								<i className="ion ion-md-log-in" />
-							</div>
+							<Tooltip content="Import">
+								<div className="btn btn-primary" onClick={() => (state.importing.show = true)}>
+									<i className="ion ion-md-log-in" />
+								</div>
+							</Tooltip>
 							<div className="divider-vert" />
 							<Input placeholder="Search..." value={state.search} oninput={binder.inputString(state, 'search')} />
 						</Header>

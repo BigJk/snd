@@ -66,3 +66,7 @@ Check our github release page: https://github.com/BigJk/snd/releases
 ## Printers, Templating & Building
 
 If you want to see what printers were already tested, which settings they need, how the templates work or how you can build Sales & Dungeons yourself please visit the [**wiki**](https://github.com/BigJk/snd/wiki).
+
+## Credits
+
+Icons used in the Sales & Dungeons Logo were made by [Smashicons](https://www.flaticon.com/authors/smashicons), [Good Ware](https://www.flaticon.com/authors/good-ware) from [www.flaticon.com](http://www.flaticon.com)

@@ -26,6 +26,17 @@ or a letter that the group found to little character sheets of your players to u
 - Fast access to external data sources like Open5e (instant access to SRD monsters, spells and more)
 - Edit templates in your favorite editor (e.g. Visual Studio Code) and get live preview
 
+## Printer Requirements
+
+At the moment Sales & Dungeons only supports the [ESC/POS](https://en.wikipedia.org/wiki/ESC/P) (Epson Standard Code) control codes, which is still one of the most used control code set. Check if a thermal printer you are interested in mentions ESC/POS or Epson in the description or manual.
+
+In general the rule of thumb is:
+- Most cheap chinese thermal printer found on Amazon or AliExpress support it
+- Most epson thermal printer obviously support it
+- A lot of older Serial printer (like Metapace T-1) also support it
+
+More specific information about tested printers can be found in the wiki: [Printer-Settings](https://github.com/BigJk/snd/wiki/Printer-Settings)
+
 ## How It Works
 
 <img align="left" alt="Sales &amp; Dungeons" src="./data/work_graph.svg">

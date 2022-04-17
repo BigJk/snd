@@ -12,7 +12,7 @@ require (
 	github.com/fatih/color v1.9.0
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/go-rod/rod v0.101.8
-	github.com/google/gousb v0.0.0-20190812193832-18f4c1d8a750
+	github.com/google/gousb v1.1.2
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/mattetti/filebuffer v1.0.1
 	github.com/otiai10/copy v1.7.0

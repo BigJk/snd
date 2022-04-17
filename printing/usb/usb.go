@@ -83,7 +83,7 @@ func (c *USB) openDevice(vendor int64, product int64, endpoint int) error {
 		return desc.Product == pid && desc.Vendor == vid
 	})
 
-	// On windows there will be a error thrown even
+	// On Windows there will be an error thrown even
 	// if the device is opened and len(devices) > 0.
 	// That's why the error is only checked if no
 	// device is found.
@@ -128,6 +128,10 @@ func (c *USB) openDevice(vendor int64, product int64, endpoint int) error {
 func (c *USB) Print(printerEndpoint string, image image.Image, data []byte) error {
 	// Parse endpoint format vendor_id:product_id:endpoint_address
 	usbConn := strings.Split(printerEndpoint, ":")
+
+	if len(usbConn) != 3 {
+		return errors.New("wrong endpoint format")
+	}
 
 	vendor, err := strconv.ParseInt(usbConn[0], 16, 32)
 	if err != nil {

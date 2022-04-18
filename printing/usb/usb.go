@@ -17,13 +17,14 @@ import (
 
 type USB struct {
 	sync.Mutex
-	vendor   int64
-	product  int64
-	endpoint int
-	ctx      *gousb.Context
-	device   *gousb.Device
-	iface    *gousb.Interface
-	out      *gousb.OutEndpoint
+	vendor    int64
+	product   int64
+	endpoint  int
+	ctx       *gousb.Context
+	device    *gousb.Device
+	iface     *gousb.Interface
+	ifaceDone func()
+	out       *gousb.OutEndpoint
 }
 
 func (c *USB) Name() string {
@@ -67,44 +68,31 @@ func (c *USB) AvailableEndpoints() (map[string]string, error) {
 }
 
 func (c *USB) reset() {
+	if c.ifaceDone != nil {
+		c.ifaceDone()
+	}
+
 	if c.device != nil {
 		_ = c.device.Close()
 	}
 
 	c.device = nil
 	c.iface = nil
+	c.ifaceDone = nil
 	c.out = nil
 }
 
 func (c *USB) openDevice(vendor int64, product int64, endpoint int) error {
-	vid := gousb.ID(vendor)
-	pid := gousb.ID(product)
-	devices, err := c.ctx.OpenDevices(func(desc *gousb.DeviceDesc) bool {
-		return desc.Product == pid && desc.Vendor == vid
-	})
-
-	// On Windows there will be an error thrown even
-	// if the device is opened and len(devices) > 0.
-	// That's why the error is only checked if no
-	// device is found.
-	if len(devices) == 0 {
-		if err != nil {
-			return err
-		}
-
-		return fmt.Errorf("usb printer not found")
-	}
-
-	if err := devices[0].SetAutoDetach(true); err != nil {
+	device, err := c.ctx.OpenDeviceWithVIDPID(gousb.ID(vendor), gousb.ID(product))
+	if err != nil {
 		return err
 	}
 
-	// close rest of the devices if there were multiple found.
-	for i := 1; i < len(devices); i++ {
-		_ = devices[i].Close()
+	if err := device.SetAutoDetach(true); err != nil {
+		return err
 	}
 
-	iface, _, err := devices[0].DefaultInterface()
+	iface, done, err := device.DefaultInterface()
 	if err != nil {
 		return err
 	}
@@ -114,8 +102,9 @@ func (c *USB) openDevice(vendor int64, product int64, endpoint int) error {
 		return err
 	}
 
-	c.device = devices[0]
+	c.device = device
 	c.iface = iface
+	c.ifaceDone = done
 	c.out = out
 
 	c.product = product
@@ -158,6 +147,8 @@ func (c *USB) Print(printerEndpoint string, image image.Image, data []byte) erro
 	// Open the device if not opened already
 	// or if the target device changed.
 	if c.device == nil || vendor != c.vendor || product != c.product || int(endpoint) != c.endpoint {
+		c.reset()
+
 		if err := c.openDevice(vendor, product, int(endpoint)); err != nil {
 			c.reset()
 			return err

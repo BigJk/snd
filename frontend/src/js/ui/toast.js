@@ -7,8 +7,8 @@ export function success(message) {
 		text: message,
 		duration: 3000,
 		gravity: 'top',
-		position: 'right',
-		backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+		position: 'center',
+		backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)'
 	}).showToast();
 }
 
@@ -17,7 +17,7 @@ export function error(message) {
 		text: message,
 		duration: 3000,
 		gravity: 'top',
-		position: 'right',
-		backgroundColor: 'linear-gradient(to right, red, darkred)',
+		position: 'center',
+		backgroundColor: 'linear-gradient(to right, red, darkred)'
 	}).showToast();
 }

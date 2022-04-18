@@ -24,13 +24,16 @@ var Go = "go"
 type Build struct {
 	Package         string
 	Arch            string
+	Arm             string
 	OS              string
 	Tags            string
+	NameTag         string
 	AdditionalFiles []string
 }
 
 // Builds represents the currently needed build configurations.
 var Builds = []Build{
+	// Electron
 	{
 		Package: "/cmd/app",
 		Arch:    "amd64",
@@ -39,30 +42,62 @@ var Builds = []Build{
 		// Windows will be build with libusb support and needs the libusb-1.0.dll as additional file.
 		// SND_LIBUSB_DLL should contain the file path of the libusb-1.0.dll.
 		AdditionalFiles: []string{os.Getenv("SND_LIBUSB_DLL")},
+		NameTag:         "gui",
 	},
 	{
 		Package: "/cmd/app",
 		Arch:    "amd64",
 		OS:      "linux",
 		Tags:    "ELECTRON",
+		NameTag: "gui",
 	},
 	{
 		Package: "/cmd/app",
 		Arch:    "amd64",
 		OS:      "darwin",
 		Tags:    "ELECTRON",
-	},
-	{
-		Package: "/cmd/app",
-		Arch:    "386",
-		OS:      "darwin",
-		Tags:    "ELECTRON",
+		NameTag: "gui",
 	},
 	{
 		Package: "/cmd/app",
 		Arch:    "arm64",
 		OS:      "darwin",
 		Tags:    "ELECTRON",
+		NameTag: "gui",
+	},
+	// Headless
+	{
+		Package: "/cmd/app",
+		Arch:    "amd64",
+		OS:      "linux",
+		NameTag: "headless",
+	},
+	{
+		Package: "/cmd/app",
+		Arch:    "arm64",
+		OS:      "linux",
+		NameTag: "headless",
+	},
+	{
+		Package: "/cmd/app",
+		Arch:    "386",
+		OS:      "linux",
+		NameTag: "headless",
+	},
+	// RPI
+	{
+		Package: "/cmd/app",
+		Arch:    "arm",
+		Arm:     "7",
+		OS:      "linux",
+		NameTag: "headless_rpi",
+	},
+	{
+		Package: "/cmd/app",
+		Arch:    "arm",
+		Arm:     "6",
+		OS:      "linux",
+		NameTag: "headless_rpi",
 	},
 }
 
@@ -142,6 +177,8 @@ func main() {
 	initialSetup()
 	runViteBuild()
 
+	cache, _ := filepath.Abs("./cache")
+
 	//
 	// Run the builds
 	//
@@ -157,7 +194,7 @@ func main() {
 			}
 
 			// Format target name
-			target := fmt.Sprintf("./release/%s-%s [%s] [%02d.%02d.%04d]", b.OS, b.Arch, string(gitCommit)[0:8], time.Now().Month(), time.Now().Day(), time.Now().Year())
+			target := fmt.Sprintf("./release/snd_%s_%s%s_%s_%s", b.OS, b.Arch, b.Arm, b.NameTag, gitCommit[0:7])
 
 			// Check for windows if .exe is needed
 			ext := ""
@@ -172,11 +209,21 @@ func main() {
 			_ = copy.Copy(fmt.Sprintf("./res/%s-%s", b.OS, b.Arch), target)
 			_ = copy.Copy("./cache/frontend/", filepath.Join(target, "/frontend"))
 			_ = copy.Copy("./data/icon.png", filepath.Join(target, "/data/icon.png"))
+			_ = ioutil.WriteFile(filepath.Join(target, "/version.txt"), []byte(fmt.Sprintf("Commit: %s\nBranch: %s\nBuild Time: %s", gitCommit, gitBranch, time.Now().Format(time.RFC3339))), 0666)
 
 			fmt.Printf("=========================== [%s-%s]\n", b.OS, b.Arch)
 
 			// Run go build
 			cmd := exec.Command(Go, "build", "-ldflags", ldflags, "-o", "Sales & Dungeons"+ext, "-tags", b.Tags)
+			cmd.Env = append(cmd.Env, []string{
+				"PATH=" + os.Getenv("PATH"),
+				"GOOS=" + b.OS,
+				"GOARCH=" + b.Arch,
+				"GOCACHE=" + cache,
+				"GOPATH=" + os.Getenv("GOPATH"),
+				"GOROOT=" + os.Getenv("GOROOT"),
+				"PKG_CONFIG_PATH=" + os.Getenv("PKG_CONFIG_PATH"),
+			}...)
 			cmd.Dir = filepath.Join(BaseDir, b.Package)
 			buildOutput, err := cmd.CombinedOutput()
 			fmt.Println("Output:", strings.Trim(string(buildOutput), " \n\t"))
@@ -209,7 +256,7 @@ func main() {
 	}
 
 	// Create a release just containing the frontend
-	targetFrontend := fmt.Sprintf("./release/%s [%s] [%02d.%02d.%04d]", "frontend", gitCommit[0:8], time.Now().Month(), time.Now().Day(), time.Now().Year())
+	targetFrontend := fmt.Sprintf("./release/snd_%s_%s", "frontend", gitCommit[0:7])
 	file, err := os.Create(targetFrontend + ".zip")
 	failOnErr(err)
 	failOnErr(zip.Archive("./cache/frontend", file, nil))

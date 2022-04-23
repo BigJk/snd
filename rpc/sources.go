@@ -1,10 +1,14 @@
 package rpc
 
 import (
+	"encoding/base64"
+	"errors"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/BigJk/nra"
+	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/imexport"
 	"github.com/labstack/echo/v4"
@@ -36,7 +40,31 @@ func RegisterSources(route *echo.Group, db database.Database) {
 	})))
 
 	route.POST("/importSourceZip", echo.WrapHandler(nra.MustBind(func(file string) (string, error) {
-		ds, entries, err := imexport.ImportSourceZIPFile(file)
+		var ds snd.DataSource
+		var entries []snd.Entry
+		var err error
+
+		if strings.HasPrefix(file, "data:") {
+			// read from data uri
+			split := strings.Split(file, ",")
+			if len(split) != 2 {
+				return "", errors.New("not a valid data url")
+			}
+
+			data, err := base64.StdEncoding.DecodeString(split[1])
+			if err != nil {
+				return "", err
+			}
+
+			buf := filebuffer.New(data)
+			defer buf.Close()
+
+			ds, entries, err = imexport.ImportSourceZIP(buf, int64(len(data)))
+		} else {
+			// read from path
+			ds, entries, err = imexport.ImportSourceZIPFile(file)
+		}
+
 		if err != nil {
 			return "", err
 		}

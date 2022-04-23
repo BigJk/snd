@@ -8,7 +8,8 @@ import { groupBy, map } from 'lodash-es';
 
 import { success } from '/js/ui/toast';
 import { tryRender } from '/js/core/templating';
-import { openFolderDialog, openFileDialog } from '/js/electron';
+import { openFolderDialog, openFileDialog, inElectron } from '/js/electron';
+import { readFile } from '/js/file'
 
 export default () => {
 	let state = {
@@ -54,17 +55,31 @@ export default () => {
 					<div
 						className="btn btn-primary mr2"
 						onclick={() => {
-							openFileDialog().then((file) => {
-								state.importing.loading = true;
-								api.importTemplateZip(file).then((name) => {
-									success(`Imported '${name}' successful`);
+							if (inElectron) {
+								openFileDialog().then((file) => {
+									state.importing.loading = true;
+									api.importTemplateZip(file).then((name) => {
+										success(`Imported '${name}' successful`);
 
-									store.pub('reload_templates');
+										store.pub('reload_templates');
 
-									state.importing.show = false;
-									state.importing.loading = false;
+										state.importing.show = false;
+										state.importing.loading = false;
+									});
 								});
-							});
+							} else {
+								readFile().then(res => {
+									state.importing.loading = true;
+									api.importTemplateZip(res).then((name) => {
+										success(`Imported '${name}' successful`);
+
+										store.pub('reload_templates');
+
+										state.importing.show = false;
+										state.importing.loading = false;
+									});
+								})
+							}
 						}}
 					>
 						Import .zip

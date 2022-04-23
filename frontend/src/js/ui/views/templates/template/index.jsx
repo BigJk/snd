@@ -4,7 +4,7 @@ import api from '/js/core/api';
 
 import { keepOpen, on } from '/js/core/ws';
 
-import { openFolderDialog } from '/js/electron';
+import { openFolderDialog, inElectron } from '/js/electron';
 
 import { Base, Header, SplitView, Loading, Modal, AdvancedSearch, Input, Tooltip } from '/js/ui/components';
 
@@ -95,16 +95,20 @@ export default () => {
 				<div
 					className="btn btn-primary mr2"
 					onclick={() => {
-						openFolderDialog().then((folder) => {
-							api
-								.exportTemplateZip(state.template.id, folder)
-								.then((file) => {
-									success('Wrote ' + file);
-								})
-								.catch((err) => {
-									error(err);
-								});
-						});
+						if (inElectron) {
+							openFolderDialog().then((folder) => {
+								api
+									.exportTemplateZip(state.template.id, folder)
+									.then((file) => {
+										success('Wrote ' + file);
+									})
+									.catch((err) => {
+										error(err);
+									});
+							});
+						} else {
+							window.open('/api/export/template/zip/' + state.template.id, "_blank")
+						}
 					}}
 				>
 					Export as{' '}

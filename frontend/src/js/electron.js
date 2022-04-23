@@ -2,24 +2,42 @@
 // This will populate the electron variable with the
 // correct runtime electron variable of the browser
 // environment.
-export const electron = eval('require("electron")');
-export const dialog = electron.remote.dialog;
-export const shell = electron.shell;
+let outsideRequire = null;
+try {
+	outsideRequire = eval('require');
+} catch (e) {
+	console.log('headless mode detected');
+}
+
+export const electron = outsideRequire ? outsideRequire('electron') : null;
+export const inElectron = !!electron;
+export const dialog = electron?.remote.dialog;
+export const shell = electron?.shell;
 
 import m from 'mithril';
+import { error } from '/js/ui/toast';
 
 export function close() {
+	if (!electron) {
+		return;
+	}
+
 	electron.remote.getCurrentWindow().close();
 }
 
 export function openFolderDialog(title) {
+	if (!electron) {
+		error('Only available in GUI mode!');
+		return;
+	}
+
 	return new Promise((resolve, reject) => {
 		dialog
 			.showOpenDialog({
 				properties: ['openDirectory'],
-				message: title ?? 'Select Folder',
+				message: title ?? 'Select Folder'
 			})
-			.then((res) => {
+			.then(res => {
 				if (res.canceled || res.filePaths.length === 0) {
 					reject();
 					return;
@@ -32,13 +50,18 @@ export function openFolderDialog(title) {
 }
 
 export function openFileDialog(title) {
+	if (!electron) {
+		error('Only available in GUI mode!');
+		return;
+	}
+
 	return new Promise((resolve, reject) => {
 		dialog
 			.showOpenDialog({
 				properties: ['openFile'],
-				message: title ?? 'Select File',
+				message: title ?? 'Select File'
 			})
-			.then((res) => {
+			.then(res => {
 				if (res.canceled || res.filePaths.length === 0) {
 					reject();
 					return;

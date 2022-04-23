@@ -2,10 +2,15 @@ package rpc
 
 import (
 	"bytes"
+	"encoding/base64"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
+	"strings"
 
+	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/imexport"
 	"github.com/mattetti/filebuffer"
@@ -58,7 +63,31 @@ func RegisterTemplate(route *echo.Group, db database.Database) {
 	})))
 
 	route.POST("/importTemplateZip", echo.WrapHandler(nra.MustBind(func(file string) (string, error) {
-		tmpl, entries, err := imexport.ImportTemplateZIPFile(file)
+		var tmpl snd.Template
+		var entries []snd.Entry
+		var err error
+
+		if strings.HasPrefix(file, "data:") {
+			// read from data uri
+			split := strings.Split(file, ",")
+			if len(split) != 2 {
+				return "", errors.New("not a valid data url")
+			}
+
+			data, err := base64.StdEncoding.DecodeString(split[1])
+			if err != nil {
+				return "", err
+			}
+
+			buf := filebuffer.New(data)
+			defer buf.Close()
+
+			tmpl, entries, err = imexport.ImportTemplateZIP(buf, int64(len(data)))
+		} else {
+			// read from path
+			tmpl, entries, err = imexport.ImportTemplateZIPFile(file)
+		}
+
 		if err != nil {
 			return "", err
 		}
@@ -116,4 +145,26 @@ func RegisterTemplate(route *echo.Group, db database.Database) {
 
 		return tmpl.Name, nil
 	})))
+
+	// ZIP export route so export is possible in headless mode
+	route.GET("/export/template/zip/:id", func(c echo.Context) error {
+		tmpl, err := db.GetTemplate(c.Param("id"))
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		entries, err := db.GetEntries(c.Param("id"))
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		buf := &bytes.Buffer{}
+		file, err := imexport.ExportTemplateZIP(tmpl, entries, buf)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", file))
+		return c.Blob(http.StatusOK, "application/zip", buf.Bytes())
+	})
 }

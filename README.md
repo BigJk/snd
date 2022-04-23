@@ -15,7 +15,12 @@ or a letter that the group found to little character sheets of your players to u
 
 ## Features
 
-- Works on Windows, Mac and Linux
+- Works on
+  - Windows
+  - Mac (Intel, M1)
+  - Linux (x64, ARM64)
+  - Raspberry Pi (ARMv6, ARMv7)
+  - Anything else go can be compiled on
 - Extensive templating system through [Nunjucks](https://mozilla.github.io/nunjucks/)
 - Various connection methods
   - Windows Direct Printing

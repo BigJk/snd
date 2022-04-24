@@ -20,8 +20,7 @@ import (
 
 var prev preview.Preview
 
-// This will change the starting routine
-// so that a additional Electron window
+// This will change the starting routine so that an additional Electron window
 // will open with the frontend in it.
 func init() {
 	startFunc = startElectron
@@ -81,7 +80,7 @@ func startElectron(debug bool) {
 	}
 
 	if debug {
-		w.OpenDevTools()
+		_ = w.OpenDevTools()
 	}
 
 	a.Wait()

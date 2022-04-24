@@ -4,7 +4,7 @@ export function readFile() {
 		f.style.display = 'none';
 		f.type = 'file';
 		f.name = 'file';
-		f.onchange = function(e) {
+		f.onchange = function (e) {
 			let files = e.target.files;
 
 			if (files.length === 0) {
@@ -14,7 +14,7 @@ export function readFile() {
 
 			let reader = new FileReader();
 
-			reader.onload = e => {
+			reader.onload = (e) => {
 				f.remove();
 				resolve(e.target.result);
 			};

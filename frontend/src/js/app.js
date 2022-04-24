@@ -9,33 +9,33 @@ import '/css/style.scss';
 // Mithril Fragment workaround
 
 import m from 'mithril';
-m.Fragment = { view: vnode => vnode.children };
+m.Fragment = { view: (vnode) => vnode.children };
 
 // Pre-Load Settings
 
 import api from '/js/core/api';
 import store from '/js/core/store';
 
-api.getSettings().then(settings => {
+api.getSettings().then((settings) => {
 	store.set('settings', settings);
 });
 
-api.getPrinter().then(printer => {
+api.getPrinter().then((printer) => {
 	store.set('printer', printer);
 });
 
-api.getVersion().then(version => {
+api.getVersion().then((version) => {
 	store.set('version', version);
 });
 
 store.sub(['reload_templates'], () => {
-	api.getTemplates().then(templates => {
+	api.getTemplates().then((templates) => {
 		store.set('templates', templates ?? []);
 	});
 });
 
 store.sub(['reload_sources'], () => {
-	api.getSources().then(sources => {
+	api.getSources().then((sources) => {
 		store.set('sources', sources ?? []);
 	});
 });
@@ -72,5 +72,5 @@ m.route(document.getElementById('app'), '/', {
 	'/help': Help,
 	'/data-sources': DataSources,
 	'/settings': Settings,
-	'/devices': Devices
+	'/devices': Devices,
 });

@@ -5,7 +5,7 @@ import binder from '/js/ui/binder';
 import { Base, Header, Input, Modal, Tooltip } from '/js/ui/components';
 
 import { openFolderDialog, openFileDialog, inElectron } from '/js/electron';
-import { readFile } from '/js/file'
+import { readFile } from '/js/file';
 import { groupBy, map } from 'lodash-es';
 import { success } from '/js/ui/toast';
 
@@ -66,7 +66,7 @@ export default () => {
 									});
 								});
 							} else {
-								readFile().then(res => {
+								readFile().then((res) => {
 									state.importing.loading = true;
 									api.importSourceZip(res).then((name) => {
 										success(`Imported '${name}' successful`);
@@ -76,7 +76,7 @@ export default () => {
 										state.importing.show = false;
 										state.importing.loading = false;
 									});
-								})
+								});
 							}
 						}}
 					>

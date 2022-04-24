@@ -35,9 +35,9 @@ export function openFolderDialog(title) {
 		dialog
 			.showOpenDialog({
 				properties: ['openDirectory'],
-				message: title ?? 'Select Folder'
+				message: title ?? 'Select Folder',
 			})
-			.then(res => {
+			.then((res) => {
 				if (res.canceled || res.filePaths.length === 0) {
 					reject();
 					return;
@@ -59,9 +59,9 @@ export function openFileDialog(title) {
 		dialog
 			.showOpenDialog({
 				properties: ['openFile'],
-				message: title ?? 'Select File'
+				message: title ?? 'Select File',
 			})
-			.then(res => {
+			.then((res) => {
 				if (res.canceled || res.filePaths.length === 0) {
 					reject();
 					return;

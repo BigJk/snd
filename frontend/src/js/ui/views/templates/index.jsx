@@ -9,7 +9,7 @@ import { groupBy, map } from 'lodash-es';
 import { success } from '/js/ui/toast';
 import { tryRender } from '/js/core/templating';
 import { openFolderDialog, openFileDialog, inElectron } from '/js/electron';
-import { readFile } from '/js/file'
+import { readFile } from '/js/file';
 
 export default () => {
 	let state = {
@@ -68,7 +68,7 @@ export default () => {
 									});
 								});
 							} else {
-								readFile().then(res => {
+								readFile().then((res) => {
 									state.importing.loading = true;
 									api.importTemplateZip(res).then((name) => {
 										success(`Imported '${name}' successful`);
@@ -78,7 +78,7 @@ export default () => {
 										state.importing.show = false;
 										state.importing.loading = false;
 									});
-								})
+								});
 							}
 						}}
 					>

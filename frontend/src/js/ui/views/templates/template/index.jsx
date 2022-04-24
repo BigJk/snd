@@ -107,7 +107,7 @@ export default () => {
 									});
 							});
 						} else {
-							window.open('/api/export/template/zip/' + state.template.id, "_blank")
+							window.open('/api/export/template/zip/' + state.template.id, '_blank');
 						}
 					}}
 				>
@@ -272,10 +272,7 @@ export default () => {
 														onclick={() => {
 															openFolderDialog().then((folder) => {
 																api
-																	.screenshot(
-																		tryRender(state.template.printTemplate, e.data, state.template.images),
-																		folder + '/' + e.name + '.png'
-																	)
+																	.screenshot(tryRender(state.template.printTemplate, e.data, state.template.images), folder + '/' + e.name + '.png')
 																	.then(() => success('Screenshot created'), error);
 															});
 														}}

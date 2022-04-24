@@ -175,6 +175,25 @@ func (s *Server) Start(bind string) error {
 		return c.Blob(resp.StatusCode, resp.Header.Get("Content-Type"), data)
 	})
 
+	// Same as proxy route but without caching. Can be used for
+	// dynamic API requests.
+	s.e.GET("/fetch", func(c echo.Context) error {
+		reqUrl := c.QueryParam("url")
+
+		resp, err := http.Get(reqUrl)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err.Error())
+		}
+		defer resp.Body.Close()
+
+		data, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err.Error())
+		}
+
+		return c.Blob(resp.StatusCode, resp.Header.Get("Content-Type"), data)
+	})
+
 	api.GET("/ws", func(c echo.Context) error {
 		return s.m.HandleRequest(c.Response().Writer, c.Request())
 	})

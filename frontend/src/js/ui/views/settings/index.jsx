@@ -65,6 +65,7 @@ export default () => {
 								value={state.spellcheckerLanguages}
 								oninput={binder.inputString(state, 'spellcheckerLanguages')}
 							/>
+							<div className="o-70 lh-copy mt3">Use a comma seperated list of languages that should be used for spellchecking like "en-US, de".</div>
 						</Form>
 					</div>
 				</div>
@@ -90,7 +91,7 @@ export default () => {
 									value={store.data.settings.printerEndpoint}
 									oninput={binder.inputString(store.data.settings, 'printerEndpoint')}
 								/>
-								<div className="mt3 lh-copy">{store.data.printer?.[store.data.settings.printerType]}</div>
+								<div className="mt3 lh-copy o-70">{store.data.printer?.[store.data.settings.printerType]}</div>
 							</Form>
 						</div>
 						<Form className="w-50 f7 black-70" horizontal={true}>

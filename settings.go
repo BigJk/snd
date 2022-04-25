@@ -12,5 +12,6 @@ type Settings struct {
 		LinesBefore       int  `json:"linesBefore"`
 		LinesAfter        int  `json:"linesAfter"`
 	} `json:"commands"`
-	Stylesheets []string `json:"stylesheets"`
+	Stylesheets           []string `json:"stylesheets"`
+	SpellcheckerLanguages []string `json:"spellcheckerLanguages"`
 }

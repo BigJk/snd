@@ -107,10 +107,11 @@ func (s *Server) Start(bind string) error {
 	// Create default settings if not existing
 	if _, err := s.db.GetSettings(); err != nil {
 		if err := s.db.SaveSettings(snd.Settings{
-			PrinterWidth:    384,
-			PrinterType:     "Preview Printing",
-			PrinterEndpoint: "window",
-			Stylesheets:     []string{},
+			PrinterWidth:          384,
+			PrinterType:           "Preview Printing",
+			PrinterEndpoint:       "window",
+			Stylesheets:           []string{},
+			SpellcheckerLanguages: []string{"en-US"},
 		}); err != nil {
 			return err
 		}

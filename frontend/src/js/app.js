@@ -15,10 +15,7 @@ m.Fragment = { view: (vnode) => vnode.children };
 
 import api from '/js/core/api';
 import store from '/js/core/store';
-
-api.getSettings().then((settings) => {
-	store.set('settings', settings);
-});
+import { setSpellcheckerLanguages } from '/js/electron';
 
 api.getPrinter().then((printer) => {
 	store.set('printer', printer);
@@ -40,6 +37,14 @@ store.sub(['reload_sources'], () => {
 	});
 });
 
+store.sub(['reload_settings'], () => {
+	api.getSettings().then((settings) => {
+		store.set('settings', settings);
+		setSpellcheckerLanguages(settings.spellcheckerLanguages);
+	});
+});
+
+store.pub('reload_settings');
 store.pub('reload_templates');
 store.pub('reload_sources');
 

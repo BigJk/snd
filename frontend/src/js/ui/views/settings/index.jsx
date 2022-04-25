@@ -2,13 +2,19 @@ import api from '/js/core/api';
 import store from '/js/core/store';
 import binder from '/js/ui/binder';
 
-import { shell } from '/js/electron';
+import { setSpellcheckerLanguages, shell } from '/js/electron';
 
 import { Base, Header, Input, Switch, Select, Form } from '/js/ui/components';
 
 import { success, error } from '/js/ui/toast';
 
+import { trim } from 'lodash-es';
+
 export default () => {
+	let state = {
+		spellcheckerLanguages: (store.data.settings?.spellcheckerLanguages ?? []).join(', '),
+	};
+
 	let version = () => {
 		if (store.data.version === null || store.data.version?.gitCommitHash.length === 0) return null;
 
@@ -45,6 +51,23 @@ export default () => {
 
 		return (
 			<div className="overflow-auto flex-grow-1">
+				<div className="flex flex-wrap pa3">
+					<div className="bg-white ph3 pt3 pb3 ba b--black-10 br1 flex-grow-1 lh-solid flex flex-wrap relative">
+						<div className="br2 br--top bl bt br b--black-10 absolute fw7 left-0 panel-title">
+							<i className="ion ion-md-settings mr1" />
+							Application Settings
+						</div>
+						<Form className="w-50 f7 black-70" horizontal={true}>
+							<Input
+								label="Spellchecking Languages"
+								labelCol={4}
+								placeholder="e.g. en-US, de"
+								value={state.spellcheckerLanguages}
+								oninput={binder.inputString(state, 'spellcheckerLanguages')}
+							/>
+						</Form>
+					</div>
+				</div>
 				<div className="flex flex-wrap ph3 pt1 pb2">
 					<div className="bg-white ph3 pt3 pb2 mt2 ba b--black-10 br1 flex-grow-1 lh-solid flex flex-wrap relative">
 						<div className="br2 br--top bl bt br b--black-10 absolute fw7 left-0 panel-title">
@@ -164,6 +187,9 @@ export default () => {
 	};
 
 	return {
+		onremove() {
+			store.pub('reload_settings');
+		},
 		view(vnode) {
 			return (
 				<Base active={'settings'}>
@@ -172,9 +198,11 @@ export default () => {
 							<div
 								className="btn btn-success"
 								onclick={() => {
+									store.data.settings.spellcheckerLanguages = state.spellcheckerLanguages.split(',').map(trim);
 									api.saveSettings(store.data.settings).then(
 										() => {
 											success('Settings saved');
+											store.pub('reload_settings');
 										},
 										(err) => {
 											error(err);

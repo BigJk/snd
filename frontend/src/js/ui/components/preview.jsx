@@ -1,3 +1,5 @@
+import { startsWith } from 'lodash-es';
+
 const pre = `
 <!DOCTYPE html>
 <html lang="en">
@@ -10,7 +12,7 @@ const pre = `
     }
   
   	::-webkit-scrollbar {
-    	width: 0px;
+    	width: 0;
 	}
 	
 	::-webkit-scrollbar-track {
@@ -25,7 +27,7 @@ const pre = `
 		background: #d1d1d1;
 	}
   </style>
-  <body class="sans-serif" style="padding: 15px; overflow-y: {{OVERFLOW}}; zoom: {{ZOOM}};">
+  <body style="padding: 15px; overflow-y: {{OVERFLOW}}; zoom: {{ZOOM}};">
     <div id="content">`;
 
 const post = `    
@@ -58,9 +60,35 @@ export default () => {
 			)
 			.replace('{{ZOOM}}', scale)
 			.replace('{{OVERFLOW}}', overflow ?? 'overlay');
+
+		let fixed = (content ?? '')
+			.replaceAll(/url\(["']?(.+)\)/gi, (subString, ...args) => {
+				let content = args[0];
+				let symbol = '';
+
+				switch (content[content.length - 1]) {
+					case '"':
+					case "'":
+						symbol = content[content.length - 1];
+				}
+
+				if (startsWith(content, 'data:')) {
+					return subString;
+				}
+
+				if (startsWith(content, 'http')) {
+					return `url(${symbol}/proxy?url=${content})`;
+				}
+
+				return subString;
+			})
+			.replace(/src="h/gi, 'src="/proxy?url=h');
+
 		let doc = iframe.contentWindow.document;
 		doc.open();
-		doc.write(preCss + (content ?? '').replace(/src="h/gi, 'src="/image-proxy?url=h') + post);
+
+		doc.write(preCss + fixed + post);
+
 		doc.close();
 	};
 

@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -37,6 +38,10 @@ func GetOutboundIP() (net.IP, error) {
 	return localAddr.IP, nil
 }
 
+var urlRegex = regexp.MustCompile(`(?U)url\(["']?(.+)\)`)
+
+// fixHtml fixes the HTML string by converting the relative URLs to absolute ones
+// and adding the html and body tags.
 func fixHtml(html string, settings snd.Settings) (string, error) {
 	// Get local outbound ip
 	ip, err := GetOutboundIP()
@@ -51,6 +56,7 @@ func fixHtml(html string, settings snd.Settings) (string, error) {
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">`
 
+	// Add global stylesheets
 	for i := range settings.Stylesheets {
 		url := settings.Stylesheets[i]
 		if strings.HasPrefix(url, "/") {
@@ -59,7 +65,7 @@ func fixHtml(html string, settings snd.Settings) (string, error) {
 		htmlHead += `<link rel="stylesheet" href="` + settings.Stylesheets[i] + `">` + "\n"
 	}
 
-	htmlHead += `<body class="sans-serif">
+	htmlHead += `<body>
 		<div id="content">`
 
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlHead + html + "</div></body></html>"))
@@ -67,9 +73,15 @@ func fixHtml(html string, settings snd.Settings) (string, error) {
 		return "", log.ErrorUser(err, "html parsing failed")
 	}
 
+	// Convert relative image urls to absolute ones
 	doc.Find("img").Each(func(i int, s *goquery.Selection) {
 		url := s.AttrOr("src", "")
-		if strings.HasPrefix(url, "/") {
+
+		if strings.HasPrefix(url, "/") || !strings.HasPrefix(url, "http") {
+			if !strings.HasPrefix(url, "/") {
+				url = "/" + url
+			}
+
 			url = "http://" + ip.String() + ":7123" + url
 			s.SetAttr("src", url)
 		}
@@ -80,19 +92,26 @@ func fixHtml(html string, settings snd.Settings) (string, error) {
 		return "", log.ErrorUser(err, "html rendering failed")
 	}
 
-	finalHtml = strings.Replace(finalHtml, `url("/static/`, `url("http://`+ip.String()+`:7123/static/`, -1)
-	finalHtml = strings.Replace(finalHtml, `url('/static/`, `url('http://`+ip.String()+`:7123/static/`, -1)
-	finalHtml = strings.Replace(finalHtml, `url(/static/`, `url(http://`+ip.String()+`:7123/static/`, -1)
-	finalHtml = strings.Replace(finalHtml, `url("static/`, `url("http://`+ip.String()+`:7123/static/`, -1)
-	finalHtml = strings.Replace(finalHtml, `url('static/`, `url('http://`+ip.String()+`:7123/static/`, -1)
-	finalHtml = strings.Replace(finalHtml, `url(static/`, `url(http://`+ip.String()+`:7123/static/`, -1)
+	// Find CSS url() usage and convert relative urls to absolute ones
+	finalHtml = urlRegex.ReplaceAllStringFunc(finalHtml, func(s string) string {
+		match := urlRegex.FindStringSubmatch(s)
 
-	finalHtml = strings.Replace(finalHtml, `url("/proxy?url=`, `url("http://`+ip.String()+`:7123/proxy?url=`, -1)
-	finalHtml = strings.Replace(finalHtml, `url('/proxy?url=`, `url('http://`+ip.String()+`:7123/proxy?url=`, -1)
-	finalHtml = strings.Replace(finalHtml, `url(/proxy?url=`, `url(http://`+ip.String()+`:7123/proxy?url=`, -1)
-	finalHtml = strings.Replace(finalHtml, `url("proxy?url=`, `url("http://`+ip.String()+`:7123/proxy?url=`, -1)
-	finalHtml = strings.Replace(finalHtml, `url('proxy?url=`, `url('http://`+ip.String()+`:7123/proxy?url=`, -1)
-	finalHtml = strings.Replace(finalHtml, `url(proxy?url=`, `url(http://`+ip.String()+`:7123/proxy?url=`, -1)
+		content := match[1]
+		symbol := ""
+
+		switch content[len(content)-1] {
+		case '"':
+			fallthrough
+		case '\'':
+			symbol = content[len(content)-1:]
+		}
+
+		if strings.HasPrefix(content, "data:") || strings.HasPrefix(content, "http") {
+			return s
+		}
+
+		return fmt.Sprintf("url(%s%s%s%s%s)", symbol, "http://", ip, ":7123/", strings.TrimLeft(content, symbol+"/"))
+	})
 
 	return finalHtml, nil
 }

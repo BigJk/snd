@@ -77,12 +77,8 @@ func fixHtml(html string, settings snd.Settings) (string, error) {
 	doc.Find("img").Each(func(i int, s *goquery.Selection) {
 		url := s.AttrOr("src", "")
 
-		if strings.HasPrefix(url, "/") || !strings.HasPrefix(url, "http") {
-			if !strings.HasPrefix(url, "/") {
-				url = "/" + url
-			}
-
-			url = "http://" + ip.String() + ":7123" + url
+		if !strings.HasPrefix(url, "http") && !strings.HasPrefix(url, "data:") {
+			url = "http://" + ip.String() + ":7123/" + strings.TrimLeft(url, "/")
 			s.SetAttr("src", url)
 		}
 	})

@@ -143,17 +143,21 @@ func (s *Server) Start(bind string) error {
 	// Register proxy route so that the iframes that are used
 	// in the frontend can proxy images and other data that they
 	// otherwise couldn't access because of CORB
-	s.e.GET("/proxy", func(c echo.Context) error {
-		reqUrl := c.QueryParam("url")
+	s.e.GET("/proxy/*", func(c echo.Context) error {
+		reqUrl := c.Request().RequestURI[len("/index/"):]
+		if !strings.HasPrefix(reqUrl, "http") {
+			return c.NoContent(http.StatusBadRequest)
+		}
+
 		hit, ok := s.cache.Get(reqUrl)
 		if ok {
-			log.Info("proxy url from cache", log.WithValue("url", c.QueryParam("url")))
+			log.Info("proxy url from cache", log.WithValue("url", reqUrl))
 
 			entry := hit.(*proxyCacheEntry)
 			return c.Blob(http.StatusOK, entry.ContentType, entry.Data)
 		}
 
-		log.Info("proxy url", log.WithValue("url", c.QueryParam("url")))
+		log.Info("proxy url", log.WithValue("url", reqUrl))
 
 		resp, err := http.Get(reqUrl)
 		if err != nil {
@@ -178,8 +182,13 @@ func (s *Server) Start(bind string) error {
 
 	// Same as proxy route but without caching. Can be used for
 	// dynamic API requests.
-	s.e.GET("/fetch", func(c echo.Context) error {
-		reqUrl := c.QueryParam("url")
+	s.e.GET("/fetch/*", func(c echo.Context) error {
+		reqUrl := c.Request().RequestURI[len("/fetch/"):]
+		if !strings.HasPrefix(reqUrl, "http") {
+			return c.NoContent(http.StatusBadRequest)
+		}
+
+		log.Info("proxy url fetch", log.WithValue("url", reqUrl))
 
 		resp, err := http.Get(reqUrl)
 		if err != nil {

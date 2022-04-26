@@ -77,12 +77,12 @@ export default () => {
 				}
 
 				if (startsWith(content, 'http')) {
-					return `url(${symbol}/proxy?url=${content})`;
+					return `url(${symbol}/proxy/${content})`;
 				}
 
 				return subString;
 			})
-			.replace(/src="h/gi, 'src="/proxy?url=h');
+			.replace(/src="h/gi, 'src="/proxy/h');
 
 		let doc = iframe.contentWindow.document;
 		doc.open();

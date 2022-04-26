@@ -171,7 +171,7 @@ export default () => {
 																</span>
 															</div>
 															<div className="divider" />
-															<div className="fw4 f7 black-50 mb1">{t.description}</div>
+															<div className="fw4 f7 black-50 mb1 lh-copy">{t.description}</div>
 														</div>
 														<div className="flex justify-between items-end">
 															<div className="lh-solid">

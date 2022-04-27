@@ -9,6 +9,8 @@ With Sales & Dungeons you can create highly customizable handouts, quick referen
 Most Thermal Printer are small in size and can be taken with you and kept right at the gaming table. Use-cases range from printing out magic items, spells
 or a letter that the group found to little character sheets of your players to use as DM note. The possibilities are nearly endless!
 
+[Printer Setup](https://github.com/BigJk/snd/wiki/Printer-Setup) • [Tested Printer](https://github.com/BigJk/snd/wiki/Printer-Settings) • [Wiki](https://github.com/BigJk/snd/wiki)
+
 **Warning:** This is still rough and early version. If you want to get this working the best way is to jump on the Discord and ask for help.
 
 ![Screenshot](./data/screenshot.png)
@@ -64,7 +66,7 @@ to the "draw image" command of the printer.
 
 :tada: :tada: :tada:
 
-## Pre-Build Binaries
+## Binaries
 
 Check our github release page: https://github.com/BigJk/snd/releases
 

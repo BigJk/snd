@@ -27,7 +27,7 @@ or a letter that the group found to little character sheets of your players to u
 - Various connection methods
   - Windows Direct Printing
   - Raw USB Printing
-  - CUPS
+  - CUPS (Linux, Mac)
   - Serial
 - Import & Export templates and data sources
 - Fast access to external [data sources](https://github.com/BigJk/snd/wiki/Data-Sources) like Open5e (instant access to SRD monsters, spells and more)

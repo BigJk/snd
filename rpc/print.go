@@ -92,7 +92,7 @@ func fixHtml(html string, settings snd.Settings) (string, error) {
 	finalHtml = urlRegex.ReplaceAllStringFunc(finalHtml, func(s string) string {
 		match := urlRegex.FindStringSubmatch(s)
 
-		content := match[1]
+		content := match[1][1:]
 		symbol := ""
 
 		switch content[len(content)-1] {

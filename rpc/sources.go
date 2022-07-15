@@ -11,6 +11,7 @@ import (
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/imexport"
+	"github.com/BigJk/snd/vtt"
 	"github.com/labstack/echo/v4"
 	"github.com/mattetti/filebuffer"
 )
@@ -106,5 +107,24 @@ func RegisterSources(route *echo.Group, db database.Database) {
 		}
 
 		return ds.Name, nil
+	})))
+
+	route.POST("/importVttModule", echo.WrapHandler(nra.MustBind(func(moduleFile string) error {
+		sources, entries, err := vtt.ConvertDataSources(moduleFile)
+		if err != nil {
+			return err
+		}
+
+		for i := range sources {
+			_ = db.DeleteEntries(sources[i].ID())
+
+			if err := db.SaveSource(sources[i]); err == nil {
+				for j := range entries[i] {
+					_ = db.SaveEntry(sources[i].ID(), entries[i][j])
+				}
+			}
+		}
+
+		return nil
 	})))
 }

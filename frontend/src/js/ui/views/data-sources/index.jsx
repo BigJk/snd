@@ -121,6 +121,36 @@ export default () => {
 						Import
 					</div>
 				</div>
+				<div className="divider" />
+				<div>
+					<div className="mt2 mb3 lh-copy">
+						<b className="db">FoundryVTT Import</b>
+						You can also import data from FoundryVTT Modules. This will convert all the included packs of data in the module. To import a Module open
+						the module.json file in the Module folder.
+					</div>
+					<div
+						className="btn btn-primary mr2"
+						onclick={() => {
+							if (inElectron) {
+								openFileDialog().then((file) => {
+									state.importing.loading = true;
+									api.importVttModule(file).then((name) => {
+										success(`Imported Module successful`);
+
+										store.pub('reload_sources');
+
+										state.importing.show = false;
+										state.importing.loading = false;
+									});
+								});
+							} else {
+								// TODO: error
+							}
+						}}
+					>
+						Import FoundryVTT Module (module.json)
+					</div>
+				</div>
 			</Modal>
 		);
 	};

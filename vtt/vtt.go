@@ -16,7 +16,7 @@ type Module struct {
 	Description string        `json:"description"`
 	Version     string        `json:"version"`
 	Systems     []string      `json:"systems"`
-	Author      []string      `json:"author"`
+	Author      interface{}   `json:"author"`
 	Scripts     []interface{} `json:"scripts"`
 	Esmodules   []interface{} `json:"esmodules"`
 	Styles      []interface{} `json:"styles"`
@@ -90,7 +90,7 @@ func ConvertPackEntries(packFile string) ([]snd.Entry, error) {
 	return entries, nil
 }
 
-// ConvertDataSources parses a FoundryVTT module.json file and converts all the specified packs to
+// ConvertDataSources parses a FoundryVTT module.json or system.json file and converts all the specified packs to
 // S&D data sources and entries.
 func ConvertDataSources(moduleFile string) ([]snd.DataSource, [][]snd.Entry, error) {
 	moduleBytes, err := ioutil.ReadFile(moduleFile)
@@ -101,6 +101,15 @@ func ConvertDataSources(moduleFile string) ([]snd.DataSource, [][]snd.Entry, err
 	mod := Module{}
 	if err := json.Unmarshal(moduleBytes, &mod); err != nil {
 		return nil, nil, err
+	}
+
+	author := ""
+
+	switch mod.Author.(type) {
+	case string:
+		author = mod.Author.(string)
+	case []string:
+		author = strings.Join(mod.Author.([]string), ", ")
 	}
 
 	var sources []snd.DataSource
@@ -118,7 +127,7 @@ func ConvertDataSources(moduleFile string) ([]snd.DataSource, [][]snd.Entry, err
 		source := snd.DataSource{
 			Name:        fmt.Sprintf("%s (%s)", mod.Title, mod.Packs[i].Label),
 			Slug:        fmt.Sprintf("%s-%s", mod.Name, mod.Packs[i].Name),
-			Author:      strings.Join(mod.Author, ", "),
+			Author:      author,
 			Description: mod.Description,
 			Version:     mod.Version,
 		}

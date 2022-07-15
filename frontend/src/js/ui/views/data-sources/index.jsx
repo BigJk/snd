@@ -125,8 +125,8 @@ export default () => {
 				<div>
 					<div className="mt2 mb3 lh-copy">
 						<b className="db">FoundryVTT Import</b>
-						You can also import data from FoundryVTT Modules. This will convert all the included packs of data in the module. To import a Module open
-						the module.json file in the Module folder.
+						You can also import data from FoundryVTT Modules and Systems. This will convert all the included packs and add them as Data Sources. To
+						import a Module or System open the module.json or system.json file in it's folder.
 					</div>
 					<div
 						className="btn btn-primary mr2"
@@ -148,7 +148,7 @@ export default () => {
 							}
 						}}
 					>
-						Import FoundryVTT Module (module.json)
+						Import FoundryVTT (module.json, system.json)
 					</div>
 				</div>
 			</Modal>
@@ -175,7 +175,7 @@ export default () => {
 									{val.map((t, i) => {
 										return (
 											<div className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}>
-												<div className="flex ba b--black-10 h4 mb2 bg-white">
+												<div className="flex ba b--black-10 h4_5 mb2 bg-white">
 													<div className="flex-grow-1 pv2 ph2 lh-solid flex flex-column justify-between">
 														<div>
 															<div className="f5 mb2 flex justify-between items-center">

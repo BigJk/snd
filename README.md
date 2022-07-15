@@ -31,6 +31,7 @@ or a letter that the group found to little character sheets of your players to u
   - Serial
 - Import & Export templates and data sources
 - Fast access to external [data sources](https://github.com/BigJk/snd/wiki/Data-Sources) like Open5e (instant access to SRD monsters, spells and more)
+- Import [FoundryVTT](https://foundryvtt.com/) Modules to access the data of even more Systems
 - Edit templates in your favorite editor (e.g. Visual Studio Code) and get live preview
 
 ## Printer Requirements

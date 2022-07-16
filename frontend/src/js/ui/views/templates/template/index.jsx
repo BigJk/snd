@@ -30,6 +30,7 @@ export default () => {
 		page: 0,
 		showExport: false,
 		showSync: false,
+		showInfo: false,
 		printing: false,
 	};
 
@@ -182,6 +183,24 @@ export default () => {
 						Start Sync
 					</div>
 				)}
+			</Modal>
+		);
+	};
+
+	let modalInfo = () => {
+		if (!state.showInfo) return null;
+
+		return (
+			<Modal title="Information" onclose={() => (state.showInfo = false)}>
+				<div className="mb1 b f5">Template ID</div>
+				<div className="mb2">This is the template id that is used in the Database.</div>
+				<Input value={state.template.id}></Input>
+				<div className="mt3 b mb1 f5">API Print Endpoint</div>
+				<div className="mb2">
+					This is the local endpoint if you want to remotely print this template. Just do a POST request containing the JSON encoded data that should
+					be inserted.
+				</div>
+				<Input value={location.origin + '/api/extern/print/' + state.template.id}></Input>
 			</Modal>
 		);
 	};
@@ -409,8 +428,13 @@ export default () => {
 								</div>
 							</Tooltip>
 							<Tooltip content="Template sync">
-								<div className={`btn ${state.syncActive ? 'btn-success' : 'btn-primary'}`} onclick={() => (state.showSync = true)}>
+								<div className={`btn ${state.syncActive ? 'btn-success' : 'btn-primary'} mr2`} onclick={() => (state.showSync = true)}>
 									<i className={`ion ion-md-sync ${state.syncActive ? 'rotating' : ''}`} />
+								</div>
+							</Tooltip>
+							<Tooltip content="Additional Information">
+								<div className={`btn btn-primary`} onclick={() => (state.showInfo = true)}>
+									<i className={`ion ion-md-information`} />
 								</div>
 							</Tooltip>
 							<div className="divider-vert" />
@@ -432,6 +456,7 @@ export default () => {
 						{body(vnode)}
 						{modalExport()}
 						{modalSync()}
+						{modalInfo()}
 						{printingLoading()}
 					</div>
 				</Base>

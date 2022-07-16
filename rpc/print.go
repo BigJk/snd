@@ -2,6 +2,8 @@ package rpc
 
 import (
 	"bytes"
+	"encoding/base64"
+	"errors"
 	"fmt"
 	"image/png"
 	"io/ioutil"
@@ -39,6 +41,9 @@ func GetOutboundIP() (net.IP, error) {
 }
 
 var urlRegex = regexp.MustCompile(`(?U)url\(["']?(.+)\)`)
+
+// renderCache is used to cache rendered HTML.
+var renderCache = cache.New(time.Second*30, time.Minute)
 
 // fixHtml fixes the HTML string by converting the relative URLs to absolute ones
 // and adding the html and body tags.
@@ -112,9 +117,67 @@ func fixHtml(html string, settings snd.Settings) (string, error) {
 	return finalHtml, nil
 }
 
-func RegisterPrint(route *echo.Group, db database.Database, printer printing.PossiblePrinter) {
-	renderCache := cache.New(time.Second*30, time.Minute)
+// print will render the HTML to a image and print it on the target printer.
+func print(db database.Database, printer printing.PossiblePrinter, html string) error {
+	// Get current settings
+	settings, err := db.GetSettings()
+	if err != nil {
+		return err
+	}
 
+	if settings.PrinterWidth < 50 {
+		return errors.New("print width is too low")
+	}
+
+	// Get printer
+	selectedPrinter, ok := printer[settings.PrinterType]
+	if !ok {
+		return fmt.Errorf("printer nout found: %w", err)
+	}
+
+	finalHtml, err := fixHtml(html, settings)
+	if err != nil {
+		return fmt.Errorf("error while fixing html: %w", err)
+	}
+
+	// Save rendered html to temporary cache
+	tempId := fmt.Sprint(rand.Int63())
+	renderCache.SetDefault(tempId, finalHtml)
+
+	// Render the html to image
+	image, err := rendering.RenderURL(fmt.Sprintf("http://127.0.0.1:7123/api/html/%s", tempId), settings.PrinterWidth)
+	if err != nil {
+		return fmt.Errorf("html to image rendering failed: %w", err)
+	}
+
+	// Print
+	buf := &bytes.Buffer{}
+
+	if settings.Commands.ExplicitInit {
+		epson.InitPrinter(buf)
+	}
+
+	if settings.Commands.ForceStandardMode {
+		epson.SetStandardMode(buf)
+	}
+
+	buf.WriteString(strings.Repeat("\n", settings.Commands.LinesBefore))
+	epson.Image(buf, image)
+	buf.WriteString(strings.Repeat("\n", 5+settings.Commands.LinesAfter))
+
+	if settings.Commands.Cut {
+		epson.CutPaper(buf)
+	}
+
+	err = selectedPrinter.Print(settings.PrinterEndpoint, image, buf.Bytes())
+	if err != nil {
+		return fmt.Errorf("printer wasn't able to print: %w", err)
+	}
+
+	return nil
+}
+
+func RegisterPrint(route *echo.Group, extern *echo.Group, db database.Database, printer printing.PossiblePrinter) {
 	route.GET("/html/:id", func(c echo.Context) error {
 		val, ok := renderCache.Get(c.Param("id"))
 		if !ok {
@@ -149,62 +212,7 @@ func RegisterPrint(route *echo.Group, db database.Database, printer printing.Pos
 	})))
 
 	route.POST("/print", echo.WrapHandler(nra.MustBind(func(html string) error {
-		// Get current settings
-		settings, err := db.GetSettings()
-		if err != nil {
-			return err
-		}
-
-		if settings.PrinterWidth < 50 {
-			return log.ErrorString("print width is too low", log.WithValue("width", settings.PrinterWidth))
-		}
-
-		// Get printer
-		printer, ok := printer[settings.PrinterType]
-		if !ok {
-			return log.ErrorString("print not found", log.WithValue("printer", settings.PrinterType))
-		}
-
-		finalHtml, err := fixHtml(html, settings)
-		if err != nil {
-			return err
-		}
-
-		// Save rendered html to temporary cache
-		tempId := fmt.Sprint(rand.Int63())
-		renderCache.SetDefault(tempId, finalHtml)
-
-		// Render the html to image
-		image, err := rendering.RenderURL(fmt.Sprintf("http://127.0.0.1:7123/api/html/%s", tempId), settings.PrinterWidth)
-		if err != nil {
-			return log.ErrorUser(err, "html to image rendering failed")
-		}
-
-		// Print
-		buf := &bytes.Buffer{}
-
-		if settings.Commands.ExplicitInit {
-			epson.InitPrinter(buf)
-		}
-
-		if settings.Commands.ForceStandardMode {
-			epson.SetStandardMode(buf)
-		}
-
-		buf.WriteString(strings.Repeat("\n", settings.Commands.LinesBefore))
-		epson.Image(buf, image)
-		buf.WriteString(strings.Repeat("\n", 5+settings.Commands.LinesAfter))
-
-		if settings.Commands.Cut {
-			epson.CutPaper(buf)
-		}
-
-		err = printer.Print(settings.PrinterEndpoint, image, buf.Bytes())
-		if err != nil {
-			return log.ErrorUser(err, "printer wasn't able to print", log.WithValue("printer", settings.PrinterType), log.WithValue("endpoint", settings.PrinterEndpoint))
-		}
-
-		return nil
+		return print(db, printer, html)
 	})))
 
 	route.POST("/screenshot", echo.WrapHandler(nra.MustBind(func(html string, file string) error {
@@ -239,4 +247,27 @@ func RegisterPrint(route *echo.Group, db database.Database, printer printing.Pos
 
 		return ioutil.WriteFile(file, buf.Bytes(), 0666)
 	})))
+
+	//
+	//	External API Routes
+	//
+
+	extern.POST("/print/:template", func(c echo.Context) error {
+		// Render the Template to HTML
+		data, err := ioutil.ReadAll(c.Request().Body)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err.Error())
+		}
+
+		html, err := rendering.ExtractHTML(fmt.Sprintf("http://127.0.0.1:7123/#!/extern-print/%s/%s", c.Param("template"), base64.StdEncoding.EncodeToString(data)), "#app")
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err.Error())
+		}
+
+		if err := print(db, printer, html); err != nil {
+			return c.JSON(http.StatusBadRequest, err.Error())
+		}
+
+		return c.NoContent(http.StatusOK)
+	})
 }

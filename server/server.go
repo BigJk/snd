@@ -119,11 +119,13 @@ func (s *Server) Start(bind string) error {
 
 	// Register rpc routes
 	api := s.e.Group("/api")
+	extern := api.Group("/extern")
+
 	rpc.RegisterBasic(api, s.db)
-	rpc.RegisterTemplate(api, s.db)
+	rpc.RegisterTemplate(api, extern, s.db)
 	rpc.RegisterEntry(api, s.db)
 	rpc.RegisterSources(api, s.db)
-	rpc.RegisterPrint(api, s.db, s.printers)
+	rpc.RegisterPrint(api, extern, s.db, s.printers)
 	rpc.RegisterSync(api, s.m, s.db)
 
 	// Register additional routes

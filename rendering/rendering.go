@@ -1,5 +1,5 @@
-// Package rendering provides a function to render HTML to images. It uses the
-// Chrome Debug Protocol through the rod package. It will download a headless
+// Package rendering provides a function to render HTML to images or HTML after JS execution.
+// It uses the Chrome Debug Protocol through the rod package. It will download a headless
 // Chrome version if needed that matches the current platform.
 //
 // If the environment variable SND_DEBUG=1 it will start the chrome instances
@@ -68,4 +68,18 @@ func RenderURL(url string, width int) (image.Image, error) {
 	defer page.Close()
 
 	return screenshotPage(page, width)
+}
+
+// ExtractHTML opens the URL, lets the page executes and returns the HTML.
+func ExtractHTML(url string, selector string) (string, error) {
+	page := browser.MustPage(url)
+	page.MustWaitLoad().MustWaitIdle()
+	defer page.Close()
+
+	sel, err := page.Element(selector)
+	if err != nil {
+		return "", err
+	}
+
+	return sel.HTML()
 }

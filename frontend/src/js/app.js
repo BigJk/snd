@@ -66,6 +66,8 @@ import DataSources from '/js/ui/views/data-sources';
 
 import Devices from '/js/ui/views/devices';
 
+import ExternPrint from '/js/ui/views/extern-print';
+
 m.route(document.getElementById('app'), '/', {
 	'/': Templates,
 	'/templates': Templates,
@@ -78,4 +80,5 @@ m.route(document.getElementById('app'), '/', {
 	'/data-sources': DataSources,
 	'/settings': Settings,
 	'/devices': Devices,
+	'/extern-print/:id/:json': ExternPrint,
 });

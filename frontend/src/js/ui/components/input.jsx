@@ -9,6 +9,7 @@ export default () => {
 				type={vnode.attrs.type ?? 'text'}
 				placeholder={vnode.attrs.placeholder}
 				oninput={vnode.attrs.oninput}
+				disabled={vnode.attrs.disabled}
 			/>
 		);
 	};

@@ -31,7 +31,7 @@
     "tachyons": "^4.11.1",
     "tippy.js": "^6.3.7",
     "toastify-js": "^1.6.2",
-    "vite": "^2.7.13",
+    "vite": "^2.9.13",
     "wildcard-match": "^5.1.2"
   }
 }

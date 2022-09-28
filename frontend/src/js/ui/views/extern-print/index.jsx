@@ -14,7 +14,7 @@ export default () => {
 			state.json = JSON.parse(atob(vnode.attrs.json));
 
 			rpc.getTemplate(state.id).then((tmpl) => {
-				state.tmpl = render(tmpl.printTemplate, state.json, tmpl.images);
+				state.tmpl = render(tmpl.printTemplate, { it: state.json, images: tmpl.images });
 			});
 		},
 		onremove() {},

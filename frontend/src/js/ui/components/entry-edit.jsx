@@ -20,7 +20,7 @@ export default () => {
 
 	let updateRender = debounce(() => {
 		try {
-			state.lastRender = render(state.template.printTemplate, state.parsedData, state.template.images);
+			state.lastRender = render(state.template.printTemplate, { it: state.parsedData, images: state.template.images });
 			m.redraw();
 
 			if (state.onRender) {

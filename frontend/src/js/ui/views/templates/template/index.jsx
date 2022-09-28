@@ -206,7 +206,7 @@ export default () => {
 		}
 
 		return (
-			<div className='modal active relative'>
+			<div className='modal active absolute'>
 				<div className='modal-overlay' />
 				<div className='absolute flex flex-column'>
 					<div className='loading loading-lg mb2' />
@@ -226,7 +226,10 @@ export default () => {
 				width={340}
 				scale={340.0 / store.data.settings.printerWidth}
 				stylesheets={store.data.settings.stylesheets}
-				content={tryRender(state.template.printTemplate, state.selected.data ?? state.template.skeletonData, state.template.images)}
+				content={tryRender(state.template.printTemplate, {
+					it: state.selected.data ?? state.template.skeletonData,
+					images: state.template.images,
+				})}
 				extraChildren={
 					state.advancedSearch
 						? [
@@ -264,7 +267,7 @@ export default () => {
 									>
 										<div>
 											<div className='fw6 f5'>{e.name}</div>
-											<div className='black-50'>{m.trust(tryRender(state.template.listTemplate, e.data, null))}</div>
+											<div className='black-50'>{m.trust(tryRender(state.template.listTemplate, { it: e.data }))}</div>
 										</div>
 										<div>
 											{e.id === state.selected.id ? (
@@ -273,7 +276,9 @@ export default () => {
 														className='btn btn-success btn-sm mr2'
 														onclick={() => {
 															state.printing = true;
-															api.print(tryRender(state.template.printTemplate, e.data, state.template.images))
+															api.print(
+																tryRender(state.template.printTemplate, { it: e.data, images: state.template.images })
+															)
 																.then(() => success('Printing send'), error)
 																.then(() => (state.printing = false));
 														}}
@@ -285,7 +290,10 @@ export default () => {
 														onclick={() => {
 															openFolderDialog().then((folder) => {
 																api.screenshot(
-																	tryRender(state.template.printTemplate, e.data, state.template.images),
+																	tryRender(state.template.printTemplate, {
+																		it: e.data,
+																		images: state.template.images,
+																	}),
 																	folder + '/' + e.name + '.png'
 																).then(() => success('Screenshot created'), error);
 															});

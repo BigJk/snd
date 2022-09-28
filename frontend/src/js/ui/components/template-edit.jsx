@@ -97,8 +97,7 @@ export default () => {
 
 		renderAsync(
 			state.target.printTemplate,
-			state.target.skeletonData,
-			state.target.images,
+			{ it: state.target.skeletonData, images: state.target.images },
 			(res) => {
 				rerender = true;
 				state.lastRender = res;
@@ -110,8 +109,7 @@ export default () => {
 
 		renderAsync(
 			state.target.listTemplate,
-			state.target.skeletonData,
-			state.target.images,
+			{ it: state.target.skeletonData, images: state.target.images },
 			(res) => {
 				rerender = true;
 				state.lastListRender = res;

@@ -11,6 +11,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/printing/preview"
 	"github.com/BigJk/snd/server"
 
@@ -27,10 +28,10 @@ func init() {
 	serverOptions = append(serverOptions, server.WithPrinter(&prev))
 }
 
-func startElectron(debug bool) {
+func startElectron(db database.Database, debug bool) {
 	// Start the S&D Backend in separate go-routine.
 	go func() {
-		startServer(debug)
+		startServer(db, debug)
 	}()
 
 	var targetWriter io.Writer
@@ -84,5 +85,6 @@ func startElectron(debug bool) {
 	}
 
 	a.Wait()
+	db.Close()
 	time.Sleep(time.Second * 1)
 }

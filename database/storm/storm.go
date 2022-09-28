@@ -12,11 +12,11 @@ import (
 )
 
 const (
-	BucketBase      = "BASE"
-	BucketTemplates = "TEMPLATES"
-	BucketSources   = "DATA_SOURCES"
-	BucketEntries   = "ENTRIES"
-	BucketScripts   = "SCRIPTS"
+	BucketBase       = "BASE"
+	BucketTemplates  = "TEMPLATES"
+	BucketGenerators = "GENERATORS"
+	BucketSources    = "DATA_SOURCES"
+	BucketEntries    = "ENTRIES"
 
 	KeySettings = "SETTINGS"
 )
@@ -26,7 +26,7 @@ type Storm struct {
 }
 
 func New(file string) (*Storm, error) {
-	db, err := storm.Open(file)
+	db, err := storm.Open(file, storm.Batch())
 	if err != nil {
 		return nil, err
 	}
@@ -36,6 +36,10 @@ func New(file string) (*Storm, error) {
 
 func (s *Storm) DB() *storm.DB {
 	return s.db
+}
+
+func (s *Storm) Close() error {
+	return s.db.Close()
 }
 
 func (s *Storm) GetSettings() (snd.Settings, error) {
@@ -135,6 +139,22 @@ func (s *Storm) DeleteEntries(id string) error {
 		}
 		return b.DeleteBucket([]byte(BucketEntries))
 	})
+}
+
+func (s *Storm) GetGenerator(id string) (snd.Generator, error) {
+	return fetchSingle[snd.Generator](s.db, BucketGenerators, id)
+}
+
+func (s *Storm) SaveGenerator(generator snd.Generator) error {
+	return s.db.Set(BucketGenerators, generator.ID(), &generator)
+}
+
+func (s *Storm) DeleteGenerator(id string) error {
+	return s.db.Delete(BucketGenerators, id)
+}
+
+func (s *Storm) GetGenerators() ([]snd.Generator, error) {
+	return fetchFromBucket[snd.Generator](s.db, "", BucketGenerators)
 }
 
 func (s *Storm) SaveSource(ds snd.DataSource) error {

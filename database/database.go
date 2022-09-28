@@ -20,6 +20,8 @@ type DataSourceEntry struct {
 
 // Database represents all database functions that are needed for S&D to work.
 type Database interface {
+	Close() error
+
 	GetSettings() (snd.Settings, error)
 	SaveSettings(settings snd.Settings) error
 
@@ -37,6 +39,11 @@ type Database interface {
 	SaveEntry(id string, entry snd.Entry) error
 	DeleteEntry(id string, eid string) error
 	DeleteEntries(id string) error
+
+	GetGenerator(id string) (snd.Generator, error)
+	SaveGenerator(generator snd.Generator) error
+	DeleteGenerator(id string) error
+	GetGenerators() ([]snd.Generator, error)
 
 	SaveSource(ds snd.DataSource) error
 	DeleteSource(id string) error

@@ -19,6 +19,7 @@ node_modules/
 dist/
 vendor/
 templates/
+userdata/
 
 .idea/
 .cache/

@@ -123,6 +123,7 @@ func (s *Server) Start(bind string) error {
 
 	rpc.RegisterBasic(api, s.db)
 	rpc.RegisterTemplate(api, extern, s.db)
+	rpc.RegisterGenerator(api, extern, s.db)
 	rpc.RegisterEntry(api, s.db)
 	rpc.RegisterSources(api, s.db)
 	rpc.RegisterPrint(api, extern, s.db, s.printers)

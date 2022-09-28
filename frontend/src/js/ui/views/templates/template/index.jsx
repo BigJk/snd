@@ -1,17 +1,16 @@
-import store from '/js/core/store';
-import binder from '/js/ui/binder';
-import api from '/js/core/api';
+import { chunk, debounce } from 'lodash-es';
 
+import { inElectron, openFolderDialog } from '/js/electron';
+
+import api from '/js/core/api';
+import store from '/js/core/store';
+import { tryRender } from '/js/core/templating';
 import { keepOpen, on } from '/js/core/ws';
 
-import { openFolderDialog, inElectron } from '/js/electron';
+import { AdvancedSearch, Base, Header, Input, Loading, Modal, SplitView, Tooltip } from '/js/ui/components';
 
-import { Base, Header, SplitView, Loading, Modal, AdvancedSearch, Input, Tooltip } from '/js/ui/components';
-
-import { debounce, chunk } from 'lodash-es';
-
-import { success, error } from '/js/ui/toast';
-import { tryRender } from '/js/core/templating';
+import binder from '/js/ui/binder';
+import { error, success } from '/js/ui/toast';
 
 export default () => {
 	let state = {
@@ -88,18 +87,17 @@ export default () => {
 		if (!state.showExport) return null;
 
 		return (
-			<Modal title="Export" onclose={() => (state.showExport = null)}>
-				<div className="mb3">
-					You can export this template in multiple formats. This will only export the template itself and entries in the template and not in any
-					associated data sources!
+			<Modal title='Export' onclose={() => (state.showExport = null)}>
+				<div className='mb3'>
+					You can export this template in multiple formats. This will only export the template itself and entries in the template and not in
+					any associated data sources!
 				</div>
 				<div
-					className="btn btn-primary mr2"
+					className='btn btn-primary mr2'
 					onclick={() => {
 						if (inElectron) {
 							openFolderDialog().then((folder) => {
-								api
-									.exportTemplateZip(state.template.id, folder)
+								api.exportTemplateZip(state.template.id, folder)
 									.then((file) => {
 										success('Wrote ' + file);
 									})
@@ -118,11 +116,10 @@ export default () => {
 					</b>
 				</div>
 				<div
-					className="btn btn-primary"
+					className='btn btn-primary'
 					onclick={() => {
 						openFolderDialog().then((folder) => {
-							api
-								.exportTemplateFolder(state.template.id, folder)
+							api.exportTemplateFolder(state.template.id, folder)
 								.then((file) => {
 									success('Wrote ' + file);
 								})
@@ -146,14 +143,13 @@ export default () => {
 		if (!state.showSync) return null;
 
 		return (
-			<Modal title="Live Sync" onclose={() => (state.showSync = false)}>
-				<div className="mb3">You can synchronise a template to a folder so that you are able to edit it in an external editor.</div>
+			<Modal title='Live Sync' onclose={() => (state.showSync = false)}>
+				<div className='mb3'>You can synchronise a template to a folder so that you are able to edit it in an external editor.</div>
 				{state.syncActive ? (
 					<div
-						className="btn btn-error"
+						className='btn btn-error'
 						onclick={() => {
-							api
-								.syncStop(state.template.id)
+							api.syncStop(state.template.id)
 								.then(() => {
 									success(`Synced stopped`);
 									state.syncActive = false;
@@ -166,11 +162,10 @@ export default () => {
 					</div>
 				) : (
 					<div
-						className="btn btn-primary"
+						className='btn btn-primary'
 						onclick={() => {
 							openFolderDialog().then((folder) => {
-								api
-									.syncStart(state.template.id, folder)
+								api.syncStart(state.template.id, folder)
 									.then((folder) => {
 										success(`Synced to '${folder}'`);
 										state.syncActive = true;
@@ -191,14 +186,14 @@ export default () => {
 		if (!state.showInfo) return null;
 
 		return (
-			<Modal title="Information" onclose={() => (state.showInfo = false)}>
-				<div className="mb1 b f5">Template ID</div>
-				<div className="mb2">This is the template id that is used in the Database.</div>
+			<Modal title='Information' onclose={() => (state.showInfo = false)}>
+				<div className='mb1 b f5'>Template ID</div>
+				<div className='mb2'>This is the template id that is used in the Database.</div>
 				<Input value={state.template.id}></Input>
-				<div className="mt3 b mb1 f5">API Print Endpoint</div>
-				<div className="mb2">
-					This is the local endpoint if you want to remotely print this template. Just do a POST request containing the JSON encoded data that should
-					be inserted.
+				<div className='mt3 b mb1 f5'>API Print Endpoint</div>
+				<div className='mb2'>
+					This is the local endpoint if you want to remotely print this template. Just do a POST request containing the JSON encoded data
+					that should be inserted.
 				</div>
 				<Input value={location.origin + '/api/extern/print/' + state.template.id}></Input>
 			</Modal>
@@ -211,11 +206,11 @@ export default () => {
 		}
 
 		return (
-			<div className="modal active relative">
-				<div className="modal-overlay" />
-				<div className="absolute flex flex-column">
-					<div className="loading loading-lg mb2" />
-					<div className="black-70">Printing...</div>
+			<div className='modal active relative'>
+				<div className='modal-overlay' />
+				<div className='absolute flex flex-column'>
+					<div className='loading loading-lg mb2' />
+					<div className='black-70'>Printing...</div>
 				</div>
 			</div>
 		);
@@ -235,7 +230,7 @@ export default () => {
 				extraChildren={
 					state.advancedSearch
 						? [
-								<div className="h-100 bg-light-gray br1 ba b--black-10 ph3 pt2 pb3 overflow-auto" style={{ width: '370px' }}>
+								<div className='h-100 bg-light-gray br1 ba b--black-10 ph3 pt2 pb3 overflow-auto' style={{ width: '370px' }}>
 									<AdvancedSearch
 										target={state.template.skeletonData}
 										onchange={(fn) => {
@@ -253,7 +248,7 @@ export default () => {
 						: []
 				}
 			>
-				<div className="flex-grow-1 overflow-auto" id="entry-page">
+				<div className='flex-grow-1 overflow-auto' id='entry-page'>
 					{state.filtered.length === 0
 						? null
 						: state.filtered[state.page].map((e) => {
@@ -268,46 +263,48 @@ export default () => {
 										}}
 									>
 										<div>
-											<div className="fw6 f5">{e.name}</div>
-											<div className="black-50">{m.trust(tryRender(state.template.listTemplate, e.data, null))}</div>
+											<div className='fw6 f5'>{e.name}</div>
+											<div className='black-50'>{m.trust(tryRender(state.template.listTemplate, e.data, null))}</div>
 										</div>
 										<div>
 											{e.id === state.selected.id ? (
-												<div className="flex">
+												<div className='flex'>
 													<div
-														className="btn btn-success btn-sm mr2"
+														className='btn btn-success btn-sm mr2'
 														onclick={() => {
 															state.printing = true;
-															api
-																.print(tryRender(state.template.printTemplate, e.data, state.template.images))
+															api.print(tryRender(state.template.printTemplate, e.data, state.template.images))
 																.then(() => success('Printing send'), error)
 																.then(() => (state.printing = false));
 														}}
 													>
-														<i className="ion ion-md-print" />
+														<i className='ion ion-md-print' />
 													</div>
 													<div
-														className="btn btn-primary btn-sm mr2"
+														className='btn btn-primary btn-sm mr2'
 														onclick={() => {
 															openFolderDialog().then((folder) => {
-																api
-																	.screenshot(tryRender(state.template.printTemplate, e.data, state.template.images), folder + '/' + e.name + '.png')
-																	.then(() => success('Screenshot created'), error);
+																api.screenshot(
+																	tryRender(state.template.printTemplate, e.data, state.template.images),
+																	folder + '/' + e.name + '.png'
+																).then(() => success('Screenshot created'), error);
 															});
 														}}
 													>
-														<i className="ion ion-md-camera" />
+														<i className='ion ion-md-camera' />
 													</div>
 													{e.source === state.template.id ? (
 														<div>
 															<div
-																className="btn btn-primary btn-sm mr2"
-																onclick={() => m.route.set(`/templates/${state.template.id}/edit/${state.selected.id}`)}
+																className='btn btn-primary btn-sm mr2'
+																onclick={() =>
+																	m.route.set(`/templates/${state.template.id}/edit/${state.selected.id}`)
+																}
 															>
-																<i className="ion ion-md-create" />
+																<i className='ion ion-md-create' />
 															</div>
 															<div
-																className="btn btn-error btn-sm"
+																className='btn btn-error btn-sm'
 																onclick={() =>
 																	api
 																		.deleteEntry(state.template.id, e.id)
@@ -319,7 +316,7 @@ export default () => {
 																		.then(loadEntries)
 																}
 															>
-																<i className="ion ion-md-close-circle-outline" />
+																<i className='ion ion-md-close-circle-outline' />
 															</div>
 														</div>
 													) : (
@@ -332,9 +329,9 @@ export default () => {
 								);
 						  })}
 				</div>
-				<div className="ph3 pv2 flex-shrink-0 bt b--black-10 bg-light-gray flex justify-between items-center">
+				<div className='ph3 pv2 flex-shrink-0 bt b--black-10 bg-light-gray flex justify-between items-center'>
 					<i
-						className="ion ion-md-arrow-dropleft f3 pointer dim"
+						className='ion ion-md-arrow-dropleft f3 pointer dim'
 						onclick={() => {
 							if (state.page > 0) {
 								state.page--;
@@ -342,19 +339,19 @@ export default () => {
 							}
 						}}
 					/>
-					<div className="w5 tc">
-						Page {state.page + 1} / {state.filtered.length} <span className="ml2 o-50">({state.found} Found)</span>
+					<div className='w5 tc'>
+						Page {state.page + 1} / {state.filtered.length} <span className='ml2 o-50'>({state.found} Found)</span>
 					</div>
 					{!state.advancedSearch ? (
-						<div className="w-40 flex items-center justify-center">
-							<div className="flex-grow-1">
-								<Input placeholder="Search..." value={state.search} oninput={binder.inputString(state, 'search', runSearch)} />
+						<div className='w-40 flex items-center justify-center'>
+							<div className='flex-grow-1'>
+								<Input placeholder='Search...' value={state.search} oninput={binder.inputString(state, 'search', runSearch)} />
 							</div>
-							<i className="ion ion-md-cog ml2 f6 dim pointer" onclick={() => (state.advancedSearch = true)} />
+							<i className='ion ion-md-cog ml2 f6 dim pointer' onclick={() => (state.advancedSearch = true)} />
 						</div>
 					) : null}
 					<i
-						className="ion ion-md-arrow-dropright f3 pointer dim"
+						className='ion ion-md-arrow-dropright f3 pointer dim'
 						onclick={() => {
 							if (state.page < state.filtered.length - 1) {
 								state.page++;
@@ -378,8 +375,7 @@ export default () => {
 				state = store.data.lastTemplateState;
 			}
 
-			api
-				.getTemplate(templateId)
+			api.getTemplate(templateId)
 				.then((template) => {
 					state.template = template;
 					state.template.id = vnode.attrs.id;
@@ -411,36 +407,39 @@ export default () => {
 		},
 		view(vnode) {
 			return (
-				<Base active="templates">
-					<div className="h-100 flex flex-column">
-						<Header breadcrumbs={breadcrumbs()} subtitle="Create, Edit and Print Entries" pt={2}>
-							<div className="btn btn-success mr2" onclick={() => m.route.set(`/templates/${state.template.id}/new`)}>
+				<Base active='templates'>
+					<div className='h-100 flex flex-column'>
+						<Header breadcrumbs={breadcrumbs()} subtitle='Create, Edit and Print Entries' pt={2}>
+							<div className='btn btn-success mr2' onclick={() => m.route.set(`/templates/${state.template.id}/new`)}>
 								New Entry
 							</div>
 							{!state.syncActive ? (
-								<div className="btn btn-primary mr2" onclick={() => m.route.set(`/templates/${state.template.id}/edit`)}>
+								<div className='btn btn-primary mr2' onclick={() => m.route.set(`/templates/${state.template.id}/edit`)}>
 									Edit
 								</div>
 							) : null}
-							<Tooltip content="Import & Export">
-								<div className="btn btn-primary mr2" onclick={() => (state.showExport = true)}>
-									<i className="ion ion-md-open" />
+							<Tooltip content='Import & Export'>
+								<div className='btn btn-primary mr2' onclick={() => (state.showExport = true)}>
+									<i className='ion ion-md-open' />
 								</div>
 							</Tooltip>
-							<Tooltip content="Template sync">
-								<div className={`btn ${state.syncActive ? 'btn-success' : 'btn-primary'} mr2`} onclick={() => (state.showSync = true)}>
+							<Tooltip content='Template sync'>
+								<div
+									className={`btn ${state.syncActive ? 'btn-success' : 'btn-primary'} mr2`}
+									onclick={() => (state.showSync = true)}
+								>
 									<i className={`ion ion-md-sync ${state.syncActive ? 'rotating' : ''}`} />
 								</div>
 							</Tooltip>
-							<Tooltip content="Additional Information">
+							<Tooltip content='Additional Information'>
 								<div className={`btn btn-primary`} onclick={() => (state.showInfo = true)}>
 									<i className={`ion ion-md-information`} />
 								</div>
 							</Tooltip>
-							<div className="divider-vert" />
-							<Tooltip content="Delete the template">
+							<div className='divider-vert' />
+							<Tooltip content='Delete the template'>
 								<div
-									className="btn btn-error"
+									className='btn btn-error'
 									onclick={() =>
 										api.deleteTemplate(state.template.id).then(() => {
 											success('Template deleted');
@@ -449,7 +448,7 @@ export default () => {
 										}, error)
 									}
 								>
-									<i className="ion ion-md-close-circle-outline" />
+									<i className='ion ion-md-close-circle-outline' />
 								</div>
 							</Tooltip>
 						</Header>

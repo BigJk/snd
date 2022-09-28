@@ -1,10 +1,10 @@
 import api from '/js/core/api';
+import { NewTemplate } from '/js/core/factory';
 import store from '/js/core/store';
 
 import { Base, Header, TemplateEdit } from '/js/ui/components';
 
-import { success, error } from '/js/ui/toast';
-import { NewTemplate } from '/js/core/factory';
+import { error, success } from '/js/ui/toast';
 
 export default () => {
 	let state = {
@@ -25,7 +25,7 @@ export default () => {
 
 	let body = () => {
 		return (
-			<div className="flex-grow-1 overflow-auto">
+			<div className='flex-grow-1 overflow-auto'>
 				<TemplateEdit target={state.template} />
 			</div>
 		);
@@ -34,11 +34,11 @@ export default () => {
 	return {
 		view(vnode) {
 			return (
-				<Base active="templates">
-					<div className="h-100 flex flex-column">
-						<Header breadcrumbs={breadcrumbs()} subtitle="Create a new Template" pt={2}>
+				<Base active='templates'>
+					<div className='h-100 flex flex-column'>
+						<Header breadcrumbs={breadcrumbs()} subtitle='Create a new Template' pt={2}>
 							<div
-								className="btn btn-success"
+								className='btn btn-success'
 								onclick={() => {
 									if (state.template.name.length === 0) {
 										error('Please insert a name');

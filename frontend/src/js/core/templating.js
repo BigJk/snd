@@ -1,7 +1,7 @@
-import store from '/js/core/store';
-
-import * as nunjucks from 'nunjucks';
 import MarkdownIt from 'markdown-it';
+import * as nunjucks from 'nunjucks';
+
+import store from '/js/core/store';
 
 // DataImportExtension
 //

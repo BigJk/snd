@@ -1,5 +1,5 @@
-import { render } from '/js/core/templating';
 import rpc from '/js/core/api';
+import { render } from '/js/core/templating';
 
 export default () => {
 	let state = {

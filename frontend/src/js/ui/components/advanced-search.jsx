@@ -1,8 +1,8 @@
+import { camelCase, cloneDeep, flattenDeep, get, map, some, startCase } from 'lodash-es';
+
+import { Form, Input, Select, Switch } from './index';
+
 import binder from '/js/ui/binder';
-
-import { Select, Input, Switch, Form } from './index';
-
-import { map, camelCase, startCase, cloneDeep, some, get, flattenDeep } from 'lodash-es';
 
 const matcher = {
 	string_contains(val, args) {
@@ -224,24 +224,24 @@ export default () => {
 			};
 
 			return (
-				<div className="overflow-auto">
-					<div className="flex justify-between items-center bb b--black-10 pb2 mb1">
-						<span className="f5">
-							<i className="ion ion-md-search mr1" /> Advanced Search
+				<div className='overflow-auto'>
+					<div className='flex justify-between items-center bb b--black-10 pb2 mb1'>
+						<span className='f5'>
+							<i className='ion ion-md-search mr1' /> Advanced Search
 						</span>
-						{state.onClose ? <i className="ion ion-md-close red f5 pointer dim" onclick={state.onClose} /> : null}
+						{state.onClose ? <i className='ion ion-md-close red f5 pointer dim' onclick={state.onClose} /> : null}
 					</div>
-					<div className="bb b--black-10 pb2 mb3">
-						<Input label="Name Search" placeholder="Dragon..." oninput={binder.inputString(state, 'search', triggerChange)} />
+					<div className='bb b--black-10 pb2 mb3'>
+						<Input label='Name Search' placeholder='Dragon...' oninput={binder.inputString(state, 'search', triggerChange)} />
 						<Select
-							label="Property"
+							label='Property'
 							selected={state.selectedKey}
 							keys={paths}
 							names={paths.map(pathToName)}
 							oninput={(e) => (state.selectedKey = e.target.value)}
 						/>
 						<div
-							className="btn btn-primary mb2"
+							className='btn btn-primary mb2'
 							onclick={() => {
 								if (state.filter.hasOwnProperty(state.selectedKey)) {
 									return;
@@ -259,18 +259,18 @@ export default () => {
 					</div>
 					{map(state.filter, (con, key) => {
 						return (
-							<div className="pa2 ba br1 b--black-10 mt2 bg-white-20">
-								<div className="flex justify-between items-center mb2">
-									<span className="b">{pathToName(key)}</span>
+							<div className='pa2 ba br1 b--black-10 mt2 bg-white-20'>
+								<div className='flex justify-between items-center mb2'>
+									<span className='b'>{pathToName(key)}</span>
 									<i
-										className="ion ion-md-close red f5 pointer dim"
+										className='ion ion-md-close red f5 pointer dim'
 										onclick={() => {
 											delete state.filter[key];
 											triggerChange();
 										}}
 									/>
 								</div>
-								<div className="flex">
+								<div className='flex'>
 									<Select
 										selected={con.selectedSuitable}
 										keys={con.suitable.map((_, i) => i)}
@@ -278,7 +278,7 @@ export default () => {
 										oninput={(e) => (con.selectedSuitable = parseInt(e.target.value))}
 									/>
 									<div
-										className="btn btn-primary ml2"
+										className='btn btn-primary ml2'
 										onclick={() => {
 											if (con.selectedSuitable === null) {
 												return;
@@ -299,34 +299,47 @@ export default () => {
 								<div>
 									{map(con.constrains, (c, i) => {
 										return (
-											<div className="bt b--black-10 pt2 mt2">
-												<div className="flex justify-between items-center">
-													<span className="b">{c.base.name}</span>{' '}
+											<div className='bt b--black-10 pt2 mt2'>
+												<div className='flex justify-between items-center'>
+													<span className='b'>{c.base.name}</span>{' '}
 													<i
-														className="ion ion-md-close red f5 pointer dim"
+														className='ion ion-md-close red f5 pointer dim'
 														onclick={() => {
 															con.constrains.splice(i, 1);
 															triggerChange();
 														}}
 													/>
 												</div>
-												<div className="flex w-100">
-													<div className="flex-grow-1">
+												<div className='flex w-100'>
+													<div className='flex-grow-1'>
 														{map(c.base.args, (input, i) => {
 															switch (input.type) {
 																case 'string':
 																	return (
-																		<Input value={c.args[i]} label={input.name} oninput={binder.inputString(c, 'args[' + i + ']', triggerChange)} />
+																		<Input
+																			value={c.args[i]}
+																			label={input.name}
+																			oninput={binder.inputString(c, 'args[' + i + ']', triggerChange)}
+																		/>
 																	);
 																case 'number':
 																	return (
-																		<Input value={c.args[i]} label={input.name} oninput={binder.inputNumber(c, 'args[' + i + ']', triggerChange)} />
+																		<Input
+																			value={c.args[i]}
+																			label={input.name}
+																			oninput={binder.inputNumber(c, 'args[' + i + ']', triggerChange)}
+																		/>
 																	);
 															}
 														})}
 													</div>
-													<Form className="form-no-margin ml2 flex-shrink-0" horizontal={false}>
-														<Switch label="Negate" labelCol={5} value={c.negate} oninput={binder.checkbox(c, 'negate', triggerChange)} />
+													<Form className='form-no-margin ml2 flex-shrink-0' horizontal={false}>
+														<Switch
+															label='Negate'
+															labelCol={5}
+															value={c.negate}
+															oninput={binder.checkbox(c, 'negate', triggerChange)}
+														/>
 													</Form>
 												</div>
 											</div>

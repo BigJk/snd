@@ -8,6 +8,11 @@ let pages = {
 		icon: 'list-box',
 		url: 'templates',
 	},
+	generator: {
+		name: 'Generators',
+		icon: 'switch',
+		url: 'generator',
+	},
 	dataSources: {
 		name: 'Data Sources',
 		icon: 'analytics',
@@ -59,14 +64,14 @@ export default () => {
 	return {
 		view(vnode) {
 			return (
-				<div className="side-nav grid-bg relative flex flex-column flex-shrink-0">
-					<div className="side-nav--shadow w-100 h-100 absolute bottom-0 left-0 z-0" />
-					<div className="ph2 pv3 header white flex-shrink-0">
-						<div className="flex-centered">
+				<div className='side-nav grid-bg relative flex flex-column flex-shrink-0'>
+					<div className='side-nav--shadow w-100 h-100 absolute bottom-0 left-0 z-0' />
+					<div className='ph2 pv3 header white flex-shrink-0'>
+						<div className='flex-centered'>
 							<Logo />
 						</div>
 					</div>
-					<div className="flex-grow-1 overflow-auto z-5">{menu(vnode.attrs.active)}</div>
+					<div className='flex-grow-1 overflow-auto z-5'>{menu(vnode.attrs.active)}</div>
 				</div>
 			);
 		},

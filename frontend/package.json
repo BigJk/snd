@@ -7,12 +7,15 @@
     "dev": "vite",
     "build": "vite build",
     "watch": "vite build --watch",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format-all": "prettier --write ./src/js/",
+    "format-check": "prettier --check ./src/js/"
   },
   "author": "BigJk",
   "license": "MIT",
   "devDependencies": {
     "@emmetio/codemirror-plugin": "^0.5.4",
+    "@trivago/prettier-plugin-sort-imports": "^3.3.0",
     "browserslist": "^4.9.1",
     "caniuse-lite": "^1.0.30001030",
     "codemirror": "^5.51.0",
@@ -25,6 +28,7 @@
     "markdown-it-replace-link": "^1.1.0",
     "mithril": "^2.0.4",
     "nunjucks": "^3.2.0",
+    "prettier": "^2.7.1",
     "reconnecting-websocket": "^4.4.0",
     "sass": "^1.25.0",
     "spectre.css": "^0.5.8",

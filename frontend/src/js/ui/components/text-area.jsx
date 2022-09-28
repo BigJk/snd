@@ -15,7 +15,9 @@ export default () => {
 
 	return {
 		view(vnode) {
-			return <FormGroup label={vnode.attrs.label} labelCol={vnode.attrs.labelCol} elem={getTextarea(vnode)} className={vnode.attrs.className} />;
+			return (
+				<FormGroup label={vnode.attrs.label} labelCol={vnode.attrs.labelCol} elem={getTextarea(vnode)} className={vnode.attrs.className} />
+			);
 		},
 	};
 };

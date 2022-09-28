@@ -112,12 +112,12 @@ export default () => {
 				<iframe
 					style={{ width: width }}
 					className={vnode.attrs.className}
-					name="result"
-					sandbox="allow-scripts allow-same-origin"
-					allowfullscreen="false"
-					allowpaymentrequest="false"
-					frameborder="0"
-					src=""
+					name='result'
+					sandbox='allow-scripts allow-same-origin'
+					allowfullscreen='false'
+					allowpaymentrequest='false'
+					frameborder='0'
+					src=''
 				/>
 			);
 		},

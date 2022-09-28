@@ -4,8 +4,8 @@ export default () => {
 	let getInput = (vnode) => {
 		return (
 			<label className={`form-switch ${vnode.attrs.labelCol ? 'col-' + (12 - vnode.attrs.labelCol) : ''}`}>
-				<input checked={vnode.attrs.value} type="checkbox" oninput={vnode.attrs.oninput} />
-				<i className="form-icon" />
+				<input checked={vnode.attrs.value} type='checkbox' oninput={vnode.attrs.oninput} />
+				<i className='form-icon' />
 			</label>
 		);
 	};

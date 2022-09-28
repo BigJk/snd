@@ -1,22 +1,20 @@
-import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/hint/show-hint.css';
+import 'codemirror/lib/codemirror.css';
 
-import CodeMirror from 'codemirror/lib/codemirror.js';
-
-import 'codemirror/addon/mode/overlay';
-import 'codemirror/addon/hint/show-hint';
-import 'codemirror/mode/htmlmixed/htmlmixed';
-import 'codemirror/mode/javascript/javascript';
-import 'codemirror/mode/go/go';
-import 'codemirror-nunjucks';
-
-import emmet from '@emmetio/codemirror-plugin';
-
-emmet(CodeMirror);
-
+import debounce from 'lodash-es/debounce';
 import get from 'lodash-es/get';
 import map from 'lodash-es/map';
-import debounce from 'lodash-es/debounce';
+
+import emmet from '@emmetio/codemirror-plugin';
+import 'codemirror-nunjucks';
+import 'codemirror/addon/hint/show-hint';
+import 'codemirror/addon/mode/overlay';
+import CodeMirror from 'codemirror/lib/codemirror.js';
+import 'codemirror/mode/go/go';
+import 'codemirror/mode/htmlmixed/htmlmixed';
+import 'codemirror/mode/javascript/javascript';
+
+emmet(CodeMirror);
 
 export default () => {
 	let state = {
@@ -74,12 +72,12 @@ export default () => {
 											const wrapper = document.createElement('div');
 											m.render(
 												wrapper,
-												<div className="flex justify-between">
+												<div className='flex justify-between'>
 													<span>
 														<b>{filter}</b>
 														{rest}
 													</span>
-													<span className="pl2 o-50">{Object.prototype.toString.call(v).slice(8, -1)}</span>
+													<span className='pl2 o-50'>{Object.prototype.toString.call(v).slice(8, -1)}</span>
 												</div>
 											);
 											elt.appendChild(wrapper);

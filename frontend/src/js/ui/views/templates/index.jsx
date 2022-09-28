@@ -1,15 +1,16 @@
-import api from '/js/core/api';
-import store from '/js/core/store';
-import binder from '/js/ui/binder';
-
-import { Base, Preview, Header, Loading, Input, Modal, Tooltip } from '/js/ui/components';
-
 import { groupBy, map } from 'lodash-es';
 
-import { success } from '/js/ui/toast';
-import { tryRender } from '/js/core/templating';
-import { openFolderDialog, openFileDialog, inElectron } from '/js/electron';
+import { inElectron, openFileDialog, openFolderDialog } from '/js/electron';
 import { readFile } from '/js/file';
+
+import api from '/js/core/api';
+import store from '/js/core/store';
+import { tryRender } from '/js/core/templating';
+
+import { Base, Header, Input, Loading, Modal, Preview, Tooltip } from '/js/ui/components';
+
+import binder from '/js/ui/binder';
+import { success } from '/js/ui/toast';
 
 export default () => {
 	let state = {
@@ -26,9 +27,9 @@ export default () => {
 
 		if (state.importing.loading)
 			return (
-				<Modal title="Import" noclose={true}>
-					<div className="flex flex-column justify-center items-center">
-						<div className="loading loading-lg mb2" />
+				<Modal title='Import' noclose={true}>
+					<div className='flex flex-column justify-center items-center'>
+						<div className='loading loading-lg mb2' />
 						Fetching data...
 					</div>
 				</Modal>
@@ -36,24 +37,24 @@ export default () => {
 
 		return (
 			<Modal
-				title="Import"
+				title='Import'
 				onclose={() => {
 					state.importing.show = false;
 					state.importing.url = '';
 					state.importing.loading = false;
 				}}
 			>
-				<div className="mb3 lh-copy">
-					<div className="mb2">
+				<div className='mb3 lh-copy'>
+					<div className='mb2'>
 						<b>Import templates either locally (e.g. .zip, folder) or from the internet via a URL</b>
 					</div>
 					<div>
 						<b>Warning:</b> A template with the same author and identification name will overwrite any previous imported version!
 					</div>
 				</div>
-				<div className="mb3">
+				<div className='mb3'>
 					<div
-						className="btn btn-primary mr2"
+						className='btn btn-primary mr2'
 						onclick={() => {
 							if (inElectron) {
 								openFileDialog().then((file) => {
@@ -85,7 +86,7 @@ export default () => {
 						Import .zip
 					</div>
 					<div
-						className="btn btn-primary"
+						className='btn btn-primary'
 						onclick={() => {
 							openFolderDialog().then((folder) => {
 								state.importing.loading = true;
@@ -103,11 +104,15 @@ export default () => {
 						Import Folder
 					</div>
 				</div>
-				<div className="divider" />
+				<div className='divider' />
 				<div>
-					<Input label="Import URL" placeholder="http://example.com/cool_template.zip" oninput={binder.inputString(state.importing, 'url')} />
+					<Input
+						label='Import URL'
+						placeholder='http://example.com/cool_template.zip'
+						oninput={binder.inputString(state.importing, 'url')}
+					/>
 					<div
-						className="btn btn-primary"
+						className='btn btn-primary'
 						onclick={() => {
 							state.importing.loading = true;
 							api.importTemplateUrl(state.importing.url).then((name) => {
@@ -133,7 +138,7 @@ export default () => {
 		}
 
 		return (
-			<div className="ph3 pb3">
+			<div className='ph3 pb3'>
 				{map(
 					groupBy(
 						store.data.templates?.filter((t) => {
@@ -143,42 +148,42 @@ export default () => {
 					),
 					(val, key) => {
 						return (
-							<div className="w-100 mb3">
-								<div className="mb2 f5">
+							<div className='w-100 mb3'>
+								<div className='mb2 f5'>
 									Templates by <b>{key}</b>
 								</div>
-								<div className="flex flex-wrap">
+								<div className='flex flex-wrap'>
 									{val.map((t, i) => {
 										return (
 											<div className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}>
-												<div className="flex ba b--black-10 h4 mb2 bg-white">
-													<div className="flex-shrink-0 ph1 mr2 br b--black-05 bg-black-05">
+												<div className='flex ba b--black-10 h4 mb2 bg-white'>
+													<div className='flex-shrink-0 ph1 mr2 br b--black-05 bg-black-05'>
 														<Preview
-															className="h-100"
+															className='h-100'
 															content={tryRender(t.printTemplate, t.skeletonData, t.images)}
 															stylesheets={store.data.settings.stylesheets}
 															width={150}
 															scale={150 / store.data.settings.printerWidth}
 														/>
 													</div>
-													<div className="flex-grow-1 pv2 pr2 lh-solid flex flex-column justify-between">
+													<div className='flex-grow-1 pv2 pr2 lh-solid flex flex-column justify-between'>
 														<div>
-															<div className="f5 mb2 flex justify-between items-center">
+															<div className='f5 mb2 flex justify-between items-center'>
 																{t.name}
 
-																<span className="f8 fw4 text-muted">
+																<span className='f8 fw4 text-muted'>
 																	{t.author}/{t.slug}
 																</span>
 															</div>
-															<div className="divider" />
-															<div className="fw4 f7 black-50 mb1 lh-copy">{t.description}</div>
+															<div className='divider' />
+															<div className='fw4 f7 black-50 mb1 lh-copy'>{t.description}</div>
 														</div>
-														<div className="flex justify-between items-end">
-															<div className="lh-solid">
-																<div className="f4 b">{t.count}</div>
-																<span className="fw4 f6 black-50">Entries</span>
+														<div className='flex justify-between items-end'>
+															<div className='lh-solid'>
+																<div className='f4 b'>{t.count}</div>
+																<span className='fw4 f6 black-50'>Entries</span>
 															</div>
-															<div className="btn" onclick={() => m.route.set(`/templates/tmpl:${t.author}+${t.slug}`)}>
+															<div className='btn' onclick={() => m.route.set(`/templates/tmpl:${t.author}+${t.slug}`)}>
 																Open Template
 															</div>
 														</div>
@@ -211,18 +216,18 @@ export default () => {
 		view(vnode) {
 			return (
 				<Base active={'templates'}>
-					<div className="w-100 h-100">
-						<Header title="Templates" subtitle="List all awesome Templates" classes="pt2">
-							<div className="btn btn-success mr2" onclick={() => m.route.set('/templates/new')}>
+					<div className='w-100 h-100'>
+						<Header title='Templates' subtitle='List all awesome Templates' classes='pt2'>
+							<div className='btn btn-success mr2' onclick={() => m.route.set('/templates/new')}>
 								Create New
 							</div>
-							<Tooltip content="Import">
-								<div className="btn btn-primary" onclick={() => (state.importing.show = true)}>
-									<i className="ion ion-md-log-in" />
+							<Tooltip content='Import'>
+								<div className='btn btn-primary' onclick={() => (state.importing.show = true)}>
+									<i className='ion ion-md-log-in' />
 								</div>
 							</Tooltip>
-							<div className="divider-vert" />
-							<Input placeholder="Search..." value={state.search} oninput={binder.inputString(state, 'search')} />
+							<div className='divider-vert' />
+							<Input placeholder='Search...' value={state.search} oninput={binder.inputString(state, 'search')} />
 						</Header>
 						{body()}
 						{modal()}

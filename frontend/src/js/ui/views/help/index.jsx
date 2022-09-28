@@ -1,6 +1,6 @@
+import hljs from 'highlight.js';
 import MarkdownIt from 'markdown-it';
 import MarkdownItReplaceLink from 'markdown-it-replace-link';
-import hljs from 'highlight.js';
 
 import { Logo } from '/js/ui/components';
 
@@ -89,19 +89,19 @@ export default () => {
 	return {
 		view(vnode) {
 			return (
-				<div className="bg-white h-100 overflow-auto">
-					<div className="grid-bg pa3">
+				<div className='bg-white h-100 overflow-auto'>
+					<div className='grid-bg pa3'>
 						<Logo scale={0.7} />
 					</div>
-					<div className="pa3 flex">
-						<div className="w4 mr3 flex-shrink-0 br b--black-10">
-							<div className="f5">Help Pages</div>
-							<ul className="nav">
+					<div className='pa3 flex'>
+						<div className='w4 mr3 flex-shrink-0 br b--black-10'>
+							<div className='f5'>Help Pages</div>
+							<ul className='nav'>
 								{pages.map((val, i) => {
 									return (
 										<li className={`nav-item ${i === state.active ? 'active' : ''}`}>
 											<a
-												href="#"
+												href='#'
 												onclick={(e) => {
 													state.active = i;
 													e.preventDefault();
@@ -114,7 +114,7 @@ export default () => {
 								})}
 							</ul>
 						</div>
-						<div className="markdown flex-grow-1">{m.trust(markdown.render(docs['/docs/' + pages[state.active].doc]))}</div>
+						<div className='markdown flex-grow-1'>{m.trust(markdown.render(docs['/docs/' + pages[state.active].doc]))}</div>
 					</div>
 				</div>
 			);

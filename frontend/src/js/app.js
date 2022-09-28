@@ -1,21 +1,35 @@
-import 'tachyons/css/tachyons.css';
-import 'tippy.js/dist/tippy.css';
+import '/css/style.scss';
+import 'highlight.js/styles/default.css';
 import 'ionicons/dist/css/ionicons-core.css';
 import 'ionicons/dist/css/ionicons.css';
-import 'highlight.js/styles/default.css';
-
-import '/css/style.scss';
-
-// Mithril Fragment workaround
+import 'tachyons/css/tachyons.css';
+import 'tippy.js/dist/tippy.css';
 
 import m from 'mithril';
-m.Fragment = { view: (vnode) => vnode.children };
 
-// Pre-Load Settings
+import { setSpellcheckerLanguages } from '/js/electron';
 
 import api from '/js/core/api';
 import store from '/js/core/store';
-import { setSpellcheckerLanguages } from '/js/electron';
+
+import DataSources from '/js/ui/views/data-sources';
+import Devices from '/js/ui/views/devices';
+import ExternPrint from '/js/ui/views/extern-print';
+import Generator from '/js/ui/views/generator/index';
+import Help from '/js/ui/views/help';
+import Settings from '/js/ui/views/settings';
+import Templates from '/js/ui/views/templates';
+import TemplatesEdit from '/js/ui/views/templates/edit';
+import TemplatesNew from '/js/ui/views/templates/new';
+import Template from '/js/ui/views/templates/template';
+import TemplateEdit from '/js/ui/views/templates/template/edit';
+import TemplateNew from '/js/ui/views/templates/template/new';
+
+// Mithril Fragment workaround
+
+m.Fragment = { view: (vnode) => vnode.children };
+
+// Pre-Load Settings
 
 api.getPrinter().then((printer) => {
 	store.set('printer', printer);
@@ -50,24 +64,6 @@ store.pub('reload_sources');
 
 // Routing
 
-import Settings from '/js/ui/views/settings';
-
-import Templates from '/js/ui/views/templates';
-import TemplatesNew from '/js/ui/views/templates/new';
-import TemplatesEdit from '/js/ui/views/templates/edit';
-
-import Template from '/js/ui/views/templates/template';
-import TemplateEdit from '/js/ui/views/templates/template/edit';
-import TemplateNew from '/js/ui/views/templates/template/new';
-
-import Help from '/js/ui/views/help';
-
-import DataSources from '/js/ui/views/data-sources';
-
-import Devices from '/js/ui/views/devices';
-
-import ExternPrint from '/js/ui/views/extern-print';
-
 m.route(document.getElementById('app'), '/', {
 	'/': Templates,
 	'/templates': Templates,
@@ -76,6 +72,7 @@ m.route(document.getElementById('app'), '/', {
 	'/templates/:id/edit': TemplatesEdit,
 	'/templates/:id/edit/:eid': TemplateEdit,
 	'/templates/:id/new': TemplateNew,
+	'/generator': Generator,
 	'/help': Help,
 	'/data-sources': DataSources,
 	'/settings': Settings,

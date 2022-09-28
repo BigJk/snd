@@ -1,10 +1,10 @@
 import api from '/js/core/api';
+import { NewEntry } from '/js/core/factory';
 import store from '/js/core/store';
 
-import { Base, Header, EntryEdit, Loading } from '/js/ui/components';
+import { Base, EntryEdit, Header, Loading } from '/js/ui/components';
 
-import { success, error } from '/js/ui/toast';
-import { NewEntry } from '/js/core/factory';
+import { error, success } from '/js/ui/toast';
 
 export default () => {
 	let state = {
@@ -51,7 +51,7 @@ export default () => {
 		}
 
 		return (
-			<div className="flex-grow-1 overflow-auto">
+			<div className='flex-grow-1 overflow-auto'>
 				<EntryEdit target={state.entry} template={state.template} onrender={(r) => (state.lastRender = r)} />
 			</div>
 		);
@@ -68,13 +68,13 @@ export default () => {
 		},
 		view(vnode) {
 			return (
-				<Base active="templates">
-					<div className="h-100 flex flex-column">
-						<Header breadcrumbs={breadcrumbs()} subtitle="Create a new Entry" pt={2}>
-							<div className="btn btn-primary mr2" onclick={() => api.print(state.lastRender).then(success('Print send'), error)}>
+				<Base active='templates'>
+					<div className='h-100 flex flex-column'>
+						<Header breadcrumbs={breadcrumbs()} subtitle='Create a new Entry' pt={2}>
+							<div className='btn btn-primary mr2' onclick={() => api.print(state.lastRender).then(success('Print send'), error)}>
 								Test Print
 							</div>
-							<div className="btn btn-success" onclick={saveEntry}>
+							<div className='btn btn-success' onclick={saveEntry}>
 								Save
 							</div>
 						</Header>

@@ -1,9 +1,9 @@
 import api from '/js/core/api';
 import store from '/js/core/store';
 
-import { Base, Header, TemplateEdit, Loading } from '/js/ui/components';
+import { Base, Header, Loading, TemplateEdit } from '/js/ui/components';
 
-import { success, error } from '/js/ui/toast';
+import { error, success } from '/js/ui/toast';
 
 export default () => {
 	let state = {
@@ -40,7 +40,7 @@ export default () => {
 		}
 
 		return (
-			<div className="flex-grow-1 overflow-auto">
+			<div className='flex-grow-1 overflow-auto'>
 				<TemplateEdit target={state.template} editmode={true} onrender={(r) => (state.lastRender = r)} />
 			</div>
 		);
@@ -55,14 +55,17 @@ export default () => {
 			if (!store.data.templates) return 'wait';
 
 			return (
-				<Base active="templates">
-					<div className="h-100 flex flex-column">
-						<Header breadcrumbs={breadcrumbs()} subtitle="Edit this Template" pt={2}>
-							<div className="btn btn-primary mr2" onclick={() => api.print(state.lastRender).then(() => success('Printing send'), error)}>
+				<Base active='templates'>
+					<div className='h-100 flex flex-column'>
+						<Header breadcrumbs={breadcrumbs()} subtitle='Edit this Template' pt={2}>
+							<div
+								className='btn btn-primary mr2'
+								onclick={() => api.print(state.lastRender).then(() => success('Printing send'), error)}
+							>
 								Test Print
 							</div>
 							<div
-								className="btn btn-success"
+								className='btn btn-success'
 								onclick={() =>
 									api.saveTemplate(state.template).then(() => {
 										success('Template saved');

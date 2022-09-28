@@ -1,0 +1,21 @@
+{
+  "printWidth": 150,
+  "useTabs": true,
+  "jsxSingleQuote": true,
+  "singleQuote": true,
+  "tabWidth": 4,
+  "importOrder": [
+    "^(.*).(css|scss)$",
+    "^/img/(.*)$",
+    "^mithril$",
+    "^lodash-es",
+    "<THIRD_PARTY_MODULES>",
+    "^./(.*)$",
+    "^/js/core/(.*)$",
+    "^/js/ui/components(.*)$",
+    "^/js/ui/views/(.*)$",
+    "^/js/ui/[^\/]+$"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
+}

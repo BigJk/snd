@@ -1,12 +1,14 @@
+import { groupBy, map } from 'lodash-es';
+
+import { inElectron, openFileDialog, openFolderDialog } from '/js/electron';
+import { readFile } from '/js/file';
+
 import api from '/js/core/api';
 import store from '/js/core/store';
-import binder from '/js/ui/binder';
 
 import { Base, Header, Input, Modal, Tooltip } from '/js/ui/components';
 
-import { openFolderDialog, openFileDialog, inElectron } from '/js/electron';
-import { readFile } from '/js/file';
-import { groupBy, map } from 'lodash-es';
+import binder from '/js/ui/binder';
 import { success } from '/js/ui/toast';
 
 export default () => {
@@ -24,9 +26,9 @@ export default () => {
 
 		if (state.importing.loading)
 			return (
-				<Modal title="Import" noclose={true}>
-					<div className="flex flex-column justify-center items-center">
-						<div className="loading loading-lg mb2" />
+				<Modal title='Import' noclose={true}>
+					<div className='flex flex-column justify-center items-center'>
+						<div className='loading loading-lg mb2' />
 						Fetching data...
 					</div>
 				</Modal>
@@ -34,24 +36,24 @@ export default () => {
 
 		return (
 			<Modal
-				title="Import"
+				title='Import'
 				onclose={() => {
 					state.importing.show = false;
 					state.importing.url = '';
 					state.importing.loading = false;
 				}}
 			>
-				<div className="mb3 lh-copy">
-					<div className="mb2">
+				<div className='mb3 lh-copy'>
+					<div className='mb2'>
 						<b>Import data sources either locally (e.g. .zip, folder) or from the internet via a URL</b>
 					</div>
 					<div>
 						<b>Warning:</b> A data source with the same author and identification name will overwrite any previous imported version!
 					</div>
 				</div>
-				<div className="mb3">
+				<div className='mb3'>
 					<div
-						className="btn btn-primary mr2"
+						className='btn btn-primary mr2'
 						onclick={() => {
 							if (inElectron) {
 								openFileDialog().then((file) => {
@@ -83,7 +85,7 @@ export default () => {
 						Import .zip
 					</div>
 					<div
-						className="btn btn-primary"
+						className='btn btn-primary'
 						onclick={() => {
 							openFolderDialog().then((folder) => {
 								state.importing.loading = true;
@@ -101,11 +103,11 @@ export default () => {
 						Import Folder
 					</div>
 				</div>
-				<div className="divider" />
-				<div className="mb3">
-					<Input label="Import URL" placeholder="http://example.com/cool_data.zip" oninput={binder.inputString(state.importing, 'url')} />
+				<div className='divider' />
+				<div className='mb3'>
+					<Input label='Import URL' placeholder='http://example.com/cool_data.zip' oninput={binder.inputString(state.importing, 'url')} />
 					<div
-						className="btn btn-primary"
+						className='btn btn-primary'
 						onclick={() => {
 							state.importing.loading = true;
 							api.importSourceUrl(state.importing.url).then((name) => {
@@ -121,15 +123,15 @@ export default () => {
 						Import
 					</div>
 				</div>
-				<div className="divider" />
+				<div className='divider' />
 				<div>
-					<div className="mt2 mb3 lh-copy">
-						<b className="db">FoundryVTT Import</b>
-						You can also import data from FoundryVTT Modules and Systems. This will convert all the included packs and add them as Data Sources. To
-						import a Module or System open the module.json or system.json file in it's folder.
+					<div className='mt2 mb3 lh-copy'>
+						<b className='db'>FoundryVTT Import</b>
+						You can also import data from FoundryVTT Modules and Systems. This will convert all the included packs and add them as Data
+						Sources. To import a Module or System open the module.json or system.json file in it's folder.
 					</div>
 					<div
-						className="btn btn-primary mr2"
+						className='btn btn-primary mr2'
 						onclick={() => {
 							if (inElectron) {
 								openFileDialog().then((file) => {
@@ -157,7 +159,7 @@ export default () => {
 
 	let body = () => {
 		return (
-			<div className="ph3 pb3">
+			<div className='ph3 pb3'>
 				{map(
 					groupBy(
 						store.data.sources?.filter((t) => {
@@ -167,41 +169,41 @@ export default () => {
 					),
 					(val, key) => {
 						return (
-							<div className="w-100 mb3">
-								<div className="mb2 f5">
+							<div className='w-100 mb3'>
+								<div className='mb2 f5'>
 									Sources by <b>{key}</b>
 								</div>
-								<div className="flex flex-wrap">
+								<div className='flex flex-wrap'>
 									{val.map((t, i) => {
 										return (
 											<div className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}>
-												<div className="flex ba b--black-10 h4_5 mb2 bg-white">
-													<div className="flex-grow-1 pv2 ph2 lh-solid flex flex-column justify-between">
+												<div className='flex ba b--black-10 h4_5 mb2 bg-white'>
+													<div className='flex-grow-1 pv2 ph2 lh-solid flex flex-column justify-between'>
 														<div>
-															<div className="f5 mb2 flex justify-between items-center">
+															<div className='f5 mb2 flex justify-between items-center'>
 																{t.name}
 
-																<span className="f8 fw4 text-muted">
+																<span className='f8 fw4 text-muted'>
 																	{t.author}/{t.slug}
 																</span>
 															</div>
-															<div className="divider" />
-															<div className="fw4 f7 black-50 mb1 lh-copy">{t.description}</div>
+															<div className='divider' />
+															<div className='fw4 f7 black-50 mb1 lh-copy'>{t.description}</div>
 														</div>
-														<div className="flex justify-between items-end">
-															<div className="lh-solid">
-																<div className="f4 b">{t.count}</div>
-																<span className="fw4 f6 black-50">Entries</span>
+														<div className='flex justify-between items-end'>
+															<div className='lh-solid'>
+																<div className='f4 b'>{t.count}</div>
+																<span className='fw4 f6 black-50'>Entries</span>
 															</div>
 															<div
-																className="btn btn-error"
+																className='btn btn-error'
 																onclick={() =>
 																	api.deleteSource(`ds:${t.author}+${t.slug}`).then(() => {
 																		store.pub('reload_sources');
 																	})
 																}
 															>
-																<i className="ion ion-md-close-circle-outline" />
+																<i className='ion ion-md-close-circle-outline' />
 															</div>
 														</div>
 													</div>
@@ -233,15 +235,15 @@ export default () => {
 		view(vnode) {
 			return (
 				<Base active={'dataSources'}>
-					<div className="h-100 flex flex-column">
-						<Header title="Data Sources" subtitle="Manage collection of data.">
-							<Tooltip content="Import">
-								<div className="btn btn-primary" onclick={() => (state.importing.show = true)}>
-									<i className="ion ion-md-log-in" />
+					<div className='h-100 flex flex-column'>
+						<Header title='Data Sources' subtitle='Manage collection of data.'>
+							<Tooltip content='Import'>
+								<div className='btn btn-primary' onclick={() => (state.importing.show = true)}>
+									<i className='ion ion-md-log-in' />
 								</div>
 							</Tooltip>
-							<div className="divider-vert" />
-							<Input placeholder="Search..." value={state.search} oninput={binder.inputString(state, 'search')} />
+							<div className='divider-vert' />
+							<Input placeholder='Search...' value={state.search} oninput={binder.inputString(state, 'search')} />
 						</Header>
 						{body()}
 						{modal()}

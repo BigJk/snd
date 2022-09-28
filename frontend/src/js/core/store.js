@@ -1,4 +1,4 @@
-import { set, get, has, forEach, toPath } from 'lodash-es';
+import { forEach, get, has, set, toPath } from 'lodash-es';
 
 class PubSubStore {
 	constructor(data) {

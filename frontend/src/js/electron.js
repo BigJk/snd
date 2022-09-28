@@ -1,3 +1,7 @@
+import m from 'mithril';
+
+import { error } from '/js/ui/toast';
+
 // Workaround to avoid compile time require of Bundler.
 // This will populate the electron variable with the
 // correct runtime electron variable of the browser
@@ -76,9 +80,6 @@ if (electron) {
 		menu.popup();
 	});
 }
-
-import m from 'mithril';
-import { error } from '/js/ui/toast';
 
 export function close() {
 	if (!electron) {

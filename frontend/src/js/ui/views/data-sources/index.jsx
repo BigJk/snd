@@ -102,7 +102,7 @@ export default () => {
 					</div>
 				</div>
 				<div className="divider" />
-				<div>
+				<div className="mb3">
 					<Input label="Import URL" placeholder="http://example.com/cool_data.zip" oninput={binder.inputString(state.importing, 'url')} />
 					<div
 						className="btn btn-primary"

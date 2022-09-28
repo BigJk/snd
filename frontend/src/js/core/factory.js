@@ -7,6 +7,21 @@ export function NewTemplate() {
 		printTemplate: '',
 		listTemplate: '',
 		skeletonData: {},
+		images: {},
+		dataSources: [],
+	};
+}
+
+export function NewGenerator() {
+	return {
+		name: '',
+		slug: '',
+		author: '',
+		description: '',
+		printTemplate: '',
+		config: {},
+		images: {},
+		dataSources: [],
 	};
 }
 

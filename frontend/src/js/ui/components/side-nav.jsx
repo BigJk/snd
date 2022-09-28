@@ -8,10 +8,10 @@ let pages = {
 		icon: 'list-box',
 		url: 'templates',
 	},
-	generator: {
+	generators: {
 		name: 'Generators',
 		icon: 'switch',
-		url: 'generator',
+		url: 'generators',
 	},
 	dataSources: {
 		name: 'Data Sources',

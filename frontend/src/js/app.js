@@ -15,7 +15,9 @@ import store from '/js/core/store';
 import DataSources from '/js/ui/views/data-sources';
 import Devices from '/js/ui/views/devices';
 import ExternPrint from '/js/ui/views/extern-print';
+import GeneratorEdit from '/js/ui/views/generator/edit';
 import Generator from '/js/ui/views/generator/index';
+import GeneratorNew from '/js/ui/views/generator/new';
 import Help from '/js/ui/views/help';
 import Settings from '/js/ui/views/settings';
 import Templates from '/js/ui/views/templates';
@@ -28,6 +30,16 @@ import TemplateNew from '/js/ui/views/templates/template/new';
 // Mithril Fragment workaround
 
 m.Fragment = { view: (vnode) => vnode.children };
+
+// Hot-Reload
+
+if (import.meta.hot) {
+	import.meta.hot.accept((newModule) => {
+		if (newModule) {
+			window.location.reload();
+		}
+	});
+}
 
 // Pre-Load Settings
 
@@ -42,6 +54,12 @@ api.getVersion().then((version) => {
 store.sub(['reload_templates'], () => {
 	api.getTemplates().then((templates) => {
 		store.set('templates', templates ?? []);
+	});
+});
+
+store.sub(['reload_generators'], () => {
+	api.getGenerators().then((generators) => {
+		store.set('generators', generators ?? []);
 	});
 });
 
@@ -60,22 +78,33 @@ store.sub(['reload_settings'], () => {
 
 store.pub('reload_settings');
 store.pub('reload_templates');
+store.pub('reload_generators');
 store.pub('reload_sources');
 
-// Routing
+// Wait for settings to populate and then mount
 
-m.route(document.getElementById('app'), '/', {
-	'/': Templates,
-	'/templates': Templates,
-	'/templates/new': TemplatesNew,
-	'/templates/:id': Template,
-	'/templates/:id/edit': TemplatesEdit,
-	'/templates/:id/edit/:eid': TemplateEdit,
-	'/templates/:id/new': TemplateNew,
-	'/generator': Generator,
-	'/help': Help,
-	'/data-sources': DataSources,
-	'/settings': Settings,
-	'/devices': Devices,
-	'/extern-print/:id/:json': ExternPrint,
-});
+let wait = setInterval(() => {
+	if (Object.keys(store.data).some((p) => store.data[p] === null)) {
+		return;
+	}
+
+	m.route(document.getElementById('app'), '/', {
+		'/': Templates,
+		'/templates': Templates,
+		'/templates/new': TemplatesNew,
+		'/templates/:id': Template,
+		'/templates/:id/edit': TemplatesEdit,
+		'/templates/:id/edit/:eid': TemplateEdit,
+		'/templates/:id/new': TemplateNew,
+		'/generators': Generator,
+		'/generators/new': GeneratorNew,
+		'/generators/:id/edit': GeneratorEdit,
+		'/help': Help,
+		'/data-sources': DataSources,
+		'/settings': Settings,
+		'/devices': Devices,
+		'/extern-print/:id/:json': ExternPrint,
+	});
+
+	clearInterval(wait);
+}, 100);

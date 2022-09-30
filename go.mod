@@ -15,7 +15,7 @@ require (
 	github.com/go-rod/rod v0.101.8
 	github.com/google/gousb v1.1.2
 	github.com/jwalton/go-supportscolor v1.1.0
-	github.com/labstack/echo/v4 v4.7.2
+	github.com/labstack/echo/v4 v4.9.0
 	github.com/mattetti/filebuffer v1.0.1
 	github.com/otiai10/copy v1.7.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible

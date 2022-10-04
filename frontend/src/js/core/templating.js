@@ -6,7 +6,6 @@ import * as nunjucks from 'nunjucks';
 import EvalWorker from '/js/workers/eval?worker';
 
 import store from '/js/core/store';
-import { promises } from 'caniuse-lite/data/features';
 
 // DataImportExtension
 //

@@ -1,6 +1,8 @@
 package rpc
 
 import (
+	"strings"
+
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/samber/lo"
@@ -23,29 +25,39 @@ func RegisterEntry(route *echo.Group, db database.Database) {
 	}
 
 	route.POST("/getEntriesWithSources", echo.WrapHandler(nra.MustBind(func(id string) ([]EntrySource, error) {
-		tmpl, err := db.GetTemplate(id)
-		if err != nil {
-			return nil, err
-		}
-
-		// load all base entries
-		entries, err := db.GetEntries(id)
-		if err != nil {
-			return nil, err
-		}
-
+		var dataSources []string
 		var entriesSources []EntrySource
 
-		entriesSources = lo.Map(entries, func(e snd.Entry, i int) EntrySource {
-			return EntrySource{
-				Entry:  e,
-				Source: id,
+		if strings.HasPrefix(id, "tmpl:") {
+			tmpl, err := db.GetTemplate(id)
+			if err != nil {
+				return nil, err
 			}
-		})
+			dataSources = tmpl.DataSources
+
+			// load all base entries
+			entries, err := db.GetEntries(id)
+			if err != nil {
+				return nil, err
+			}
+
+			entriesSources = lo.Map(entries, func(e snd.Entry, i int) EntrySource {
+				return EntrySource{
+					Entry:  e,
+					Source: id,
+				}
+			})
+		} else if strings.HasPrefix(id, "gen:") {
+			gen, err := db.GetGenerator(id)
+			if err != nil {
+				return nil, err
+			}
+			dataSources = gen.DataSources
+		}
 
 		// fetch all associated data sources
-		for i := range tmpl.DataSources {
-			dsEntries, err := db.GetEntries(tmpl.DataSources[i])
+		for i := range dataSources {
+			dsEntries, err := db.GetEntries(dataSources[i])
 			if err != nil {
 				// ignore errors from data sources for now.
 				// TODO: revisit in the future
@@ -55,7 +67,7 @@ func RegisterEntry(route *echo.Group, db database.Database) {
 			entriesSources = append(entriesSources, lo.Map(dsEntries, func(e snd.Entry, _ int) EntrySource {
 				return EntrySource{
 					Entry:  e,
-					Source: tmpl.DataSources[i],
+					Source: dataSources[i],
 				}
 			})...)
 		}

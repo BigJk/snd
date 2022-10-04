@@ -1,7 +1,12 @@
+import { filter } from 'lodash-es';
+
 import MarkdownIt from 'markdown-it';
 import * as nunjucks from 'nunjucks';
 
+import EvalWorker from '/js/workers/eval?worker';
+
 import store from '/js/core/store';
+import { promises } from 'caniuse-lite/data/features';
 
 // DataImportExtension
 //
@@ -31,16 +36,61 @@ function DataImportExtension() {
 	};
 }
 
+function JavascriptExecuteExtension() {
+	this.tags = ['js'];
+
+	this.parse = function (parser, nodes, lexer) {
+		let tok = parser.nextToken();
+
+		let args = parser.parseSignature(null, true);
+		parser.advanceAfterBlockEnd(tok.value);
+
+		let body = parser.parseUntilBlocks('endjs');
+		parser.advanceAfterBlockEnd();
+
+		return new nodes.CallExtensionAsync(this, 'run', args, [body]);
+	};
+
+	this.run = function (context, name, fn, callback) {
+		let worker = new EvalWorker();
+
+		// Kill worker after timeout. This is important if
+		// the code has a infinite loop.
+		let timeout = setTimeout(() => {
+			worker.terminate();
+			callback('eval worker: timeout');
+		}, 1000);
+
+		// Wait for response.
+		worker.onmessage = (e) => {
+			clearTimeout(timeout);
+			worker.terminate();
+			context.ctx[name] = e.data;
+			callback(null, '');
+		};
+
+		// Send request.
+		worker.postMessage([context.ctx, fn()]);
+	};
+}
+
 let env = new nunjucks.Environment();
 let markdown = new MarkdownIt();
 
 env.addExtension('DataImportExtension', new DataImportExtension());
+env.addExtension('JavascriptExecuteExtension', new JavascriptExecuteExtension());
+
 env.addFilter('markdown', (md) => {
 	return new nunjucks.runtime.SafeString(markdown.render(md));
 });
 
 env.addFilter('markdowni', (md) => {
 	return new nunjucks.runtime.SafeString(markdown.renderInline(md));
+});
+
+env.addFilter('jsfilter', (obj, func) => {
+	let fn = eval(func);
+	return filter(obj, fn);
 });
 
 // Exports
@@ -61,22 +111,13 @@ export const parseError = (e) => {
 export const render = (template, state) => {
 	state.settings = store.data.settings;
 
-	return env.renderString(template, state);
-};
-
-export const renderAsync = (template, state, success, error) => {
-	try {
-		success(render(template, state));
-	} catch (e) {
-		if (error) {
-			error(parseError(e));
-		}
-	}
-};
-
-export const tryRender = (template, state) => {
-	try {
-		return render(template, state);
-	} catch (e) {}
-	return 'Template error...';
+	return new Promise((resolve, reject) => {
+		env.renderString(template, state, (err, res) => {
+			if (err) {
+				reject(parseError(err));
+			} else {
+				resolve(res);
+			}
+		});
+	});
 };

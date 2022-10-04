@@ -181,8 +181,6 @@ export default () => {
 		let search = state.search;
 		let filter = cloneDeep(state.filter);
 
-		console.log(filter);
-
 		state.onChange((name, obj) => {
 			if (name.toLowerCase().indexOf(search.toLowerCase()) < 0) {
 				return false;

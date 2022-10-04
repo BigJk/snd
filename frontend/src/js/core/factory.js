@@ -19,6 +19,7 @@ export function NewGenerator() {
 		author: '',
 		description: '',
 		printTemplate: '',
+		passEntriesToJS: false,
 		config: {},
 		images: {},
 		dataSources: [],

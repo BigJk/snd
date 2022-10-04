@@ -84,12 +84,16 @@ export default () => {
 			})
 			.replace(/src="h/gi, 'src="/proxy/h');
 
-		let doc = iframe.contentWindow.document;
-		doc.open();
+		// We need to reset the iframe to clear old javascript declarations.
+		// TODO: better way?
+		iframe.contentWindow.location.reload(true);
+		iframe.onload = () => {
+			let doc = iframe.contentWindow.document;
 
-		doc.write(preCss + fixed + post);
-
-		doc.close();
+			doc.open();
+			doc.write(preCss + fixed + post);
+			doc.close();
+		};
 	};
 
 	return {

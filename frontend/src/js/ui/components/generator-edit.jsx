@@ -1,88 +1,24 @@
 import { chunk, debounce, isArray, map, mergeWith, uniq } from 'lodash-es';
 
 import api from '/js/core/api';
+import snippets from '/js/core/snippets';
 import store from '/js/core/store';
-import { renderAsync } from '/js/core/templating';
+import { render } from '/js/core/templating';
 
-import { Editor, Input, Select, SplitView, TextArea, Tooltip } from '/js/ui/components';
+import { Editor, Input, Select, SplitView, Switch, TextArea, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
-
-function entryMerger(objValue, srcValue) {
-	if (typeof objValue === 'string' && typeof srcValue === 'string') {
-		return objValue;
-	}
-	if (!isArray(objValue) && isArray(srcValue)) {
-		return srcValue;
-	}
-	if (isArray(objValue) && !isArray(srcValue)) {
-		return objValue;
-	}
-	if (isArray(objValue) && isArray(srcValue)) {
-		return objValue.length > srcValue.length ? objValue : srcValue;
-	}
-	return undefined;
-}
-
-const snippets = [
-	{
-		name: 'if',
-		content: `{% if variable %}
-  
-{% endif %}`,
-	},
-	{
-		name: 'if-else',
-		content: `{% if variable %}
-  
-{% elif tired %}
-
-{% else %}
-
-{% endif %}`,
-	},
-	{
-		name: 'if-in-place',
-		content: '{{ "true" if foo else "false" }}',
-	},
-	{
-		name: 'for-in',
-		content: `{% for item in items %}
-		
-{% else %}
-
-{% endfor %}`,
-	},
-	{
-		name: 'macro',
-		content: `{% macro your_macro(val, other_val='') %}
-
-{% endmacro %}`,
-	},
-	{
-		name: 'set',
-		content: `{% set x = 5 %}`,
-	},
-	{
-		name: 'set-block',
-		content: `{% set x %}
-		
-{% endset %}`,
-	},
-];
 
 export default () => {
 	let state = {
 		target: null,
 		editMode: false,
 		lastRender: '',
-		lastListRender: '',
 		selectedTab: '',
 		selectedSource: '',
 		testConfig: {},
 		onRender: null,
 		templateErrors: [],
-		listTemplateErrors: [],
 		entries: [],
 		entriesSearch: '',
 		entriesSelected: null,
@@ -90,43 +26,24 @@ export default () => {
 	};
 
 	let updateRender = debounce(() => {
-		let rerender = false;
-
 		state.templateErrors = [];
-		state.listTemplateErrors = [];
 
-		renderAsync(
-			state.target.printTemplate,
-			{ config: state.testConfig, images: state.target.images },
-			(res) => {
-				rerender = true;
+		render(
+			(state.target.passEntriesToJS ? `<script> let entries = ${JSON.stringify(state.entries)};</script>` : '') + state.target.printTemplate,
+			{ config: state.testConfig, images: state.target.images, entries: state.entries }
+		)
+			.then((res) => {
 				state.lastRender = res;
-			},
-			(err) => {
+			})
+			.catch((err) => {
 				state.templateErrors = [err];
-			}
-		);
-
-		renderAsync(
-			state.target.listTemplate,
-			{ config: state.testConfig, images: state.target.images },
-			(res) => {
-				rerender = true;
-				state.lastListRender = res;
-			},
-			(err) => {
-				state.listTemplateErrors = [err];
-			}
-		);
-
-		if (rerender) {
-			m.redraw();
-		}
+			})
+			.then(m.redraw);
 
 		if (state.onRender) {
 			state.onRender(state.lastRender);
 		}
-	}, 250);
+	}, 1000);
 
 	let tabs = {
 		Information: () => {
@@ -150,6 +67,12 @@ export default () => {
 							oninput={binder.inputString(state.target, 'slug', null, (txt) => txt.replace(/[^a-z0-9\-]/gi, ''))}
 						/>
 					) : null}
+					<Switch
+						label='Pass Entries to Javascript'
+						labelCol={5}
+						value={state.target.passEntriesToJS}
+						oninput={binder.checkbox(state.target, 'passEntriesToJS')}
+					/>
 					<TextArea
 						label='Description'
 						cols={9}
@@ -312,7 +235,7 @@ export default () => {
 			state.onRender = vnode.attrs.onrender;
 
 			if (state.editMode) {
-				api.getEntriesWithSources(`tmpl:${state.target.author}+${state.target.slug}`).then((entries) => {
+				api.getEntriesWithSources(`gen:${state.target.author}+${state.target.slug}`).then((entries) => {
 					state.entries = entries ?? [];
 				});
 			}

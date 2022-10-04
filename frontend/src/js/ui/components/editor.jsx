@@ -149,8 +149,12 @@ export default () => {
 			let res = state.errorProvider(state.editor.getValue());
 			if (res instanceof Promise) {
 				res.then((res) => {
-					state.errorWidgets.map((w) => w.clear());
+					state.errorWidgets.map((w) => w?.clear());
 					state.errorWidgets = res.map((e) => {
+						if (!e) {
+							return null;
+						}
+
 						return state.editor.markText(
 							{ line: e.line - 1, ch: e.column - 2 },
 							{ line: e.line - 1, ch: e.column - 1 },
@@ -159,8 +163,12 @@ export default () => {
 					});
 				});
 			} else {
-				state.errorWidgets.map((w) => w.clear());
+				state.errorWidgets.map((w) => w?.clear());
 				state.errorWidgets = res.map((e) => {
+					if (!e) {
+						return null;
+					}
+
 					return state.editor.markText(
 						{ line: e.line - 1, ch: e.column - 2 },
 						{ line: e.line - 1, ch: e.column - 1 },

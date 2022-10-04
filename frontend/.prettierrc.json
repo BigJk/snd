@@ -11,6 +11,7 @@
     "^lodash-es",
     "<THIRD_PARTY_MODULES>",
     "^./(.*)$",
+    "^/js/workers/(.*)$",
     "^/js/core/(.*)$",
     "^/js/ui/components(.*)$",
     "^/js/ui/views/(.*)$",

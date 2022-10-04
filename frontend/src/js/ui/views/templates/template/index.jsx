@@ -4,7 +4,7 @@ import { inElectron, openFolderDialog } from '/js/electron';
 
 import api from '/js/core/api';
 import store from '/js/core/store';
-import { tryRender } from '/js/core/templating';
+import { render } from '/js/core/templating';
 import { keepOpen, on } from '/js/core/ws';
 
 import { AdvancedSearch, Base, Header, Input, Loading, Modal, SplitView, Tooltip } from '/js/ui/components';
@@ -16,7 +16,12 @@ export default () => {
 	let state = {
 		template: null,
 		entries: [],
+		entriesTemplate: {},
 		filtered: [],
+		renderedTemplate: {
+			id: null,
+			template: '',
+		},
 		found: 0,
 		selected: {
 			id: null,
@@ -31,6 +36,37 @@ export default () => {
 		showSync: false,
 		showInfo: false,
 		printing: false,
+	};
+
+	let getSelectedTemplate = () => {
+		if (state.renderedTemplate.id !== state.selected.id) {
+			state.renderedTemplate.id = state.selected.id;
+
+			render(state.template.printTemplate, {
+				it: state.selected.data ?? state.template.skeletonData,
+				images: state.template.images,
+			}).then((res) => {
+				if (state.renderedTemplate.id === state.selected.id) {
+					state.renderedTemplate.template = res;
+					m.redraw();
+				}
+			});
+		}
+
+		return state.renderedTemplate.template;
+	};
+
+	let getListTemplate = (entry) => {
+		if (state.entriesTemplate[entry.id]) {
+			return state.entriesTemplate[entry.id];
+		}
+
+		render(state.template.listTemplate, { it: entry.data }).then((res) => {
+			state.entriesTemplate[entry.id] = res;
+			m.redraw();
+		});
+
+		return 'Loading...';
 	};
 
 	let loadEntries = () => {
@@ -226,10 +262,7 @@ export default () => {
 				width={340}
 				scale={340.0 / store.data.settings.printerWidth}
 				stylesheets={store.data.settings.stylesheets}
-				content={tryRender(state.template.printTemplate, {
-					it: state.selected.data ?? state.template.skeletonData,
-					images: state.template.images,
-				})}
+				content={getSelectedTemplate()}
 				extraChildren={
 					state.advancedSearch
 						? [
@@ -267,7 +300,7 @@ export default () => {
 									>
 										<div>
 											<div className='fw6 f5'>{e.name}</div>
-											<div className='black-50'>{m.trust(tryRender(state.template.listTemplate, { it: e.data }))}</div>
+											<div className='black-50'>{m.trust(getListTemplate(e))}</div>
 										</div>
 										<div>
 											{e.id === state.selected.id ? (
@@ -276,11 +309,17 @@ export default () => {
 														className='btn btn-success btn-sm mr2'
 														onclick={() => {
 															state.printing = true;
-															api.print(
-																tryRender(state.template.printTemplate, { it: e.data, images: state.template.images })
-															)
-																.then(() => success('Printing send'), error)
-																.then(() => (state.printing = false));
+
+															render(state.template.printTemplate, { it: e.data, images: state.template.images })
+																.then((res) => {
+																	api.print(res)
+																		.then(() => success('Printing send'), error)
+																		.then(() => (state.printing = false));
+																})
+																.catch((err) => {
+																	error(err);
+																	state.printing = false;
+																});
 														}}
 													>
 														<i className='ion ion-md-print' />
@@ -289,13 +328,15 @@ export default () => {
 														className='btn btn-primary btn-sm mr2'
 														onclick={() => {
 															openFolderDialog().then((folder) => {
-																api.screenshot(
-																	tryRender(state.template.printTemplate, {
-																		it: e.data,
-																		images: state.template.images,
-																	}),
-																	folder + '/' + e.name + '.png'
-																).then(() => success('Screenshot created'), error);
+																render(state.template.printTemplate, {
+																	it: e.data,
+																	images: state.template.images,
+																}).then((res) => {
+																	api.screenshot(res, folder + '/' + e.name + '.png').then(
+																		() => success('Screenshot created'),
+																		error
+																	);
+																});
 															});
 														}}
 													>
@@ -387,6 +428,15 @@ export default () => {
 				.then((template) => {
 					state.template = template;
 					state.template.id = vnode.attrs.id;
+
+					// Render skeleton template
+					render(state.template.printTemplate, {
+						it: state.template.skeletonData,
+						images: state.template.images,
+					}).then((res) => {
+						state.renderedTemplate.template = res;
+						m.redraw();
+					});
 				})
 				.then(loadEntries);
 

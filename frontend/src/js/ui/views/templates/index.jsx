@@ -5,7 +5,7 @@ import { readFile } from '/js/file';
 
 import api from '/js/core/api';
 import store from '/js/core/store';
-import { tryRender } from '/js/core/templating';
+import { render } from '/js/core/templating';
 
 import { Base, Header, Input, Loading, Modal, Preview, Tooltip } from '/js/ui/components';
 
@@ -15,6 +15,7 @@ import { success } from '/js/ui/toast';
 export default () => {
 	let state = {
 		search: '',
+		templates: {},
 		importing: {
 			show: false,
 			loading: false,
@@ -160,7 +161,7 @@ export default () => {
 													<div className='flex-shrink-0 ph1 mr2 br b--black-05 bg-black-05'>
 														<Preview
 															className='h-100'
-															content={tryRender(t.printTemplate, { it: t.skeletonData, images: t.images })}
+															content={state.templates['tmpl:' + t.author + '+' + t.name] ?? 'Rendering...'}
 															stylesheets={store.data.settings.stylesheets}
 															width={150}
 															scale={150 / store.data.settings.printerWidth}
@@ -212,6 +213,34 @@ export default () => {
 		},
 		onremove() {
 			clearInterval(updater);
+		},
+		onupdate(vnode) {
+			Promise.all(
+				store.data.templates.map((t) => {
+					return new Promise((resolve) => {
+						let id = 'tmpl:' + t.author + '+' + t.name;
+						render(t.printTemplate, { it: t.skeletonData, images: t.images })
+							.then((res) => {
+								resolve({
+									id,
+									template: res,
+								});
+							})
+							.catch((err) => {
+								resolve({
+									id,
+									template: 'Template Error',
+								});
+							});
+					});
+				})
+			).then((res) => {
+				state.templates = {};
+				res.forEach((res) => {
+					state.templates[res.id] = res.template;
+				});
+				m.redraw();
+			});
 		},
 		view(vnode) {
 			return (

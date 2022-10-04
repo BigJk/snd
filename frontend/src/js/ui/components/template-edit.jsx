@@ -1,8 +1,9 @@
 import { chunk, debounce, isArray, map, mergeWith, uniq } from 'lodash-es';
 
 import api from '/js/core/api';
+import snippets from '/js/core/snippets';
 import store from '/js/core/store';
-import { renderAsync } from '/js/core/templating';
+import { render } from '/js/core/templating';
 
 import { Editor, Input, Select, SplitView, TextArea, Tooltip } from '/js/ui/components';
 
@@ -24,53 +25,6 @@ function entryMerger(objValue, srcValue) {
 	return undefined;
 }
 
-const snippets = [
-	{
-		name: 'if',
-		content: `{% if variable %}
-  
-{% endif %}`,
-	},
-	{
-		name: 'if-else',
-		content: `{% if variable %}
-  
-{% elif tired %}
-
-{% else %}
-
-{% endif %}`,
-	},
-	{
-		name: 'if-in-place',
-		content: '{{ "true" if foo else "false" }}',
-	},
-	{
-		name: 'for-in',
-		content: `{% for item in items %}
-		
-{% else %}
-
-{% endfor %}`,
-	},
-	{
-		name: 'macro',
-		content: `{% macro your_macro(val, other_val='') %}
-
-{% endmacro %}`,
-	},
-	{
-		name: 'set',
-		content: `{% set x = 5 %}`,
-	},
-	{
-		name: 'set-block',
-		content: `{% set x %}
-		
-{% endset %}`,
-	},
-];
-
 export default () => {
 	let state = {
 		target: null,
@@ -90,38 +44,26 @@ export default () => {
 	};
 
 	let updateRender = debounce(() => {
-		let rerender = false;
-
 		state.templateErrors = [];
 		state.listTemplateErrors = [];
 
-		renderAsync(
-			state.target.printTemplate,
-			{ it: state.target.skeletonData, images: state.target.images },
-			(res) => {
-				rerender = true;
-				state.lastRender = res;
-			},
-			(err) => {
-				state.templateErrors = [err];
-			}
-		);
+		Promise.all([
+			render(state.target.printTemplate, { it: state.target.skeletonData, images: state.target.images })
+				.then((res) => {
+					state.lastRender = res;
+				})
+				.catch((err) => {
+					state.templateErrors = [err];
+				}),
 
-		renderAsync(
-			state.target.listTemplate,
-			{ it: state.target.skeletonData, images: state.target.images },
-			(res) => {
-				rerender = true;
-				state.lastListRender = res;
-			},
-			(err) => {
-				state.listTemplateErrors = [err];
-			}
-		);
-
-		if (rerender) {
-			m.redraw();
-		}
+			render(state.target.listTemplate, { it: state.target.skeletonData, images: state.target.images })
+				.then((res) => {
+					state.lastListRender = res;
+				})
+				.catch((err) => {
+					state.listTemplateErrors = [err];
+				}),
+		]).then(m.redraw);
 
 		if (state.onRender) {
 			state.onRender(state.lastRender);

@@ -19,14 +19,18 @@ export default () => {
 	};
 
 	let updateRender = debounce(() => {
-		try {
-			state.lastRender = render(state.template.printTemplate, { it: state.parsedData, images: state.template.images });
-			m.redraw();
+		render(state.template.printTemplate, { it: state.parsedData, images: state.template.images })
+			.then((res) => {
+				state.lastRender = res;
+				m.redraw();
 
-			if (state.onRender) {
-				state.onRender(state.lastRender);
-			}
-		} catch (e) {}
+				if (state.onRender) {
+					state.onRender(state.lastRender);
+				}
+			})
+			.catch((err) => {
+				// TODO: handle error
+			});
 	}, 250);
 
 	let tabs = () => {

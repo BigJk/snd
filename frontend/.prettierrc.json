@@ -4,6 +4,7 @@
   "jsxSingleQuote": true,
   "singleQuote": true,
   "tabWidth": 4,
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
   "importOrder": [
     "^(.*).(css|scss)$",
     "^/img/(.*)$",

@@ -204,43 +204,48 @@ export default () => {
 
 	let updater = null;
 
+	let updateTemplates = () => {
+		Promise.all(
+			store.data.templates.map((t) => {
+				return new Promise((resolve) => {
+					let id = 'tmpl:' + t.author + '+' + t.name;
+					render(t.printTemplate, { it: t.skeletonData, images: t.images })
+						.then((res) => {
+							resolve({
+								id,
+								template: res,
+							});
+						})
+						.catch((err) => {
+							resolve({
+								id,
+								template: 'Template Error',
+							});
+						});
+				});
+			})
+		).then((res) => {
+			state.templates = {};
+			res.forEach((res) => {
+				state.templates[res.id] = res.template;
+			});
+		});
+	};
+
 	return {
 		oninit() {
 			store.pub('reload_templates');
 			updater = setInterval(() => {
 				store.pub('reload_templates');
 			}, 5000);
+
+			updateTemplates();
 		},
 		onremove() {
 			clearInterval(updater);
 		},
 		onupdate(vnode) {
-			Promise.all(
-				store.data.templates.map((t) => {
-					return new Promise((resolve) => {
-						let id = 'tmpl:' + t.author + '+' + t.name;
-						render(t.printTemplate, { it: t.skeletonData, images: t.images })
-							.then((res) => {
-								resolve({
-									id,
-									template: res,
-								});
-							})
-							.catch((err) => {
-								resolve({
-									id,
-									template: 'Template Error',
-								});
-							});
-					});
-				})
-			).then((res) => {
-				state.templates = {};
-				res.forEach((res) => {
-					state.templates[res.id] = res.template;
-				});
-				m.redraw();
-			});
+			updateTemplates();
 		},
 		view(vnode) {
 			return (

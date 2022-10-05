@@ -2,6 +2,7 @@ import { filter } from 'lodash-es';
 
 import MarkdownIt from 'markdown-it';
 import * as nunjucks from 'nunjucks';
+import hash from 'object-hash';
 
 import EvalWorker from '/js/workers/eval?worker';
 
@@ -107,14 +108,26 @@ export const parseError = (e) => {
 	return null;
 };
 
+let cache = {};
+
 export const render = (template, state) => {
 	state.settings = store.data.settings;
 
 	return new Promise((resolve, reject) => {
+		let id = hash(template) + hash(state);
+		if (cache[id]) {
+			console.log('cache hit');
+			resolve(cache[id]);
+			return;
+		}
+
 		env.renderString(template, state, (err, res) => {
 			if (err) {
-				reject(parseError(err));
+				let parsedErr = parseError(err);
+				cache[id] = parsedErr;
+				reject(parsedErr);
 			} else {
+				cache[id] = res;
 				resolve(res);
 			}
 		});

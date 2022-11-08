@@ -42,7 +42,9 @@ func dropSingle(db *badger.DB, key string) error {
 }
 
 func dropAll(db *badger.DB, prefix string) error {
-	return db.Update(func(txn *badger.Txn) error {
+	var toDelete [][]byte
+
+	if err := db.View(func(txn *badger.Txn) error {
 		opts := badger.DefaultIteratorOptions
 		opts.PrefetchValues = false
 
@@ -51,11 +53,21 @@ func dropAll(db *badger.DB, prefix string) error {
 
 		prefixBytes := []byte(prefix)
 		for it.Seek(prefixBytes); it.ValidForPrefix(prefixBytes); it.Next() {
-			if err := txn.Delete(it.Item().Key()); err != nil {
+			key := it.Item().KeyCopy(nil)
+			toDelete = append(toDelete, key)
+		}
+
+		return nil
+	}); err != nil {
+		return err
+	}
+
+	return db.Update(func(txn *badger.Txn) error {
+		for i := range toDelete {
+			if err := txn.Delete(toDelete[i]); err != nil {
 				return err
 			}
 		}
-
 		return nil
 	})
 }

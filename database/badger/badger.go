@@ -95,6 +95,10 @@ func (b *Badger) SaveTemplate(template snd.Template) error {
 }
 
 func (b *Badger) DeleteTemplate(id string) error {
+	if err := b.DeleteEntries(id); err != nil {
+		return err
+	}
+	
 	return dropSingle(b.db, id)
 }
 
@@ -153,6 +157,10 @@ func (b *Badger) SaveGenerator(generator snd.Generator) error {
 }
 
 func (b *Badger) DeleteGenerator(id string) error {
+	if err := b.DeleteEntries(id); err != nil {
+		return err
+	}
+
 	return dropSingle(b.db, id)
 }
 
@@ -165,6 +173,10 @@ func (b *Badger) SaveSource(ds snd.DataSource) error {
 }
 
 func (b *Badger) DeleteSource(id string) error {
+	if err := b.DeleteEntries(id); err != nil {
+		return err
+	}
+
 	return dropSingle(b.db, id)
 }
 

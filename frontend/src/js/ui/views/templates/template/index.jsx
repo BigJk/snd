@@ -57,6 +57,10 @@ export default () => {
 	};
 
 	let getListTemplate = (entry) => {
+		if (state.template.listTemplate.trim().length === 0) {
+			return '';
+		}
+
 		if (state.entriesTemplate[entry.id]) {
 			return state.entriesTemplate[entry.id];
 		}

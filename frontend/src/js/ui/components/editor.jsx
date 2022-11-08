@@ -145,6 +145,7 @@ export default () => {
 
 		state.errorChecker = debounce(() => {
 			if (!state.errorProvider) return;
+			if (!state.editor) return;
 
 			let res = state.errorProvider(state.editor.getValue());
 			if (res instanceof Promise) {

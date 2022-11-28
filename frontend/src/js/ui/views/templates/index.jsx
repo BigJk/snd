@@ -10,7 +10,7 @@ import { render } from '/js/core/templating';
 import { Base, Header, Input, Loading, Modal, Preview, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
-import { success } from '/js/ui/toast';
+import { error, success } from '/js/ui/toast';
 
 export default () => {
 	let state = {
@@ -60,26 +60,32 @@ export default () => {
 							if (inElectron) {
 								openFileDialog().then((file) => {
 									state.importing.loading = true;
-									api.importTemplateZip(file).then((name) => {
-										success(`Imported '${name}' successful`);
+									api.importTemplateZip(file)
+										.then((name) => {
+											success(`Imported '${name}' successful`);
 
-										store.pub('reload_templates');
-
-										state.importing.show = false;
-										state.importing.loading = false;
-									});
+											store.pub('reload_templates');
+										})
+										.catch((err) => error(err))
+										.then(() => {
+											state.importing.show = false;
+											state.importing.loading = false;
+										});
 								});
 							} else {
 								readFile().then((res) => {
 									state.importing.loading = true;
-									api.importTemplateZip(res).then((name) => {
-										success(`Imported '${name}' successful`);
+									api.importTemplateZip(res)
+										.then((name) => {
+											success(`Imported '${name}' successful`);
 
-										store.pub('reload_templates');
-
-										state.importing.show = false;
-										state.importing.loading = false;
-									});
+											store.pub('reload_templates');
+										})
+										.catch((err) => error(err))
+										.then(() => {
+											state.importing.show = false;
+											state.importing.loading = false;
+										});
 								});
 							}
 						}}
@@ -91,14 +97,17 @@ export default () => {
 						onclick={() => {
 							openFolderDialog().then((folder) => {
 								state.importing.loading = true;
-								api.importTemplateFolder(folder).then((name) => {
-									success(`Imported '${name}' successful`);
+								api.importTemplateFolder(folder)
+									.then((name) => {
+										success(`Imported '${name}' successful`);
 
-									store.pub('reload_templates');
-
-									state.importing.show = false;
-									state.importing.loading = false;
-								});
+										store.pub('reload_templates');
+									})
+									.catch((err) => error(err))
+									.then(() => {
+										state.importing.show = false;
+										state.importing.loading = false;
+									});
 							});
 						}}
 					>
@@ -116,14 +125,17 @@ export default () => {
 						className='btn btn-primary'
 						onclick={() => {
 							state.importing.loading = true;
-							api.importTemplateUrl(state.importing.url).then((name) => {
-								success(`Imported '${name}' successful`);
+							api.importTemplateUrl(state.importing.url)
+								.then((name) => {
+									success(`Imported '${name}' successful`);
 
-								store.pub('reload_templates');
-
-								state.importing.show = false;
-								state.importing.loading = false;
-							});
+									store.pub('reload_templates');
+								})
+								.catch((err) => error(err))
+								.then(() => {
+									state.importing.show = false;
+									state.importing.loading = false;
+								});
 						}}
 					>
 						Import

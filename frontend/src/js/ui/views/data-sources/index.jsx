@@ -9,7 +9,7 @@ import store from '/js/core/store';
 import { Base, Header, Input, Modal, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
-import { success } from '/js/ui/toast';
+import { error, success } from '/js/ui/toast';
 
 export default () => {
 	let state = {
@@ -58,26 +58,31 @@ export default () => {
 							if (inElectron) {
 								openFileDialog().then((file) => {
 									state.importing.loading = true;
-									api.importSourceZip(file).then((name) => {
-										success(`Imported '${name}' successful`);
-
-										store.pub('reload_sources');
-
-										state.importing.show = false;
-										state.importing.loading = false;
-									});
+									api.importSourceZip(file)
+										.then((name) => {
+											success(`Imported '${name}' successful`);
+											store.pub('reload_sources');
+										})
+										.catch((err) => error(err))
+										.then(() => {
+											state.importing.show = false;
+											state.importing.loading = false;
+										});
 								});
 							} else {
 								readFile().then((res) => {
 									state.importing.loading = true;
-									api.importSourceZip(res).then((name) => {
-										success(`Imported '${name}' successful`);
+									api.importSourceZip(res)
+										.then((name) => {
+											success(`Imported '${name}' successful`);
 
-										store.pub('reload_sources');
-
-										state.importing.show = false;
-										state.importing.loading = false;
-									});
+											store.pub('reload_sources');
+										})
+										.catch((err) => error(err))
+										.then(() => {
+											state.importing.show = false;
+											state.importing.loading = false;
+										});
 								});
 							}
 						}}
@@ -89,14 +94,17 @@ export default () => {
 						onclick={() => {
 							openFolderDialog().then((folder) => {
 								state.importing.loading = true;
-								api.importSourceFolder(folder).then((name) => {
-									success(`Imported '${name}' successful`);
+								api.importSourceFolder(folder)
+									.then((name) => {
+										success(`Imported '${name}' successful`);
 
-									store.pub('reload_sources');
-
-									state.importing.show = false;
-									state.importing.loading = false;
-								});
+										store.pub('reload_sources');
+									})
+									.catch((err) => error(err))
+									.then(() => {
+										state.importing.show = false;
+										state.importing.loading = false;
+									});
 							});
 						}}
 					>
@@ -110,14 +118,17 @@ export default () => {
 						className='btn btn-primary'
 						onclick={() => {
 							state.importing.loading = true;
-							api.importSourceUrl(state.importing.url).then((name) => {
-								success(`Imported '${name}' successful`);
+							api.importSourceUrl(state.importing.url)
+								.then((name) => {
+									success(`Imported '${name}' successful`);
 
-								store.pub('reload_sources');
-
-								state.importing.show = false;
-								state.importing.loading = false;
-							});
+									store.pub('reload_sources');
+								})
+								.catch((err) => error(err))
+								.then(() => {
+									state.importing.show = false;
+									state.importing.loading = false;
+								});
 						}}
 					>
 						Import
@@ -136,14 +147,16 @@ export default () => {
 							if (inElectron) {
 								openFileDialog().then((file) => {
 									state.importing.loading = true;
-									api.importVttModule(file).then((name) => {
-										success(`Imported Module successful`);
-
-										store.pub('reload_sources');
-
-										state.importing.show = false;
-										state.importing.loading = false;
-									});
+									api.importVttModule(file)
+										.then((name) => {
+											success(`Imported Module successful`);
+											store.pub('reload_sources');
+										})
+										.catch((err) => error(err))
+										.then(() => {
+											state.importing.show = false;
+											state.importing.loading = false;
+										});
 								});
 							} else {
 								// TODO: error

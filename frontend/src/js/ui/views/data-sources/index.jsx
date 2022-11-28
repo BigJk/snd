@@ -63,7 +63,7 @@ export default () => {
 											success(`Imported '${name}' successful`);
 											store.pub('reload_sources');
 										})
-										.catch((err) => error(err))
+										.catch(error)
 										.then(() => {
 											state.importing.show = false;
 											state.importing.loading = false;
@@ -78,7 +78,7 @@ export default () => {
 
 											store.pub('reload_sources');
 										})
-										.catch((err) => error(err))
+										.catch(error)
 										.then(() => {
 											state.importing.show = false;
 											state.importing.loading = false;
@@ -100,7 +100,7 @@ export default () => {
 
 										store.pub('reload_sources');
 									})
-									.catch((err) => error(err))
+									.catch(error)
 									.then(() => {
 										state.importing.show = false;
 										state.importing.loading = false;
@@ -124,7 +124,7 @@ export default () => {
 
 									store.pub('reload_sources');
 								})
-								.catch((err) => error(err))
+								.catch(error)
 								.then(() => {
 									state.importing.show = false;
 									state.importing.loading = false;
@@ -152,7 +152,7 @@ export default () => {
 											success(`Imported Module successful`);
 											store.pub('reload_sources');
 										})
-										.catch((err) => error(err))
+										.catch(error)
 										.then(() => {
 											state.importing.show = false;
 											state.importing.loading = false;

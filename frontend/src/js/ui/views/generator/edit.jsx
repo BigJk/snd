@@ -69,7 +69,7 @@ export default () => {
 										success('Generator saved');
 										store.pub('reload_generators');
 										m.route.set('/generators');
-									}, error)
+									}).catch(error)
 								}
 							>
 								Save

@@ -13,13 +13,14 @@ const rngScript = (seed) => {
 		<script src="https://cdn.jsdelivr.net/npm/@dice-roller/rpg-dice-roller@5.2.1/lib/umd/bundle.min.js"></script>
 		<script>
 			window.random = new Math.seedrandom('${seed}');
-			window.dice = new rpgDiceRoller.DiceRoller();
 			
-			window.dice.engine = {
+			rpgDiceRoller.NumberGenerator.generator.engine = {
 			  next () {
 				return Math.abs(window.random.int32());
 			  },
 			};
+			
+			window.dice = new rpgDiceRoller.DiceRoller();
 		</script>
 `;
 };

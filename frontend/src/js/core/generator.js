@@ -14,8 +14,6 @@ const rngScript = (seed) => {
 };
 
 export function render(generator, entries, config) {
-	console.log(generator, entries, config);
-
 	return renderTemplate(
 		(generator.passEntriesToJS ? `<script> let entries = ${JSON.stringify(state.entries)};</script>` : '') +
 			rngScript(config.seed ?? 'test-seed') +

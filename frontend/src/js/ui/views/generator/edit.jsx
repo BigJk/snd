@@ -29,7 +29,6 @@ export default () => {
 			},
 			{
 				name: state.generator?.name ?? '...',
-				link: state.id ? '/generators/' + state.id : undefined,
 			},
 			{
 				name: 'Editing',

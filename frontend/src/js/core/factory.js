@@ -20,7 +20,7 @@ export function NewGenerator() {
 		description: '',
 		printTemplate: '',
 		passEntriesToJS: false,
-		config: {},
+		config: [],
 		images: {},
 		dataSources: [],
 	};

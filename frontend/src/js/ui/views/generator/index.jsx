@@ -1,6 +1,12 @@
+import { pickBy } from 'lodash-es';
+
+import { error, success } from '../../toast';
+
+import api from '/js/core/api';
+import { render } from '/js/core/generator';
 import Store from '/js/core/store';
 
-import { Header, Input, Tooltip } from '/js/ui/components';
+import { GeneratorConfig, Header, Input, Tooltip } from '/js/ui/components';
 import Base from '/js/ui/components/base';
 
 import binder from '/js/ui/binder';
@@ -13,6 +19,31 @@ export default () => {
 			loading: false,
 			url: '',
 		},
+		configs: {},
+	};
+
+	let sanitizeConfig = (g) => {
+		let id = `gen:${g.author}+${g.slug}`;
+
+		if (state.configs[id] === undefined) {
+			state.configs[id] = {
+				seed: 'TEST_SEED',
+			};
+		}
+
+		g.config.forEach((conf) => {
+			if (state.configs[id][conf.key] === undefined) {
+				state.configs[id][conf.key] = conf.default;
+			}
+		});
+
+		state.configs[id] = pickBy(state.configs[id], (val, key) => {
+			return g.config.some((conf) => {
+				return conf.key === key || key === 'seed';
+			});
+		});
+
+		console.log(state.configs);
 	};
 
 	return {
@@ -31,8 +62,12 @@ export default () => {
 						<div className='divider-vert' />
 						<Input placeholder='Search...' value={state.search} oninput={binder.inputString(state, 'search')} />
 					</Header>
-					<div className='pa3'>
+					<div className='pa3 flex flex-wrap'>
 						{Store.data.generators.map((g, i) => {
+							let id = `gen:${g.author}+${g.slug}`;
+
+							sanitizeConfig(g);
+
 							return (
 								<div className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}>
 									<div className='ba b--black-10 mb2 bg-white'>
@@ -50,9 +85,28 @@ export default () => {
 												</div>
 												<div className='divider' />
 											</div>
-											<div className='ba br2 b--black-05 mb2 h5 overflow-auto'></div>
+											<div className='ba br2 b--black-05 mb2 overflow-auto ph3 pv2' style='height: 400px;'>
+												<GeneratorConfig
+													config={g.config}
+													value={state.configs[id]}
+													onchange={(key, val) => {
+														state.configs[id][key] = val;
+													}}
+												></GeneratorConfig>
+											</div>
 											<div className='flex'>
-												<div className='flex-grow-1 btn btn-success mr2' onclick={null}>
+												<div
+													className='flex-grow-1 btn btn-success mr2'
+													onclick={() => {
+														render(g, null, state.configs[id])
+															.then((res) => {
+																api.print(res)
+																	.then(() => success('Printing send'))
+																	.catch(error);
+															})
+															.catch(error);
+													}}
+												>
 													<i className='ion ion-md-print mr1' /> Generate
 												</div>
 												<div

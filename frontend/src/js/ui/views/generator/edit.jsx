@@ -1,3 +1,5 @@
+import { transform } from 'lodash-es';
+
 import api from '/js/core/api';
 import store from '/js/core/store';
 
@@ -9,6 +11,7 @@ export default () => {
 	let state = {
 		id: null,
 		generator: null,
+		testConfig: {},
 		lastRender: '',
 	};
 
@@ -65,11 +68,14 @@ export default () => {
 							<div
 								className='btn btn-success'
 								onclick={() =>
-									api.saveGenerator(state.generator).then(() => {
-										success('Generator saved');
-										store.pub('reload_generators');
-										m.route.set('/generators');
-									}).catch(error)
+									api
+										.saveGenerator(state.generator)
+										.then(() => {
+											success('Generator saved');
+											store.pub('reload_generators');
+											m.route.set('/generators');
+										})
+										.catch(error)
 								}
 							>
 								Save

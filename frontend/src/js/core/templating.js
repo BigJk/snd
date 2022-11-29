@@ -116,7 +116,7 @@ export const render = (template, state) => {
 	return new Promise((resolve, reject) => {
 		let id = hash(template) + hash(state);
 		if (cache[id]) {
-			console.log('cache hit');
+			console.log('templating: cache hit');
 			resolve(cache[id]);
 			return;
 		}

@@ -90,7 +90,8 @@ func fetchAll[T any](db *badger.DB, prefix string, filter func(string) bool) ([]
 
 				err := msgpack.Unmarshal(val, &elem)
 				if err != nil {
-					return err
+					// TODO: handle changed schema
+					return nil
 				}
 
 				elems = append(elems, elem)

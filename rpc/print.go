@@ -59,7 +59,8 @@ func fixHtml(html string, settings snd.Settings) (string, error) {
 <html lang="en">
   <title>print page</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1">`
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>body { margin: 0; padding: 0; }</style>`
 
 	// Add global stylesheets
 	for i := range settings.Stylesheets {

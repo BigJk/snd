@@ -18,3 +18,4 @@ export { default as TextArea } from './text-area';
 export { default as AdvancedSearch } from './advanced-search';
 export { default as Tooltip } from './tooltip';
 export { default as Logo } from './logo';
+export { default as GeneratorConfig } from './generator-config';

@@ -1,11 +1,12 @@
-import { chunk, debounce, isArray, map, mergeWith, uniq } from 'lodash-es';
+import { debounce, map, pickBy, uniq } from 'lodash-es';
 
 import api from '/js/core/api';
+import { render } from '/js/core/generator';
 import snippets from '/js/core/snippets';
 import store from '/js/core/store';
-import { render } from '/js/core/templating';
 
-import { Editor, Input, Select, SplitView, Switch, TextArea, Tooltip } from '/js/ui/components';
+import { Editor, GeneratorConfig, Input, Select, SplitView, Switch, TextArea } from '/js/ui/components';
+import Types from '/js/ui/components/generator/types';
 
 import binder from '/js/ui/binder';
 
@@ -25,13 +26,26 @@ export default () => {
 		imagesToUpload: [],
 	};
 
+	let sanitizeConfig = () => {
+		state.target.config.forEach((conf) => {
+			if (state.testConfig[conf.key] === undefined) {
+				state.testConfig[conf.key] = conf.default;
+			}
+		});
+
+		state.testConfig = pickBy(state.testConfig, (val, key) => {
+			return state.target.config.some((conf) => {
+				return conf.key === key || key === 'seed';
+			});
+		});
+	};
+
 	let updateRender = debounce(() => {
 		state.templateErrors = [];
 
-		render(
-			(state.target.passEntriesToJS ? `<script> let entries = ${JSON.stringify(state.entries)};</script>` : '') + state.target.printTemplate,
-			{ config: state.testConfig, images: state.target.images, entries: state.entries }
-		)
+		sanitizeConfig();
+
+		render(state.target, state.entries, state.testConfig)
 			.then((res) => {
 				state.lastRender = res;
 			})
@@ -44,6 +58,11 @@ export default () => {
 			state.onRender(state.lastRender);
 		}
 	}, 1000);
+
+	let updateRenderSanitize = () => {
+		sanitizeConfig();
+		updateRender();
+	};
 
 	let tabs = {
 		Information: () => {
@@ -167,7 +186,6 @@ export default () => {
 							if (state.selectedSource.length === 0) {
 								return;
 							}
-
 							if (!state.target.dataSources) {
 								state.target.dataSources = [];
 							}
@@ -199,10 +217,101 @@ export default () => {
 			);
 		},
 		Config: () => {
-			return <div className='pa3'>...</div>;
+			return (
+				<div className='pa3'>
+					<div
+						className='btn btn-primary mb1'
+						onclick={() => {
+							state.target.config.push({
+								key: 'option_key_' + Math.ceil(Math.random() * 10000),
+								name: 'Option Name',
+								description: 'Option description',
+								type: 'Text',
+								data: 'hello world',
+								default: 'hello world',
+							});
+
+							updateRenderSanitize();
+						}}
+					>
+						New Config Value
+					</div>
+					<div className='divider' />
+					{state.target.config.map((val, i) => {
+						return [
+							<div className='flex w-100'>
+								<div className='flex-grow-1 mr3'>
+									<Input
+										label='Key'
+										placeholder='Key'
+										value={val.key}
+										oninput={binder.inputString(val, 'key', updateRenderSanitize)}
+									></Input>
+									<Input
+										label='Name'
+										placeholder='Name'
+										value={val.name}
+										oninput={binder.inputString(val, 'name', updateRenderSanitize)}
+									></Input>
+									<Input
+										label='Description'
+										placeholder='Description'
+										value={val.description}
+										oninput={binder.inputString(val, 'description', updateRenderSanitize)}
+									></Input>
+								</div>
+								<div className='flex-grow-1'>
+									<Select
+										label='Printer Type'
+										keys={Object.keys(Types)}
+										selected={val.type}
+										labelCol={4}
+										oninput={binder.inputString(val, 'type', (newType) => {
+											val.data = val.default = Types[newType].defaultValue;
+											state.testConfig[val.key] = val.default;
+											updateRenderSanitize();
+										})}
+									></Select>
+									{m(Types[val.type].view, {
+										value: val.default,
+										oninput: (newVal) => {
+											val.default = newVal;
+											state.testConfig[val.key] = val.default;
+											updateRenderSanitize();
+										},
+										inEdit: true,
+										label: 'Default Value',
+									})}
+								</div>
+							</div>,
+							<div
+								className='btn btn-error mt3 mb1'
+								onclick={() => {
+									state.target.config.splice(i, 1);
+									updateRenderSanitize();
+								}}
+							>
+								Delete
+							</div>,
+							<div className='divider' />,
+						];
+					})}
+				</div>
+			);
 		},
 		'Test Config': () => {
-			return <div className='pa3'>...</div>;
+			return (
+				<div className='ph3 pt2'>
+					<GeneratorConfig
+						config={state.target.config}
+						value={state.testConfig}
+						onchange={(key, val) => {
+							state.testConfig[key] = val;
+							updateRenderSanitize();
+						}}
+					></GeneratorConfig>
+				</div>
+			);
 		},
 		'Print Template': () => {
 			return (
@@ -233,6 +342,9 @@ export default () => {
 			state.target = vnode.attrs.target;
 			state.editMode = vnode.attrs.editmode ?? false;
 			state.onRender = vnode.attrs.onrender;
+			state.testConfig = vnode.attrs.testConfig ?? {
+				seed: 'TEST_SEED',
+			};
 
 			if (state.editMode) {
 				api.getEntriesWithSources(`gen:${state.target.author}+${state.target.slug}`).then((entries) => {

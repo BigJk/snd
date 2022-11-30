@@ -155,7 +155,11 @@ export default () => {
 				{map(
 					groupBy(
 						store.data.templates?.filter((t) => {
-							return state.search.length === 0 || t.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0;
+							return (
+								state.search.length === 0 ||
+								t.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0 ||
+								t.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0
+							);
 						}),
 						'author'
 					),

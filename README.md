@@ -24,6 +24,7 @@ or a letter that the group found to little character sheets of your players to u
   - Raspberry Pi (ARMv6, ARMv7)
   - Anything else go can be compiled on
 - Extensive templating system through [Nunjucks](https://mozilla.github.io/nunjucks/)
+- Extensive random generator system
 - Various connection methods
   - Windows Direct Printing
   - Raw USB Printing

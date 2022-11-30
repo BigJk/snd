@@ -267,7 +267,7 @@ export default () => {
 										selected={val.type}
 										labelCol={4}
 										oninput={binder.inputString(val, 'type', (newType) => {
-											val.data = val.default = Types[newType].defaultValue;
+											val.default = Types[newType].defaultValue;
 											state.testConfig[val.key] = val.default;
 											updateRenderSanitize();
 										})}

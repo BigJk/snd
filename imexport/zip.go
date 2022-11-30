@@ -2,10 +2,12 @@ package imexport
 
 import (
 	"archive/zip"
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/BigJk/snd"
 )
@@ -61,6 +63,27 @@ func ExportTemplateZIP(tmpl snd.Template, entries []snd.Entry, writer io.Writer)
 	defer zipper.Close()
 
 	return fmt.Sprintf("%s_%s.zip", tmpl.Author, tmpl.Slug), ExportTemplate(tmpl, entries, &ZipExportWriter{writer: zipper})
+}
+
+// ExportTemplateZIPFile exports the template and entries as a zip file.
+//
+// Following files will be created in the zip:
+// - meta.json
+// - print.html.njk
+// - list.html.njk
+// - skeleton.json
+// - entries.json
+//
+// The function returns the location where the file was written to as "{folder}/{tmpl.Autor}_{tmpl.Slug}.zip".
+func ExportTemplateZIPFile(tmpl snd.Template, entries []snd.Entry, folder string) (string, error) {
+	buf := &bytes.Buffer{}
+	file, err := ExportTemplateZIP(tmpl, entries, buf)
+	if err != nil {
+		return "", err
+	}
+
+	path := filepath.Join(folder, file)
+	return path, ioutil.WriteFile(path, buf.Bytes(), 0666)
 }
 
 // ImportTemplateZIP will import template and entry data from a given zip.
@@ -135,4 +158,70 @@ func ImportSourceZIPFile(file string) (snd.DataSource, []snd.Entry, error) {
 	}
 
 	return ImportSourceZIP(zipFile, stat.Size())
+}
+
+// ExportGeneratorZIP exports the generator and entries as a zip file.
+//
+// Following files will be created in the zip:
+// - meta.json
+// - print.html.njk
+//
+// The function returns the advised name for the zip file with the pattern "gen_{tmpl.Autor}_{tmpl.Slug}.zip".
+func ExportGeneratorZIP(gen snd.Generator, writer io.Writer) (string, error) {
+	zipper := zip.NewWriter(writer)
+	defer zipper.Close()
+
+	return fmt.Sprintf("gen_%s_%s.zip", gen.Author, gen.Slug), ExportGenerator(gen, &ZipExportWriter{writer: zipper})
+}
+
+// ExportGeneratorZIPFile exports the generator and entries as a zip file.
+//
+// Following files will be created in the zip:
+// - meta.json
+// - print.html.njk
+//
+// The function returns the location where the file was written to as "{folder}/gen_{tmpl.Autor}_{tmpl.Slug}.zip".
+func ExportGeneratorZIPFile(gen snd.Generator, folder string) (string, error) {
+	buf := &bytes.Buffer{}
+	file, err := ExportGeneratorZIP(gen, buf)
+	if err != nil {
+		return "", err
+	}
+
+	path := filepath.Join(folder, file)
+	return path, ioutil.WriteFile(path, buf.Bytes(), 0666)
+}
+
+// ImportGeneratorZIP will import generator and entry data from a given zip.
+//
+// Following files are needed in the zip:
+// - meta.json
+// - print.html.njk
+func ImportGeneratorZIP(reader io.ReaderAt, size int64) (snd.Generator, error) {
+	zipper, err := zip.NewReader(reader, size)
+	if err != nil {
+		return snd.Generator{}, err
+	}
+
+	return ImportGenerator(&ZipImportReader{reader: zipper})
+}
+
+// ImportGeneratorZIPFile will import generator from a given zip file.
+//
+// Following files are needed:
+// - meta.json
+// - print.html.njk
+func ImportGeneratorZIPFile(file string) (snd.Generator, error) {
+	zipFile, err := os.Open(file)
+	if err != nil {
+		return snd.Generator{}, err
+	}
+	defer zipFile.Close()
+
+	stat, err := zipFile.Stat()
+	if err != nil {
+		return snd.Generator{}, err
+	}
+
+	return ImportGeneratorZIP(zipFile, stat.Size())
 }

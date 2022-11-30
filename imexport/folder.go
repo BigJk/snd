@@ -73,3 +73,30 @@ func ImportSourceFolder(folder string) (snd.DataSource, []snd.Entry, error) {
 	}
 	return ImportSource(reader)
 }
+
+// ExportGeneratorFolder exports the template and entries to the given folder. A new folder with
+// the pattern gen_{tmpl.Autor}_{tmpl.Slug} will be created.
+//
+// Following files will be created:
+// - meta.json
+// - print.html.njk
+//
+// The function returns the name of the created folder.
+func ExportGeneratorFolder(tmpl snd.Generator, folder string) (string, error) {
+	name := fmt.Sprintf("gen_%s_%s", tmpl.Author, tmpl.Slug)
+	_ = os.MkdirAll(filepath.Join(folder, name), 0777)
+
+	return name, ExportGenerator(tmpl, &FolderExportWriter{base: filepath.Join(folder, name)})
+}
+
+// ImportGeneratorFolder will import template and entry data from a given folder.
+//
+// Following files are needed:
+// - meta.json
+// - print.html.njk
+func ImportGeneratorFolder(folder string) (snd.Generator, error) {
+	reader := &FolderImportReader{
+		base: folder,
+	}
+	return ImportGenerator(reader)
+}

@@ -36,12 +36,12 @@ func RegisterTemplate(route *echo.Group, extern *echo.Group, db database.Databas
 			return "", err
 		}
 
-		buf := &bytes.Buffer{}
-		file, err := imexport.ExportTemplateZIP(tmpl, entries, buf)
+		file, err := imexport.ExportTemplateZIPFile(tmpl, entries, path)
 		if err != nil {
 			return "", err
 		}
-		return filepath.Join(path, file), ioutil.WriteFile(filepath.Join(path, file), buf.Bytes(), 0666)
+
+		return file, nil
 	})))
 
 	route.POST("/exportTemplateFolder", echo.WrapHandler(nra.MustBind(func(id string, path string) (string, error) {

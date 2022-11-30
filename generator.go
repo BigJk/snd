@@ -7,7 +7,6 @@ type GeneratorConfig struct {
 	Name        string      `json:"name"`
 	Description string      `json:"description"`
 	Type        string      `json:"type"`
-	Data        interface{} `json:"data"`
 	Default     interface{} `json:"default"`
 }
 

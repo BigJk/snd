@@ -348,7 +348,7 @@ export default () => {
 																			</div>
 																		</div>
 
-																		<span className='f8 fw4 text-muted'>
+																		<span className='f8 fw4 text-muted flex-shrink-0 ml3'>
 																			{g.author}/{g.slug}
 																		</span>
 																	</div>

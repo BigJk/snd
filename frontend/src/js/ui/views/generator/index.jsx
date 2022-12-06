@@ -11,7 +11,7 @@ import { GeneratorConfig, Header, Input, Modal, Preview, Switch, Tooltip } from 
 import Base from '/js/ui/components/base';
 
 import binder from '/js/ui/binder';
-import { error, success } from '/js/ui/toast';
+import { dialogWarning, error, success } from '/js/ui/toast';
 
 export default () => {
 	let state = {
@@ -417,11 +417,15 @@ export default () => {
 																				<div
 																					className='btn btn-error'
 																					onclick={() =>
-																						api.deleteGenerator(id).then(() => {
-																							delete state.configs[id];
-																							delete state.rendered[id];
-																							store.pub('reload_generators');
-																						})
+																						dialogWarning(
+																							`Do you really want to delete the '${g.name}' generator?`
+																						).then(() =>
+																							api.deleteGenerator(id).then(() => {
+																								delete state.configs[id];
+																								delete state.rendered[id];
+																								store.pub('reload_generators');
+																							})
+																						)
 																					}
 																				>
 																					<i className='ion ion-md-close-circle mr1' /> Delete

@@ -10,7 +10,7 @@ import { keepOpen, on } from '/js/core/ws';
 import { AdvancedSearch, Base, Header, Input, Loading, Modal, SplitView, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
-import { error, success } from '/js/ui/toast';
+import { dialogWarning, error, success } from '/js/ui/toast';
 
 export default () => {
 	let state = {
@@ -503,11 +503,13 @@ export default () => {
 								<div
 									className='btn btn-error'
 									onclick={() =>
-										api.deleteTemplate(state.template.id).then(() => {
-											success('Template deleted');
-											store.pub('reload_templates');
-											m.route.set('/templates');
-										}, error)
+										dialogWarning(`Do you really want to delete the '${state.template.name}' template?`).then(() =>
+											api.deleteTemplate(state.template.id).then(() => {
+												success('Template deleted');
+												store.pub('reload_templates');
+												m.route.set('/templates');
+											}, error)
+										)
 									}
 								>
 									<i className='ion ion-md-close-circle-outline' />

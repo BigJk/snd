@@ -9,7 +9,7 @@ import store from '/js/core/store';
 import { Base, Header, Input, Modal, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
-import { error, success } from '/js/ui/toast';
+import { dialogWarning, error, success } from '/js/ui/toast';
 
 export default () => {
 	let state = {
@@ -211,9 +211,11 @@ export default () => {
 															<div
 																className='btn btn-error'
 																onclick={() =>
-																	api.deleteSource(`ds:${t.author}+${t.slug}`).then(() => {
-																		store.pub('reload_sources');
-																	})
+																	dialogWarning(`Do you really want to delete the '${t.name}' source ?`).then(
+																		api.deleteSource(`ds:${t.author}+${t.slug}`).then(() => {
+																			store.pub('reload_sources');
+																		})
+																	)
 																}
 															>
 																<i className='ion ion-md-close-circle-outline' />

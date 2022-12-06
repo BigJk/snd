@@ -1,6 +1,7 @@
-import { chunk, debounce, isArray, map, mergeWith, uniq } from 'lodash-es';
+import { debounce, isArray, map, mergeWith, uniq } from 'lodash-es';
 
 import api from '/js/core/api';
+import htmlFormat from '/js/core/html-format';
 import snippets from '/js/core/snippets';
 import store from '/js/core/store';
 import { render } from '/js/core/templating';
@@ -331,6 +332,7 @@ export default () => {
 					errorProvider={() => {
 						return state.templateErrors;
 					}}
+					formatter={htmlFormat}
 				/>
 			);
 		},
@@ -349,6 +351,7 @@ export default () => {
 					errorProvider={() => {
 						return state.listTemplateErrors;
 					}}
+					formatter={htmlFormat}
 				/>,
 				<div className='absolute right-0 bottom-0 ma3 pa2 ba b--black-10 bg-white f5 lh-solid w500'>
 					<div className='fw7'>Sample Entry</div>

@@ -14,8 +14,8 @@ import store from '/js/core/store';
 
 import DataSources from '/js/ui/views/data-sources';
 import Devices from '/js/ui/views/devices';
-import ExternPrintTemplate from '/js/ui/views/extern-print/template';
 import ExternPrintGenerator from '/js/ui/views/extern-print/generator';
+import ExternPrintTemplate from '/js/ui/views/extern-print/template';
 import GeneratorEdit from '/js/ui/views/generator/edit';
 import Generator from '/js/ui/views/generator/index';
 import GeneratorNew from '/js/ui/views/generator/new';

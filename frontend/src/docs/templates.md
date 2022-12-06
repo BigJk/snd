@@ -70,6 +70,12 @@ The skeleton data is like an example entry that is used for template editing and
 It is encoded as [json](https://en.wikipedia.org/wiki/JSON). Depending on the type and value of a
 property a different input will be shown in the entry creation and editing.
 
+## Hotkeys
+
+In the skeleton editor following hotkeys are available:
+
+- ``Ctrl+K``: Format Code
+
 ### — Type: Text
 
 If a property is a text like the ``description`` in the following example a normal text input
@@ -172,6 +178,7 @@ In the template editors following hotkeys are available:
 
 - ``Ctrl+Space``: Open Hint
 - ``Ctrl+G``: Open Snippets
+- ``Ctrl+K``: Format Code
 
 ## Variables
 

@@ -74,6 +74,7 @@ function dialogInternal(question, bg) {
 							dialogToast.toast.hideToast();
 							resetDialogState();
 							resolve();
+							m.redraw();
 						}}
 					>
 						Yes
@@ -85,6 +86,7 @@ function dialogInternal(question, bg) {
 							dialogToast.toast.hideToast();
 							resetDialogState();
 							reject();
+							m.redraw();
 						}}
 					>
 						No

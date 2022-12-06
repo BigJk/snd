@@ -138,4 +138,38 @@ func RegisterGenerator(route *echo.Group, extern *echo.Group, db database.Databa
 		c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", file))
 		return c.Blob(http.StatusOK, "application/zip", buf.Bytes())
 	})
+
+	//
+	//	External API Routes
+	//
+
+	extern.GET("/generators", func(c echo.Context) error {
+		gens, err := db.GetGenerators()
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err.Error())
+		}
+
+		type ExternGeneratorEntry struct {
+			ID          string                `json:"id"`
+			Name        string                `json:"name"`
+			Author      string                `json:"author"`
+			Slug        string                `json:"slug"`
+			Description string                `json:"description"`
+			Config      []snd.GeneratorConfig `json:"config"`
+		}
+
+		var result []ExternGeneratorEntry
+		for i := range gens {
+			result = append(result, ExternGeneratorEntry{
+				ID:          gens[i].ID(),
+				Name:        gens[i].Name,
+				Author:      gens[i].Author,
+				Slug:        gens[i].Slug,
+				Description: gens[i].Description,
+				Config:      gens[i].Config,
+			})
+		}
+
+		return c.JSON(http.StatusOK, result)
+	})
 }

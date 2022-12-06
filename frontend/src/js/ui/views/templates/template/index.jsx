@@ -133,7 +133,7 @@ export default () => {
 					any associated data sources!
 				</div>
 				<div
-					className='btn btn-primary mr2'
+					className='btn btn-primary mr2 mb2'
 					onclick={() => {
 						if (inElectron) {
 							openFolderDialog().then((folder) => {
@@ -156,7 +156,7 @@ export default () => {
 					</b>
 				</div>
 				<div
-					className='btn btn-primary'
+					className='btn btn-primary mb2'
 					onclick={() => {
 						openFolderDialog().then((folder) => {
 							api.exportTemplateFolder(state.template.id, folder)

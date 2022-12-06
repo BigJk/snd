@@ -41,6 +41,10 @@ export default () => {
 			};
 		}
 
+		if (state.configs[id].seed === undefined) {
+			state.configs[id].seed = 'TEST_SEED';
+		}
+
 		g.config.forEach((conf) => {
 			if (state.configs[id][conf.key] === undefined) {
 				state.configs[id][conf.key] = conf.default;
@@ -48,9 +52,12 @@ export default () => {
 		});
 
 		state.configs[id] = pickBy(state.configs[id], (val, key) => {
-			return g.config.some((conf) => {
-				return conf.key === key || key === 'seed';
-			});
+			return (
+				key === 'seed' ||
+				g.config.some((conf) => {
+					return conf.key === key;
+				})
+			);
 		});
 	};
 

@@ -13,23 +13,26 @@ export default () => {
 			state.id = vnode.attrs.id;
 			state.json = JSON.parse(atob(vnode.attrs.json));
 
-			rpc.getTemplate(state.id).then((tmpl) => {
-				render(tmpl.printTemplate, { it: state.json, images: tmpl.images })
-					.then((res) => {
-						state.tmpl = res;
-					})
-					.catch((err) => {
-						state.tmpl = 'Template Error';
-					});
-			});
+			rpc.getTemplate(state.id)
+				.then((tmpl) => {
+					render(tmpl.printTemplate, { it: state.json, images: tmpl.images })
+						.then((res) => {
+							state.tmpl = res;
+						})
+						.catch((err) => {
+							state.tmpl = 'Template Error: ' + err;
+						});
+				})
+				.catch((err) => {
+					state.tmpl = 'Template Error: ' + err;
+				});
 		},
-		onremove() {},
 		view(vnode) {
 			if (state.tmpl === null) {
 				return <div></div>;
 			}
 
-			return <div>{m.trust(state.tmpl)}</div>;
+			return <div id='render-done'>{m.trust(state.tmpl)}</div>;
 		},
 	};
 };

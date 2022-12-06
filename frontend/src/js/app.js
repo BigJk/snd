@@ -105,7 +105,7 @@ let wait = setInterval(() => {
 		'/settings': Settings,
 		'/devices': Devices,
 		'/extern-print/template/:id/:json': ExternPrintTemplate,
-		'/extern-print/generator/:id/:json': ExternPrintTemplate,
+		'/extern-print/generator/:id/:json': ExternPrintGenerator,
 	});
 
 	clearInterval(wait);

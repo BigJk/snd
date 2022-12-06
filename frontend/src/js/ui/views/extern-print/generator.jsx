@@ -13,25 +13,28 @@ export default () => {
 			state.id = vnode.attrs.id;
 			state.json = JSON.parse(atob(vnode.attrs.json));
 
-			api.getEntriesWithSources(state.id).then((entries) => {
-				api.getGenerator(state.id).then((gen) => {
-					render(gen, entries ?? [], state.json)
-						.then((res) => {
-							state.gen = res;
-						})
-						.catch((err) => {
-							state.gen = 'Generator Error';
-						});
+			api.getEntriesWithSources(state.id)
+				.then((entries) => {
+					api.getGenerator(state.id).then((gen) => {
+						render(gen, entries ?? [], state.json)
+							.then((res) => {
+								state.gen = res;
+							})
+							.catch((err) => {
+								state.gen = 'Generator Error: ' + err;
+							});
+					});
+				})
+				.catch((err) => {
+					state.gen = 'Generator Error: ' + err;
 				});
-			});
 		},
-		onremove() {},
 		view(vnode) {
-			if (state.tmpl === null) {
+			if (state.gen === null) {
 				return <div></div>;
 			}
 
-			return <div>{m.trust(state.gen)}</div>;
+			return <div id='render-done'>{m.trust(state.gen)}</div>;
 		},
 	};
 };

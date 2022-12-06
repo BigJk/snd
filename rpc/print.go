@@ -265,7 +265,7 @@ func RegisterPrint(route *echo.Group, extern *echo.Group, db database.Database, 
 			t = "generator"
 		}
 
-		html, err := rendering.ExtractHTML(fmt.Sprintf("http://127.0.0.1:7123/#!/extern-print/%s/%s/%s", t, c.Param("id"), base64.StdEncoding.EncodeToString(data)), "#app")
+		html, err := rendering.ExtractHTML(fmt.Sprintf("http://127.0.0.1:7123/#!/extern-print/%s/%s/%s", t, c.Param("id"), base64.StdEncoding.EncodeToString(data)), "#render-done")
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, err.Error())
 		}

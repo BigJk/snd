@@ -13,6 +13,7 @@ import (
 	_ "image/png"
 	"net/url"
 	"os"
+	"time"
 
 	"github.com/go-rod/rod/lib/launcher"
 
@@ -75,6 +76,10 @@ func ExtractHTML(url string, selector string) (string, error) {
 	page := browser.MustPage(url)
 	page.MustWaitLoad().MustWaitIdle()
 	defer page.Close()
+
+	if err := page.Timeout(time.Second*5).WaitElementsMoreThan(selector, 0); err != nil {
+		return "", err
+	}
 
 	sel, err := page.Element(selector)
 	if err != nil {

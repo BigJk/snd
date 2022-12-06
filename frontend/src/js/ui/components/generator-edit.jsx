@@ -34,10 +34,17 @@ export default () => {
 			}
 		});
 
+		if (state.testConfig.seed === undefined) {
+			state.testConfig.seed = 'TEST_SEED';
+		}
+
 		state.testConfig = pickBy(state.testConfig, (val, key) => {
-			return state.target.config.some((conf) => {
-				return conf.key === key || key === 'seed';
-			});
+			return (
+				key === 'seed' ||
+				state.target.config.some((conf) => {
+					return conf.key === key;
+				})
+			);
 		});
 	};
 

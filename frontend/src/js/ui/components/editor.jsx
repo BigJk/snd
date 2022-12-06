@@ -38,6 +38,12 @@ export default () => {
 
 				let cursor = state.editor.getDoc().getCursor();
 				let line = state.editor.getDoc().getLine(cursor.line).slice(0, cursor.ch);
+				let lastStart = line.lastIndexOf('{{');
+
+				if (lastStart === -1)
+					return;
+
+				line = line.slice(lastStart);
 
 				for (let i = 0; i < hintObjects.length; i++) {
 					let match = new RegExp(hintObjects[i] + '\\.(\\S*)', 'gm').exec(line);

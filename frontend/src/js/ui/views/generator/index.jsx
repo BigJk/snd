@@ -7,7 +7,7 @@ import api from '/js/core/api';
 import { render } from '/js/core/generator';
 import store from '/js/core/store';
 
-import { GeneratorConfig, Header, Input, Modal, Preview, Switch, Tooltip } from '/js/ui/components';
+import { GeneratorConfig, Header, Input, Modal, Preview, Switch, TextArea, Tooltip } from '/js/ui/components';
 import Base from '/js/ui/components/base';
 
 import binder from '/js/ui/binder';
@@ -25,6 +25,10 @@ export default () => {
 			id: '',
 			g: null,
 			show: false,
+		},
+		info: {
+			show: false,
+			id: '',
 		},
 		configs: {},
 		rendered: {},
@@ -252,6 +256,27 @@ export default () => {
 		);
 	};
 
+	let modalInfo = () => {
+		if (!state.info.show) return null;
+
+		return (
+			<Modal title='Information' onclose={() => (state.info.show = false)}>
+				<div className='mb1 b f5'>Generator ID</div>
+				<div className='mb2'>This is the generator id that is used in the Database.</div>
+				<Input value={state.info.id}></Input>
+				<div className='mt3 b mb1 f5'>API Print Endpoint</div>
+				<div className='mb2'>
+					This is the local endpoint if you want to remotely print this generator. Just do a POST request containing the JSON encoded config
+					data that should be inserted.
+				</div>
+				<Input value={location.origin + '/api/extern/print/generator/' + state.info.id}></Input>
+				<div className='mt3 b mb1 f5'>Current Config</div>
+				<div className='mb2'>This is the JSON of the current configuration.</div>
+				<TextArea rows={10} value={JSON.stringify(state.configs[state.info.id], null, '\t')}></TextArea>
+			</Modal>
+		);
+	};
+
 	let updater = null;
 
 	return {
@@ -407,36 +432,53 @@ export default () => {
 																					<i className='ion ion-md-print mr1' /> Print
 																				</div>
 																				<div className='divider-vert' />
-																				<div
-																					className='btn btn-primary mr2'
-																					onclick={() =>
-																						m.route.set(`/generators/gen:${g.author}+${g.slug}/edit`)
-																					}
-																				>
-																					<i className='ion ion-md-settings mr1' /> Edit
-																				</div>
-																				<div
-																					className='btn btn-primary mr2'
-																					onclick={() => (state.export = { show: true, g: g, id: id })}
-																				>
-																					<i className='ion ion-md-open mr1' /> Export
-																				</div>
-																				<div
-																					className='btn btn-error'
-																					onclick={() =>
-																						dialogWarning(
-																							`Do you really want to delete the '${g.name}' generator?`
-																						).then(() =>
-																							api.deleteGenerator(id).then(() => {
-																								delete state.configs[id];
-																								delete state.rendered[id];
-																								store.pub('reload_generators');
-																							})
-																						)
-																					}
-																				>
-																					<i className='ion ion-md-close-circle mr1' /> Delete
-																				</div>
+																				<Tooltip content={'Edit'}>
+																					<div
+																						className='btn btn-primary w2 mr2'
+																						onclick={() =>
+																							m.route.set(`/generators/gen:${g.author}+${g.slug}/edit`)
+																						}
+																					>
+																						<i className='ion ion-md-settings' />
+																					</div>
+																				</Tooltip>
+																				<Tooltip content={'Export Options'}>
+																					<div
+																						className='btn btn-primary w2 mr2'
+																						onclick={() => (state.export = { show: true, g: g, id: id })}
+																					>
+																						<i className='ion ion-md-open' />
+																					</div>
+																				</Tooltip>
+																				<Tooltip content={'API Information'}>
+																					<div
+																						className={`btn btn-primary w2 mr2`}
+																						onclick={() => {
+																							state.info.id = id;
+																							state.info.show = true;
+																						}}
+																					>
+																						<i className={`ion ion-md-information`} />
+																					</div>
+																				</Tooltip>
+																				<Tooltip content={'Delete'}>
+																					<div
+																						className='btn btn-error w2'
+																						onclick={() =>
+																							dialogWarning(
+																								`Do you really want to delete the '${g.name}' generator?`
+																							).then(() =>
+																								api.deleteGenerator(id).then(() => {
+																									delete state.configs[id];
+																									delete state.rendered[id];
+																									store.pub('reload_generators');
+																								})
+																							)
+																						}
+																					>
+																						<i className='ion ion-md-close-circle' />
+																					</div>
+																				</Tooltip>
 																			</div>,
 																			<div className='flex'>
 																				<div className='w5 mr3'>
@@ -478,6 +520,7 @@ export default () => {
 					</div>
 					{modal()}
 					{modalExport()}
+					{modalInfo()}
 				</Base>
 			);
 		},

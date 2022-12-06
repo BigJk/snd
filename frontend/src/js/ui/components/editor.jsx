@@ -40,8 +40,7 @@ export default () => {
 				let line = state.editor.getDoc().getLine(cursor.line).slice(0, cursor.ch);
 				let lastStart = line.lastIndexOf('{{');
 
-				if (lastStart === -1)
-					return;
+				if (lastStart === -1) return;
 
 				line = line.slice(lastStart);
 

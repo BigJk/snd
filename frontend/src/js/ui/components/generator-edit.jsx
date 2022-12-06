@@ -10,6 +10,7 @@ import { Editor, GeneratorConfig, Input, Select, SplitView, Switch, TextArea } f
 import Types from '/js/ui/components/generator/types';
 
 import binder from '/js/ui/binder';
+import { dialogWarning } from '/js/ui/toast';
 
 export default () => {
 	let state = {
@@ -248,7 +249,7 @@ export default () => {
 					{state.target.config.map((val, i) => {
 						return [
 							<div className='flex w-100'>
-								<div className='flex-grow-1 mr3'>
+								<div className='w-50 flex-shrink-0 mr3'>
 									<Input
 										label='Key'
 										placeholder='Key'
@@ -268,10 +269,11 @@ export default () => {
 										oninput={binder.inputString(val, 'description', updateRenderSanitize)}
 									></Input>
 								</div>
-								<div className='flex-grow-1'>
+								<div className='w-50 flex-shrink-0'>
 									<Select
 										label='Printer Type'
 										keys={Object.keys(Types)}
+										names={Object.keys(Types).map((key) => Types[key].name)}
 										selected={val.type}
 										labelCol={4}
 										oninput={binder.inputString(val, 'type', (newType) => {
@@ -295,8 +297,10 @@ export default () => {
 							<div
 								className='btn btn-error mt3 mb1'
 								onclick={() => {
-									state.target.config.splice(i, 1);
-									updateRenderSanitize();
+									dialogWarning(`Do you really want to delete the '${val.name}' option?`).then(() => {
+										state.target.config.splice(i, 1);
+										updateRenderSanitize();
+									});
 								}}
 							>
 								Delete
@@ -331,13 +335,17 @@ export default () => {
 						state.target.printTemplate = html;
 						updateRender();
 					}}
-					snippets={[...snippets, {
-						name: 'dice',
-						content: `dice.roll('1d6').total`,
-					}, {
-						name: 'random',
-						content: `random()`,
-					}]}
+					snippets={[
+						...snippets,
+						{
+							name: 'dice',
+							content: `dice.roll('1d6').total`,
+						},
+						{
+							name: 'random',
+							content: `random()`,
+						},
+					]}
 					autocompleteData={{ config: state.testConfig, settings: store.data.settings }}
 					errorProvider={() => {
 						return state.templateErrors;

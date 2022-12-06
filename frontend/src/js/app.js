@@ -14,7 +14,8 @@ import store from '/js/core/store';
 
 import DataSources from '/js/ui/views/data-sources';
 import Devices from '/js/ui/views/devices';
-import ExternPrint from '/js/ui/views/extern-print';
+import ExternPrintTemplate from '/js/ui/views/extern-print/template';
+import ExternPrintGenerator from '/js/ui/views/extern-print/generator';
 import GeneratorEdit from '/js/ui/views/generator/edit';
 import Generator from '/js/ui/views/generator/index';
 import GeneratorNew from '/js/ui/views/generator/new';
@@ -103,7 +104,8 @@ let wait = setInterval(() => {
 		'/data-sources': DataSources,
 		'/settings': Settings,
 		'/devices': Devices,
-		'/extern-print/:id/:json': ExternPrint,
+		'/extern-print/template/:id/:json': ExternPrintTemplate,
+		'/extern-print/generator/:id/:json': ExternPrintTemplate,
 	});
 
 	clearInterval(wait);

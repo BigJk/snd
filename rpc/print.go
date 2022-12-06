@@ -253,14 +253,19 @@ func RegisterPrint(route *echo.Group, extern *echo.Group, db database.Database, 
 	//	External API Routes
 	//
 
-	extern.POST("/print/:template", func(c echo.Context) error {
+	extern.POST("/print/:id", func(c echo.Context) error {
 		// Render the Template to HTML
 		data, err := ioutil.ReadAll(c.Request().Body)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, err.Error())
 		}
 
-		html, err := rendering.ExtractHTML(fmt.Sprintf("http://127.0.0.1:7123/#!/extern-print/%s/%s", c.Param("template"), base64.StdEncoding.EncodeToString(data)), "#app")
+		t := "template"
+		if strings.HasPrefix(c.Param("id"), "gen:") {
+			t = "generator"
+		}
+
+		html, err := rendering.ExtractHTML(fmt.Sprintf("http://127.0.0.1:7123/#!/extern-print/%s/%s/%s", t, c.Param("id"), base64.StdEncoding.EncodeToString(data)), "#app")
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, err.Error())
 		}

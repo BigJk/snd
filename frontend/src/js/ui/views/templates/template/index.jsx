@@ -235,7 +235,7 @@ export default () => {
 					This is the local endpoint if you want to remotely print this template. Just do a POST request containing the JSON encoded data
 					that should be inserted.
 				</div>
-				<Input value={location.origin + '/api/extern/print/' + state.template.id}></Input>
+				<Input value={location.origin + '/api/extern/print/template/' + state.template.id}></Input>
 			</Modal>
 		);
 	};

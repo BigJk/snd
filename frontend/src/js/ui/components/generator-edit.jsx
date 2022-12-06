@@ -331,7 +331,13 @@ export default () => {
 						state.target.printTemplate = html;
 						updateRender();
 					}}
-					snippets={snippets}
+					snippets={[...snippets, {
+						name: 'dice',
+						content: `dice.roll('1d6').total`,
+					}, {
+						name: 'random',
+						content: `random()`,
+					}]}
 					autocompleteData={{ config: state.testConfig, settings: store.data.settings }}
 					errorProvider={() => {
 						return state.templateErrors;

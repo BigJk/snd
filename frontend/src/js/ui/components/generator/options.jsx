@@ -1,7 +1,7 @@
 import { Input, Select } from '/js/ui/components/index';
 
 export default {
-	name: 'Text',
+	name: 'Option',
 	defaultValue: {
 		choices: ['Option A', 'Option B'],
 		selected: 'Option A',

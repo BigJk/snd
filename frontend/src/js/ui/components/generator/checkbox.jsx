@@ -1,7 +1,7 @@
 import { Switch } from '/js/ui/components/index';
 
 export default {
-	name: 'Text',
+	name: 'Checkbox',
 	defaultValue: false,
 	view: () => {
 		return {

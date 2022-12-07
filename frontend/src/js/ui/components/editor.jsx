@@ -39,6 +39,9 @@ export default () => {
 				let cursor = state.editor.getDoc().getCursor();
 				let line = state.editor.getDoc().getLine(cursor.line).slice(0, cursor.ch);
 				let lastStart = line.lastIndexOf('{{');
+				if (lastStart === -1) {
+					lastStart = line.lastIndexOf('{%');
+				}
 
 				if (lastStart === -1) return;
 

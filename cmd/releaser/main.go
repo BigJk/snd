@@ -185,7 +185,7 @@ func main() {
 
 	ldflags := fmt.Sprintf("-X github.com/BigJk/snd.GitCommitHash=%s -X github.com/BigJk/snd.GitBranch=%s -X github.com/BigJk/snd.BuildTime=%s", gitCommit, gitBranch, time.Now().Format(time.RFC3339))
 	if !*skipBuilds {
-		for _, b := range Builds {
+		for i, b := range Builds {
 			if len(*only) > 0 && !strings.Contains(b.Arch+b.OS, *only) {
 				fmt.Printf("=========================== [%s-%s]\n", b.OS, b.Arch)
 				fmt.Println("Skipping...")
@@ -205,6 +205,7 @@ func main() {
 			// Create needed directories
 			_ = os.MkdirAll(target, 0777)
 			_ = os.MkdirAll(filepath.Join(target, "/data"), 0777)
+			_ = os.MkdirAll(filepath.Join(cache, fmt.Sprintf("build-%d", i)), 0777)
 
 			_ = copy.Copy(fmt.Sprintf("./res/%s-%s", b.OS, b.Arch), target)
 			_ = copy.Copy("./cache/frontend/", filepath.Join(target, "/frontend"))
@@ -219,7 +220,8 @@ func main() {
 				"PATH=" + os.Getenv("PATH"),
 				"GOOS=" + b.OS,
 				"GOARCH=" + b.Arch,
-				"GOCACHE=" + cache,
+				"GOCACHE=" + filepath.Join(cache, fmt.Sprintf("build-%d", i)),
+				"GOTMPDIR=" + filepath.Join(cache, fmt.Sprintf("build-%d", i)),
 				"GOPATH=" + os.Getenv("GOPATH"),
 				"GOROOT=" + os.Getenv("GOROOT"),
 				"PKG_CONFIG_PATH=" + os.Getenv("PKG_CONFIG_PATH"),

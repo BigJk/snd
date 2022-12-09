@@ -5,8 +5,7 @@ import { render as renderTemplate } from './templating';
 // Dice Roller: https://dice-roller.github.io/documentation/
 //
 // TODO: include it locally
-const rngScript = (seed) => {
-	return `
+const rngScript = (seed) => `
 		<script src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
 		<script src="https://unpkg.com/mathjs@9.3.2/lib/browser/math.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/random-js@2.1.0/dist/random-js.umd.min.js"></script>
@@ -23,11 +22,10 @@ const rngScript = (seed) => {
 			window.dice = new rpgDiceRoller.DiceRoller();
 		</script>
 `;
-};
 
 export function render(generator, entries, config) {
 	return renderTemplate(
-		(generator.passEntriesToJS ? `<script> let entries = ${JSON.stringify(state.entries)};</script>` : '') +
+		(generator.passEntriesToJS ? `<script> let entries = ${JSON.stringify(entries)};</script>` : '') +
 			rngScript(config.seed ?? 'test-seed') +
 			generator.printTemplate,
 		{ config: config, images: generator.images, entries: entries }

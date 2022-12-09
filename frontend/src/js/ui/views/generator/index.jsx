@@ -60,14 +60,10 @@ export default () => {
 		});
 
 		// remove old fields that are not present in the config anymore.
-		state.configs[id] = pickBy(state.configs[id], (val, key) => {
-			return (
+		state.configs[id] = pickBy(state.configs[id], (val, key) => (
 				key === 'seed' ||
-				g.config.some((conf) => {
-					return conf.key === key;
-				})
-			);
-		});
+				g.config.some((conf) => conf.key === key)
+			));
 	};
 
 	let rerender = (g) => {
@@ -210,17 +206,14 @@ export default () => {
 					<div className='pa3 flex flex-wrap'>
 						{map(
 							groupBy(
-								store.data.generators?.filter((t) => {
-									return (
+								store.data.generators?.filter((t) => (
 										state.search.length === 0 ||
 										t.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0 ||
 										t.author.toLowerCase().indexOf(state.search.toLowerCase()) >= 0
-									);
-								}),
+									)),
 								'author'
 							),
-							(val, key) => {
-								return (
+							(val, key) => (
 									<div className='w-100 mb3'>
 										<div className='mb2 f5'>
 											Generators by <b>{key}</b>
@@ -397,7 +390,7 @@ export default () => {
 																					oninput={binder.checkbox(state.settings[id], 'reroll')}
 																				></Switch>
 																			</div>,
-																	  ]
+																		]
 																	: null}
 															</div>
 														</div>
@@ -417,8 +410,7 @@ export default () => {
 											})}
 										</div>
 									</div>
-								);
-							}
+								)
 						)}
 					</div>
 					<ModalImport

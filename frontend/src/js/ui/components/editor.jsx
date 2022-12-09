@@ -76,7 +76,7 @@ export default () => {
 
 									return {
 										text: rest + (typeof v === 'object' && !Array.isArray(v) ? '.' : ''),
-										render: function (elt, data, cur) {
+										render: function (elt) {
 											const wrapper = document.createElement('div');
 											m.render(
 												wrapper,
@@ -91,9 +91,7 @@ export default () => {
 											elt.appendChild(wrapper);
 										},
 									};
-								}).filter((e) => {
-									return e;
-								}),
+								}).filter((e) => e),
 							};
 						}
 					}
@@ -111,21 +109,18 @@ export default () => {
 			completeSingle: false,
 			hint: () => {
 				let cursor = state.editor.getDoc().getCursor();
-				let line = state.editor.getDoc().getLine(cursor.line).slice(0, cursor.ch);
 
 				return {
 					from: cursor,
 					to: cursor,
-					list: map(state.snippets, (v) => {
-						return {
+					list: map(state.snippets, (v) => ({
 							text: v.content,
 							render: function (elt) {
 								const wrapper = document.createElement('div');
 								m.render(wrapper, <div>{v.name}</div>);
 								elt.appendChild(wrapper);
 							},
-						};
-					}),
+						})),
 				};
 			},
 		});
@@ -212,7 +207,7 @@ export default () => {
 		onremove(vnode) {
 			state.editor = null;
 		},
-		onbeforeupdate(vnode, old) {
+		onbeforeupdate(vnode) {
 			state.onchange = vnode.attrs.onchange;
 			state.autocompleteData = vnode.attrs.autocompleteData;
 			state.errorProvider = vnode.attrs.errorProvider;

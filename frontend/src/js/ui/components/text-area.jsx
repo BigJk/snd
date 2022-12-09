@@ -1,8 +1,7 @@
 import FormGroup from '/js/ui/components/form-group';
 
 export default () => {
-	let getTextarea = (vnode) => {
-		return (
+	let getTextarea = (vnode) => (
 			<textarea
 				value={vnode.attrs.value}
 				rows={vnode.attrs.rows}
@@ -11,7 +10,6 @@ export default () => {
 				oninput={vnode.attrs.oninput}
 			/>
 		);
-	};
 
 	return {
 		view(vnode) {

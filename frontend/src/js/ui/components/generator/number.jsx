@@ -3,8 +3,7 @@ import { Input } from '/js/ui/components/index';
 export default {
 	name: 'Number',
 	defaultValue: 0,
-	view: () => {
-		return {
+	view: () => ({
 			oninit() {},
 			view(vnode) {
 				return (
@@ -15,6 +14,5 @@ export default {
 					></Input>
 				);
 			},
-		};
-	},
+		}),
 };

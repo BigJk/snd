@@ -6,8 +6,7 @@ export default {
 		choices: ['Option A', 'Option B'],
 		selected: 'Option A',
 	},
-	view: () => {
-		return {
+	view: () => ({
 			oninit() {},
 			view(vnode) {
 				return (
@@ -28,6 +27,5 @@ export default {
 					</div>
 				);
 			},
-		};
-	},
+		}),
 };

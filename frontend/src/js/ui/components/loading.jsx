@@ -1,5 +1,4 @@
-export default () => {
-	return {
+export default () => ({
 		view(vnode) {
 			return (
 				<div className='flex-grow-1 flex justify-center items-center'>
@@ -7,5 +6,4 @@ export default () => {
 				</div>
 			);
 		},
-	};
-};
+	});

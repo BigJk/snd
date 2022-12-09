@@ -11,8 +11,7 @@ export default () => {
 		template: NewTemplate(),
 	};
 
-	let breadcrumbs = () => {
-		return [
+	let breadcrumbs = () => [
 			{
 				name: 'Templates',
 				link: '/templates',
@@ -21,15 +20,12 @@ export default () => {
 				name: 'New',
 			},
 		];
-	};
 
-	let body = () => {
-		return (
+	let body = () => (
 			<div className='flex-grow-1 overflow-auto'>
 				<TemplateEdit target={state.template} />
 			</div>
 		);
-	};
 
 	return {
 		view(vnode) {

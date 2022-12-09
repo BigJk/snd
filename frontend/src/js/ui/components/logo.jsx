@@ -1,8 +1,7 @@
 import buySvg from '/img/buy.svg';
 import dungeonSvg from '/img/dungeon.svg';
 
-export default () => {
-	return {
+export default () => ({
 		view(vnode) {
 			return (
 				<div className='flex items-center z-5' style={{ zoom: vnode.attrs.scale ?? 1.0 }}>
@@ -11,5 +10,4 @@ export default () => {
 				</div>
 			);
 		},
-	};
-};
+	});

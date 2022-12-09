@@ -152,9 +152,7 @@ const constrains = [
 
 function suitableConstrains(obj) {
 	let type = Array.isArray(obj) ? 'array' : typeof obj;
-	return constrains.filter((c) => {
-		return c.for.some((t) => t === type);
-	});
+	return constrains.filter((c) => c.for.some((t) => t === type));
 }
 
 function allPaths(obj, cur) {
@@ -241,7 +239,7 @@ export default () => {
 						<div
 							className='btn btn-primary mb2'
 							onclick={() => {
-								if (state.filter.hasOwnProperty(state.selectedKey)) {
+								if (state.filter[state.selectedKey]) {
 									return;
 								}
 
@@ -255,8 +253,7 @@ export default () => {
 							Add Constrain
 						</div>
 					</div>
-					{map(state.filter, (con, key) => {
-						return (
+					{map(state.filter, (con, key) => (
 							<div className='pa2 ba br1 b--black-10 mt2 bg-white-20'>
 								<div className='flex justify-between items-center mb2'>
 									<span className='b'>{pathToName(key)}</span>
@@ -284,7 +281,7 @@ export default () => {
 
 											con.constrains.push({
 												base: con.suitable[con.selectedSuitable],
-												args: con.suitable[con.selectedSuitable].args.map((_) => null),
+												args: con.suitable[con.selectedSuitable].args.map(() => null),
 												negate: false,
 											});
 
@@ -295,8 +292,7 @@ export default () => {
 									</div>
 								</div>
 								<div>
-									{map(con.constrains, (c, i) => {
-										return (
+									{map(con.constrains, (c, i) => (
 											<div className='bt b--black-10 pt2 mt2'>
 												<div className='flex justify-between items-center'>
 													<span className='b'>{c.base.name}</span>{' '}
@@ -341,12 +337,10 @@ export default () => {
 													</Form>
 												</div>
 											</div>
-										);
-									})}
+										))}
 								</div>
 							</div>
-						);
-					})}
+						))}
 				</div>
 			);
 		},

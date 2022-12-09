@@ -4,9 +4,7 @@ export default function (html) {
 	let pre = html
 		.replace(/{%/g, `/*{%`)
 		.replace(/%}/g, `%}*/`)
-		.replace(/{{.+}}/g, (x) => {
-			return `/*` + x + `*/`;
-		});
+		.replace(/{{.+}}/g, (x) => `/*` + x + `*/`);
 
 	let formatted = Beautifier.html(pre, {
 		e4x: true,
@@ -20,7 +18,5 @@ export default function (html) {
 	return formatted
 		.replace(/\/\*{%/g, `{%`)
 		.replace(/%}\*\//g, `%}`)
-		.replace(/\/\*{{.+}}\*\//g, (x) => {
-			return x.slice(2, x.length - 2);
-		});
+		.replace(/\/\*{{.+}}\*\//g, (x) => x.slice(2, x.length - 2));
 }

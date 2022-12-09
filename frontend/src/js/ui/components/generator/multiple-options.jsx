@@ -9,8 +9,7 @@ export default {
 		allowDuplicate: false,
 		selected: ['Option A'],
 	},
-	view: () => {
-		return {
+	view: () => ({
 			oninit() {},
 			view(vnode) {
 				return (
@@ -34,7 +33,7 @@ export default {
 											})
 										}
 									></Switch>,
-							  ]
+								]
 							: null}
 						<Select
 							label={vnode.attrs.label}
@@ -48,8 +47,7 @@ export default {
 								})
 							}
 						></Select>
-						{vnode.attrs.value.selected.map((v, i) => {
-							return (
+						{vnode.attrs.value.selected.map((v, i) => (
 								<div className='dib mr2 mb2 label label-primary'>
 									<span className='mr2'>{v}</span>
 									<i
@@ -62,11 +60,9 @@ export default {
 										}
 									></i>
 								</div>
-							);
-						})}
+							))}
 					</div>
 				);
 			},
-		};
-	},
+		}),
 };

@@ -149,7 +149,7 @@ export default () => {
 									state.importing.loading = true;
 									api.importVttModule(file)
 										.then((name) => {
-											success(`Imported Module successful`);
+											success(`Imported '${name}' module successful`);
 											store.pub('reload_sources');
 										})
 										.catch(error)
@@ -170,25 +170,20 @@ export default () => {
 		);
 	};
 
-	let body = () => {
-		return (
+	let body = () => (
 			<div className='ph3 pb3'>
 				{map(
 					groupBy(
-						store.data.sources?.filter((t) => {
-							return state.search.length === 0 || t.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0;
-						}),
+						store.data.sources?.filter((t) => state.search.length === 0 || t.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0),
 						'author'
 					),
-					(val, key) => {
-						return (
+					(val, key) => (
 							<div className='w-100 mb3'>
 								<div className='mb2 f5'>
 									Sources by <b>{key}</b>
 								</div>
 								<div className='flex flex-wrap'>
-									{val.map((t, i) => {
-										return (
+									{val.map((t, i) => (
 											<div className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}>
 												<div className='flex ba b--black-10 h4_5 mb2 bg-white'>
 													<div className='flex-grow-1 pv2 ph2 lh-solid flex flex-column justify-between'>
@@ -224,16 +219,13 @@ export default () => {
 													</div>
 												</div>
 											</div>
-										);
-									})}
+										))}
 								</div>
 							</div>
-						);
-					}
+						)
 				)}
 			</div>
 		);
-	};
 
 	let updater = null;
 

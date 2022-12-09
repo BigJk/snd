@@ -1,6 +1,6 @@
 import { trim } from 'lodash-es';
 
-import { setSpellcheckerLanguages, shell } from '/js/electron';
+import { shell } from '/js/electron';
 
 import api from '/js/core/api';
 import store from '/js/core/store';
@@ -151,8 +151,7 @@ export default () => {
 							Global Stylesheets
 						</div>
 						<Form className='w-100 pt2'>
-							{store.data.settings.stylesheets?.map((s, i) => {
-								return (
+							{store.data.settings.stylesheets?.map((s, i) => (
 									<div className='flex justify-between'>
 										<Input
 											value={s}
@@ -163,8 +162,7 @@ export default () => {
 											Delete
 										</div>
 									</div>
-								);
-							})}
+								))}
 						</Form>
 						<div className='btn btn-success btn-sm' onclick={() => store.data.settings.stylesheets.push('')}>
 							New Entry

@@ -1,6 +1,5 @@
 export default () => {
-	let breadcrumbs = (b) => {
-		return (
+	let breadcrumbs = (b) => (
 			<ul className='breadcrumb f5'>
 				{b.map((e, i) => {
 					if (i < b.length - 1) {
@@ -24,7 +23,6 @@ export default () => {
 				})}
 			</ul>
 		);
-	};
 
 	return {
 		view(vnode) {

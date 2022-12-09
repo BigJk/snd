@@ -30,6 +30,7 @@ export default () => {
 			})
 			.catch((err) => {
 				// TODO: handle error
+				console.log(err);
 			});
 	}, 250);
 
@@ -111,7 +112,8 @@ export default () => {
 					);
 				}
 
-				let isNum = typeof obj === 'number';
+				// eslint-disable-next-line no-case-declarations
+				let isNum = (typeof obj === 'number');
 
 				return (
 					<div className='form-group mw-50 mr3'>
@@ -157,8 +159,7 @@ export default () => {
 							>
 								Create New
 							</div>
-							{map(obj, (v, k) => {
-								return (
+							{map(obj, (v, k) => (
 									<div className='panel mb2 pt2'>
 										<div className='panel-body'>{walkRecursive(curPath + '[' + k + ']', k)}</div>
 										<div className='panel-footer'>
@@ -173,8 +174,7 @@ export default () => {
 											</div>
 										</div>
 									</div>
-								);
-							})}
+								))}
 						</div>
 					);
 				}
@@ -182,9 +182,7 @@ export default () => {
 					<div>
 						<div className='f5'>{startCase(camelCase(name))}</div>
 						<div className='divider' />
-						{map(obj, (v, k) => {
-							return walkRecursive(curPath + '.' + k, k);
-						})}
+						{map(obj, (v, k) => walkRecursive(curPath + '.' + k, k))}
 					</div>
 				);
 		}

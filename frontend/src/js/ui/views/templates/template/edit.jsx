@@ -26,8 +26,7 @@ export default () => {
 		}, error);
 	};
 
-	let breadcrumbs = () => {
-		return [
+	let breadcrumbs = () => [
 			{
 				name: 'Templates',
 				link: '/templates',
@@ -43,7 +42,6 @@ export default () => {
 				name: 'Editing',
 			},
 		];
-	};
 
 	let body = (vnode) => {
 		if (!state.entry || !state.template || !store.there(['settings'])) {

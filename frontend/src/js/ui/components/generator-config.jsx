@@ -1,8 +1,7 @@
 import Types from '/js/ui/components/generator/types';
 import { Input } from '/js/ui/components/index';
 
-export default () => {
-	return {
+export default () => ({
 		view(vnode) {
 			return (
 				<div className='lh-copy'>
@@ -20,8 +19,7 @@ export default () => {
 						values.
 					</div>
 					<div className='divider' />
-					{vnode.attrs.config.map((val, i) => {
-						return (
+					{vnode.attrs.config.map((val) => (
 							<div>
 								{m(Types[val.type].view, {
 									value: vnode.attrs.value[val.key],
@@ -34,10 +32,8 @@ export default () => {
 								<span className='o-70 mt2 mb2'>{val.description}</span>
 								<div className='divider' />
 							</div>
-						);
-					})}
+						))}
 				</div>
 			);
 		},
-	};
-};
+	});

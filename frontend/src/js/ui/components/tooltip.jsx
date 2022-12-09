@@ -1,7 +1,6 @@
 import Tippy from 'tippy.js';
 
-export default () => {
-	return {
+export default () => ({
 		oncreate: function (vnode) {
 			Tippy(vnode.dom, {
 				maxWidth: 220,
@@ -11,5 +10,4 @@ export default () => {
 		view: function (vnode) {
 			return vnode.children;
 		},
-	};
-};
+	});

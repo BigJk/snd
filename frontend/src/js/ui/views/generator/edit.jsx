@@ -1,5 +1,3 @@
-import { transform } from 'lodash-es';
-
 import api from '/js/core/api';
 import store from '/js/core/store';
 
@@ -21,8 +19,7 @@ export default () => {
 		});
 	};
 
-	let breadcrumbs = () => {
-		return [
+	let breadcrumbs = () => [
 			{
 				name: 'Generators',
 				link: '/generators',
@@ -34,7 +31,6 @@ export default () => {
 				name: 'Editing',
 			},
 		];
-	};
 
 	let body = (vnode) => {
 		if (!state.generator) {

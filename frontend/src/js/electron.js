@@ -94,7 +94,7 @@ export function setSpellcheckerLanguages(languages) {
 		return;
 	}
 
-	electron.remote.session.defaultSession.setSpellCheckerLanguages(['en-US', 'de']);
+	electron.remote.session.defaultSession.setSpellCheckerLanguages(languages ?? ['en-US']);
 }
 
 export function openFolderDialog(title) {

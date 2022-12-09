@@ -16,7 +16,7 @@ import store from '/js/core/store';
 function DataImportExtension() {
 	this.tags = ['data'];
 
-	this.parse = function (parser, nodes, lexer) {
+	this.parse = function (parser, nodes) {
 		let tok = parser.nextToken();
 
 		let args = parser.parseSignature(null, true);
@@ -31,7 +31,9 @@ function DataImportExtension() {
 	this.run = function (context, name, body) {
 		try {
 			context.ctx[name] = JSON.parse(body());
-		} catch (e) {}
+		} catch (e) {
+			console.log(e);
+		}
 		return '';
 	};
 }
@@ -39,7 +41,7 @@ function DataImportExtension() {
 function JavascriptExecuteExtension() {
 	this.tags = ['js'];
 
-	this.parse = function (parser, nodes, lexer) {
+	this.parse = function (parser, nodes) {
 		let tok = parser.nextToken();
 
 		let args = parser.parseSignature(null, true);
@@ -80,13 +82,9 @@ let markdown = new MarkdownIt();
 env.addExtension('DataImportExtension', new DataImportExtension());
 env.addExtension('JavascriptExecuteExtension', new JavascriptExecuteExtension());
 
-env.addFilter('markdown', (md) => {
-	return new nunjucks.runtime.SafeString(markdown.render(md));
-});
+env.addFilter('markdown', (md) => new nunjucks.runtime.SafeString(markdown.render(md)));
 
-env.addFilter('markdowni', (md) => {
-	return new nunjucks.runtime.SafeString(markdown.renderInline(md));
-});
+env.addFilter('markdowni', (md) => new nunjucks.runtime.SafeString(markdown.renderInline(md)));
 
 env.addFilter('jsfilter', (obj, func) => {
 	let fn = eval(func);

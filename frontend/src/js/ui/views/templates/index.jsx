@@ -106,24 +106,20 @@ export default () => {
 			<div className='ph3 pb3'>
 				{map(
 					groupBy(
-						store.data.templates?.filter((t) => {
-							return (
+						store.data.templates?.filter((t) => (
 								state.search.length === 0 ||
 								t.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0 ||
 								t.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0
-							);
-						}),
+							)),
 						'author'
 					),
-					(val, key) => {
-						return (
+					(val, key) => (
 							<div className='w-100 mb3'>
 								<div className='mb2 f5'>
 									Templates by <b>{key}</b>
 								</div>
 								<div className='flex flex-wrap'>
-									{val.map((t, i) => {
-										return (
+									{val.map((t, i) => (
 											<div className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}>
 												<div className='flex ba b--black-10 h4 mb2 bg-white'>
 													<div className='flex-shrink-0 ph1 mr2 br b--black-05 bg-black-05'>
@@ -159,12 +155,10 @@ export default () => {
 													</div>
 												</div>
 											</div>
-										);
-									})}
+										))}
 								</div>
 							</div>
-						);
-					}
+						)
 				)}
 			</div>
 		);
@@ -174,8 +168,7 @@ export default () => {
 
 	let updateTemplates = () => {
 		Promise.all(
-			store.data.templates.map((t) => {
-				return new Promise((resolve) => {
+			store.data.templates.map((t) => new Promise((resolve) => {
 					let id = 'tmpl:' + t.author + '+' + t.name;
 					render(t.printTemplate, { it: t.skeletonData, images: t.images })
 						.then((res) => {
@@ -184,14 +177,13 @@ export default () => {
 								template: res,
 							});
 						})
-						.catch((err) => {
+						.catch(() => {
 							resolve({
 								id,
 								template: 'Template Error',
 							});
 						});
-				});
-			})
+				}))
 		).then((res) => {
 			state.templates = {};
 			res.forEach((res) => {

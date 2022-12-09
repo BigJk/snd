@@ -1,8 +1,7 @@
 import FormGroup from '/js/ui/components/form-group';
 
 export default () => {
-	let getInput = (vnode) => {
-		return (
+	let getInput = (vnode) => (
 			<input
 				value={vnode.attrs.value}
 				className={`form-input ${vnode.attrs.labelCol ? 'col-' + (12 - vnode.attrs.labelCol) : ''}`}
@@ -12,7 +11,6 @@ export default () => {
 				disabled={vnode.attrs.disabled}
 			/>
 		);
-	};
 
 	return {
 		view(vnode) {

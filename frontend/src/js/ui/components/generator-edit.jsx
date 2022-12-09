@@ -39,14 +39,10 @@ export default () => {
 			state.testConfig.seed = 'TEST_SEED';
 		}
 
-		state.testConfig = pickBy(state.testConfig, (val, key) => {
-			return (
+		state.testConfig = pickBy(state.testConfig, (val, key) => (
 				key === 'seed' ||
-				state.target.config.some((conf) => {
-					return conf.key === key;
-				})
-			);
-		});
+				state.target.config.some((conf) => conf.key === key)
+			));
 	};
 
 	let updateRender = debounce(() => {
@@ -74,8 +70,7 @@ export default () => {
 	};
 
 	let tabs = {
-		Information: () => {
-			return (
+		Information: () => (
 				<div className='pa3'>
 					<div className='toast toast-primary lh-copy mb1'>Here you can set basic information about the generator.</div>
 					<Input label='Name' cols={9} value={state.target.name} oninput={binder.inputString(state.target, 'name')} />
@@ -84,7 +79,7 @@ export default () => {
 							label='Author'
 							cols={9}
 							value={state.target.author}
-							oninput={binder.inputString(state.target, 'author', null, (txt) => txt.replace(/[^a-z0-9\-]/gi, ''))}
+							oninput={binder.inputString(state.target, 'author', null, (txt) => txt.replace(/[^a-z0-9-]/gi, ''))}
 						/>
 					) : null}
 					{!state.editMode ? (
@@ -92,7 +87,7 @@ export default () => {
 							label='Slug'
 							cols={9}
 							value={state.target.slug}
-							oninput={binder.inputString(state.target, 'slug', null, (txt) => txt.replace(/[^a-z0-9\-]/gi, ''))}
+							oninput={binder.inputString(state.target, 'slug', null, (txt) => txt.replace(/[^a-z0-9-]/gi, ''))}
 						/>
 					) : null}
 					<Switch
@@ -108,10 +103,8 @@ export default () => {
 						oninput={binder.inputString(state.target, 'description')}
 					/>
 				</div>
-			);
-		},
-		Images: () => {
-			return (
+			),
+		Images: () => (
 				<div className='pa3'>
 					<div className='toast toast-primary lh-copy mb3'>
 						Here you can add images that are available in the generator template. If you export or import a generator the images will be
@@ -137,15 +130,13 @@ export default () => {
 
 								let reader = new FileReader();
 
-								reader.onload = ((name) => {
-									return (e) => {
+								reader.onload = ((name) => (e) => {
 										if (!state.target.images) {
 											state.target.images = {};
 										}
 										state.target.images[name] = e.target.result;
 										m.redraw();
-									};
-								})(f.name);
+									})(f.name);
 
 								reader.readAsDataURL(f);
 							}
@@ -153,8 +144,7 @@ export default () => {
 					/>
 					<div className='divider' />
 					<div className='mt1'>
-						{map(state.target.images, (val, key) => {
-							return (
+						{map(state.target.images, (val, key) => (
 								<div className='flex items-center justify-between mb2'>
 									<div className='flex items-center'>
 										<img src={val} alt='' width={64} className='mr2' />
@@ -169,14 +159,11 @@ export default () => {
 										Delete
 									</div>
 								</div>
-							);
-						})}
+							))}
 					</div>
 				</div>
-			);
-		},
-		Sources: () => {
-			return (
+			),
+		Sources: () => (
 				<div className='ph3 pt3'>
 					<div className='toast toast-primary lh-copy mb2'>
 						Here you can add data sources to this generator. If you add a data source the entries in the data source will be available in
@@ -209,8 +196,7 @@ export default () => {
 
 					<div className='divider' />
 
-					{state.target.dataSources?.map((d, i) => {
-						return (
+					{state.target.dataSources?.map((d, i) => (
 							<span className='chip'>
 								{d}
 								<div
@@ -220,13 +206,10 @@ export default () => {
 									onclick={() => state.target.dataSources.splice(i, 1)}
 								/>
 							</span>
-						);
-					})}
+						))}
 				</div>
-			);
-		},
-		Config: () => {
-			return (
+			),
+		Config: () => (
 				<div className='pa3'>
 					<div
 						className='btn btn-primary mb1'
@@ -246,8 +229,7 @@ export default () => {
 						New Config Value
 					</div>
 					<div className='divider' />
-					{state.target.config.map((val, i) => {
-						return [
+					{state.target.config.map((val, i) => [
 							<div className='flex w-100'>
 								<div className='w-50 flex-shrink-0 mr3'>
 									<Input
@@ -306,13 +288,10 @@ export default () => {
 								Delete
 							</div>,
 							<div className='divider' />,
-						];
-					})}
+						])}
 				</div>
-			);
-		},
-		'Test Config': () => {
-			return (
+			),
+		'Test Config': () => (
 				<div className='ph3 pt2'>
 					<GeneratorConfig
 						config={state.target.config}
@@ -323,10 +302,8 @@ export default () => {
 						}}
 					></GeneratorConfig>
 				</div>
-			);
-		},
-		'Print Template': () => {
-			return (
+			),
+		'Print Template': () => (
 				<Editor
 					className='h-100 w-100'
 					language='nunjucks'
@@ -347,13 +324,10 @@ export default () => {
 						},
 					]}
 					autocompleteData={{ config: state.testConfig, settings: store.data.settings }}
-					errorProvider={() => {
-						return state.templateErrors;
-					}}
+					errorProvider={() => state.templateErrors}
 					formatter={htmlFormat}
 				/>
-			);
-		},
+			),
 	};
 
 	state.selectedTab = Object.keys(tabs)[0];
@@ -387,13 +361,11 @@ export default () => {
 					stylesheets={store.data.settings.stylesheets}
 				>
 					<ul className='tab tab-block tab-m0 flex-shrink-0'>
-						{map(tabs, (v, k) => {
-							return (
+						{map(tabs, (v, k) => (
 								<li className={'tab-item ' + (k === state.selectedTab ? 'active' : '')} onclick={() => (state.selectedTab = k)}>
 									<a className='pointer'>{k}</a>
 								</li>
-							);
-						})}
+							))}
 					</ul>
 					<div className='relative w-100 flex-grow-1 overflow-auto'>{tabs[state.selectedTab]()}</div>
 				</SplitView>

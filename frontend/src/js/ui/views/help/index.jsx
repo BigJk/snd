@@ -10,7 +10,7 @@ const images = import.meta.globEager('/docs/images/*.png');
 // Markdown instance with syntax highlighting
 let markdown = new MarkdownIt({
 	html: true,
-	replaceLink: function (link, env) {
+	replaceLink: function (link) {
 		if (link.indexOf('.png') === -1 || link.indexOf('http') === 0) {
 			return link;
 		}
@@ -28,7 +28,9 @@ let markdown = new MarkdownIt({
 					hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
 					'</code></pre>'
 				);
-			} catch (__) {}
+			} catch (e) {
+				console.log(e);
+			}
 		}
 
 		return '<pre class="code hljs br1" data-lang="' + lang + '"><code>' + markdown.utils.escapeHtml(str) + '</code></pre>';
@@ -97,8 +99,7 @@ export default () => {
 						<div className='w4 mr3 flex-shrink-0 br b--black-10'>
 							<div className='f5'>Help Pages</div>
 							<ul className='nav'>
-								{pages.map((val, i) => {
-									return (
+								{pages.map((val, i) => (
 										<li className={`nav-item ${i === state.active ? 'active' : ''}`}>
 											<a
 												href='#'
@@ -110,8 +111,7 @@ export default () => {
 												{val.name}
 											</a>
 										</li>
-									);
-								})}
+									))}
 							</ul>
 						</div>
 						<div className='markdown flex-grow-1'>{m.trust(markdown.render(docs['/docs/' + pages[state.active].doc]))}</div>

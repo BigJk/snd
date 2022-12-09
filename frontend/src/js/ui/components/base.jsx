@@ -1,7 +1,6 @@
 import SideNav from '/js/ui/components/side-nav';
 
-export default () => {
-	return {
+export default () => ({
 		view(vnode) {
 			return (
 				<div className='w-100 h-100 flex justify-between'>
@@ -10,5 +9,4 @@ export default () => {
 				</div>
 			);
 		},
-	};
-};
+	});

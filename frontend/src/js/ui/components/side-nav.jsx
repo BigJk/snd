@@ -39,9 +39,7 @@ let pages = {
 };
 
 export default () => {
-	let menu = (active) => {
-		return map(pages, (v, k) => {
-			return (
+	let menu = (active) => map(pages, (v, k) => (
 				<div
 					onclick={() => {
 						if (v.newPage) {
@@ -57,9 +55,7 @@ export default () => {
 					<div>{v.name}</div>
 					<i className={`ion ion-md-${v.icon}`} />
 				</div>
-			);
-		});
-	};
+			));
 
 	return {
 		view(vnode) {

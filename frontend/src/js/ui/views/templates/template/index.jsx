@@ -9,7 +9,7 @@ import store from '/js/core/store';
 import { render } from '/js/core/templating';
 import { keepOpen, on } from '/js/core/ws';
 
-import { AdvancedSearch, Base, Header, Input, Loading, Modal, ModalExport, SplitView, Tooltip } from '/js/ui/components';
+import { AdvancedSearch, Base, Header, Input, Loading, ModalExport, SplitView, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
 import { dialogWarning, error, success } from '/js/ui/toast';
@@ -113,8 +113,7 @@ export default () => {
 		m.redraw();
 	}, 250);
 
-	let breadcrumbs = () => {
-		return [
+	let breadcrumbs = () => [
 			{
 				name: 'Templates',
 				link: '/templates',
@@ -123,7 +122,6 @@ export default () => {
 				name: state.template?.name ?? '...',
 			},
 		];
-	};
 
 	let onexport = (type) => {
 		switch (type) {
@@ -132,7 +130,7 @@ export default () => {
 					if (inElectron) {
 						openFolderDialog().then((folder) => {
 							api.exportTemplateZip(state.template.id, folder)
-								.then(() => success('Wrote ' + file))
+								.then(() => success('Wrote ' + folder))
 								.catch(error)
 								.then(() => (state.showExport = false));
 						});
@@ -220,15 +218,14 @@ export default () => {
 										}}
 									/>
 								</div>,
-						  ]
+							]
 						: []
 				}
 			>
 				<div className='flex-grow-1 overflow-auto' id='entry-page'>
 					{state.filtered.length === 0
 						? null
-						: state.filtered[state.page].map((e) => {
-								return (
+						: state.filtered[state.page].map((e) => (
 									<div
 										className={`w-100 bb b--black-10 mh55 pa2 flex justify-between items-center ${
 											e.id !== state.selected.id ? 'hover-bg-secondary pointer' : 'bg-secondary'
@@ -315,8 +312,7 @@ export default () => {
 											) : null}
 										</div>
 									</div>
-								);
-						  })}
+								))}
 				</div>
 				<div className='ph3 pv2 flex-shrink-0 bt b--black-10 bg-light-gray flex justify-between items-center'>
 					<i

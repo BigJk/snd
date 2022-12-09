@@ -14,7 +14,7 @@ class PubSubStore {
 
 		let deleter = [];
 		subs.forEach((s) => {
-			if (!this.changeSubs.hasOwnProperty(s)) {
+			if (!this.changeSubs[s]) {
 				this.changeSubs[s] = {};
 			}
 
@@ -61,7 +61,7 @@ class PubSubStore {
 
 		let deleter = [];
 		subs.forEach((s) => {
-			if (!this.eventSubs.hasOwnProperty(s)) {
+			if (!this.eventSubs[s]) {
 				this.eventSubs[s] = {};
 			}
 
@@ -88,7 +88,7 @@ class PubSubStore {
 
 		while (pathParts.length > 0) {
 			cur += (cur.length > 0 ? '.' : '') + pathParts.shift();
-			if (this.changeSubs.hasOwnProperty(cur)) {
+			if (this.changeSubs[cur]) {
 				forEach(this.changeSubs[cur], (s) => {
 					s(get(this.data, cur), cur);
 				});
@@ -97,7 +97,7 @@ class PubSubStore {
 	}
 
 	pub(type, ...args) {
-		if (this.eventSubs.hasOwnProperty(type)) {
+		if (this.eventSubs[type]) {
 			forEach(this.eventSubs[type], (s) => {
 				s(type, ...args);
 			});

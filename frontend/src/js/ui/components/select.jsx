@@ -1,8 +1,7 @@
 import FormGroup from '/js/ui/components/form-group';
 
 export default () => {
-	let getSelect = (vnode) => {
-		return (
+	let getSelect = (vnode) => (
 			<select className={`form-select ${vnode.attrs.labelCol ? 'col-' + (12 - vnode.attrs.labelCol) : ''}`} oninput={vnode.attrs.oninput}>
 				<option value='' selected={!vnode.attrs.selected || vnode.attrs.selected.length === 0}>
 					{vnode.attrs.default ?? 'Choose an option...'}
@@ -20,7 +19,6 @@ export default () => {
 				})}
 			</select>
 		);
-	};
 
 	return {
 		view(vnode) {

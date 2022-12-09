@@ -72,8 +72,7 @@ export default () => {
 	}, 250);
 
 	let tabs = {
-		Information: () => {
-			return (
+		Information: () => (
 				<div className='pa3'>
 					<div className='toast toast-primary lh-copy mb1'>Here you can set basic information about the template.</div>
 					<Input label='Name' cols={9} value={state.target.name} oninput={binder.inputString(state.target, 'name')} />
@@ -82,7 +81,7 @@ export default () => {
 							label='Author'
 							cols={9}
 							value={state.target.author}
-							oninput={binder.inputString(state.target, 'author', null, (txt) => txt.replace(/[^a-z0-9\-]/gi, ''))}
+							oninput={binder.inputString(state.target, 'author', null, (txt) => txt.replace(/[^a-z0-9-]/gi, ''))}
 						/>
 					) : null}
 					{!state.editMode ? (
@@ -90,7 +89,7 @@ export default () => {
 							label='Slug'
 							cols={9}
 							value={state.target.slug}
-							oninput={binder.inputString(state.target, 'slug', null, (txt) => txt.replace(/[^a-z0-9\-]/gi, ''))}
+							oninput={binder.inputString(state.target, 'slug', null, (txt) => txt.replace(/[^a-z0-9-]/gi, ''))}
 						/>
 					) : null}
 					<TextArea
@@ -100,10 +99,8 @@ export default () => {
 						oninput={binder.inputString(state.target, 'description')}
 					/>
 				</div>
-			);
-		},
-		Images: () => {
-			return (
+			),
+		Images: () => (
 				<div className='pa3'>
 					<div className='toast toast-primary lh-copy mb3'>
 						Here you can add images that are available in the templates. If you export or import a template the images will be included as
@@ -129,15 +126,13 @@ export default () => {
 
 								let reader = new FileReader();
 
-								reader.onload = ((name) => {
-									return (e) => {
+								reader.onload = ((name) => (e) => {
 										if (!state.target.images) {
 											state.target.images = {};
 										}
 										state.target.images[name] = e.target.result;
 										m.redraw();
-									};
-								})(f.name);
+									})(f.name);
 
 								reader.readAsDataURL(f);
 							}
@@ -145,8 +140,7 @@ export default () => {
 					/>
 					<div className='divider' />
 					<div className='mt1'>
-						{map(state.target.images, (val, key) => {
-							return (
+						{map(state.target.images, (val, key) => (
 								<div className='flex items-center justify-between mb2'>
 									<div className='flex items-center'>
 										<img src={val} alt='' width={64} className='mr2' />
@@ -161,14 +155,11 @@ export default () => {
 										Delete
 									</div>
 								</div>
-							);
-						})}
+							))}
 					</div>
 				</div>
-			);
-		},
-		Sources: () => {
-			return (
+			),
+		Sources: () => (
 				<div className='ph3 pt3'>
 					<div className='toast toast-primary lh-copy mb2'>
 						Here you can add data sources to this template. If you add a data source the entries in the data source will be available in
@@ -202,8 +193,7 @@ export default () => {
 
 					<div className='divider' />
 
-					{state.target.dataSources?.map((d, i) => {
-						return (
+					{state.target.dataSources?.map((d, i) => (
 							<span className='chip'>
 								{d}
 								<div
@@ -213,13 +203,10 @@ export default () => {
 									onclick={() => state.target.dataSources.splice(i, 1)}
 								/>
 							</span>
-						);
-					})}
+						))}
 				</div>
-			);
-		},
-		'Data Skeleton': () => {
-			return (
+			),
+		'Data Skeleton': () => (
 				<div className='h-100 flex flex-column overflow-auto'>
 					<Editor
 						className='flex-grow-1 w-100 bb b--black-10 overflow-auto'
@@ -228,7 +215,9 @@ export default () => {
 						formatter={(data) => {
 							try {
 								return JSON.stringify(JSON.parse(data), null, '\t');
-							} catch (e) {}
+							} catch (e) {
+								console.log(e);
+							}
 							return data;
 						}}
 						onchange={(data) => {
@@ -236,7 +225,9 @@ export default () => {
 							try {
 								state.target.skeletonData = JSON.parse(data);
 								updateRender();
-							} catch (e) {}
+							} catch (e) {
+								console.log(e);
+							}
 						}}
 					/>
 					{state.editMode ? (
@@ -315,10 +306,8 @@ export default () => {
 						</div>
 					) : null}
 				</div>
-			);
-		},
-		'Print Template': () => {
-			return (
+			),
+		'Print Template': () => (
 				<Editor
 					className='h-100 w-100'
 					language='nunjucks'
@@ -329,15 +318,11 @@ export default () => {
 					}}
 					snippets={snippets}
 					autocompleteData={{ it: state.target.skeletonData, settings: store.data.settings }}
-					errorProvider={() => {
-						return state.templateErrors;
-					}}
+					errorProvider={() => state.templateErrors}
 					formatter={htmlFormat}
 				/>
-			);
-		},
-		'List Template': () => {
-			return [
+			),
+		'List Template': () => [
 				<Editor
 					className='h-100 w-100'
 					language='nunjucks'
@@ -348,17 +333,14 @@ export default () => {
 					}}
 					snippets={snippets}
 					autocompleteData={{ it: state.target.skeletonData, settings: store.data.settings }}
-					errorProvider={() => {
-						return state.listTemplateErrors;
-					}}
+					errorProvider={() => state.listTemplateErrors}
 					formatter={htmlFormat}
 				/>,
 				<div className='absolute right-0 bottom-0 ma3 pa2 ba b--black-10 bg-white f5 lh-solid w500'>
 					<div className='fw7'>Sample Entry</div>
 					<div className='black-50'>{m.trust(state.lastListRender)}</div>
 				</div>,
-			];
-		},
+			],
 	};
 
 	state.selectedTab = Object.keys(tabs)[0];
@@ -390,13 +372,11 @@ export default () => {
 					stylesheets={store.data.settings.stylesheets}
 				>
 					<ul className='tab tab-block tab-m0 flex-shrink-0'>
-						{map(tabs, (v, k) => {
-							return (
+						{map(tabs, (v, k) => (
 								<li className={'tab-item ' + (k === state.selectedTab ? 'active' : '')} onclick={() => (state.selectedTab = k)}>
 									<a className='pointer'>{k}</a>
 								</li>
-							);
-						})}
+							))}
 					</ul>
 					<div className='relative w-100 flex-grow-1 overflow-auto'>{tabs[state.selectedTab]()}</div>
 				</SplitView>

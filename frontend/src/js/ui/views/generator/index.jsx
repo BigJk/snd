@@ -3,6 +3,8 @@ import { clone, groupBy, map, pickBy } from 'lodash-es';
 import { inElectron, openFileDialog, openFolderDialog } from '/js/electron';
 import { readFile } from '/js/file';
 
+import { ModalExport, ModalImport, ModalInfo } from './modals';
+
 import api from '/js/core/api';
 import { render } from '/js/core/generator';
 import store from '/js/core/store';
@@ -19,7 +21,6 @@ export default () => {
 		importing: {
 			show: false,
 			loading: false,
-			url: '',
 		},
 		export: {
 			id: '',
@@ -39,22 +40,26 @@ export default () => {
 	let sanitizeConfig = (g) => {
 		let id = `gen:${g.author}+${g.slug}`;
 
+		// create base config
 		if (state.configs[id] === undefined) {
 			state.configs[id] = {
 				seed: 'TEST_SEED',
 			};
 		}
 
+		// set seed if uninitialized
 		if (state.configs[id].seed === undefined) {
 			state.configs[id].seed = 'TEST_SEED';
 		}
 
+		// set default values for initialized fields
 		g.config.forEach((conf) => {
 			if (state.configs[id][conf.key] === undefined) {
 				state.configs[id][conf.key] = conf.default;
 			}
 		});
 
+		// remove old fields that are not present in the config anymore.
 		state.configs[id] = pickBy(state.configs[id], (val, key) => {
 			return (
 				key === 'seed' ||
@@ -75,112 +80,16 @@ export default () => {
 			.catch(error);
 	};
 
-	let modal = () => {
-		if (!state.importing.show) return null;
-
-		if (state.importing.loading)
-			return (
-				<Modal title='Import' noclose={true}>
-					<div className='flex flex-column justify-center items-center'>
-						<div className='loading loading-lg mb2' />
-						Fetching data...
-					</div>
-				</Modal>
-			);
-
-		return (
-			<Modal
-				title='Import'
-				onclose={() => {
-					state.importing.show = false;
-					state.importing.url = '';
-					state.importing.loading = false;
-				}}
-			>
-				<div className='mb3 lh-copy'>
-					<div className='mb2'>
-						<b>Import generator either locally (e.g. .zip, folder) or from the internet via a URL</b>
-					</div>
-					<div>
-						<b>Warning:</b> A generator with the same author and identification name will overwrite any previous imported version!
-					</div>
-				</div>
-				<div className='mb3'>
-					<div
-						className='btn btn-primary mr2'
-						onclick={() => {
-							if (inElectron) {
-								openFileDialog().then((file) => {
-									state.importing.loading = true;
-									api.importGeneratorZip(file)
-										.then((name) => {
-											success(`Imported '${name}' successful`);
-
-											store.pub('reload_generators');
-										})
-										.catch(error)
-										.then(() => {
-											state.importing.show = false;
-											state.importing.loading = false;
-										});
-								});
-							} else {
-								readFile().then((res) => {
-									state.importing.loading = true;
-									api.importGeneratorZip(res)
-										.then((name) => {
-											success(`Imported '${name}' successful`);
-
-											store.pub('reload_generators');
-										})
-										.catch(error)
-										.then(() => {
-											state.importing.show = false;
-											state.importing.loading = false;
-										});
-								});
-							}
-						}}
-					>
-						Import .zip
-					</div>
-					<div
-						className='btn btn-primary'
-						onclick={() => {
-							openFolderDialog().then((folder) => {
-								state.importing.loading = true;
-								api.importGeneratorFolder(folder)
-									.then((name) => {
-										success(`Imported '${name}' successful`);
-
-										store.pub('reload_generators');
-									})
-									.catch(error)
-									.then(() => {
-										state.importing.show = false;
-										state.importing.loading = false;
-									});
-							});
-						}}
-					>
-						Import Folder
-					</div>
-				</div>
-				<div className='divider' />
-				<div>
-					<Input
-						label='Import URL'
-						placeholder='http://example.com/cool_generator.zip'
-						oninput={binder.inputString(state.importing, 'url')}
-					/>
-					<div
-						className='btn btn-primary'
-						onclick={() => {
+	let onimport = (type, url) => {
+		switch (type) {
+			case 'zip':
+				{
+					if (inElectron) {
+						openFileDialog().then((file) => {
 							state.importing.loading = true;
-							api.importGeneratorUrl(state.importing.url)
+							api.importGeneratorZip(file)
 								.then((name) => {
 									success(`Imported '${name}' successful`);
-
 									store.pub('reload_generators');
 								})
 								.catch(error)
@@ -188,93 +97,87 @@ export default () => {
 									state.importing.show = false;
 									state.importing.loading = false;
 								});
-						}}
-					>
-						Import
-					</div>
-				</div>
-			</Modal>
-		);
+						});
+					} else {
+						readFile().then((res) => {
+							state.importing.loading = true;
+							api.importGeneratorZip(res)
+								.then((name) => {
+									success(`Imported '${name}' successful`);
+									store.pub('reload_generators');
+								})
+								.catch(error)
+								.then(() => {
+									state.importing.show = false;
+									state.importing.loading = false;
+								});
+						});
+					}
+				}
+				break;
+			case 'folder':
+				{
+					openFolderDialog().then((folder) => {
+						state.importing.loading = true;
+						api.importGeneratorFolder(folder)
+							.then((name) => {
+								success(`Imported '${name}' successful`);
+								store.pub('reload_generators');
+							})
+							.catch(error)
+							.then(() => {
+								state.importing.show = false;
+								state.importing.loading = false;
+							});
+					});
+				}
+				break;
+			case 'url':
+				{
+					state.importing.loading = true;
+					api.importGeneratorUrl(url)
+						.then((name) => {
+							success(`Imported '${name}' successful`);
+							store.pub('reload_generators');
+						})
+						.catch(error)
+						.then(() => {
+							state.importing.show = false;
+							state.importing.loading = false;
+						});
+				}
+				break;
+		}
 	};
 
-	let modalExport = () => {
-		if (!state.export.show) return null;
-
-		return (
-			<Modal title='Export' onclose={() => (state.export.show = null)}>
-				<div className='mb3'>
-					You can export this generator in multiple formats. This will only export the generator itself and no entries in any associated
-					data sources!
-				</div>
-				<div
-					className='btn btn-primary mr2 mb2'
-					onclick={() => {
-						if (inElectron) {
-							openFolderDialog().then((folder) => {
-								api.exportGeneratorZip(state.export.id, folder)
-									.then((file) => {
-										success('Wrote ' + file);
-									})
-									.catch((err) => {
-										error(err);
-									})
-									.then(() => (state.export.show = false));
-							});
-						} else {
-							window.open('/api/export/generator/zip/' + state.export.id, '_blank');
-							state.export.show = false;
-						}
-					}}
-				>
-					Export as{' '}
-					<b>
-						gen_{state.export.g.author}_{state.export.g.slug}.zip
-					</b>
-				</div>
-				<div
-					className='btn btn-primary mb2'
-					onclick={() => {
+	let onexport = (type) => {
+		switch (type) {
+			case 'zip':
+				{
+					if (inElectron) {
 						openFolderDialog().then((folder) => {
-							api.exportGeneratorFolder(state.export.id, folder)
-								.then((file) => {
-									success('Wrote ' + file);
-								})
-								.catch((err) => {
-									error(err);
-								})
+							api.exportGeneratorZip(state.export.id, folder)
+								.then((file) => success('Wrote ' + file))
+								.catch(error)
 								.then(() => (state.export.show = false));
 						});
-					}}
-				>
-					Export to{' '}
-					<b>
-						gen_{state.export.g.author}_{state.export.g.slug}
-					</b>{' '}
-					folder
-				</div>
-			</Modal>
-		);
-	};
-
-	let modalInfo = () => {
-		if (!state.info.show) return null;
-
-		return (
-			<Modal title='Information' onclose={() => (state.info.show = false)}>
-				<div className='mb1 b f5'>Generator ID</div>
-				<div className='mb2'>This is the generator id that is used in the Database.</div>
-				<Input value={state.info.id}></Input>
-				<div className='mt3 b mb1 f5'>API Print Endpoint</div>
-				<div className='mb2'>
-					This is the local endpoint if you want to remotely print this generator. Just do a POST request containing the JSON encoded config
-					data that should be inserted.
-				</div>
-				<Input value={location.origin + '/api/extern/print/generator/' + state.info.id}></Input>
-				<div className='mt3 b mb1 f5'>Current Config</div>
-				<div className='mb2'>This is the JSON of the current configuration.</div>
-				<TextArea rows={10} value={JSON.stringify(state.configs[state.info.id], null, '\t')}></TextArea>
-			</Modal>
-		);
+					} else {
+						window.open('/api/export/generator/zip/' + state.export.id, '_blank');
+						state.export.show = false;
+					}
+				}
+				break;
+			case 'folder':
+				{
+					openFolderDialog().then((folder) => {
+						api.exportGeneratorFolder(state.export.id, folder)
+							.then((file) => success('Wrote ' + file))
+							.catch(error)
+							.then(() => (state.export.show = false));
+					});
+				}
+				break;
+		}
 	};
 
 	let updater = null;
@@ -518,9 +421,23 @@ export default () => {
 							}
 						)}
 					</div>
-					{modal()}
-					{modalExport()}
-					{modalInfo()}
+					<ModalImport
+						show={state.importing.show}
+						loading={state.importing.loading}
+						onimport={onimport}
+						onclose={() => {
+							state.importing.show = false;
+							state.importing.url = '';
+							state.importing.loading = false;
+						}}
+					></ModalImport>
+					<ModalExport
+						show={state.export.show}
+						gen={state.export.g}
+						onexport={onexport}
+						onclose={() => (state.export.show = false)}
+					></ModalExport>
+					<ModalInfo id={state.info.id} config={state.configs[state.info.id]} onclose={() => (state.info.show = false)}></ModalInfo>
 				</Base>
 			);
 		},

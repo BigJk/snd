@@ -7,7 +7,7 @@ import api from '/js/core/api';
 import store from '/js/core/store';
 import { render } from '/js/core/templating';
 
-import { Base, Header, Input, Loading, Modal, Preview, Tooltip } from '/js/ui/components';
+import { Base, Header, Input, Loading, ModalImport, Preview, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
 import { error, success } from '/js/ui/toast';
@@ -23,109 +23,14 @@ export default () => {
 		},
 	};
 
-	let modal = () => {
-		if (!state.importing.show) return null;
-
-		if (state.importing.loading)
-			return (
-				<Modal title='Import' noclose={true}>
-					<div className='flex flex-column justify-center items-center'>
-						<div className='loading loading-lg mb2' />
-						Fetching data...
-					</div>
-				</Modal>
-			);
-
-		return (
-			<Modal
-				title='Import'
-				onclose={() => {
-					state.importing.show = false;
-					state.importing.url = '';
-					state.importing.loading = false;
-				}}
-			>
-				<div className='mb3 lh-copy'>
-					<div className='mb2'>
-						<b>Import templates either locally (e.g. .zip, folder) or from the internet via a URL</b>
-					</div>
-					<div>
-						<b>Warning:</b> A template with the same author and identification name will overwrite any previous imported version!
-					</div>
-				</div>
-				<div className='mb3'>
-					<div
-						className='btn btn-primary mr2'
-						onclick={() => {
-							if (inElectron) {
-								openFileDialog().then((file) => {
-									state.importing.loading = true;
-									api.importTemplateZip(file)
-										.then((name) => {
-											success(`Imported '${name}' successful`);
-
-											store.pub('reload_templates');
-										})
-										.catch(error)
-										.then(() => {
-											state.importing.show = false;
-											state.importing.loading = false;
-										});
-								});
-							} else {
-								readFile().then((res) => {
-									state.importing.loading = true;
-									api.importTemplateZip(res)
-										.then((name) => {
-											success(`Imported '${name}' successful`);
-
-											store.pub('reload_templates');
-										})
-										.catch(error)
-										.then(() => {
-											state.importing.show = false;
-											state.importing.loading = false;
-										});
-								});
-							}
-						}}
-					>
-						Import .zip
-					</div>
-					<div
-						className='btn btn-primary'
-						onclick={() => {
-							openFolderDialog().then((folder) => {
-								state.importing.loading = true;
-								api.importTemplateFolder(folder)
-									.then((name) => {
-										success(`Imported '${name}' successful`);
-
-										store.pub('reload_templates');
-									})
-									.catch(error)
-									.then(() => {
-										state.importing.show = false;
-										state.importing.loading = false;
-									});
-							});
-						}}
-					>
-						Import Folder
-					</div>
-				</div>
-				<div className='divider' />
-				<div>
-					<Input
-						label='Import URL'
-						placeholder='http://example.com/cool_template.zip'
-						oninput={binder.inputString(state.importing, 'url')}
-					/>
-					<div
-						className='btn btn-primary'
-						onclick={() => {
+	let onimport = (type, url) => {
+		switch (type) {
+			case 'zip':
+				{
+					if (inElectron) {
+						openFileDialog().then((file) => {
 							state.importing.loading = true;
-							api.importTemplateUrl(state.importing.url)
+							api.importTemplateZip(file)
 								.then((name) => {
 									success(`Imported '${name}' successful`);
 
@@ -136,13 +41,60 @@ export default () => {
 									state.importing.show = false;
 									state.importing.loading = false;
 								});
-						}}
-					>
-						Import
-					</div>
-				</div>
-			</Modal>
-		);
+						});
+					} else {
+						readFile().then((res) => {
+							state.importing.loading = true;
+							api.importTemplateZip(res)
+								.then((name) => {
+									success(`Imported '${name}' successful`);
+
+									store.pub('reload_templates');
+								})
+								.catch(error)
+								.then(() => {
+									state.importing.show = false;
+									state.importing.loading = false;
+								});
+						});
+					}
+				}
+				break;
+			case 'folder':
+				{
+					openFolderDialog().then((folder) => {
+						state.importing.loading = true;
+						api.importTemplateFolder(folder)
+							.then((name) => {
+								success(`Imported '${name}' successful`);
+
+								store.pub('reload_templates');
+							})
+							.catch(error)
+							.then(() => {
+								state.importing.show = false;
+								state.importing.loading = false;
+							});
+					});
+				}
+				break;
+			case 'url':
+				{
+					state.importing.loading = true;
+					api.importTemplateUrl(url)
+						.then((name) => {
+							success(`Imported '${name}' successful`);
+
+							store.pub('reload_templates');
+						})
+						.catch(error)
+						.then(() => {
+							state.importing.show = false;
+							state.importing.loading = false;
+						});
+				}
+				break;
+		}
 	};
 
 	let body = () => {
@@ -280,7 +232,16 @@ export default () => {
 							<Input placeholder='Search...' value={state.search} oninput={binder.inputString(state, 'search')} />
 						</Header>
 						{body()}
-						{modal()}
+						<ModalImport
+							type={'template'}
+							show={state.importing.show}
+							loading={state.importing.loading}
+							onimport={onimport}
+							onclose={() => {
+								state.importing.show = false;
+								state.importing.loading = false;
+							}}
+						></ModalImport>
 					</div>
 				</Base>
 			);

@@ -3,13 +3,13 @@ import { clone, groupBy, map, pickBy } from 'lodash-es';
 import { inElectron, openFileDialog, openFolderDialog } from '/js/electron';
 import { readFile } from '/js/file';
 
-import { ModalExport, ModalImport, ModalInfo } from './modals';
+import { ModalInfo } from './modals';
 
 import api from '/js/core/api';
 import { render } from '/js/core/generator';
 import store from '/js/core/store';
 
-import { GeneratorConfig, Header, Input, Modal, Preview, Switch, TextArea, Tooltip } from '/js/ui/components';
+import { GeneratorConfig, Header, Input, ModalExport, ModalImport, Preview, Switch, Tooltip } from '/js/ui/components';
 import Base from '/js/ui/components/base';
 
 import binder from '/js/ui/binder';
@@ -422,18 +422,20 @@ export default () => {
 						)}
 					</div>
 					<ModalImport
+						type={'generator'}
 						show={state.importing.show}
 						loading={state.importing.loading}
 						onimport={onimport}
 						onclose={() => {
 							state.importing.show = false;
-							state.importing.url = '';
 							state.importing.loading = false;
 						}}
 					></ModalImport>
 					<ModalExport
+						type={'generator'}
+						prefix={'gen_'}
 						show={state.export.show}
-						gen={state.export.g}
+						value={state.export.g}
 						onexport={onexport}
 						onclose={() => (state.export.show = false)}
 					></ModalExport>

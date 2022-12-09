@@ -2,12 +2,14 @@ import { chunk, debounce } from 'lodash-es';
 
 import { inElectron, openFolderDialog } from '/js/electron';
 
+import { ModalInfo, ModalSync } from './modals';
+
 import api from '/js/core/api';
 import store from '/js/core/store';
 import { render } from '/js/core/templating';
 import { keepOpen, on } from '/js/core/ws';
 
-import { AdvancedSearch, Base, Header, Input, Loading, Modal, SplitView, Tooltip } from '/js/ui/components';
+import { AdvancedSearch, Base, Header, Input, Loading, Modal, ModalExport, SplitView, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
 import { dialogWarning, error, success } from '/js/ui/toast';
@@ -123,121 +125,55 @@ export default () => {
 		];
 	};
 
-	let modalExport = () => {
-		if (!state.showExport) return null;
-
-		return (
-			<Modal title='Export' onclose={() => (state.showExport = null)}>
-				<div className='mb3'>
-					You can export this template in multiple formats. This will only export the template itself and entries in the template and not in
-					any associated data sources!
-				</div>
-				<div
-					className='btn btn-primary mr2 mb2'
-					onclick={() => {
-						if (inElectron) {
-							openFolderDialog().then((folder) => {
-								api.exportTemplateZip(state.template.id, folder)
-									.then((file) => {
-										success('Wrote ' + file);
-									})
-									.catch((err) => {
-										error(err);
-									});
-							});
-						} else {
-							window.open('/api/export/template/zip/' + state.template.id, '_blank');
-						}
-					}}
-				>
-					Export as{' '}
-					<b>
-						{state.template.author}_{state.template.slug}.zip
-					</b>
-				</div>
-				<div
-					className='btn btn-primary mb2'
-					onclick={() => {
+	let onexport = (type) => {
+		switch (type) {
+			case 'zip':
+				{
+					if (inElectron) {
 						openFolderDialog().then((folder) => {
-							api.exportTemplateFolder(state.template.id, folder)
-								.then((file) => {
-									success('Wrote ' + file);
-								})
-								.catch((err) => {
-									error(err);
-								});
+							api.exportTemplateZip(state.template.id, folder)
+								.then(() => success('Wrote ' + file))
+								.catch(error)
+								.then(() => (state.showExport = false));
 						});
-					}}
-				>
-					Export to{' '}
-					<b>
-						{state.template.author}_{state.template.slug}
-					</b>{' '}
-					folder
-				</div>
-			</Modal>
-		);
+					} else {
+						window.open('/api/export/template/zip/' + state.template.id, '_blank');
+					}
+				}
+				break;
+			case 'folder':
+				{
+					openFolderDialog().then((folder) => {
+						api.exportTemplateFolder(state.template.id, folder)
+							.then((file) => success('Wrote ' + file))
+							.catch(error)
+							.then(() => (state.showExport = false));
+					});
+				}
+				break;
+		}
 	};
 
-	let modalSync = () => {
-		if (!state.showSync) return null;
-
-		return (
-			<Modal title='Live Sync' onclose={() => (state.showSync = false)}>
-				<div className='mb3'>You can synchronise a template to a folder so that you are able to edit it in an external editor.</div>
-				{state.syncActive ? (
-					<div
-						className='btn btn-error'
-						onclick={() => {
-							api.syncStop(state.template.id)
-								.then(() => {
-									success(`Synced stopped`);
-									state.syncActive = false;
-									state.showSync = false;
-								})
-								.catch(error);
-						}}
-					>
-						Stop Sync
-					</div>
-				) : (
-					<div
-						className='btn btn-primary'
-						onclick={() => {
-							openFolderDialog().then((folder) => {
-								api.syncStart(state.template.id, folder)
-									.then((folder) => {
-										success(`Synced to '${folder}'`);
-										state.syncActive = true;
-										state.showSync = false;
-									})
-									.catch(error);
-							});
-						}}
-					>
-						Start Sync
-					</div>
-				)}
-			</Modal>
-		);
+	let stopSync = () => {
+		api.syncStop(state.template.id)
+			.then(() => {
+				success(`Synced stopped`);
+				state.syncActive = false;
+				state.showSync = false;
+			})
+			.catch(error);
 	};
 
-	let modalInfo = () => {
-		if (!state.showInfo) return null;
-
-		return (
-			<Modal title='Information' onclose={() => (state.showInfo = false)}>
-				<div className='mb1 b f5'>Template ID</div>
-				<div className='mb2'>This is the template id that is used in the Database.</div>
-				<Input value={state.template.id}></Input>
-				<div className='mt3 b mb1 f5'>API Print Endpoint</div>
-				<div className='mb2'>
-					This is the local endpoint if you want to remotely print this template. Just do a POST request containing the JSON encoded data
-					that should be inserted.
-				</div>
-				<Input value={location.origin + '/api/extern/print/template/' + state.template.id}></Input>
-			</Modal>
-		);
+	let startSync = () => {
+		openFolderDialog().then((folder) => {
+			api.syncStart(state.template.id, folder)
+				.then((folder) => {
+					success(`Synced to '${folder}'`);
+					state.syncActive = true;
+					state.showSync = false;
+				})
+				.catch(error);
+		});
 	};
 
 	let printingLoading = () => {
@@ -517,10 +453,22 @@ export default () => {
 							</Tooltip>
 						</Header>
 						{body(vnode)}
-						{modalExport()}
-						{modalSync()}
-						{modalInfo()}
 						{printingLoading()}
+						<ModalExport
+							type={'template'}
+							show={state.showExport}
+							value={state.template}
+							onexport={onexport}
+							onclose={() => (state.showExport = false)}
+						></ModalExport>
+						<ModalInfo show={state.showInfo} id={vnode.attrs.id} onclose={() => (state.showInfo = false)}></ModalInfo>
+						<ModalSync
+							show={state.showSync}
+							active={state.syncActive}
+							onstart={startSync}
+							onstop={stopSync}
+							onclose={() => (state.showSync = false)}
+						></ModalSync>
 					</div>
 				</Base>
 			);

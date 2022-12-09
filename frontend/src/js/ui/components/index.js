@@ -19,3 +19,5 @@ export { default as AdvancedSearch } from './advanced-search';
 export { default as Tooltip } from './tooltip';
 export { default as Logo } from './logo';
 export { default as GeneratorConfig } from './generator-config';
+export { default as ModalImport } from './modal-import';
+export { default as ModalExport } from './modal-export';

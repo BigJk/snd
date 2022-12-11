@@ -1,4 +1,4 @@
-import rpc from '/js/core/api';
+import api from '/js/core/api';
 import { render } from '/js/core/templating';
 
 export default () => {
@@ -13,7 +13,7 @@ export default () => {
 			state.id = vnode.attrs.id;
 			state.json = JSON.parse(atob(vnode.attrs.json));
 
-			rpc
+			api
 				.getTemplate(state.id)
 				.then((tmpl) => {
 					render(tmpl.printTemplate, { it: state.json, images: tmpl.images })

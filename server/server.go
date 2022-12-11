@@ -130,6 +130,7 @@ func (s *Server) Start(bind string) error {
 	rpc.RegisterSources(api, s.db)
 	rpc.RegisterPrint(api, extern, s.db, s.printers)
 	rpc.RegisterSync(api, s.m, s.db)
+	rpc.RegisterGit(api, s.db)
 
 	// Register additional routes
 	for k, v := range s.additionalRpc {

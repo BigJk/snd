@@ -14,4 +14,5 @@ type Settings struct {
 	} `json:"commands"`
 	Stylesheets           []string `json:"stylesheets"`
 	SpellcheckerLanguages []string `json:"spellcheckerLanguages"`
+	PackageRepos          []string `json:"packageRepos"`
 }

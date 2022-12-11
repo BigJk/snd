@@ -42,6 +42,7 @@ export default function () {
 							Import
 						</div>
 					</div>
+					{vnode.attrs.extra}
 				</Modal>
 			);
 		},

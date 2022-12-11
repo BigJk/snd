@@ -6,7 +6,7 @@ import { readFile } from '/js/file';
 import api from '/js/core/api';
 import store from '/js/core/store';
 
-import { Base, Header, Input, Modal, Tooltip } from '/js/ui/components';
+import { Base, Header, Input, ModalImport, PreviewBox, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
 import { dialogWarning, error, success } from '/js/ui/toast';
@@ -16,113 +16,34 @@ export default () => {
 		search: '',
 		importing: {
 			show: false,
-			url: '',
 			loading: false,
 		},
 	};
 
-	let modal = () => {
-		if (!state.importing.show) return null;
-
-		if (state.importing.loading)
-			return (
-				<Modal title='Import' noclose={true}>
-					<div className='flex flex-column justify-center items-center'>
-						<div className='loading loading-lg mb2' />
-						Fetching data...
-					</div>
-				</Modal>
-			);
-
-		return (
-			<Modal
-				title='Import'
-				onclose={() => {
-					state.importing.show = false;
-					state.importing.url = '';
-					state.importing.loading = false;
-				}}
-			>
-				<div className='mb3 lh-copy'>
-					<div className='mb2'>
-						<b>Import data sources either locally (e.g. .zip, folder) or from the internet via a URL</b>
-					</div>
-					<div>
-						<b>Warning:</b> A data source with the same author and identification name will overwrite any previous imported version!
-					</div>
-				</div>
-				<div className='mb3'>
-					<div
-						className='btn btn-primary mr2'
-						onclick={() => {
-							if (inElectron) {
-								openFileDialog().then((file) => {
-									state.importing.loading = true;
-									api
-										.importSourceZip(file)
-										.then((name) => {
-											success(`Imported '${name}' successful`);
-											store.pub('reload_sources');
-										})
-										.catch(error)
-										.then(() => {
-											state.importing.show = false;
-											state.importing.loading = false;
-										});
-								});
-							} else {
-								readFile().then((res) => {
-									state.importing.loading = true;
-									api
-										.importSourceZip(res)
-										.then((name) => {
-											success(`Imported '${name}' successful`);
-
-											store.pub('reload_sources');
-										})
-										.catch(error)
-										.then(() => {
-											state.importing.show = false;
-											state.importing.loading = false;
-										});
-								});
-							}
-						}}
-					>
-						Import .zip
-					</div>
-					<div
-						className='btn btn-primary'
-						onclick={() => {
-							openFolderDialog().then((folder) => {
-								state.importing.loading = true;
-								api
-									.importSourceFolder(folder)
-									.then((name) => {
-										success(`Imported '${name}' successful`);
-
-										store.pub('reload_sources');
-									})
-									.catch(error)
-									.then(() => {
-										state.importing.show = false;
-										state.importing.loading = false;
-									});
-							});
-						}}
-					>
-						Import Folder
-					</div>
-				</div>
-				<div className='divider' />
-				<div className='mb3'>
-					<Input label='Import URL' placeholder='http://example.com/cool_data.zip' oninput={binder.inputString(state.importing, 'url')} />
-					<div
-						className='btn btn-primary'
-						onclick={() => {
+	let onimport = (type, url) => {
+		switch (type) {
+			case 'zip':
+				{
+					if (inElectron) {
+						openFileDialog().then((file) => {
 							state.importing.loading = true;
 							api
-								.importSourceUrl(state.importing.url)
+								.importSourceZip(file)
+								.then((name) => {
+									success(`Imported '${name}' successful`);
+									store.pub('reload_sources');
+								})
+								.catch(error)
+								.then(() => {
+									state.importing.show = false;
+									state.importing.loading = false;
+								});
+						});
+					} else {
+						readFile().then((res) => {
+							state.importing.loading = true;
+							api
+								.importSourceZip(res)
 								.then((name) => {
 									success(`Imported '${name}' successful`);
 
@@ -133,46 +54,69 @@ export default () => {
 									state.importing.show = false;
 									state.importing.loading = false;
 								});
-						}}
-					>
-						Import
-					</div>
-				</div>
-				<div className='divider' />
-				<div>
-					<div className='mt2 mb3 lh-copy'>
-						<b className='db'>FoundryVTT Import</b>
-						You can also import data from FoundryVTT Modules and Systems. This will convert all the included packs and add them as Data Sources. To
-						import a Module or System open the module.json or system.json file in it's folder.
-					</div>
-					<div
-						className='btn btn-primary mr2'
-						onclick={() => {
-							if (inElectron) {
-								openFileDialog().then((file) => {
-									state.importing.loading = true;
-									api
-										.importVttModule(file)
-										.then((name) => {
-											success(`Imported '${name}' module successful`);
-											store.pub('reload_sources');
-										})
-										.catch(error)
-										.then(() => {
-											state.importing.show = false;
-											state.importing.loading = false;
-										});
+						});
+					}
+				}
+				break;
+			case 'folder':
+				{
+					openFolderDialog().then((folder) => {
+						state.importing.loading = true;
+						api
+							.importSourceFolder(folder)
+							.then((name) => {
+								success(`Imported '${name}' successful`);
+
+								store.pub('reload_sources');
+							})
+							.catch(error)
+							.then(() => {
+								state.importing.show = false;
+								state.importing.loading = false;
+							});
+					});
+				}
+				break;
+			case 'url':
+				{
+					state.importing.loading = true;
+					api
+						.importSourceUrl(url)
+						.then((name) => {
+							success(`Imported '${name}' successful`);
+
+							store.pub('reload_sources');
+						})
+						.catch(error)
+						.then(() => {
+							state.importing.show = false;
+							state.importing.loading = false;
+						});
+				}
+				break;
+			case 'vtt':
+				{
+					if (inElectron) {
+						openFileDialog().then((file) => {
+							state.importing.loading = true;
+							api
+								.importVttModule(file)
+								.then((name) => {
+									success(`Imported '${name}' module successful`);
+									store.pub('reload_sources');
+								})
+								.catch(error)
+								.then(() => {
+									state.importing.show = false;
+									state.importing.loading = false;
 								});
-							} else {
-								// TODO: error
-							}
-						}}
-					>
-						Import FoundryVTT (module.json, system.json)
-					</div>
-				</div>
-			</Modal>
-		);
+						});
+					} else {
+						// TODO: error
+					}
+				}
+				break;
+		}
 	};
 
 	let body = () => (
@@ -189,41 +133,30 @@ export default () => {
 						</div>
 						<div className='flex flex-wrap'>
 							{val.map((t, i) => (
-								<div className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}>
-									<div className='flex ba b--black-10 h4_5 mb2 bg-white'>
-										<div className='flex-grow-1 pv2 ph2 lh-solid flex flex-column justify-between'>
-											<div>
-												<div className='f5 mb2 flex justify-between items-center'>
-													{t.name}
-
-													<span className='f8 fw4 text-muted'>
-														{t.author}/{t.slug}
-													</span>
-												</div>
-												<div className='divider' />
-												<div className='fw4 f7 black-50 mb1 lh-copy'>{t.description}</div>
-											</div>
-											<div className='flex justify-between items-end'>
-												<div className='lh-solid'>
-													<div className='f4 b'>{t.count}</div>
-													<span className='fw4 f6 black-50'>Entries</span>
-												</div>
-												<div
-													className='btn btn-error'
-													onclick={() =>
-														dialogWarning(`Do you really want to delete the '${t.name}' source ?`).then(
-															api.deleteSource(`ds:${t.author}+${t.slug}`).then(() => {
-																store.pub('reload_sources');
-															})
-														)
-													}
-												>
-													<i className='ion ion-md-close-circle-outline' />
-												</div>
-											</div>
+								<PreviewBox
+									className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}
+									value={t}
+									bottomLeft={
+										<div className='lh-solid'>
+											<div className='f4 b'>{t.count}</div>
+											<span className='fw4 f6 black-50'>Entries</span>
 										</div>
-									</div>
-								</div>
+									}
+									bottomRight={
+										<div
+											className='btn btn-error'
+											onclick={() =>
+												dialogWarning(`Do you really want to delete the '${t.name}' source ?`).then(() =>
+													api.deleteSource(`ds:${t.author}+${t.slug}`).then(() => {
+														store.pub('reload_sources');
+													})
+												)
+											}
+										>
+											<i className='ion ion-md-close-circle-outline' />
+										</div>
+									}
+								></PreviewBox>
 							))}
 						</div>
 					</div>
@@ -258,7 +191,27 @@ export default () => {
 							<Input placeholder='Search...' value={state.search} oninput={binder.inputString(state, 'search')} />
 						</Header>
 						{body()}
-						{modal()}
+						<ModalImport
+							type={'data source'}
+							show={state.importing.show}
+							onimport={onimport}
+							onclose={() => (state.importing.show = false)}
+							extra={
+								<div className='mt3'>
+									<div className='divider' />
+									<div>
+										<div className='mt2 mb3 lh-copy'>
+											<b className='db'>FoundryVTT Import</b>
+											You can also import data from FoundryVTT Modules and Systems. This will convert all the included packs and add them as Data
+											Sources. To import a Module or System open the module.json or system.json file in it's folder.
+										</div>
+										<div className='btn btn-primary mr2' onclick={() => onimport('vtt')}>
+											Import FoundryVTT (module.json, system.json)
+										</div>
+									</div>
+								</div>
+							}
+						></ModalImport>
 					</div>
 				</Base>
 			);

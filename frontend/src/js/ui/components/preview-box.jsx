@@ -8,16 +8,18 @@ export default function () {
 			return (
 				<div className={vnode.attrs.className}>
 					<div className='flex ba b--black-10 h4 mb2 bg-white'>
-						<div className='flex-shrink-0 ph1 mr2 br b--black-05 bg-black-05'>
-							<Preview
-								className='h-100'
-								content={vnode.attrs.previewContent}
-								stylesheets={store.data.settings.stylesheets}
-								width={150}
-								scale={150 / store.data.settings.printerWidth}
-							/>
-						</div>
-						<div className='flex-grow-1 pv2 pr2 lh-solid flex flex-column justify-between'>
+						{vnode.attrs.previewContent ? (
+							<div className='flex-shrink-0 ph1 br b--black-05 bg-black-05'>
+								<Preview
+									className='h-100'
+									content={vnode.attrs.previewContent}
+									stylesheets={store.data.settings.stylesheets}
+									width={150}
+									scale={150 / store.data.settings.printerWidth}
+								/>
+							</div>
+						) : null}
+						<div className='flex-grow-1 pa2 lh-solid flex flex-column justify-between'>
 							<div>
 								<div className='f5 mb2 flex justify-between items-center'>
 									{vnode.attrs.value.name}

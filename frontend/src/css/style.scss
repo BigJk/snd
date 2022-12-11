@@ -113,6 +113,12 @@ body {
     background-color: #f4f8f9;
 }
 
+.overflow-ellipsis {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 .f8 {
     font-size: .6rem;
 }

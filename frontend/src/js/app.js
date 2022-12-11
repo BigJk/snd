@@ -17,9 +17,10 @@ import DataSources from '/js/ui/views/data-sources';
 import Devices from '/js/ui/views/devices';
 import ExternPrintGenerator from '/js/ui/views/extern-print/generator';
 import ExternPrintTemplate from '/js/ui/views/extern-print/template';
-import GeneratorEdit from '/js/ui/views/generators/edit';
-import Generator from '/js/ui/views/generators/index';
-import GeneratorNew from '/js/ui/views/generators/new';
+import GeneratorsEdit from '/js/ui/views/generators/edit';
+import Generator from '/js/ui/views/generators/generator';
+import Generators from '/js/ui/views/generators/index';
+import GeneratorsNew from '/js/ui/views/generators/new';
 import Help from '/js/ui/views/help';
 import Settings from '/js/ui/views/settings';
 import Templates from '/js/ui/views/templates';
@@ -98,9 +99,10 @@ let wait = setInterval(() => {
 		'/templates/:id/edit': TemplatesEdit,
 		'/templates/:id/edit/:eid': TemplateEdit,
 		'/templates/:id/new': TemplateNew,
-		'/generators': Generator,
-		'/generators/new': GeneratorNew,
-		'/generators/:id/edit': GeneratorEdit,
+		'/generators': Generators,
+		'/generators/new': GeneratorsNew,
+		'/generators/:id/edit': GeneratorsEdit,
+		'/generators/:id': Generator,
 		'/help': Help,
 		'/data-sources': DataSources,
 		'/settings': Settings,

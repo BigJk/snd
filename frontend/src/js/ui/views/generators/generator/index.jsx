@@ -1,0 +1,216 @@
+import { clone, pickBy } from 'lodash-es';
+
+import { inElectron, openFolderDialog } from '/js/electron';
+
+import { ModalInfo } from './modals';
+
+import api from '/js/core/api';
+import { render } from '/js/core/generator';
+import store from '/js/core/store';
+
+import { Base, GeneratorConfig, Header, Input, Loading, ModalExport, SplitView, Tooltip } from '/js/ui/components';
+
+import binder from '/js/ui/binder';
+import { dialogWarning, error, success } from '/js/ui/toast';
+
+export default function () {
+	let state = {
+		gen: null,
+		entries: null,
+		config: {
+			seed: 'TEST_SEED',
+		},
+		rendered: '',
+		amount: 1,
+		showExport: false,
+		showInfo: false,
+	};
+
+	let breadcrumbs = () => [
+		{
+			name: 'Generators',
+			link: '/generators',
+		},
+		{
+			name: state.gen?.name ?? '...',
+		},
+	];
+
+	let sanitizeConfig = () => {
+		if (!state.gen) {
+			return;
+		}
+
+		// set seed if uninitialized
+		if (state.config.seed === undefined) {
+			state.config.seed = 'TEST_SEED';
+		}
+
+		// set default values for initialized fields
+		state.gen.config.forEach((conf) => {
+			if (state.config[conf.key] === undefined) {
+				state.config[conf.key] = conf.default;
+			}
+		});
+
+		// remove old fields that are not present in the config anymore.
+		state.config = pickBy(state.config, (val, key) => key === 'seed' || state.gen.config.some((conf) => conf.key === key));
+	};
+
+	let onexport = (type) => {
+		switch (type) {
+			case 'zip':
+				{
+					if (inElectron) {
+						openFolderDialog().then((folder) => {
+							api
+								.exportGeneratorZip(state.id, folder)
+								.then((file) => success('Wrote ' + file))
+								.catch(error)
+								.then(() => (state.showExport = false));
+						});
+					} else {
+						window.open('/api/export/generator/zip/' + state.id, '_blank');
+						state.showExport = false;
+					}
+				}
+				break;
+			case 'folder':
+				{
+					openFolderDialog().then((folder) => {
+						api
+							.exportGeneratorFolder(state.id, folder)
+							.then((file) => success('Wrote ' + file))
+							.catch(error)
+							.then(() => (state.showExport = false));
+					});
+				}
+				break;
+		}
+	};
+
+	let updateRender = () => render(state.gen, state.entries, state.config).then((res) => (state.rendered = res));
+
+	let print = () => {
+		for (let j = 0; j < state.amount; j++) {
+			let config = clone(state.config);
+
+			if (j > 0) {
+				config.seed += '_' + j;
+			}
+
+			render(state.gen, state.entries, config)
+				.then((res) => {
+					api
+						.print(res)
+						.then(() => success('Printing send'))
+						.catch(error);
+				})
+				.catch(error);
+		}
+
+		state.config.seed = Math.ceil(Math.random() * 1000000000);
+		updateRender().then(m.redraw);
+	};
+
+	let body = (vnode) => {
+		if (!state.gen || !store.data.settings) {
+			return <Loading />;
+		}
+
+		return (
+			<SplitView width={340} scale={340.0 / store.data.settings.printerWidth} stylesheets={store.data.settings.stylesheets} content={state.rendered}>
+				<div className='h-100 flex flex-column overflow-auto'>
+					<div className='flex-grow-1 overflow-auto ph3 pv2'>
+						<GeneratorConfig
+							config={state.gen.config}
+							value={state.config}
+							onchange={(key, val) => {
+								state.config[key] = val;
+								updateRender().then(m.redraw);
+							}}
+						></GeneratorConfig>
+					</div>
+					<div className='flex-shrink-0 pa3 bt b--black-05'>
+						<div className='flex'>
+							<div className='flex-grow-1 mr2'>
+								<Input value={state.amount} oninput={binder.inputNumber(state, 'amount')}></Input>
+							</div>
+							<div className='w-80 btn btn-success' onclick={print}>
+								<i className='ion ion-md-print mr1' /> Print
+							</div>
+						</div>
+					</div>
+				</div>
+			</SplitView>
+		);
+	};
+
+	return {
+		oninit(vnode) {
+			state.id = vnode.attrs.id;
+
+			api.getGenerator(vnode.attrs.id).then((gen) => {
+				state.gen = gen;
+				api.getEntriesWithSources(vnode.attrs.id).then((entries) => {
+					state.entries = entries ?? [];
+					updateRender();
+				});
+				sanitizeConfig();
+			});
+		},
+		onupdate(vnode) {
+			sanitizeConfig();
+			updateRender();
+		},
+		view(vnode) {
+			return (
+				<Base active='generators'>
+					<div className='h-100 flex flex-column'>
+						<Header breadcrumbs={breadcrumbs()} pt={2} subtitle='Configure and print this generator.'>
+							<div className='btn btn-primary mr2' onclick={() => m.route.set(`/generators/${vnode.attrs.id}/edit`)}>
+								Edit
+							</div>
+							<Tooltip content={'Export Options'}>
+								<div className='btn btn-primary w2 mr2' onclick={() => (state.showExport = true)}>
+									<i className='ion ion-md-open' />
+								</div>
+							</Tooltip>
+							<Tooltip content={'API Information'}>
+								<div className={`btn btn-primary w2`} onclick={() => (state.showInfo = true)}>
+									<i className={`ion ion-md-information`} />
+								</div>
+							</Tooltip>
+							<div className='divider-vert'></div>
+							<Tooltip content='Delete'>
+								<div
+									className='btn btn-error w2'
+									onclick={() => {
+										dialogWarning(`Do you really want to delete the '${state.gen.name}' generator?`).then(() =>
+											api.deleteGenerator(vnode.attrs.id).then(() => {
+												store.pub('reload_generators');
+												m.route.set('/generators');
+											})
+										);
+									}}
+								>
+									<i className='ion ion-md-close-circle' />
+								</div>
+							</Tooltip>
+						</Header>
+						{body()}
+						<ModalExport
+							type={'generator'}
+							prefix={'gen_'}
+							show={state.showExport}
+							value={state.gen}
+							onexport={onexport}
+							onclose={() => (state.showExport = false)}
+						></ModalExport>
+						<ModalInfo show={state.showInfo} id={vnode.attrs.id} config={state.config} onclose={() => (state.showInfo = false)}></ModalInfo>
+					</div>
+				</Base>
+			);
+		},
+	};
+}

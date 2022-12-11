@@ -11,11 +11,11 @@ export default () => ({
 					value={vnode.attrs.value.seed}
 					oninput={(e) => vnode.attrs.onchange('seed', e.target.value)}
 				></Input>{' '}
-				<div className='btn btn-primary' onclick={() => vnode.attrs.onchange('seed', Math.ceil(Math.random() * 1000000000))}>
-					Reroll
-				</div>
 				<div className='mb2 o-70'>
 					A random seed will make the random number generator deterministic. The same seed will result in the same generated random values.
+				</div>
+				<div className='btn btn-primary mb2' onclick={() => vnode.attrs.onchange('seed', Math.ceil(Math.random() * 1000000000))}>
+					Reroll
 				</div>
 				<div className='divider' />
 				{vnode.attrs.config.map((val) => (

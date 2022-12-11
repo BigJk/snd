@@ -1,8 +1,10 @@
 import FormGroup from '/js/ui/components/form-group';
 
+import easydropdown from 'easydropdown'
+
 export default () => {
 	let getSelect = (vnode) => (
-			<select className={`form-select ${vnode.attrs.labelCol ? 'col-' + (12 - vnode.attrs.labelCol) : ''}`} oninput={vnode.attrs.oninput}>
+			<select className={`form-select ${vnode.attrs.labelCol ? 'col-' + (12 - vnode.attrs.labelCol) : ''}`} oninput={vnode.attrs.oninput} style={{width: '31px'}}>
 				<option value='' selected={!vnode.attrs.selected || vnode.attrs.selected.length === 0}>
 					{vnode.attrs.default ?? 'Choose an option...'}
 				</option>
@@ -20,7 +22,33 @@ export default () => {
 			</select>
 		);
 
+	let dropdown = null;
+
 	return {
+		oncreate(vnode) {
+			dropdown = easydropdown(vnode.dom.classList.contains('form-select') ? vnode.dom : vnode.dom.querySelector('.form-select'), {
+				behavior: {
+					maxVisibleItems: 7
+				},
+				callbacks: {
+					onSelect: (value) => vnode.attrs.oninput({ target: { value: value } })
+				},
+				classNames: {
+					root: `edd-root ${vnode.attrs.labelCol ? 'col-' + (12 - vnode.attrs.labelCol) : ''}`,
+					head: `form-select edd-head`,
+					value: '',
+					arrow: '',
+					gradientTop:    '',
+					gradientBottom: '',
+				}
+			});
+		},
+		onupdate(vnode) {
+			dropdown.refresh();
+		},
+		onremove(vnode) {
+			dropdown.destroy();
+		},
 		view(vnode) {
 			return <FormGroup label={vnode.attrs.label} labelCol={vnode.attrs.labelCol} elem={getSelect(vnode)} />;
 		},

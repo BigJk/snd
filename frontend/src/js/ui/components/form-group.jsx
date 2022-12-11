@@ -6,6 +6,8 @@ export default () => {
 
 	return {
 		view(vnode) {
+			if (!vnode.attrs.label || vnode.attrs.label === '') return vnode.attrs.elem;
+
 			return (
 				<div className={`form-group w-100 ${vnode.attrs.className ?? ''}`}>
 					{getLabel(vnode.attrs.label, vnode.attrs.labelCol, vnode.attrs.type)}

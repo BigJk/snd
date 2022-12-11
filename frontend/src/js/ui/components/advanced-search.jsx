@@ -220,7 +220,7 @@ export default () => {
 			};
 
 			return (
-				<div className='overflow-auto'>
+				<div className='overflow-auto min-h-100'>
 					<div className='flex justify-between items-center bb b--black-10 pb2 mb1'>
 						<span className='f5'>
 							<i className='ion ion-md-search mr1' /> Advanced Search
@@ -239,6 +239,10 @@ export default () => {
 						<div
 							className='btn btn-primary mb2'
 							onclick={() => {
+								if (state.selectedKey.length === 0) {
+									return;
+								}
+
 								if (state.filter[state.selectedKey]) {
 									return;
 								}

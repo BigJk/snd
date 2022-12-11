@@ -82,7 +82,9 @@ export default () => {
 								value={state.packageRepos}
 								oninput={binder.inputString(state, 'packageRepos')}
 							/>
-							<div className='o-70 lh-copy mt1'>Can be used to add non-official package repos to the workshop. Should contain one package repo link per line.</div>
+							<div className='o-70 lh-copy mt1'>
+								Can be used to add non-official package repos to the workshop. Should contain one package repo link per line.
+							</div>
 						</Form>
 					</div>
 				</div>

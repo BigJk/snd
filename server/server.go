@@ -32,6 +32,8 @@ import (
 // https://github.com/labstack/echo/issues/1038
 func init() {
 	_ = mime.AddExtensionType(".js", "application/javascript")
+
+	http.DefaultClient.Timeout = time.Second * 2
 }
 
 type proxyCacheEntry struct {

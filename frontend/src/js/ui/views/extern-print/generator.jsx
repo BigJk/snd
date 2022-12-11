@@ -13,7 +13,8 @@ export default () => {
 			state.id = vnode.attrs.id;
 			state.json = JSON.parse(atob(vnode.attrs.json));
 
-			api.getEntriesWithSources(state.id)
+			api
+				.getEntriesWithSources(state.id)
 				.then((entries) => {
 					api.getGenerator(state.id).then((gen) => {
 						render(gen, entries ?? [], state.json)

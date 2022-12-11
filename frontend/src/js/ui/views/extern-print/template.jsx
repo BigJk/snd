@@ -13,7 +13,8 @@ export default () => {
 			state.id = vnode.attrs.id;
 			state.json = JSON.parse(atob(vnode.attrs.json));
 
-			rpc.getTemplate(state.id)
+			rpc
+				.getTemplate(state.id)
 				.then((tmpl) => {
 					render(tmpl.printTemplate, { it: state.json, images: tmpl.images })
 						.then((res) => {

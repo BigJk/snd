@@ -12,8 +12,8 @@ export function ModalInfo() {
 					<Input value={vnode.attrs.id}></Input>
 					<div className='mt3 b mb1 f5'>API Print Endpoint</div>
 					<div className='mb2'>
-						This is the local endpoint if you want to remotely print this generator. Just do a POST request containing the JSON encoded
-						config data that should be inserted.
+						This is the local endpoint if you want to remotely print this generator. Just do a POST request containing the JSON encoded config data
+						that should be inserted.
 					</div>
 					<Input value={location.origin + '/api/extern/print/generator/' + vnode.attrs.id}></Input>
 					<div className='mt3 b mb1 f5'>Current Config</div>

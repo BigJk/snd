@@ -8,8 +8,8 @@ export default function () {
 			return (
 				<Modal title='Export' onclose={vnode.attrs.onclose}>
 					<div className='mb3'>
-						You can export this {vnode.attrs.type} in multiple formats. This will only export the {vnode.attrs.type} itself and no entries
-						in any associated data sources!
+						You can export this {vnode.attrs.type} in multiple formats. This will only export the {vnode.attrs.type} itself and no entries in any
+						associated data sources!
 					</div>
 					<div className='btn btn-primary mr2 mb2' onclick={() => vnode.attrs.onexport('zip')}>
 						Export as{' '}

@@ -129,7 +129,8 @@ export default () => {
 				{
 					if (inElectron) {
 						openFolderDialog().then((folder) => {
-							api.exportTemplateZip(state.template.id, folder)
+							api
+								.exportTemplateZip(state.template.id, folder)
 								.then(() => success('Wrote ' + folder))
 								.catch(error)
 								.then(() => (state.showExport = false));
@@ -142,7 +143,8 @@ export default () => {
 			case 'folder':
 				{
 					openFolderDialog().then((folder) => {
-						api.exportTemplateFolder(state.template.id, folder)
+						api
+							.exportTemplateFolder(state.template.id, folder)
 							.then((file) => success('Wrote ' + file))
 							.catch(error)
 							.then(() => (state.showExport = false));
@@ -153,7 +155,8 @@ export default () => {
 	};
 
 	let stopSync = () => {
-		api.syncStop(state.template.id)
+		api
+			.syncStop(state.template.id)
 			.then(() => {
 				success(`Synced stopped`);
 				state.syncActive = false;
@@ -164,7 +167,8 @@ export default () => {
 
 	let startSync = () => {
 		openFolderDialog().then((folder) => {
-			api.syncStart(state.template.id, folder)
+			api
+				.syncStart(state.template.id, folder)
 				.then((folder) => {
 					success(`Synced to '${folder}'`);
 					state.syncActive = true;
@@ -249,7 +253,8 @@ export default () => {
 
 														render(state.template.printTemplate, { it: e.data, images: state.template.images })
 															.then((res) => {
-																api.print(res)
+																api
+																	.print(res)
 																	.then(() => success('Printing send'), error)
 																	.then(() => (state.printing = false));
 															})
@@ -269,10 +274,7 @@ export default () => {
 																it: e.data,
 																images: state.template.images,
 															}).then((res) => {
-																api.screenshot(res, folder + '/' + e.name + '.png').then(
-																	() => success('Screenshot created'),
-																	error
-																);
+																api.screenshot(res, folder + '/' + e.name + '.png').then(() => success('Screenshot created'), error);
 															});
 														});
 													}}
@@ -358,7 +360,8 @@ export default () => {
 				state = store.data.lastTemplateState;
 			}
 
-			api.getTemplate(templateId)
+			api
+				.getTemplate(templateId)
 				.then((template) => {
 					state.template = template;
 					state.template.id = vnode.attrs.id;
@@ -416,10 +419,7 @@ export default () => {
 								</div>
 							</Tooltip>
 							<Tooltip content='Template sync'>
-								<div
-									className={`btn ${state.syncActive ? 'btn-success' : 'btn-primary'} mr2`}
-									onclick={() => (state.showSync = true)}
-								>
+								<div className={`btn ${state.syncActive ? 'btn-success' : 'btn-primary'} mr2`} onclick={() => (state.showSync = true)}>
 									<i className={`ion ion-md-sync ${state.syncActive ? 'rotating' : ''}`} />
 								</div>
 							</Tooltip>

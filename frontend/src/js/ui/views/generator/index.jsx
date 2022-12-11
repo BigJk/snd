@@ -80,7 +80,8 @@ export default () => {
 					if (inElectron) {
 						openFileDialog().then((file) => {
 							state.importing.loading = true;
-							api.importGeneratorZip(file)
+							api
+								.importGeneratorZip(file)
 								.then((name) => {
 									success(`Imported '${name}' successful`);
 									store.pub('reload_generators');
@@ -94,7 +95,8 @@ export default () => {
 					} else {
 						readFile().then((res) => {
 							state.importing.loading = true;
-							api.importGeneratorZip(res)
+							api
+								.importGeneratorZip(res)
 								.then((name) => {
 									success(`Imported '${name}' successful`);
 									store.pub('reload_generators');
@@ -112,7 +114,8 @@ export default () => {
 				{
 					openFolderDialog().then((folder) => {
 						state.importing.loading = true;
-						api.importGeneratorFolder(folder)
+						api
+							.importGeneratorFolder(folder)
 							.then((name) => {
 								success(`Imported '${name}' successful`);
 								store.pub('reload_generators');
@@ -128,7 +131,8 @@ export default () => {
 			case 'url':
 				{
 					state.importing.loading = true;
-					api.importGeneratorUrl(url)
+					api
+						.importGeneratorUrl(url)
 						.then((name) => {
 							success(`Imported '${name}' successful`);
 							store.pub('reload_generators');
@@ -149,7 +153,8 @@ export default () => {
 				{
 					if (inElectron) {
 						openFolderDialog().then((folder) => {
-							api.exportGeneratorZip(state.export.id, folder)
+							api
+								.exportGeneratorZip(state.export.id, folder)
 								.then((file) => success('Wrote ' + file))
 								.catch(error)
 								.then(() => (state.export.show = false));
@@ -163,7 +168,8 @@ export default () => {
 			case 'folder':
 				{
 					openFolderDialog().then((folder) => {
-						api.exportGeneratorFolder(state.export.id, folder)
+						api
+							.exportGeneratorFolder(state.export.id, folder)
 							.then((file) => success('Wrote ' + file))
 							.catch(error)
 							.then(() => (state.export.show = false));
@@ -252,17 +258,11 @@ export default () => {
 													<div className={`flex-grow-1 ${state.settings[id].open ? 'mr3' : ''} ba b--black-10 bg-white`}>
 														<div className='flex-grow-1 pv2 ph2 lh-solid flex flex-column justify-between'>
 															<div>
-																<div
-																	className={`f5 ${
-																		state.settings[id].open ? 'mb2' : ''
-																	} flex justify-between lh-copy`}
-																>
+																<div className={`f5 ${state.settings[id].open ? 'mb2' : ''} flex justify-between lh-copy`}>
 																	<div className='flex items-center'>
 																		<i
 																			className={`ion ${
-																				state.settings[id].open
-																					? 'ion-md-arrow-dropup'
-																					: 'ion-md-arrow-dropdown'
+																				state.settings[id].open ? 'ion-md-arrow-dropup' : 'ion-md-arrow-dropdown'
 																			} f3 mh3 dim pointer`}
 																			onclick={() => (state.settings[id].open = !state.settings[id].open)}
 																		/>
@@ -280,10 +280,7 @@ export default () => {
 															</div>
 															{state.settings[id].open
 																? [
-																		<div
-																			className='ba br2 b--black-05 mb2 overflow-auto ph3 pv2'
-																			style='height: 400px;'
-																		>
+																		<div className='ba br2 b--black-05 mb2 overflow-auto ph3 pv2' style='height: 400px;'>
 																			<GeneratorConfig
 																				config={g.config}
 																				value={state.configs[id]}
@@ -306,7 +303,8 @@ export default () => {
 
 																						render(g, null, config)
 																							.then((res) => {
-																								api.print(res)
+																								api
+																									.print(res)
 																									.then(() => success('Printing send'))
 																									.catch(error);
 																							})
@@ -314,9 +312,7 @@ export default () => {
 																					}
 
 																					if (state.settings[id].reroll) {
-																						state.configs[id]['seed'] = Math.ceil(
-																							Math.random() * 1000000000
-																						);
+																						state.configs[id]['seed'] = Math.ceil(Math.random() * 1000000000);
 																						rerender(g).then(m.redraw);
 																					}
 																				}}
@@ -327,18 +323,13 @@ export default () => {
 																			<Tooltip content={'Edit'}>
 																				<div
 																					className='btn btn-primary w2 mr2'
-																					onclick={() =>
-																						m.route.set(`/generators/gen:${g.author}+${g.slug}/edit`)
-																					}
+																					onclick={() => m.route.set(`/generators/gen:${g.author}+${g.slug}/edit`)}
 																				>
 																					<i className='ion ion-md-settings' />
 																				</div>
 																			</Tooltip>
 																			<Tooltip content={'Export Options'}>
-																				<div
-																					className='btn btn-primary w2 mr2'
-																					onclick={() => (state.export = { show: true, g: g, id: id })}
-																				>
+																				<div className='btn btn-primary w2 mr2' onclick={() => (state.export = { show: true, g: g, id: id })}>
 																					<i className='ion ion-md-open' />
 																				</div>
 																			</Tooltip>
@@ -357,9 +348,7 @@ export default () => {
 																				<div
 																					className='btn btn-error w2'
 																					onclick={() =>
-																						dialogWarning(
-																							`Do you really want to delete the '${g.name}' generator?`
-																						).then(() =>
+																						dialogWarning(`Do you really want to delete the '${g.name}' generator?`).then(() =>
 																							api.deleteGenerator(id).then(() => {
 																								delete state.configs[id];
 																								delete state.rendered[id];

@@ -24,8 +24,7 @@ export default function () {
 							<b>Import {vnode.attrs.type} either locally (e.g. .zip, folder) or from the internet via a URL</b>
 						</div>
 						<div>
-							<b>Warning:</b> A {vnode.attrs.type} with the same author and identification name will overwrite any previous imported
-							version!
+							<b>Warning:</b> A {vnode.attrs.type} with the same author and identification name will overwrite any previous imported version!
 						</div>
 					</div>
 					<div className='mb3'>

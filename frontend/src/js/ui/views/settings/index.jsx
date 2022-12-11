@@ -65,9 +65,7 @@ export default () => {
 								value={state.spellcheckerLanguages}
 								oninput={binder.inputString(state, 'spellcheckerLanguages')}
 							/>
-							<div className='o-70 lh-copy mt3'>
-								Use a comma seperated list of languages that should be used for spellchecking like "en-US, de".
-							</div>
+							<div className='o-70 lh-copy mt3'>Use a comma seperated list of languages that should be used for spellchecking like "en-US, de".</div>
 						</Form>
 					</div>
 				</div>
@@ -153,11 +151,7 @@ export default () => {
 						<Form className='w-100 pt2'>
 							{store.data.settings.stylesheets?.map((s, i) => (
 								<div className='flex justify-between'>
-									<Input
-										value={s}
-										placeholder='e.g. http://unpkg.com/style.css'
-										oninput={binder.inputString(store.data.settings.stylesheets, i)}
-									/>
+									<Input value={s} placeholder='e.g. http://unpkg.com/style.css' oninput={binder.inputString(store.data.settings.stylesheets, i)} />
 									<div className='btn btn-error ml2' onclick={() => store.data.settings.stylesheets.splice(i, 1)}>
 										Delete
 									</div>
@@ -185,8 +179,7 @@ export default () => {
 					</a>
 				</div>
 				<div className='ph3 pb4'>
-					Software made with <i className='ion ion-md-heart red' /> by{' '}
-					<a onclick={() => shell.openExternal('https://github.com/BigJk')}>BigJk</a>
+					Software made with <i className='ion ion-md-heart red' /> by <a onclick={() => shell.openExternal('https://github.com/BigJk')}>BigJk</a>
 				</div>
 			</div>
 		);

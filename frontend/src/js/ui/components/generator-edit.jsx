@@ -99,8 +99,8 @@ export default () => {
 		Images: () => (
 			<div className='pa3'>
 				<div className='toast toast-primary lh-copy mb3'>
-					Here you can add images that are available in the generator template. If you export or import a generator the images will be
-					included as well.
+					Here you can add images that are available in the generator template. If you export or import a generator the images will be included as
+					well.
 					<br /> <br /> You can access a image in the generator via: <br />
 					<div className='mt1'>
 						<code>&#123;&#123; images[IMAGE_NAME.png] &#125;&#125;</code>
@@ -219,18 +219,8 @@ export default () => {
 				{state.target.config.map((val, i) => [
 					<div className='flex w-100'>
 						<div className='w-50 flex-shrink-0 mr3'>
-							<Input
-								label='Key'
-								placeholder='Key'
-								value={val.key}
-								oninput={binder.inputString(val, 'key', updateRenderSanitize)}
-							></Input>
-							<Input
-								label='Name'
-								placeholder='Name'
-								value={val.name}
-								oninput={binder.inputString(val, 'name', updateRenderSanitize)}
-							></Input>
+							<Input label='Key' placeholder='Key' value={val.key} oninput={binder.inputString(val, 'key', updateRenderSanitize)}></Input>
+							<Input label='Name' placeholder='Name' value={val.name} oninput={binder.inputString(val, 'name', updateRenderSanitize)}></Input>
 							<Input
 								label='Description'
 								placeholder='Description'

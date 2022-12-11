@@ -55,8 +55,8 @@ export default () => {
 						<i className='red f2 ion ion-md-alert' />
 						<div className='f5 b'>No Suitable Device Found</div>
 						<div className='mw6 black-50'>
-							Don't worry! If you plugged the printer in and it is not showing up there is still a chance that printing can work. Please
-							stop by the Discord so we can check your printer!
+							Don't worry! If you plugged the printer in and it is not showing up there is still a chance that printing can work. Please stop by the
+							Discord so we can check your printer!
 						</div>
 					</div>
 				</div>

@@ -313,31 +313,14 @@ export default () => {
 												{map(c.base.args, (input, i) => {
 													switch (input.type) {
 														case 'string':
-															return (
-																<Input
-																	value={c.args[i]}
-																	label={input.name}
-																	oninput={binder.inputString(c, 'args[' + i + ']', triggerChange)}
-																/>
-															);
+															return <Input value={c.args[i]} label={input.name} oninput={binder.inputString(c, 'args[' + i + ']', triggerChange)} />;
 														case 'number':
-															return (
-																<Input
-																	value={c.args[i]}
-																	label={input.name}
-																	oninput={binder.inputNumber(c, 'args[' + i + ']', triggerChange)}
-																/>
-															);
+															return <Input value={c.args[i]} label={input.name} oninput={binder.inputNumber(c, 'args[' + i + ']', triggerChange)} />;
 													}
 												})}
 											</div>
 											<Form className='form-no-margin ml2 flex-shrink-0' horizontal={false}>
-												<Switch
-													label='Negate'
-													labelCol={5}
-													value={c.negate}
-													oninput={binder.checkbox(c, 'negate', triggerChange)}
-												/>
+												<Switch label='Negate' labelCol={5} value={c.negate} oninput={binder.checkbox(c, 'negate', triggerChange)} />
 											</Form>
 										</div>
 									</div>

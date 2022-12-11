@@ -119,12 +119,7 @@ export default () => {
 					<div className='form-group mw-50 mr3'>
 						<label className='form-label'>{startCase(camelCase(name))}</label>
 						{isNum ? (
-							<input
-								type='text'
-								className='form-input'
-								value={obj}
-								oninput={binder.inputNumber(state.parsedData, curPath, updateRender)}
-							/>
+							<input type='text' className='form-input' value={obj} oninput={binder.inputNumber(state.parsedData, curPath, updateRender)} />
 						) : (
 							<textarea
 								className='form-input'

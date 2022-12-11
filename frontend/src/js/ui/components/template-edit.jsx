@@ -98,8 +98,7 @@ export default () => {
 		Images: () => (
 			<div className='pa3'>
 				<div className='toast toast-primary lh-copy mb3'>
-					Here you can add images that are available in the templates. If you export or import a template the images will be included as
-					well.
+					Here you can add images that are available in the templates. If you export or import a template the images will be included as well.
 					<br /> <br /> You can access a image in the template via: <br />
 					<div className='mt1'>
 						<code>&#123;&#123; images[IMAGE_NAME.png] &#125;&#125;</code>
@@ -157,8 +156,7 @@ export default () => {
 		Sources: () => (
 			<div className='ph3 pt3'>
 				<div className='toast toast-primary lh-copy mb2'>
-					Here you can add data sources to this template. If you add a data source the entries in the data source will be available in this
-					template.
+					Here you can add data sources to this template. If you add a data source the entries in the data source will be available in this template.
 				</div>
 				<Select
 					label='Add Sources'
@@ -228,12 +226,8 @@ export default () => {
 						<div className='mr2 w4'>
 							<Select
 								selected={state.entriesSelected}
-								keys={state.entries
-									.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0)
-									.map((_, i) => i)}
-								names={state.entries
-									.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0)
-									.map((e) => e.name)}
+								keys={state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0).map((_, i) => i)}
+								names={state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0).map((e) => e.name)}
 								oninput={(e) => (state.entriesSelected = parseInt(e.target.value))}
 							/>
 						</div>
@@ -246,15 +240,13 @@ export default () => {
 									}
 
 									state.skeletonDataRaw = JSON.stringify(
-										state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0)[
-											state.entriesSelected
-										].data,
+										state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0)[state.entriesSelected].data,
 										null,
 										'\t'
 									);
-									state.target.skeletonData = state.entries.filter(
-										(e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0
-									)[state.entriesSelected].data;
+									state.target.skeletonData = state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0)[
+										state.entriesSelected
+									].data;
 									state.entriesSearch = '';
 									state.entriesSelected = null;
 								}}
@@ -270,11 +262,7 @@ export default () => {
 										return;
 									}
 
-									state.target.skeletonData = mergeWith(
-										state.target.skeletonData,
-										...[state.entries[state.entriesSelected].data],
-										entryMerger
-									);
+									state.target.skeletonData = mergeWith(state.target.skeletonData, ...[state.entries[state.entriesSelected].data], entryMerger);
 									state.skeletonDataRaw = JSON.stringify(state.target.skeletonData, null, '\t');
 								}}
 							>

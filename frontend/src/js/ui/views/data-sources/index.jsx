@@ -58,7 +58,8 @@ export default () => {
 							if (inElectron) {
 								openFileDialog().then((file) => {
 									state.importing.loading = true;
-									api.importSourceZip(file)
+									api
+										.importSourceZip(file)
 										.then((name) => {
 											success(`Imported '${name}' successful`);
 											store.pub('reload_sources');
@@ -72,7 +73,8 @@ export default () => {
 							} else {
 								readFile().then((res) => {
 									state.importing.loading = true;
-									api.importSourceZip(res)
+									api
+										.importSourceZip(res)
 										.then((name) => {
 											success(`Imported '${name}' successful`);
 
@@ -94,7 +96,8 @@ export default () => {
 						onclick={() => {
 							openFolderDialog().then((folder) => {
 								state.importing.loading = true;
-								api.importSourceFolder(folder)
+								api
+									.importSourceFolder(folder)
 									.then((name) => {
 										success(`Imported '${name}' successful`);
 
@@ -118,7 +121,8 @@ export default () => {
 						className='btn btn-primary'
 						onclick={() => {
 							state.importing.loading = true;
-							api.importSourceUrl(state.importing.url)
+							api
+								.importSourceUrl(state.importing.url)
 								.then((name) => {
 									success(`Imported '${name}' successful`);
 
@@ -138,8 +142,8 @@ export default () => {
 				<div>
 					<div className='mt2 mb3 lh-copy'>
 						<b className='db'>FoundryVTT Import</b>
-						You can also import data from FoundryVTT Modules and Systems. This will convert all the included packs and add them as Data
-						Sources. To import a Module or System open the module.json or system.json file in it's folder.
+						You can also import data from FoundryVTT Modules and Systems. This will convert all the included packs and add them as Data Sources. To
+						import a Module or System open the module.json or system.json file in it's folder.
 					</div>
 					<div
 						className='btn btn-primary mr2'
@@ -147,7 +151,8 @@ export default () => {
 							if (inElectron) {
 								openFileDialog().then((file) => {
 									state.importing.loading = true;
-									api.importVttModule(file)
+									api
+										.importVttModule(file)
 										.then((name) => {
 											success(`Imported '${name}' module successful`);
 											store.pub('reload_sources');

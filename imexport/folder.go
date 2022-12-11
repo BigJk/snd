@@ -74,6 +74,21 @@ func ImportSourceFolder(folder string) (snd.DataSource, []snd.Entry, error) {
 	return ImportSource(reader)
 }
 
+// ExportSourceFolder exports the data source and entries to the given folder. A new folder with
+// the pattern ds_{tmpl.Autor}_{tmpl.Slug} will be created.
+//
+// Following files will be created:
+// - meta.json
+// - entries.json
+//
+// The function returns the name of the created folder.
+func ExportSourceFolder(ds snd.DataSource, entries []snd.Entry, folder string) (string, error) {
+	name := fmt.Sprintf("ds_%s_%s", ds.Author, ds.Slug)
+	_ = os.MkdirAll(filepath.Join(folder, name), 0777)
+
+	return name, ExportSource(ds, entries, &FolderExportWriter{base: filepath.Join(folder, name)})
+}
+
 // ExportGeneratorFolder exports the template and entries to the given folder. A new folder with
 // the pattern gen_{tmpl.Autor}_{tmpl.Slug} will be created.
 //

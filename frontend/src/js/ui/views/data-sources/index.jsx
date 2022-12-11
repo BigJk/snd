@@ -6,7 +6,7 @@ import { readFile } from '/js/file';
 import api from '/js/core/api';
 import store from '/js/core/store';
 
-import { Base, Header, Input, ModalImport, PreviewBox, Tooltip } from '/js/ui/components';
+import { Base, Header, Input, ModalExport, ModalImport, PreviewBox, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
 import { dialogWarning, error, success } from '/js/ui/toast';
@@ -17,6 +17,11 @@ export default () => {
 		importing: {
 			show: false,
 			loading: false,
+		},
+		exporting: {
+			id: '',
+			ds: null,
+			show: false,
 		},
 	};
 
@@ -119,6 +124,38 @@ export default () => {
 		}
 	};
 
+	let onexport = (type) => {
+		switch (type) {
+			case 'zip':
+				{
+					if (inElectron) {
+						openFolderDialog().then((folder) => {
+							api
+								.exportSourceZip(state.exporting.id, folder)
+								.then((file) => success('Wrote ' + file))
+								.catch(error)
+								.then(() => (state.exporting.show = false));
+						});
+					} else {
+						// TODO: headless export
+						state.exporting.show = false;
+					}
+				}
+				break;
+			case 'folder':
+				{
+					openFolderDialog().then((folder) => {
+						api
+							.exportSourceFolder(state.exporting.id, folder)
+							.then((file) => success('Wrote ' + file))
+							.catch(error)
+							.then(() => (state.exporting.show = false));
+					});
+				}
+				break;
+		}
+	};
+
 	let body = () => (
 		<div className='ph3 pb3'>
 			{map(
@@ -143,17 +180,31 @@ export default () => {
 										</div>
 									}
 									bottomRight={
-										<div
-											className='btn btn-error'
-											onclick={() =>
-												dialogWarning(`Do you really want to delete the '${t.name}' source ?`).then(() =>
-													api.deleteSource(`ds:${t.author}+${t.slug}`).then(() => {
-														store.pub('reload_sources');
-													})
-												)
-											}
-										>
-											<i className='ion ion-md-close-circle-outline' />
+										<div>
+											<Tooltip content={'Export Options'}>
+												<div
+													className='btn btn-primary w2 mr2'
+													onclick={() => {
+														state.exporting.ds = t;
+														state.exporting.id = `ds:${t.author}+${t.slug}`;
+														state.exporting.show = true;
+													}}
+												>
+													<i className='ion ion-md-open' />
+												</div>
+											</Tooltip>
+											<div
+												className='btn btn-error'
+												onclick={() =>
+													dialogWarning(`Do you really want to delete the '${t.name}' source ?`).then(() =>
+														api.deleteSource(`ds:${t.author}+${t.slug}`).then(() => {
+															store.pub('reload_sources');
+														})
+													)
+												}
+											>
+												<i className='ion ion-md-close-circle-outline' />
+											</div>
 										</div>
 									}
 								></PreviewBox>
@@ -212,6 +263,14 @@ export default () => {
 								</div>
 							}
 						></ModalImport>
+						<ModalExport
+							type={'data source'}
+							prefix={'ds_'}
+							show={state.exporting.show}
+							value={state.exporting.ds}
+							onexport={onexport}
+							onclose={() => (state.exporting.show = false)}
+						></ModalExport>
 					</div>
 				</Base>
 			);

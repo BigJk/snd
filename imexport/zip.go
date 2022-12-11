@@ -160,6 +160,38 @@ func ImportSourceZIPFile(file string) (snd.DataSource, []snd.Entry, error) {
 	return ImportSourceZIP(zipFile, stat.Size())
 }
 
+// ExportSourceZIP exports the data source and entries as a zip file.
+//
+// Following files will be created in the zip:
+// - meta.json
+// - entries.json
+//
+// The function returns the advised name for the zip file with the pattern "ds_{tmpl.Autor}_{tmpl.Slug}.zip".
+func ExportSourceZIP(ds snd.DataSource, entries []snd.Entry, writer io.Writer) (string, error) {
+	zipper := zip.NewWriter(writer)
+	defer zipper.Close()
+
+	return fmt.Sprintf("ds_%s_%s.zip", ds.Author, ds.Slug), ExportSource(ds, entries, &ZipExportWriter{writer: zipper})
+}
+
+// ExportSourceZIPFile exports the data source and entries as a zip file.
+//
+// Following files will be created in the zip:
+// - meta.json
+// - entries.json
+//
+// The function returns the advised name for the zip file with the pattern "ds_{tmpl.Autor}_{tmpl.Slug}.zip".
+func ExportSourceZIPFile(ds snd.DataSource, entries []snd.Entry, folder string) (string, error) {
+	buf := &bytes.Buffer{}
+	file, err := ExportSourceZIP(ds, entries, buf)
+	if err != nil {
+		return "", err
+	}
+
+	path := filepath.Join(folder, file)
+	return path, ioutil.WriteFile(path, buf.Bytes(), 0666)
+}
+
 // ExportGeneratorZIP exports the generator and entries as a zip file.
 //
 // Following files will be created in the zip:

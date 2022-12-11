@@ -7,7 +7,7 @@ import api from '/js/core/api';
 import store from '/js/core/store';
 import { render } from '/js/core/templating';
 
-import { Base, Header, Input, Loading, ModalImport, Preview, Tooltip } from '/js/ui/components';
+import { Base, Header, Input, Loading, ModalImport, PreviewBox, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
 import { error, success } from '/js/ui/toast';
@@ -30,7 +30,8 @@ export default () => {
 					if (inElectron) {
 						openFileDialog().then((file) => {
 							state.importing.loading = true;
-							api.importTemplateZip(file)
+							api
+								.importTemplateZip(file)
 								.then((name) => {
 									success(`Imported '${name}' successful`);
 
@@ -45,7 +46,8 @@ export default () => {
 					} else {
 						readFile().then((res) => {
 							state.importing.loading = true;
-							api.importTemplateZip(res)
+							api
+								.importTemplateZip(res)
 								.then((name) => {
 									success(`Imported '${name}' successful`);
 
@@ -64,7 +66,8 @@ export default () => {
 				{
 					openFolderDialog().then((folder) => {
 						state.importing.loading = true;
-						api.importTemplateFolder(folder)
+						api
+							.importTemplateFolder(folder)
 							.then((name) => {
 								success(`Imported '${name}' successful`);
 
@@ -81,7 +84,8 @@ export default () => {
 			case 'url':
 				{
 					state.importing.loading = true;
-					api.importTemplateUrl(url)
+					api
+						.importTemplateUrl(url)
 						.then((name) => {
 							success(`Imported '${name}' successful`);
 
@@ -121,41 +125,22 @@ export default () => {
 							</div>
 							<div className='flex flex-wrap'>
 								{val.map((t, i) => (
-									<div className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}>
-										<div className='flex ba b--black-10 h4 mb2 bg-white'>
-											<div className='flex-shrink-0 ph1 mr2 br b--black-05 bg-black-05'>
-												<Preview
-													className='h-100'
-													content={state.templates['tmpl:' + t.author + '+' + t.name] ?? 'Rendering...'}
-													stylesheets={store.data.settings.stylesheets}
-													width={150}
-													scale={150 / store.data.settings.printerWidth}
-												/>
+									<PreviewBox
+										className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}
+										value={t}
+										previewContent={state.templates['tmpl:' + t.author + '+' + t.name] ?? 'Rendering...'}
+										bottomLeft={
+											<div className='lh-solid'>
+												<div className='f4 b'>{t.count}</div>
+												<span className='fw4 f6 black-50'>Entries</span>
 											</div>
-											<div className='flex-grow-1 pv2 pr2 lh-solid flex flex-column justify-between'>
-												<div>
-													<div className='f5 mb2 flex justify-between items-center'>
-														{t.name}
-
-														<span className='f8 fw4 text-muted'>
-															{t.author}/{t.slug}
-														</span>
-													</div>
-													<div className='divider' />
-													<div className='fw4 f7 black-50 mb1 lh-copy'>{t.description}</div>
-												</div>
-												<div className='flex justify-between items-end'>
-													<div className='lh-solid'>
-														<div className='f4 b'>{t.count}</div>
-														<span className='fw4 f6 black-50'>Entries</span>
-													</div>
-													<div className='btn' onclick={() => m.route.set(`/templates/tmpl:${t.author}+${t.slug}`)}>
-														Open Template
-													</div>
-												</div>
+										}
+										bottomRight={
+											<div className='btn' onclick={() => m.route.set(`/templates/tmpl:${t.author}+${t.slug}`)}>
+												Open Template
 											</div>
-										</div>
-									</div>
+										}
+									></PreviewBox>
 								))}
 							</div>
 						</div>

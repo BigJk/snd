@@ -70,8 +70,8 @@ func startElectron(db database.Database, debug bool) {
 
 	var w, _ = a.NewWindow("http://127.0.0.1:7123", &astilectron.WindowOptions{
 		Center: astikit.BoolPtr(true),
-		Height: astikit.IntPtr(820),
-		Width:  astikit.IntPtr(1450),
+		Height: astikit.IntPtr(920),
+		Width:  astikit.IntPtr(1600),
 		WebPreferences: &astilectron.WebPreferences{
 			EnableRemoteModule: astikit.BoolPtr(true),
 		},

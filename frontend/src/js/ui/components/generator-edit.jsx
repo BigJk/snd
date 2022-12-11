@@ -88,7 +88,7 @@ export default () => {
 					/>
 				) : null}
 				<Switch
-					label='Pass Entries to Javascript'
+					label='Pass Entries to Javascript (creates "entries" js variable)'
 					labelCol={5}
 					value={state.target.passEntriesToJS}
 					oninput={binder.checkbox(state.target, 'passEntriesToJS')}

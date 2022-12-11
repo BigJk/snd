@@ -141,6 +141,10 @@ body {
     width: 500px;
 }
 
+.bg-black-05 { background-color: rgba( 0, 0, 0, .05 ); }
+.hover-bg-black-05:hover { background-color: rgba( 0, 0, 0, .05 ); }
+.hover-bg-black-05:focus { background-color: rgba( 0, 0, 0, .05 ); }
+
 .light-shadow {
     -webkit-box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.1);
     -moz-box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.1);

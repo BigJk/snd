@@ -29,6 +29,8 @@ import TemplatesNew from '/js/ui/views/templates/new';
 import Template from '/js/ui/views/templates/template';
 import TemplateEdit from '/js/ui/views/templates/template/edit';
 import TemplateNew from '/js/ui/views/templates/template/new';
+import Workshop from '/js/ui/views/workshop';
+import WorkshopRepo from '/js/ui/views/workshop/repo';
 
 // Mithril Fragment workaround
 
@@ -79,10 +81,17 @@ store.sub(['reload_settings'], () => {
 	});
 });
 
+store.sub(['reload_public_packages'], () => {
+	api.getPublicPackages().then((packages) => {
+		store.set('publicPackages', packages ?? []);
+	});
+});
+
 store.pub('reload_settings');
 store.pub('reload_templates');
 store.pub('reload_generators');
 store.pub('reload_sources');
+store.pub('reload_public_packages');
 
 // Wait for settings to populate and then mount
 
@@ -103,6 +112,8 @@ let wait = setInterval(() => {
 		'/generators/new': GeneratorsNew,
 		'/generators/:id/edit': GeneratorsEdit,
 		'/generators/:id': Generator,
+		'/workshop': Workshop,
+		'/workshop/:id': WorkshopRepo,
 		'/help': Help,
 		'/data-sources': DataSources,
 		'/settings': Settings,

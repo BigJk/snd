@@ -18,6 +18,11 @@ let pages = {
 		icon: 'analytics',
 		url: 'data-sources',
 	},
+	workshop: {
+		name: 'Workshop',
+		icon: 'cart',
+		url: 'workshop',
+	},
 	help: {
 		name: 'Help',
 		icon: 'help',

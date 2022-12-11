@@ -5,7 +5,7 @@ import { shell } from '/js/electron';
 import api from '/js/core/api';
 import store from '/js/core/store';
 
-import { Base, Form, Header, Input, Select, Switch } from '/js/ui/components';
+import { Base, Form, Header, Input, Select, Switch, TextArea } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
 import { error, success } from '/js/ui/toast';
@@ -13,6 +13,7 @@ import { error, success } from '/js/ui/toast';
 export default () => {
 	let state = {
 		spellcheckerLanguages: (store.data.settings?.spellcheckerLanguages ?? []).join(', '),
+		packageRepos: (store.data.settings?.packageRepos ?? []).join('\n'),
 	};
 
 	let version = () => {
@@ -49,23 +50,39 @@ export default () => {
 			store.data.settings.stylesheets = [];
 		}
 
+		if (store.data.settings.packageRepos === null) {
+			store.data.settings.packageRepos = [];
+		}
+
 		return (
 			<div className='overflow-auto flex-grow-1'>
 				<div className='flex flex-wrap pa3'>
-					<div className='bg-white ph3 pt3 pb3 ba b--black-10 br1 flex-grow-1 lh-solid flex flex-wrap relative'>
+					<div className='bg-white ph3 pt3 pb3 ba b--black-10 br1 flex-grow-1 lh-solid relative'>
 						<div className='br2 br--top bl bt br b--black-10 absolute fw7 left-0 panel-title'>
 							<i className='ion ion-md-settings mr1' />
 							Application Settings
 						</div>
-						<Form className='w-50 f7 black-70' horizontal={true}>
+						<Form className='w-50 f7 black-70'>
 							<Input
 								label='Spellchecking Languages'
-								labelCol={4}
 								placeholder='e.g. en-US, de'
 								value={state.spellcheckerLanguages}
 								oninput={binder.inputString(state, 'spellcheckerLanguages')}
 							/>
-							<div className='o-70 lh-copy mt3'>Use a comma seperated list of languages that should be used for spellchecking like "en-US, de".</div>
+							<div className='o-70 lh-copy mt1'>Use a comma seperated list of languages that should be used for spellchecking like "en-US, de".</div>
+						</Form>
+						<div className='w-50 mt3'>
+							<div className='divider'></div>
+						</div>
+						<Form className='w-50 f7 black-70'>
+							<TextArea
+								label='Package Repos'
+								rows={5}
+								placeholder='e.g. https://package-repo.de/packages.json'
+								value={state.packageRepos}
+								oninput={binder.inputString(state, 'packageRepos')}
+							/>
+							<div className='o-70 lh-copy mt1'>Can be used to add non-official package repos to the workshop. Should contain one package repo link per line.</div>
 						</Form>
 					</div>
 				</div>
@@ -198,6 +215,7 @@ export default () => {
 								className='btn btn-success'
 								onclick={() => {
 									store.data.settings.spellcheckerLanguages = state.spellcheckerLanguages.split(',').map(trim);
+									store.data.settings.packageRepos = state.packageRepos.split('\n').map(trim);
 									api.saveSettings(store.data.settings).then(
 										() => {
 											success('Settings saved');

@@ -25,7 +25,13 @@ export default function () {
 									{vnode.attrs.value.name}
 
 									<span className='f8 fw4 text-muted overflow-ellipsis'>
-										{vnode.attrs.value.author}/{vnode.attrs.value.slug}
+										{(() => {
+											if (vnode.attrs.value.author && !vnode.attrs.value.slug) {
+												return vnode.attrs.value.author;
+											}
+
+											return vnode.attrs.value.author + '/' + vnode.attrs.value.slug;
+										})()}
 									</span>
 								</div>
 								<div className='divider' />

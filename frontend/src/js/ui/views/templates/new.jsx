@@ -12,20 +12,20 @@ export default () => {
 	};
 
 	let breadcrumbs = () => [
-			{
-				name: 'Templates',
-				link: '/templates',
-			},
-			{
-				name: 'New',
-			},
-		];
+		{
+			name: 'Templates',
+			link: '/templates',
+		},
+		{
+			name: 'New',
+		},
+	];
 
 	let body = () => (
-			<div className='flex-grow-1 overflow-auto'>
-				<TemplateEdit target={state.template} />
-			</div>
-		);
+		<div className='flex-grow-1 overflow-auto'>
+			<TemplateEdit target={state.template} />
+		</div>
+	);
 
 	return {
 		view(vnode) {

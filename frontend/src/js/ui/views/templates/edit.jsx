@@ -19,18 +19,18 @@ export default () => {
 	};
 
 	let breadcrumbs = () => [
-			{
-				name: 'Templates',
-				link: '/templates',
-			},
-			{
-				name: state.template?.name ?? '...',
-				link: state.id ? '/templates/' + state.id : undefined,
-			},
-			{
-				name: 'Editing',
-			},
-		];
+		{
+			name: 'Templates',
+			link: '/templates',
+		},
+		{
+			name: state.template?.name ?? '...',
+			link: state.id ? '/templates/' + state.id : undefined,
+		},
+		{
+			name: 'Editing',
+		},
+	];
 
 	let body = (vnode) => {
 		if (!state.template) {

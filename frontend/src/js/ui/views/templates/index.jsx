@@ -106,59 +106,60 @@ export default () => {
 			<div className='ph3 pb3'>
 				{map(
 					groupBy(
-						store.data.templates?.filter((t) => (
+						store.data.templates?.filter(
+							(t) =>
 								state.search.length === 0 ||
 								t.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0 ||
 								t.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0
-							)),
+						),
 						'author'
 					),
 					(val, key) => (
-							<div className='w-100 mb3'>
-								<div className='mb2 f5'>
-									Templates by <b>{key}</b>
-								</div>
-								<div className='flex flex-wrap'>
-									{val.map((t, i) => (
-											<div className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}>
-												<div className='flex ba b--black-10 h4 mb2 bg-white'>
-													<div className='flex-shrink-0 ph1 mr2 br b--black-05 bg-black-05'>
-														<Preview
-															className='h-100'
-															content={state.templates['tmpl:' + t.author + '+' + t.name] ?? 'Rendering...'}
-															stylesheets={store.data.settings.stylesheets}
-															width={150}
-															scale={150 / store.data.settings.printerWidth}
-														/>
-													</div>
-													<div className='flex-grow-1 pv2 pr2 lh-solid flex flex-column justify-between'>
-														<div>
-															<div className='f5 mb2 flex justify-between items-center'>
-																{t.name}
+						<div className='w-100 mb3'>
+							<div className='mb2 f5'>
+								Templates by <b>{key}</b>
+							</div>
+							<div className='flex flex-wrap'>
+								{val.map((t, i) => (
+									<div className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}>
+										<div className='flex ba b--black-10 h4 mb2 bg-white'>
+											<div className='flex-shrink-0 ph1 mr2 br b--black-05 bg-black-05'>
+												<Preview
+													className='h-100'
+													content={state.templates['tmpl:' + t.author + '+' + t.name] ?? 'Rendering...'}
+													stylesheets={store.data.settings.stylesheets}
+													width={150}
+													scale={150 / store.data.settings.printerWidth}
+												/>
+											</div>
+											<div className='flex-grow-1 pv2 pr2 lh-solid flex flex-column justify-between'>
+												<div>
+													<div className='f5 mb2 flex justify-between items-center'>
+														{t.name}
 
-																<span className='f8 fw4 text-muted'>
-																	{t.author}/{t.slug}
-																</span>
-															</div>
-															<div className='divider' />
-															<div className='fw4 f7 black-50 mb1 lh-copy'>{t.description}</div>
-														</div>
-														<div className='flex justify-between items-end'>
-															<div className='lh-solid'>
-																<div className='f4 b'>{t.count}</div>
-																<span className='fw4 f6 black-50'>Entries</span>
-															</div>
-															<div className='btn' onclick={() => m.route.set(`/templates/tmpl:${t.author}+${t.slug}`)}>
-																Open Template
-															</div>
-														</div>
+														<span className='f8 fw4 text-muted'>
+															{t.author}/{t.slug}
+														</span>
+													</div>
+													<div className='divider' />
+													<div className='fw4 f7 black-50 mb1 lh-copy'>{t.description}</div>
+												</div>
+												<div className='flex justify-between items-end'>
+													<div className='lh-solid'>
+														<div className='f4 b'>{t.count}</div>
+														<span className='fw4 f6 black-50'>Entries</span>
+													</div>
+													<div className='btn' onclick={() => m.route.set(`/templates/tmpl:${t.author}+${t.slug}`)}>
+														Open Template
 													</div>
 												</div>
 											</div>
-										))}
-								</div>
+										</div>
+									</div>
+								))}
 							</div>
-						)
+						</div>
+					)
 				)}
 			</div>
 		);
@@ -168,22 +169,25 @@ export default () => {
 
 	let updateTemplates = () => {
 		Promise.all(
-			store.data.templates.map((t) => new Promise((resolve) => {
-					let id = 'tmpl:' + t.author + '+' + t.name;
-					render(t.printTemplate, { it: t.skeletonData, images: t.images })
-						.then((res) => {
-							resolve({
-								id,
-								template: res,
+			store.data.templates.map(
+				(t) =>
+					new Promise((resolve) => {
+						let id = 'tmpl:' + t.author + '+' + t.name;
+						render(t.printTemplate, { it: t.skeletonData, images: t.images })
+							.then((res) => {
+								resolve({
+									id,
+									template: res,
+								});
+							})
+							.catch(() => {
+								resolve({
+									id,
+									template: 'Template Error',
+								});
 							});
-						})
-						.catch(() => {
-							resolve({
-								id,
-								template: 'Template Error',
-							});
-						});
-				}))
+					})
+			)
 		).then((res) => {
 			state.templates = {};
 			res.forEach((res) => {

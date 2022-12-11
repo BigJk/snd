@@ -39,23 +39,24 @@ let pages = {
 };
 
 export default () => {
-	let menu = (active) => map(pages, (v, k) => (
-				<div
-					onclick={() => {
-						if (v.newPage) {
-							window.open('http://127.0.0.1:7123/#!/' + (v.url ?? k), 'targetWindow', `width=${v.width},height=${v.height}`);
-						} else {
-							m.route.set('/' + (v.url ?? k));
-						}
-					}}
-					className={`mh3 mb2 br2 ph2 pv1 hover-bg-primary hover-white pointer z-999 flex items-center justify-between mb1 f7 ${
-						active === k ? 'white bg-primary' : 'bg-white-05 white-60'
-					}`}
-				>
-					<div>{v.name}</div>
-					<i className={`ion ion-md-${v.icon}`} />
-				</div>
-			));
+	let menu = (active) =>
+		map(pages, (v, k) => (
+			<div
+				onclick={() => {
+					if (v.newPage) {
+						window.open('http://127.0.0.1:7123/#!/' + (v.url ?? k), 'targetWindow', `width=${v.width},height=${v.height}`);
+					} else {
+						m.route.set('/' + (v.url ?? k));
+					}
+				}}
+				className={`mh3 mb2 br2 ph2 pv1 hover-bg-primary hover-white pointer z-999 flex items-center justify-between mb1 f7 ${
+					active === k ? 'white bg-primary' : 'bg-white-05 white-60'
+				}`}
+			>
+				<div>{v.name}</div>
+				<i className={`ion ion-md-${v.icon}`} />
+			</div>
+		));
 
 	return {
 		view(vnode) {

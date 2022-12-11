@@ -1,5 +1,5 @@
-import '/css/style.scss';
 import '/css/dropdown.scss';
+import '/css/style.scss';
 import 'highlight.js/styles/default.css';
 import 'ionicons/dist/css/ionicons-core.css';
 import 'ionicons/dist/css/ionicons.css';

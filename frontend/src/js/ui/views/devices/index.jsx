@@ -22,10 +22,10 @@ export default () => {
 	fetch();
 
 	let controls = () => (
-			<div className='btn btn-primary' onclick={fetch}>
-				<i className='ion ion-md-refresh' />
-			</div>
-		);
+		<div className='btn btn-primary' onclick={fetch}>
+			<i className='ion ion-md-refresh' />
+		</div>
+	);
 
 	let body = () => {
 		if (!store.data.settings || !store.data.printer) {
@@ -65,30 +65,32 @@ export default () => {
 
 		return (
 			<div className='h-100 br1 bg-white overflow-auto ba b--black-10'>
-				{map(state.devices, (available, printerType) => map(available, (endpoint, name) => (
-							<div className='flex justify-between items-center pa2 bb b--black-05'>
-								<div className='lh-solid'>
-									<div className='f6 fw7 mb1'>{name}</div>
-									<div className='f7 black-50'>
-										({printerType}) {endpoint}
-									</div>
-								</div>
-								<div className='h2 flex justify-between items-center'>
-									<div
-										className='btn btn-success mr2'
-										onclick={() => {
-											store.data.settings.printerType = printerType;
-											store.data.settings.printerEndpoint = endpoint;
-											api.saveSettings(store.data.settings).then(() => {
-												success('Settings changed');
-											}, error);
-										}}
-									>
-										Use
-									</div>
+				{map(state.devices, (available, printerType) =>
+					map(available, (endpoint, name) => (
+						<div className='flex justify-between items-center pa2 bb b--black-05'>
+							<div className='lh-solid'>
+								<div className='f6 fw7 mb1'>{name}</div>
+								<div className='f7 black-50'>
+									({printerType}) {endpoint}
 								</div>
 							</div>
-						)))}
+							<div className='h2 flex justify-between items-center'>
+								<div
+									className='btn btn-success mr2'
+									onclick={() => {
+										store.data.settings.printerType = printerType;
+										store.data.settings.printerEndpoint = endpoint;
+										api.saveSettings(store.data.settings).then(() => {
+											success('Settings changed');
+										}, error);
+									}}
+								>
+									Use
+								</div>
+							</div>
+						</div>
+					))
+				)}
 			</div>
 		);
 	};

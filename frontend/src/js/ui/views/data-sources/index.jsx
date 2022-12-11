@@ -171,61 +171,61 @@ export default () => {
 	};
 
 	let body = () => (
-			<div className='ph3 pb3'>
-				{map(
-					groupBy(
-						store.data.sources?.filter((t) => state.search.length === 0 || t.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0),
-						'author'
-					),
-					(val, key) => (
-							<div className='w-100 mb3'>
-								<div className='mb2 f5'>
-									Sources by <b>{key}</b>
-								</div>
-								<div className='flex flex-wrap'>
-									{val.map((t, i) => (
-											<div className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}>
-												<div className='flex ba b--black-10 h4_5 mb2 bg-white'>
-													<div className='flex-grow-1 pv2 ph2 lh-solid flex flex-column justify-between'>
-														<div>
-															<div className='f5 mb2 flex justify-between items-center'>
-																{t.name}
+		<div className='ph3 pb3'>
+			{map(
+				groupBy(
+					store.data.sources?.filter((t) => state.search.length === 0 || t.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0),
+					'author'
+				),
+				(val, key) => (
+					<div className='w-100 mb3'>
+						<div className='mb2 f5'>
+							Sources by <b>{key}</b>
+						</div>
+						<div className='flex flex-wrap'>
+							{val.map((t, i) => (
+								<div className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}>
+									<div className='flex ba b--black-10 h4_5 mb2 bg-white'>
+										<div className='flex-grow-1 pv2 ph2 lh-solid flex flex-column justify-between'>
+											<div>
+												<div className='f5 mb2 flex justify-between items-center'>
+													{t.name}
 
-																<span className='f8 fw4 text-muted'>
-																	{t.author}/{t.slug}
-																</span>
-															</div>
-															<div className='divider' />
-															<div className='fw4 f7 black-50 mb1 lh-copy'>{t.description}</div>
-														</div>
-														<div className='flex justify-between items-end'>
-															<div className='lh-solid'>
-																<div className='f4 b'>{t.count}</div>
-																<span className='fw4 f6 black-50'>Entries</span>
-															</div>
-															<div
-																className='btn btn-error'
-																onclick={() =>
-																	dialogWarning(`Do you really want to delete the '${t.name}' source ?`).then(
-																		api.deleteSource(`ds:${t.author}+${t.slug}`).then(() => {
-																			store.pub('reload_sources');
-																		})
-																	)
-																}
-															>
-																<i className='ion ion-md-close-circle-outline' />
-															</div>
-														</div>
-													</div>
+													<span className='f8 fw4 text-muted'>
+														{t.author}/{t.slug}
+													</span>
+												</div>
+												<div className='divider' />
+												<div className='fw4 f7 black-50 mb1 lh-copy'>{t.description}</div>
+											</div>
+											<div className='flex justify-between items-end'>
+												<div className='lh-solid'>
+													<div className='f4 b'>{t.count}</div>
+													<span className='fw4 f6 black-50'>Entries</span>
+												</div>
+												<div
+													className='btn btn-error'
+													onclick={() =>
+														dialogWarning(`Do you really want to delete the '${t.name}' source ?`).then(
+															api.deleteSource(`ds:${t.author}+${t.slug}`).then(() => {
+																store.pub('reload_sources');
+															})
+														)
+													}
+												>
+													<i className='ion ion-md-close-circle-outline' />
 												</div>
 											</div>
-										))}
+										</div>
+									</div>
 								</div>
-							</div>
-						)
-				)}
-			</div>
-		);
+							))}
+						</div>
+					</div>
+				)
+			)}
+		</div>
+	);
 
 	let updater = null;
 

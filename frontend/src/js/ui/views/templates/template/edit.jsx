@@ -27,21 +27,21 @@ export default () => {
 	};
 
 	let breadcrumbs = () => [
-			{
-				name: 'Templates',
-				link: '/templates',
-			},
-			{
-				name: state.template?.name ?? '...',
-				link: state.template ? '/templates/' + state.template.id : undefined,
-			},
-			{
-				name: state.entry?.name ?? '...',
-			},
-			{
-				name: 'Editing',
-			},
-		];
+		{
+			name: 'Templates',
+			link: '/templates',
+		},
+		{
+			name: state.template?.name ?? '...',
+			link: state.template ? '/templates/' + state.template.id : undefined,
+		},
+		{
+			name: state.entry?.name ?? '...',
+		},
+		{
+			name: 'Editing',
+		},
+	];
 
 	let body = (vnode) => {
 		if (!state.entry || !state.template || !store.there(['settings'])) {

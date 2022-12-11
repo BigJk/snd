@@ -113,7 +113,7 @@ export default () => {
 				}
 
 				// eslint-disable-next-line no-case-declarations
-				let isNum = (typeof obj === 'number');
+				let isNum = typeof obj === 'number';
 
 				return (
 					<div className='form-group mw-50 mr3'>
@@ -160,21 +160,21 @@ export default () => {
 								Create New
 							</div>
 							{map(obj, (v, k) => (
-									<div className='panel mb2 pt2'>
-										<div className='panel-body'>{walkRecursive(curPath + '[' + k + ']', k)}</div>
-										<div className='panel-footer'>
-											<div
-												className='btn btn-error'
-												onclick={() => {
-													obj.splice(k, 1);
-													updateRender();
-												}}
-											>
-												Delete
-											</div>
+								<div className='panel mb2 pt2'>
+									<div className='panel-body'>{walkRecursive(curPath + '[' + k + ']', k)}</div>
+									<div className='panel-footer'>
+										<div
+											className='btn btn-error'
+											onclick={() => {
+												obj.splice(k, 1);
+												updateRender();
+											}}
+										>
+											Delete
 										</div>
 									</div>
-								))}
+								</div>
+							))}
 						</div>
 					);
 				}

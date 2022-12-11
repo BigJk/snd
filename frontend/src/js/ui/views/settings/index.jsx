@@ -152,17 +152,17 @@ export default () => {
 						</div>
 						<Form className='w-100 pt2'>
 							{store.data.settings.stylesheets?.map((s, i) => (
-									<div className='flex justify-between'>
-										<Input
-											value={s}
-											placeholder='e.g. http://unpkg.com/style.css'
-											oninput={binder.inputString(store.data.settings.stylesheets, i)}
-										/>
-										<div className='btn btn-error ml2' onclick={() => store.data.settings.stylesheets.splice(i, 1)}>
-											Delete
-										</div>
+								<div className='flex justify-between'>
+									<Input
+										value={s}
+										placeholder='e.g. http://unpkg.com/style.css'
+										oninput={binder.inputString(store.data.settings.stylesheets, i)}
+									/>
+									<div className='btn btn-error ml2' onclick={() => store.data.settings.stylesheets.splice(i, 1)}>
+										Delete
 									</div>
-								))}
+								</div>
+							))}
 						</Form>
 						<div className='btn btn-success btn-sm' onclick={() => store.data.settings.stylesheets.push('')}>
 							New Entry

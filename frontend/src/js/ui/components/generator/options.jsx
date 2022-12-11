@@ -7,25 +7,25 @@ export default {
 		selected: 'Option A',
 	},
 	view: () => ({
-			oninit() {},
-			view(vnode) {
-				return (
-					<div>
-						{vnode.attrs.inEdit ? (
-							<Input
-								value={vnode.attrs.value.choices.join(',')}
-								label={'Choices'}
-								oninput={(e) => vnode.attrs.oninput({ ...vnode.attrs.value, choices: e.target.value.split(',') })}
-							></Input>
-						) : null}
-						<Select
-							label={vnode.attrs.label}
-							keys={vnode.attrs.value.choices}
-							selected={vnode.attrs.value.selected}
-							oninput={(e) => vnode.attrs.oninput({ ...vnode.attrs.value, selected: e.target.value })}
-						></Select>
-					</div>
-				);
-			},
-		}),
+		oninit() {},
+		view(vnode) {
+			return (
+				<div>
+					{vnode.attrs.inEdit ? (
+						<Input
+							value={vnode.attrs.value.choices.join(',')}
+							label={'Choices'}
+							oninput={(e) => vnode.attrs.oninput({ ...vnode.attrs.value, choices: e.target.value.split(',') })}
+						></Input>
+					) : null}
+					<Select
+						label={vnode.attrs.label}
+						keys={vnode.attrs.value.choices}
+						selected={vnode.attrs.value.selected}
+						oninput={(e) => vnode.attrs.oninput({ ...vnode.attrs.value, selected: e.target.value })}
+					></Select>
+				</div>
+			);
+		},
+	}),
 };

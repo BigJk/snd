@@ -1,28 +1,28 @@
 export default () => {
 	let breadcrumbs = (b) => (
-			<ul className='breadcrumb f5'>
-				{b.map((e, i) => {
-					if (i < b.length - 1) {
-						if (e.link) {
-							return (
-								<span className='mr1'>
-									<span className='black-60 dim pointer mr1' onclick={() => m.route.set(e.link)}>
-										{e.name}
-									</span>
-									—
-								</span>
-							);
-						}
+		<ul className='breadcrumb f5'>
+			{b.map((e, i) => {
+				if (i < b.length - 1) {
+					if (e.link) {
 						return (
 							<span className='mr1'>
-								<span className='black-60 mr1'>{e.name}</span>—
+								<span className='black-60 dim pointer mr1' onclick={() => m.route.set(e.link)}>
+									{e.name}
+								</span>
+								—
 							</span>
 						);
 					}
-					return <span className='black-80'>{e.name}</span>;
-				})}
-			</ul>
-		);
+					return (
+						<span className='mr1'>
+							<span className='black-60 mr1'>{e.name}</span>—
+						</span>
+					);
+				}
+				return <span className='black-80'>{e.name}</span>;
+			})}
+		</ul>
+	);
 
 	return {
 		view(vnode) {

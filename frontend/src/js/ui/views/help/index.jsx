@@ -100,18 +100,18 @@ export default () => {
 							<div className='f5'>Help Pages</div>
 							<ul className='nav'>
 								{pages.map((val, i) => (
-										<li className={`nav-item ${i === state.active ? 'active' : ''}`}>
-											<a
-												href='#'
-												onclick={(e) => {
-													state.active = i;
-													e.preventDefault();
-												}}
-											>
-												{val.name}
-											</a>
-										</li>
-									))}
+									<li className={`nav-item ${i === state.active ? 'active' : ''}`}>
+										<a
+											href='#'
+											onclick={(e) => {
+												state.active = i;
+												e.preventDefault();
+											}}
+										>
+											{val.name}
+										</a>
+									</li>
+								))}
 							</ul>
 						</div>
 						<div className='markdown flex-grow-1'>{m.trust(markdown.render(docs['/docs/' + pages[state.active].doc]))}</div>

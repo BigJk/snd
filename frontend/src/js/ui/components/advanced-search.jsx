@@ -258,93 +258,93 @@ export default () => {
 						</div>
 					</div>
 					{map(state.filter, (con, key) => (
-							<div className='pa2 ba br1 b--black-10 mt2 bg-white-20'>
-								<div className='flex justify-between items-center mb2'>
-									<span className='b'>{pathToName(key)}</span>
-									<i
-										className='ion ion-md-close red f5 pointer dim'
-										onclick={() => {
-											delete state.filter[key];
-											triggerChange();
-										}}
-									/>
-								</div>
-								<div className='flex'>
-									<Select
-										selected={con.selectedSuitable}
-										keys={con.suitable.map((_, i) => i)}
-										names={con.suitable.map((s) => s.name)}
-										oninput={(e) => (con.selectedSuitable = parseInt(e.target.value))}
-									/>
-									<div
-										className='btn btn-primary ml2'
-										onclick={() => {
-											if (con.selectedSuitable === null) {
-												return;
-											}
+						<div className='pa2 ba br1 b--black-10 mt2 bg-white-20'>
+							<div className='flex justify-between items-center mb2'>
+								<span className='b'>{pathToName(key)}</span>
+								<i
+									className='ion ion-md-close red f5 pointer dim'
+									onclick={() => {
+										delete state.filter[key];
+										triggerChange();
+									}}
+								/>
+							</div>
+							<div className='flex'>
+								<Select
+									selected={con.selectedSuitable}
+									keys={con.suitable.map((_, i) => i)}
+									names={con.suitable.map((s) => s.name)}
+									oninput={(e) => (con.selectedSuitable = parseInt(e.target.value))}
+								/>
+								<div
+									className='btn btn-primary ml2'
+									onclick={() => {
+										if (con.selectedSuitable === null) {
+											return;
+										}
 
-											con.constrains.push({
-												base: con.suitable[con.selectedSuitable],
-												args: con.suitable[con.selectedSuitable].args.map(() => null),
-												negate: false,
-											});
+										con.constrains.push({
+											base: con.suitable[con.selectedSuitable],
+											args: con.suitable[con.selectedSuitable].args.map(() => null),
+											negate: false,
+										});
 
-											triggerChange();
-										}}
-									>
-										Add
-									</div>
-								</div>
-								<div>
-									{map(con.constrains, (c, i) => (
-											<div className='bt b--black-10 pt2 mt2'>
-												<div className='flex justify-between items-center'>
-													<span className='b'>{c.base.name}</span>{' '}
-													<i
-														className='ion ion-md-close red f5 pointer dim'
-														onclick={() => {
-															con.constrains.splice(i, 1);
-															triggerChange();
-														}}
-													/>
-												</div>
-												<div className='flex w-100'>
-													<div className='flex-grow-1'>
-														{map(c.base.args, (input, i) => {
-															switch (input.type) {
-																case 'string':
-																	return (
-																		<Input
-																			value={c.args[i]}
-																			label={input.name}
-																			oninput={binder.inputString(c, 'args[' + i + ']', triggerChange)}
-																		/>
-																	);
-																case 'number':
-																	return (
-																		<Input
-																			value={c.args[i]}
-																			label={input.name}
-																			oninput={binder.inputNumber(c, 'args[' + i + ']', triggerChange)}
-																		/>
-																	);
-															}
-														})}
-													</div>
-													<Form className='form-no-margin ml2 flex-shrink-0' horizontal={false}>
-														<Switch
-															label='Negate'
-															labelCol={5}
-															value={c.negate}
-															oninput={binder.checkbox(c, 'negate', triggerChange)}
-														/>
-													</Form>
-												</div>
-											</div>
-										))}
+										triggerChange();
+									}}
+								>
+									Add
 								</div>
 							</div>
-						))}
+							<div>
+								{map(con.constrains, (c, i) => (
+									<div className='bt b--black-10 pt2 mt2'>
+										<div className='flex justify-between items-center'>
+											<span className='b'>{c.base.name}</span>{' '}
+											<i
+												className='ion ion-md-close red f5 pointer dim'
+												onclick={() => {
+													con.constrains.splice(i, 1);
+													triggerChange();
+												}}
+											/>
+										</div>
+										<div className='flex w-100'>
+											<div className='flex-grow-1'>
+												{map(c.base.args, (input, i) => {
+													switch (input.type) {
+														case 'string':
+															return (
+																<Input
+																	value={c.args[i]}
+																	label={input.name}
+																	oninput={binder.inputString(c, 'args[' + i + ']', triggerChange)}
+																/>
+															);
+														case 'number':
+															return (
+																<Input
+																	value={c.args[i]}
+																	label={input.name}
+																	oninput={binder.inputNumber(c, 'args[' + i + ']', triggerChange)}
+																/>
+															);
+													}
+												})}
+											</div>
+											<Form className='form-no-margin ml2 flex-shrink-0' horizontal={false}>
+												<Switch
+													label='Negate'
+													labelCol={5}
+													value={c.negate}
+													oninput={binder.checkbox(c, 'negate', triggerChange)}
+												/>
+											</Form>
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+					))}
 				</div>
 			);
 		},

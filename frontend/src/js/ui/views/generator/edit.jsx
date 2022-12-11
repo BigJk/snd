@@ -20,17 +20,17 @@ export default () => {
 	};
 
 	let breadcrumbs = () => [
-			{
-				name: 'Generators',
-				link: '/generators',
-			},
-			{
-				name: state.generator?.name ?? '...',
-			},
-			{
-				name: 'Editing',
-			},
-		];
+		{
+			name: 'Generators',
+			link: '/generators',
+		},
+		{
+			name: state.generator?.name ?? '...',
+		},
+		{
+			name: 'Editing',
+		},
+	];
 
 	let body = (vnode) => {
 		if (!state.generator) {

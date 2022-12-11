@@ -60,10 +60,7 @@ export default () => {
 		});
 
 		// remove old fields that are not present in the config anymore.
-		state.configs[id] = pickBy(state.configs[id], (val, key) => (
-				key === 'seed' ||
-				g.config.some((conf) => conf.key === key)
-			));
+		state.configs[id] = pickBy(state.configs[id], (val, key) => key === 'seed' || g.config.some((conf) => conf.key === key));
 	};
 
 	let rerender = (g) => {
@@ -206,211 +203,210 @@ export default () => {
 					<div className='pa3 flex flex-wrap'>
 						{map(
 							groupBy(
-								store.data.generators?.filter((t) => (
+								store.data.generators?.filter(
+									(t) =>
 										state.search.length === 0 ||
 										t.name.toLowerCase().indexOf(state.search.toLowerCase()) >= 0 ||
 										t.author.toLowerCase().indexOf(state.search.toLowerCase()) >= 0
-									)),
+								),
 								'author'
 							),
 							(val, key) => (
-									<div className='w-100 mb3'>
-										<div className='mb2 f5'>
-											Generators by <b>{key}</b>
-										</div>
-										<div className='flex flex-wrap'>
-											{val.map((g) => {
-												if (
-													g.name.toLowerCase().indexOf(state.search.toLowerCase()) === -1 &&
-													g.author.toLowerCase().indexOf(state.search.toLowerCase()) === -1
-												) {
-													return;
-												}
+								<div className='w-100 mb3'>
+									<div className='mb2 f5'>
+										Generators by <b>{key}</b>
+									</div>
+									<div className='flex flex-wrap'>
+										{val.map((g) => {
+											if (
+												g.name.toLowerCase().indexOf(state.search.toLowerCase()) === -1 &&
+												g.author.toLowerCase().indexOf(state.search.toLowerCase()) === -1
+											) {
+												return;
+											}
 
-												let id = `gen:${g.author}+${g.slug}`;
+											let id = `gen:${g.author}+${g.slug}`;
 
-												sanitizeConfig(g);
+											sanitizeConfig(g);
 
-												if (state.rendered[id] === undefined) {
-													rerender(g).then(m.redraw);
-												}
+											if (state.rendered[id] === undefined) {
+												rerender(g).then(m.redraw);
+											}
 
-												if (state.settings[id] === undefined) {
-													state.settings[id] = {
-														open: false,
-														reroll: false,
-														amount: 1,
-													};
-												}
+											if (state.settings[id] === undefined) {
+												state.settings[id] = {
+													open: false,
+													reroll: false,
+													amount: 1,
+												};
+											}
 
-												if (state.entries[id] === undefined) {
-													api.getEntriesWithSources(`gen:${g.author}+${g.slug}`).then((entries) => {
-														state.entries[id] = entries ?? [];
-													});
-												}
+											if (state.entries[id] === undefined) {
+												api.getEntriesWithSources(`gen:${g.author}+${g.slug}`).then((entries) => {
+													state.entries[id] = entries ?? [];
+												});
+											}
 
-												return (
-													<div className='w-100 flex mb3'>
-														<div
-															className={`flex-grow-1 ${state.settings[id].open ? 'mr3' : ''} ba b--black-10 bg-white`}
-														>
-															<div className='flex-grow-1 pv2 ph2 lh-solid flex flex-column justify-between'>
-																<div>
-																	<div
-																		className={`f5 ${
-																			state.settings[id].open ? 'mb2' : ''
-																		} flex justify-between lh-copy`}
-																	>
-																		<div className='flex items-center'>
-																			<i
-																				className={`ion ${
-																					state.settings[id].open
-																						? 'ion-md-arrow-dropup'
-																						: 'ion-md-arrow-dropdown'
-																				} f3 mh3 dim pointer`}
-																				onclick={() => (state.settings[id].open = !state.settings[id].open)}
-																			/>
-																			<div>
-																				<div className='flex items-center'>{g.name}</div>
-																				<div className='fw4 f7 black-50'>{g.description}</div>
-																			</div>
+											return (
+												<div className='w-100 flex mb3'>
+													<div className={`flex-grow-1 ${state.settings[id].open ? 'mr3' : ''} ba b--black-10 bg-white`}>
+														<div className='flex-grow-1 pv2 ph2 lh-solid flex flex-column justify-between'>
+															<div>
+																<div
+																	className={`f5 ${
+																		state.settings[id].open ? 'mb2' : ''
+																	} flex justify-between lh-copy`}
+																>
+																	<div className='flex items-center'>
+																		<i
+																			className={`ion ${
+																				state.settings[id].open
+																					? 'ion-md-arrow-dropup'
+																					: 'ion-md-arrow-dropdown'
+																			} f3 mh3 dim pointer`}
+																			onclick={() => (state.settings[id].open = !state.settings[id].open)}
+																		/>
+																		<div>
+																			<div className='flex items-center'>{g.name}</div>
+																			<div className='fw4 f7 black-50'>{g.description}</div>
 																		</div>
-
-																		<span className='f8 fw4 text-muted flex-shrink-0 ml3'>
-																			{g.author}/{g.slug}
-																		</span>
 																	</div>
-																	{state.settings[id].open ? <div className='divider' /> : null}
+
+																	<span className='f8 fw4 text-muted flex-shrink-0 ml3'>
+																		{g.author}/{g.slug}
+																	</span>
 																</div>
-																{state.settings[id].open
-																	? [
+																{state.settings[id].open ? <div className='divider' /> : null}
+															</div>
+															{state.settings[id].open
+																? [
+																		<div
+																			className='ba br2 b--black-05 mb2 overflow-auto ph3 pv2'
+																			style='height: 400px;'
+																		>
+																			<GeneratorConfig
+																				config={g.config}
+																				value={state.configs[id]}
+																				onchange={(key, val) => {
+																					state.configs[id][key] = val;
+																					rerender(g).then(m.redraw);
+																				}}
+																			></GeneratorConfig>
+																		</div>,
+																		<div className='flex'>
 																			<div
-																				className='ba br2 b--black-05 mb2 overflow-auto ph3 pv2'
-																				style='height: 400px;'
-																			>
-																				<GeneratorConfig
-																					config={g.config}
-																					value={state.configs[id]}
-																					onchange={(key, val) => {
-																						state.configs[id][key] = val;
+																				className='flex-grow-1 btn btn-success'
+																				onclick={() => {
+																					for (let j = 0; j < state.settings[id].amount; j++) {
+																						let config = clone(state.configs[id]);
+
+																						if (j > 0) {
+																							config.seed += '_' + j;
+																						}
+
+																						render(g, null, config)
+																							.then((res) => {
+																								api.print(res)
+																									.then(() => success('Printing send'))
+																									.catch(error);
+																							})
+																							.catch(error);
+																					}
+
+																					if (state.settings[id].reroll) {
+																						state.configs[id]['seed'] = Math.ceil(
+																							Math.random() * 1000000000
+																						);
 																						rerender(g).then(m.redraw);
-																					}}
-																				></GeneratorConfig>
-																			</div>,
-																			<div className='flex'>
+																					}
+																				}}
+																			>
+																				<i className='ion ion-md-print mr1' /> Print
+																			</div>
+																			<div className='divider-vert' />
+																			<Tooltip content={'Edit'}>
 																				<div
-																					className='flex-grow-1 btn btn-success'
+																					className='btn btn-primary w2 mr2'
+																					onclick={() =>
+																						m.route.set(`/generators/gen:${g.author}+${g.slug}/edit`)
+																					}
+																				>
+																					<i className='ion ion-md-settings' />
+																				</div>
+																			</Tooltip>
+																			<Tooltip content={'Export Options'}>
+																				<div
+																					className='btn btn-primary w2 mr2'
+																					onclick={() => (state.export = { show: true, g: g, id: id })}
+																				>
+																					<i className='ion ion-md-open' />
+																				</div>
+																			</Tooltip>
+																			<Tooltip content={'API Information'}>
+																				<div
+																					className={`btn btn-primary w2 mr2`}
 																					onclick={() => {
-																						for (let j = 0; j < state.settings[id].amount; j++) {
-																							let config = clone(state.configs[id]);
-
-																							if (j > 0) {
-																								config.seed += '_' + j;
-																							}
-
-																							render(g, null, config)
-																								.then((res) => {
-																									api.print(res)
-																										.then(() => success('Printing send'))
-																										.catch(error);
-																								})
-																								.catch(error);
-																						}
-
-																						if (state.settings[id].reroll) {
-																							state.configs[id]['seed'] = Math.ceil(
-																								Math.random() * 1000000000
-																							);
-																							rerender(g).then(m.redraw);
-																						}
+																						state.info.id = id;
+																						state.info.show = true;
 																					}}
 																				>
-																					<i className='ion ion-md-print mr1' /> Print
+																					<i className={`ion ion-md-information`} />
 																				</div>
-																				<div className='divider-vert' />
-																				<Tooltip content={'Edit'}>
-																					<div
-																						className='btn btn-primary w2 mr2'
-																						onclick={() =>
-																							m.route.set(`/generators/gen:${g.author}+${g.slug}/edit`)
-																						}
-																					>
-																						<i className='ion ion-md-settings' />
-																					</div>
-																				</Tooltip>
-																				<Tooltip content={'Export Options'}>
-																					<div
-																						className='btn btn-primary w2 mr2'
-																						onclick={() => (state.export = { show: true, g: g, id: id })}
-																					>
-																						<i className='ion ion-md-open' />
-																					</div>
-																				</Tooltip>
-																				<Tooltip content={'API Information'}>
-																					<div
-																						className={`btn btn-primary w2 mr2`}
-																						onclick={() => {
-																							state.info.id = id;
-																							state.info.show = true;
-																						}}
-																					>
-																						<i className={`ion ion-md-information`} />
-																					</div>
-																				</Tooltip>
-																				<Tooltip content={'Delete'}>
-																					<div
-																						className='btn btn-error w2'
-																						onclick={() =>
-																							dialogWarning(
-																								`Do you really want to delete the '${g.name}' generator?`
-																							).then(() =>
-																								api.deleteGenerator(id).then(() => {
-																									delete state.configs[id];
-																									delete state.rendered[id];
-																									store.pub('reload_generators');
-																								})
-																							)
-																						}
-																					>
-																						<i className='ion ion-md-close-circle' />
-																					</div>
-																				</Tooltip>
-																			</div>,
-																			<div className='flex'>
-																				<div className='w5 mr3'>
-																					<Input
-																						label='Amount to Generate'
-																						value={state.settings[id].amount}
-																						oninput={binder.inputNumber(state.settings[id], 'amount')}
-																					></Input>
+																			</Tooltip>
+																			<Tooltip content={'Delete'}>
+																				<div
+																					className='btn btn-error w2'
+																					onclick={() =>
+																						dialogWarning(
+																							`Do you really want to delete the '${g.name}' generator?`
+																						).then(() =>
+																							api.deleteGenerator(id).then(() => {
+																								delete state.configs[id];
+																								delete state.rendered[id];
+																								store.pub('reload_generators');
+																							})
+																						)
+																					}
+																				>
+																					<i className='ion ion-md-close-circle' />
 																				</div>
-																				<Switch
-																					label='Reroll Seed'
-																					value={state.settings[id].reroll}
-																					oninput={binder.checkbox(state.settings[id], 'reroll')}
-																				></Switch>
-																			</div>,
-																		]
-																	: null}
-															</div>
+																			</Tooltip>
+																		</div>,
+																		<div className='flex'>
+																			<div className='w5 mr3'>
+																				<Input
+																					label='Amount to Generate'
+																					value={state.settings[id].amount}
+																					oninput={binder.inputNumber(state.settings[id], 'amount')}
+																				></Input>
+																			</div>
+																			<Switch
+																				label='Reroll Seed'
+																				value={state.settings[id].reroll}
+																				oninput={binder.checkbox(state.settings[id], 'reroll')}
+																			></Switch>
+																		</div>,
+																  ]
+																: null}
 														</div>
-														{state.settings[id].open ? (
-															<div className='flex-shrink-0'>
-																<Preview
-																	className='br1 ba b--black-10 bg-black-05 w-100 h-100'
-																	stylesheets={store.data.settings.stylesheets}
-																	width={350}
-																	scale={350 / store.data.settings.printerWidth}
-																	content={state.rendered[id]}
-																/>
-															</div>
-														) : null}
 													</div>
-												);
-											})}
-										</div>
+													{state.settings[id].open ? (
+														<div className='flex-shrink-0'>
+															<Preview
+																className='br1 ba b--black-10 bg-black-05 w-100 h-100'
+																stylesheets={store.data.settings.stylesheets}
+																width={350}
+																scale={350 / store.data.settings.printerWidth}
+																content={state.rendered[id]}
+															/>
+														</div>
+													) : null}
+												</div>
+											);
+										})}
 									</div>
-								)
+								</div>
+							)
 						)}
 					</div>
 					<ModalImport

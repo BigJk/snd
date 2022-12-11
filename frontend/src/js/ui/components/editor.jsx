@@ -114,13 +114,13 @@ export default () => {
 					from: cursor,
 					to: cursor,
 					list: map(state.snippets, (v) => ({
-							text: v.content,
-							render: function (elt) {
-								const wrapper = document.createElement('div');
-								m.render(wrapper, <div>{v.name}</div>);
-								elt.appendChild(wrapper);
-							},
-						})),
+						text: v.content,
+						render: function (elt) {
+							const wrapper = document.createElement('div');
+							m.render(wrapper, <div>{v.name}</div>);
+							elt.appendChild(wrapper);
+						},
+					})),
 				};
 			},
 		});

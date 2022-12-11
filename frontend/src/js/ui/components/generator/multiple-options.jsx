@@ -10,59 +10,59 @@ export default {
 		selected: ['Option A'],
 	},
 	view: () => ({
-			oninit() {},
-			view(vnode) {
-				return (
-					<div>
-						{vnode.attrs.inEdit
-							? [
-									<Input
-										value={vnode.attrs.value.choices.join(',')}
-										label={'Choices'}
-										oninput={(e) => vnode.attrs.oninput({ ...vnode.attrs.value, choices: e.target.value.split(',') })}
-									></Input>,
-									<Switch
-										label='Allow Duplicate'
-										labelCol={5}
-										value={vnode.attrs.value.allowDuplicate}
-										oninput={(e) =>
-											vnode.attrs.oninput({
-												...vnode.attrs.value,
-												selected: e.target.checked ? vnode.attrs.value.selected : uniq(vnode.attrs.value.selected),
-												allowDuplicate: e.target.checked,
-											})
-										}
-									></Switch>,
-								]
-							: null}
-						<Select
-							label={vnode.attrs.label}
-							keys={vnode.attrs.value.choices}
-							oninput={(e) =>
-								vnode.attrs.oninput({
-									...vnode.attrs.value,
-									selected: vnode.attrs.value.allowDuplicate
-										? [...vnode.attrs.value.selected, e.target.value]
-										: uniq([...vnode.attrs.value.selected, e.target.value]),
-								})
-							}
-						></Select>
-						{vnode.attrs.value.selected.map((v, i) => (
-								<div className='dib mr2 mb2 label label-primary'>
-									<span className='mr2'>{v}</span>
-									<i
-										className='ion ion-md-close pointer dim'
-										onclick={() =>
-											vnode.attrs.oninput({
-												...vnode.attrs.value,
-												selected: vnode.attrs.value.selected.filter((_, j) => j !== i),
-											})
-										}
-									></i>
-								</div>
-							))}
-					</div>
-				);
-			},
-		}),
+		oninit() {},
+		view(vnode) {
+			return (
+				<div>
+					{vnode.attrs.inEdit
+						? [
+								<Input
+									value={vnode.attrs.value.choices.join(',')}
+									label={'Choices'}
+									oninput={(e) => vnode.attrs.oninput({ ...vnode.attrs.value, choices: e.target.value.split(',') })}
+								></Input>,
+								<Switch
+									label='Allow Duplicate'
+									labelCol={5}
+									value={vnode.attrs.value.allowDuplicate}
+									oninput={(e) =>
+										vnode.attrs.oninput({
+											...vnode.attrs.value,
+											selected: e.target.checked ? vnode.attrs.value.selected : uniq(vnode.attrs.value.selected),
+											allowDuplicate: e.target.checked,
+										})
+									}
+								></Switch>,
+						  ]
+						: null}
+					<Select
+						label={vnode.attrs.label}
+						keys={vnode.attrs.value.choices}
+						oninput={(e) =>
+							vnode.attrs.oninput({
+								...vnode.attrs.value,
+								selected: vnode.attrs.value.allowDuplicate
+									? [...vnode.attrs.value.selected, e.target.value]
+									: uniq([...vnode.attrs.value.selected, e.target.value]),
+							})
+						}
+					></Select>
+					{vnode.attrs.value.selected.map((v, i) => (
+						<div className='dib mr2 mb2 label label-primary'>
+							<span className='mr2'>{v}</span>
+							<i
+								className='ion ion-md-close pointer dim'
+								onclick={() =>
+									vnode.attrs.oninput({
+										...vnode.attrs.value,
+										selected: vnode.attrs.value.selected.filter((_, j) => j !== i),
+									})
+								}
+							></i>
+						</div>
+					))}
+				</div>
+			);
+		},
+	}),
 };

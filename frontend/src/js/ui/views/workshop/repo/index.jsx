@@ -62,20 +62,27 @@ export default function () {
 		},
 	];
 
-	let selectAuthor = (i) => {
-		if (anyLoading()) return;
-
-		state.selectedAuthor = i;
+	let resetAuthor = () => {
+		state.selectedAuthor = null;
 		state.selectedRepo = null;
 		state.selectedVersion = null;
 		state.repos = [];
 		state.packages = [];
+	};
+
+	let selectAuthor = (i) => {
+		if (anyLoading()) return;
+
+		resetAuthor();
+		state.selectedAuthor = i;
 		state.loading[1] = true;
 
-		Promise.all(state.pack.entries[i].repos.map((repo) => api.getRepo(repo))).then((res) => {
-			state.repos = res;
-			state.loading[1] = false;
-		});
+		Promise.all(state.pack.entries[i].repos.map((repo) => api.getRepo(repo)))
+			.then((res) => {
+				state.repos = res;
+			})
+			.catch(error)
+			.then(() => (state.loading[1] = false));
 	};
 
 	let openRepo = (rep, i) => {
@@ -94,10 +101,13 @@ export default function () {
 		state.loading[2] = true;
 
 		state.selectedVersion = ver;
-		api.getPackages(state.repos[state.selectedRepo].url, state.selectedVersion).then((packages) => {
-			state.packages = packages;
-			state.loading[2] = false;
-		});
+		api
+			.getPackages(state.repos[state.selectedRepo].url, state.selectedVersion)
+			.then((packages) => {
+				state.packages = packages;
+			})
+			.catch(error)
+			.then(() => (state.loading[2] = false));
 	};
 
 	let selectedRepo = () => {

@@ -10,7 +10,7 @@ export default () => ({
 					placeholder='121FA0GA...'
 					value={vnode.attrs.value.seed}
 					oninput={(e) => vnode.attrs.onchange('seed', e.target.value)}
-				></Input>{' '}
+				/>{' '}
 				<div className='mb2 o-70'>
 					A random seed will make the random number generator deterministic. The same seed will result in the same generated random values.
 				</div>

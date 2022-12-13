@@ -30,7 +30,7 @@ export default () => {
 		},
 		view(vnode) {
 			if (state.tmpl === null) {
-				return <div></div>;
+				return <div />;
 			}
 
 			return <div id='render-done'>{m.trust(state.tmpl)}</div>;

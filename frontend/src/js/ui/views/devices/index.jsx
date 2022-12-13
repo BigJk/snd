@@ -98,7 +98,7 @@ export default () => {
 	return {
 		view() {
 			return (
-				<Base active={'devices'}>
+				<Base active='devices'>
 					<div className='h-100 flex flex-column'>
 						<Header title='Devices' subtitle='List possible printing devices that have been found'>
 							{controls()}

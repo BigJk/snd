@@ -140,7 +140,7 @@ export default () => {
 												Open Template
 											</div>
 										}
-									></PreviewBox>
+									/>
 								))}
 							</div>
 						</div>
@@ -198,7 +198,7 @@ export default () => {
 		},
 		view(vnode) {
 			return (
-				<Base active={'templates'}>
+				<Base active='templates'>
 					<div className='w-100 h-100'>
 						<Header title='Templates' subtitle='List all awesome Templates' classes='pt2'>
 							<div className='btn btn-success mr2' onclick={() => m.route.set('/templates/new')}>
@@ -214,7 +214,7 @@ export default () => {
 						</Header>
 						{body()}
 						<ModalImport
-							type={'template'}
+							type='template'
 							show={state.importing.show}
 							loading={state.importing.loading}
 							onimport={onimport}
@@ -222,7 +222,7 @@ export default () => {
 								state.importing.show = false;
 								state.importing.loading = false;
 							}}
-						></ModalImport>
+						/>
 					</div>
 				</Base>
 			);

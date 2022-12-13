@@ -32,7 +32,7 @@ export default () => {
 		},
 		view(vnode) {
 			if (state.gen === null) {
-				return <div></div>;
+				return <div />;
 			}
 
 			return <div id='render-done'>{m.trust(state.gen)}</div>;

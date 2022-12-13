@@ -211,7 +211,7 @@ export default () => {
 															Open Template
 														</div>
 													}
-												></PreviewBox>
+												/>
 											);
 										})}
 									</div>
@@ -220,7 +220,7 @@ export default () => {
 						)}
 					</div>
 					<ModalImport
-						type={'generator'}
+						type='generator'
 						show={state.importing.show}
 						loading={state.importing.loading}
 						onimport={onimport}
@@ -228,7 +228,7 @@ export default () => {
 							state.importing.show = false;
 							state.importing.loading = false;
 						}}
-					></ModalImport>
+					/>
 				</Base>
 			);
 		},

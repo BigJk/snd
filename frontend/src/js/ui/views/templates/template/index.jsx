@@ -408,8 +408,8 @@ export default () => {
 								</div>
 							</Tooltip>
 							<Tooltip content='Additional Information'>
-								<div className={`btn btn-primary`} onclick={() => (state.showInfo = true)}>
-									<i className={`ion ion-md-information`} />
+								<div className='btn btn-primary' onclick={() => (state.showInfo = true)}>
+									<i className='ion ion-md-information' />
 								</div>
 							</Tooltip>
 							<div className='divider-vert' />
@@ -431,22 +431,22 @@ export default () => {
 							</Tooltip>
 						</Header>
 						{body(vnode)}
-						<LoadingFullscreen show={state.printing}></LoadingFullscreen>
+						<LoadingFullscreen show={state.printing} />
 						<ModalExport
-							type={'template'}
+							type='template'
 							show={state.showExport}
 							value={state.template}
 							onexport={onexport}
 							onclose={() => (state.showExport = false)}
-						></ModalExport>
-						<ModalInfo show={state.showInfo} id={vnode.attrs.id} onclose={() => (state.showInfo = false)}></ModalInfo>
+						/>
+						<ModalInfo show={state.showInfo} id={vnode.attrs.id} onclose={() => (state.showInfo = false)} />
 						<ModalSync
 							show={state.showSync}
 							active={state.syncActive}
 							onstart={startSync}
 							onstop={stopSync}
 							onclose={() => (state.showSync = false)}
-						></ModalSync>
+						/>
 					</div>
 				</Base>
 			);

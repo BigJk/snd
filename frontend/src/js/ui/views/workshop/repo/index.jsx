@@ -132,14 +132,14 @@ export default function () {
 					<Select
 						keys={Object.keys(state.repos[state.selectedRepo].versions)}
 						oninput={(e) => openRepoVersion(state.repos[state.selectedRepo].versions[e.target.value])}
-					></Select>
+					/>
 				</div>
 				{state.repos[state.selectedRepo].readme.length > 0 ? (
 					<div className='overflow-auto flex-shrink-0'>
 						<div className='bb ph3 b--black-10 overflow-auto'>
 							<div style={{ height: '300px' }}>
 								{m.trust(markdown.render(state.repos[state.selectedRepo].readme))}
-								<div className='pb3'></div>
+								<div className='pb3' />
 							</div>
 						</div>
 					</div>
@@ -205,7 +205,7 @@ export default function () {
 			return (
 				<Base active='workshop'>
 					<div className='h-100 flex flex-column overflow-auto'>
-						<Header breadcrumbs={breadcrumbs(vnode)} subtitle='Browse and download community made content.'></Header>
+						<Header breadcrumbs={breadcrumbs(vnode)} subtitle='Browse and download community made content.' />
 						<div className='ph3 pb3 flex-grow-1 overflow-auto'>
 							<div className='bg-white b--black-10 ba br1 h-100 flex'>
 								<div className='flex-shrink-0 br b--black-10 overflow-auto' style={{ width: '300px' }}>
@@ -221,7 +221,7 @@ export default function () {
 														<div className='f5 b'>{p.author}</div>
 													</div>
 													<div>
-														<i className='ion ion-md-briefcase f4'></i>
+														<i className='ion ion-md-briefcase f4' />
 													</div>
 												</div>
 											</div>

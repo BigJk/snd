@@ -6,7 +6,7 @@ export default {
 	view: () => ({
 		oninit() {},
 		view(vnode) {
-			return <Switch value={vnode.attrs.value} label={vnode.attrs.label} oninput={(e) => vnode.attrs.oninput(e.target.checked)}></Switch>;
+			return <Switch value={vnode.attrs.value} label={vnode.attrs.label} oninput={(e) => vnode.attrs.oninput(e.target.checked)} />;
 		},
 	}),
 };

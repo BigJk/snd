@@ -181,7 +181,7 @@ export default () => {
 									}
 									bottomRight={
 										<div>
-											<Tooltip content={'Export Options'}>
+											<Tooltip content='Export Options'>
 												<div
 													className='btn btn-primary w2 mr2'
 													onclick={() => {
@@ -207,7 +207,7 @@ export default () => {
 											</div>
 										</div>
 									}
-								></PreviewBox>
+								/>
 							))}
 						</div>
 					</div>
@@ -230,7 +230,7 @@ export default () => {
 		},
 		view(vnode) {
 			return (
-				<Base active={'dataSources'}>
+				<Base active='dataSources'>
 					<div className='h-100 flex flex-column'>
 						<Header title='Data Sources' subtitle='Manage collection of data.'>
 							<Tooltip content='Import'>
@@ -243,7 +243,7 @@ export default () => {
 						</Header>
 						{body()}
 						<ModalImport
-							type={'data source'}
+							type='data source'
 							show={state.importing.show}
 							onimport={onimport}
 							onclose={() => (state.importing.show = false)}
@@ -262,15 +262,15 @@ export default () => {
 									</div>
 								</div>
 							}
-						></ModalImport>
+						/>
 						<ModalExport
-							type={'data source'}
-							prefix={'ds_'}
+							type='data source'
+							prefix='ds_'
 							show={state.exporting.show}
 							value={state.exporting.ds}
 							onexport={onexport}
 							onclose={() => (state.exporting.show = false)}
-						></ModalExport>
+						/>
 					</div>
 				</Base>
 			);

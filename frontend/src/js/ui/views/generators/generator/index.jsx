@@ -139,12 +139,12 @@ export default function () {
 								state.config[key] = val;
 								updateRender().then(m.redraw);
 							}}
-						></GeneratorConfig>
+						/>
 					</div>
 					<div className='flex-shrink-0 pa3 bt b--black-05'>
 						<div className='flex'>
 							<div className='flex-grow-1 mr2'>
-								<Input value={state.amount} oninput={binder.inputNumber(state, 'amount')}></Input>
+								<Input value={state.amount} oninput={binder.inputNumber(state, 'amount')} />
 							</div>
 							<div className='w-80 btn btn-success' onclick={print}>
 								<i className='ion ion-md-print mr1' /> Print
@@ -181,17 +181,17 @@ export default function () {
 							<div className='btn btn-primary mr2' onclick={() => m.route.set(`/generators/${vnode.attrs.id}/edit`)}>
 								Edit
 							</div>
-							<Tooltip content={'Export Options'}>
+							<Tooltip content='Export Options'>
 								<div className='btn btn-primary w2 mr2' onclick={() => (state.showExport = true)}>
 									<i className='ion ion-md-open' />
 								</div>
 							</Tooltip>
-							<Tooltip content={'API Information'}>
-								<div className={`btn btn-primary w2`} onclick={() => (state.showInfo = true)}>
-									<i className={`ion ion-md-information`} />
+							<Tooltip content='API Information'>
+								<div className='btn btn-primary w2' onclick={() => (state.showInfo = true)}>
+									<i className='ion ion-md-information' />
 								</div>
 							</Tooltip>
-							<div className='divider-vert'></div>
+							<div className='divider-vert' />
 							<Tooltip content='Delete'>
 								<div
 									className='btn btn-error w2'
@@ -209,16 +209,16 @@ export default function () {
 							</Tooltip>
 						</Header>
 						{body()}
-						<LoadingFullscreen show={state.printing}></LoadingFullscreen>
+						<LoadingFullscreen show={state.printing} />
 						<ModalExport
-							type={'generator'}
-							prefix={'gen_'}
+							type='generator'
+							prefix='gen_'
 							show={state.showExport}
 							value={state.gen}
 							onexport={onexport}
 							onclose={() => (state.showExport = false)}
-						></ModalExport>
-						<ModalInfo show={state.showInfo} id={vnode.attrs.id} config={state.config} onclose={() => (state.showInfo = false)}></ModalInfo>
+						/>
+						<ModalInfo show={state.showInfo} id={vnode.attrs.id} config={state.config} onclose={() => (state.showInfo = false)} />
 					</div>
 				</Base>
 			);

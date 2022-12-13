@@ -72,7 +72,7 @@ export default () => {
 							<div className='o-70 lh-copy mt1'>Use a comma seperated list of languages that should be used for spellchecking like "en-US, de".</div>
 						</Form>
 						<div className='w-50 mt3'>
-							<div className='divider'></div>
+							<div className='divider' />
 						</div>
 						<Form className='w-50 f7 black-70'>
 							<TextArea
@@ -140,19 +140,19 @@ export default () => {
 							<div className='divider' />
 							<Form className='w-100 form-no-margin' horizontal={true}>
 								<Switch
-									label={'Explicit Initialization'}
+									label='Explicit Initialization'
 									labelCol={4}
 									value={store.data.settings.commands.explicitInit}
 									oninput={binder.checkbox(store.data.settings.commands, 'explicitInit')}
 								/>
 								<Switch
-									label={'Force Standard Mode'}
+									label='Force Standard Mode'
 									labelCol={4}
 									value={store.data.settings.commands.forceStandardMode}
 									oninput={binder.checkbox(store.data.settings.commands, 'forceStandardMode')}
 								/>
 								<Switch
-									label={'Cut After Printing'}
+									label='Cut After Printing'
 									labelCol={4}
 									value={store.data.settings.commands.cut}
 									oninput={binder.checkbox(store.data.settings.commands, 'cut')}
@@ -210,7 +210,7 @@ export default () => {
 		},
 		view(vnode) {
 			return (
-				<Base active={'settings'}>
+				<Base active='settings'>
 					<div className='h-100 flex flex-column'>
 						<Header title='Settings' subtitle='Configure various aspects'>
 							<div

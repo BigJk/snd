@@ -18,9 +18,9 @@ export default {
 						? [
 								<Input
 									value={vnode.attrs.value.choices.join(',')}
-									label={'Choices'}
+									label='Choices'
 									oninput={(e) => vnode.attrs.oninput({ ...vnode.attrs.value, choices: e.target.value.split(',') })}
-								></Input>,
+								/>,
 								<Switch
 									label='Allow Duplicate'
 									labelCol={5}
@@ -32,7 +32,7 @@ export default {
 											allowDuplicate: e.target.checked,
 										})
 									}
-								></Switch>,
+								/>,
 						  ]
 						: null}
 					<Select
@@ -46,7 +46,7 @@ export default {
 									: uniq([...vnode.attrs.value.selected, e.target.value]),
 							})
 						}
-					></Select>
+					/>
 					{vnode.attrs.value.selected.map((v, i) => (
 						<div className='dib mr2 mb2 label label-primary'>
 							<span className='mr2'>{v}</span>
@@ -58,7 +58,7 @@ export default {
 										selected: vnode.attrs.value.selected.filter((_, j) => j !== i),
 									})
 								}
-							></i>
+							/>
 						</div>
 					))}
 				</div>

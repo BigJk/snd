@@ -9,13 +9,13 @@ export function ModalInfo() {
 				<Modal title='Information' onclose={vnode.attrs.onclose}>
 					<div className='mb1 b f5'>Template ID</div>
 					<div className='mb2'>This is the template id that is used in the Database.</div>
-					<Input value={vnode.attrs.id}></Input>
+					<Input value={vnode.attrs.id} />
 					<div className='mt3 b mb1 f5'>API Print Endpoint</div>
 					<div className='mb2'>
 						This is the local endpoint if you want to remotely print this template. Just do a POST request containing the JSON encoded data that
 						should be inserted.
 					</div>
-					<Input value={location.origin + '/api/extern/print/template/' + vnode.attrs.id}></Input>
+					<Input value={location.origin + '/api/extern/print/template/' + vnode.attrs.id} />
 				</Modal>
 			);
 		},

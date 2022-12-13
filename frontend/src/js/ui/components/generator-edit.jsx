@@ -219,14 +219,14 @@ export default () => {
 				{state.target.config.map((val, i) => [
 					<div className='flex w-100'>
 						<div className='w-50 flex-shrink-0 mr3'>
-							<Input label='Key' placeholder='Key' value={val.key} oninput={binder.inputString(val, 'key', updateRenderSanitize)}></Input>
-							<Input label='Name' placeholder='Name' value={val.name} oninput={binder.inputString(val, 'name', updateRenderSanitize)}></Input>
+							<Input label='Key' placeholder='Key' value={val.key} oninput={binder.inputString(val, 'key', updateRenderSanitize)} />
+							<Input label='Name' placeholder='Name' value={val.name} oninput={binder.inputString(val, 'name', updateRenderSanitize)} />
 							<Input
 								label='Description'
 								placeholder='Description'
 								value={val.description}
 								oninput={binder.inputString(val, 'description', updateRenderSanitize)}
-							></Input>
+							/>
 						</div>
 						<div className='w-50 flex-shrink-0'>
 							<Select
@@ -240,7 +240,7 @@ export default () => {
 									state.testConfig[val.key] = val.default;
 									updateRenderSanitize();
 								})}
-							></Select>
+							/>
 							{m(Types[val.type].view, {
 								value: val.default,
 								oninput: (newVal) => {
@@ -277,7 +277,7 @@ export default () => {
 						state.testConfig[key] = val;
 						updateRenderSanitize();
 					}}
-				></GeneratorConfig>
+				/>
 			</div>
 		),
 		'Print Template': () => (

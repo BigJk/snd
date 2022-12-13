@@ -12,7 +12,7 @@ export default function () {
 				<Base active='workshop'>
 					<Header title='Workshop' subtitle='Browse and download community made content.'>
 						<div className='btn btn-primary'>
-							<i className='ion ion-md-refresh' onclick={() => store.pub('reload_public_packages')}></i>
+							<i className='ion ion-md-refresh' onclick={() => store.pub('reload_public_packages')} />
 						</div>
 					</Header>
 					<div className='ph3 flex flex-wrap'>
@@ -25,7 +25,7 @@ export default function () {
 										Browse
 									</div>
 								}
-							></PreviewBox>
+							/>
 						))}
 					</div>
 				</Base>

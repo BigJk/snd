@@ -2,6 +2,9 @@ module github.com/BigJk/snd
 
 go 1.18
 
+// CGO Problem: https://github.com/go-git/go-git/issues/624
+replace github.com/pjbgf/sha1cd => github.com/pjbgf/sha1cd v0.2.3
+
 require (
 	github.com/BigJk/nra v1.0.0-rc
 	github.com/PuerkitoBio/goquery v1.5.1
@@ -12,6 +15,8 @@ require (
 	github.com/dgraph-io/badger/v3 v3.2103.2
 	github.com/fatih/color v1.9.0
 	github.com/fsnotify/fsnotify v1.5.1
+	github.com/go-git/go-billy/v5 v5.3.1
+	github.com/go-git/go-git/v5 v5.5.0
 	github.com/go-rod/rod v0.101.8
 	github.com/google/gousb v1.1.2
 	github.com/jwalton/go-supportscolor v1.1.0
@@ -42,8 +47,6 @@ require (
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/go-git/gcfg v1.5.0 // indirect
-	github.com/go-git/go-billy/v5 v5.3.1 // indirect
-	github.com/go-git/go-git/v5 v5.5.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect

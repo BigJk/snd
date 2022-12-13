@@ -9,7 +9,7 @@ import store from '/js/core/store';
 import { render } from '/js/core/templating';
 import { keepOpen, on } from '/js/core/ws';
 
-import { AdvancedSearch, Base, Header, Input, Loading, ModalExport, SplitView, Tooltip } from '/js/ui/components';
+import { AdvancedSearch, Base, Header, Input, Loading, LoadingFullscreen, ModalExport, SplitView, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
 import { dialogWarning, error, success } from '/js/ui/toast';
@@ -176,22 +176,6 @@ export default () => {
 				})
 				.catch(error);
 		});
-	};
-
-	let printingLoading = () => {
-		if (!state.printing) {
-			return;
-		}
-
-		return (
-			<div className='modal active absolute'>
-				<div className='modal-overlay' />
-				<div className='absolute flex flex-column'>
-					<div className='loading loading-lg mb2' />
-					<div className='black-70'>Printing...</div>
-				</div>
-			</div>
-		);
 	};
 
 	let body = (vnode) => {
@@ -447,7 +431,7 @@ export default () => {
 							</Tooltip>
 						</Header>
 						{body(vnode)}
-						{printingLoading()}
+						<LoadingFullscreen show={state.printing}></LoadingFullscreen>
 						<ModalExport
 							type={'template'}
 							show={state.showExport}

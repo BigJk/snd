@@ -22,3 +22,4 @@ export { default as GeneratorConfig } from './generator-config';
 export { default as ModalImport } from './modal-import';
 export { default as ModalExport } from './modal-export';
 export { default as PreviewBox } from './preview-box';
+export { default as LoadingFullscreen } from './loading-fullscreen';

@@ -8,7 +8,7 @@ import api from '/js/core/api';
 import { render } from '/js/core/generator';
 import store from '/js/core/store';
 
-import { Base, GeneratorConfig, Header, Input, Loading, ModalExport, SplitView, Tooltip } from '/js/ui/components';
+import { Base, GeneratorConfig, Header, Input, Loading, LoadingFullscreen, ModalExport, SplitView, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
 import { dialogWarning, error, success } from '/js/ui/toast';
@@ -20,6 +20,7 @@ export default function () {
 		config: {
 			seed: 'TEST_SEED',
 		},
+		printing: false,
 		rendered: '',
 		amount: 1,
 		showExport: false,
@@ -92,8 +93,12 @@ export default function () {
 	let updateRender = () => render(state.gen, state.entries, state.config).then((res) => (state.rendered = res));
 
 	let print = () => {
+		if (state.printing || state.amount <= 0) return;
+
+		state.printing = true;
 		for (let j = 0; j < state.amount; j++) {
 			let config = clone(state.config);
+			let last = j === state.amount - 1;
 
 			if (j > 0) {
 				config.seed += '_' + j;
@@ -104,7 +109,12 @@ export default function () {
 					api
 						.print(res)
 						.then(() => success('Printing send'))
-						.catch(error);
+						.catch(error)
+						.then(() => {
+							if (last) {
+								state.printing = false;
+							}
+						});
 				})
 				.catch(error);
 		}
@@ -199,6 +209,7 @@ export default function () {
 							</Tooltip>
 						</Header>
 						{body()}
+						<LoadingFullscreen show={state.printing}></LoadingFullscreen>
 						<ModalExport
 							type={'generator'}
 							prefix={'gen_'}

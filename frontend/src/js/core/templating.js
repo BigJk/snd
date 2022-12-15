@@ -1,11 +1,10 @@
-import { filter } from 'lodash-es';
-
 import MarkdownIt from 'markdown-it';
 import * as nunjucks from 'nunjucks';
 import hash from 'object-hash';
 
 import EvalWorker from '/js/workers/eval?worker';
 
+import api from '/js/core/api';
 import store from '/js/core/store';
 
 // DataImportExtension
@@ -83,13 +82,25 @@ env.addExtension('DataImportExtension', new DataImportExtension());
 env.addExtension('JavascriptExecuteExtension', new JavascriptExecuteExtension());
 
 env.addFilter('markdown', (md) => new nunjucks.runtime.SafeString(markdown.render(md)));
-
 env.addFilter('markdowni', (md) => new nunjucks.runtime.SafeString(markdown.renderInline(md)));
+env.addFilter('json', (data) => new nunjucks.runtime.SafeString(JSON.stringify(data)));
+env.addFilter(
+	'source',
+	(source, cb) => {
+		let found = store.data.sources.find((s) => `ds:${s.author}+${s.slug}` === source);
 
-env.addFilter('jsfilter', (obj, func) => {
-	let fn = eval(func);
-	return filter(obj, fn);
-});
+		if (!found) {
+			cb(null, 'not found');
+			return;
+		}
+
+		api
+			.getEntries(source)
+			.then((res) => cb(null, res))
+			.catch((err) => cb(err, null));
+	},
+	true
+);
 
 // Exports
 //

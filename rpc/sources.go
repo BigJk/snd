@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -164,5 +165,30 @@ func RegisterSources(route *echo.Group, db database.Database) {
 		}
 
 		return nil
+	})))
+
+	route.POST("/importSourceCSV", echo.WrapHandler(nra.MustBind(func(csvFile string) (string, error) {
+		csv, err := os.OpenFile(csvFile, os.O_RDONLY, 0777)
+		if err != nil {
+			return "", err
+		}
+
+		ds, entries, err := imexport.ImportDataSourceCSV(csv)
+		if err != nil {
+			return "", err
+		}
+
+		_ = db.DeleteEntries(ds.ID())
+
+		err = db.SaveSource(ds)
+		if err != nil {
+			return "", err
+		}
+
+		for i := range entries {
+			_ = db.SaveEntry(ds.ID(), entries[i])
+		}
+
+		return ds.Name, nil
 	})))
 }

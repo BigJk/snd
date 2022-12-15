@@ -2,7 +2,7 @@ import { Input } from '/js/ui/components/index';
 
 export default {
 	name: 'Text',
-	defaultValue: 'some text',
+	defaultValue: () => 'some text',
 	view: () => ({
 		oninit() {},
 		view(vnode) {

@@ -106,8 +106,30 @@ export default () => {
 							state.importing.loading = true;
 							api
 								.importVttModule(file)
+								.then(() => {
+									success(`Imported vtt module successful`);
+									store.pub('reload_sources');
+								})
+								.catch(error)
+								.then(() => {
+									state.importing.show = false;
+									state.importing.loading = false;
+								});
+						});
+					} else {
+						// TODO: error
+					}
+				}
+				break;
+			case 'csv':
+				{
+					if (inElectron) {
+						openFileDialog().then((file) => {
+							state.importing.loading = true;
+							api
+								.importSourceCSV(file)
 								.then((name) => {
-									success(`Imported '${name}' module successful`);
+									success(`Imported '${name}' csv successful`);
 									store.pub('reload_sources');
 								})
 								.catch(error)
@@ -248,16 +270,30 @@ export default () => {
 							onimport={onimport}
 							onclose={() => (state.importing.show = false)}
 							extra={
-								<div className='mt3'>
-									<div className='divider' />
-									<div>
-										<div className='mt2 mb3 lh-copy'>
-											<b className='db'>FoundryVTT Import</b>
-											You can also import data from FoundryVTT Modules and Systems. This will convert all the included packs and add them as Data
-											Sources. To import a Module or System open the module.json or system.json file in it's folder.
+								<div>
+									<div className='mt3'>
+										<div className='divider' />
+										<div>
+											<div className='mt2 mb3 lh-copy'>
+												<b className='db'>CSV Import</b>
+												You can also import data from simple CSV files that you exported from Google Sheets or Excel.
+											</div>
+											<div className='btn btn-primary mr2' onclick={() => onimport('csv')}>
+												Import CSV (data.csv)
+											</div>
 										</div>
-										<div className='btn btn-primary mr2' onclick={() => onimport('vtt')}>
-											Import FoundryVTT (module.json, system.json)
+									</div>
+									<div className='mt3'>
+										<div className='divider' />
+										<div>
+											<div className='mt2 mb3 lh-copy'>
+												<b className='db'>FoundryVTT Import</b>
+												You can also import data from FoundryVTT Modules and Systems. This will convert all the included packs and add them as Data
+												Sources. To import a Module or System open the module.json or system.json file in it's folder.
+											</div>
+											<div className='btn btn-primary mr2' onclick={() => onimport('vtt')}>
+												Import FoundryVTT (module.json, system.json)
+											</div>
 										</div>
 									</div>
 								</div>

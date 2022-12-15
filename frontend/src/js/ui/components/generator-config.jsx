@@ -28,7 +28,7 @@ export default () => ({
 							inEdit: false,
 							label: val.name,
 						})}
-						<span className='o-70 mt2 mb2'>{val.description}</span>
+						<div className='o-70 mt2 mb2'>{val.description}</div>
 						<div className='divider' />
 					</div>
 				))}

@@ -1,4 +1,5 @@
 import Checkbox from './checkbox';
+import DataSource from './data-source';
 import MultipleOptions from './multiple-options';
 import Number from './number';
 import Options from './options';
@@ -10,4 +11,5 @@ export default {
 	Number: Number,
 	Options: Options,
 	MultipleOptions: MultipleOptions,
+	DataSource: DataSource,
 };

@@ -58,7 +58,9 @@ export default () => {
 			.then((res) => {
 				state.rendered[id] = res;
 			})
-			.catch(error);
+			.catch((err) => {
+				state.rendered[id] = `Error: ${err}`;
+			});
 	};
 
 	let onimport = (type, url) => {

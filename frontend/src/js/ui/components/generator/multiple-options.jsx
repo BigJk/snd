@@ -4,11 +4,11 @@ import { Input, Select, Switch } from '/js/ui/components/index';
 
 export default {
 	name: 'Multiple Options',
-	defaultValue: {
+	defaultValue: () => ({
 		choices: ['Option A', 'Option B'],
 		allowDuplicate: false,
 		selected: ['Option A'],
-	},
+	}),
 	view: () => ({
 		oninit() {},
 		view(vnode) {

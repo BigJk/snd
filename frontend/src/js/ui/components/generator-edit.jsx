@@ -228,7 +228,7 @@ export default () => {
 								oninput={binder.inputString(val, 'description', updateRenderSanitize)}
 							/>
 						</div>
-						<div className='w-50 flex-shrink-0'>
+						<div className='w-50 flex-shrink-0 pr3'>
 							<Select
 								label='Printer Type'
 								keys={Object.keys(Types)}
@@ -236,7 +236,7 @@ export default () => {
 								selected={val.type}
 								labelCol={4}
 								oninput={binder.inputString(val, 'type', (newType) => {
-									val.default = Types[newType].defaultValue;
+									val.default = Types[newType].defaultValue();
 									state.testConfig[val.key] = val.default;
 									updateRenderSanitize();
 								})}

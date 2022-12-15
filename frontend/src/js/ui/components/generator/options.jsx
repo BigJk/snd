@@ -2,10 +2,10 @@ import { Input, Select } from '/js/ui/components/index';
 
 export default {
 	name: 'Option',
-	defaultValue: {
+	defaultValue: () => ({
 		choices: ['Option A', 'Option B'],
 		selected: 'Option A',
-	},
+	}),
 	view: () => ({
 		oninit() {},
 		view(vnode) {

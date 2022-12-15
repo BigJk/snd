@@ -2,7 +2,7 @@ import { Switch } from '/js/ui/components/index';
 
 export default {
 	name: 'Checkbox',
-	defaultValue: false,
+	defaultValue: () => false,
 	view: () => ({
 		oninit() {},
 		view(vnode) {

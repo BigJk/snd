@@ -18,20 +18,26 @@ export default () => ({
 					Reroll
 				</div>
 				<div className='divider' />
-				{vnode.attrs.config.map((val) => (
-					<div>
-						{m(Types[val.type].view, {
-							value: vnode.attrs.value[val.key],
-							oninput: (newVal) => {
-								vnode.attrs.onchange(val.key, newVal);
-							},
-							inEdit: false,
-							label: val.name,
-						})}
-						<div className='o-70 mt2 mb2'>{val.description}</div>
-						<div className='divider' />
-					</div>
-				))}
+				{vnode.attrs.config.map((val) => {
+					if (!Types[val.type] || !vnode.attrs.value[val.key]) {
+						return null;
+					}
+
+					return (
+						<div>
+							{m(Types[val.type].view, {
+								value: vnode.attrs.value[val.key],
+								oninput: (newVal) => {
+									vnode.attrs.onchange(val.key, newVal);
+								},
+								inEdit: false,
+								label: val.name,
+							})}
+							<div className='o-70 mt2 mb2'>{val.description}</div>
+							<div className='divider' />
+						</div>
+					);
+				})}
 			</div>
 		);
 	},

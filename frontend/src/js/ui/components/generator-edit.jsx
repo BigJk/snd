@@ -6,7 +6,7 @@ import htmlFormat from '/js/core/html-format';
 import snippets from '/js/core/snippets';
 import store from '/js/core/store';
 
-import { Editor, GeneratorConfig, Input, Select, SplitView, Switch, TextArea } from '/js/ui/components';
+import { Editor, GeneratorConfig, Input, Loading, Select, SplitView, Switch, TextArea } from '/js/ui/components';
 import Types from '/js/ui/components/generator/types';
 
 import binder from '/js/ui/binder';
@@ -22,7 +22,7 @@ export default () => {
 		testConfig: {},
 		onRender: null,
 		templateErrors: [],
-		entries: [],
+		entries: null,
 		entriesSearch: '',
 		entriesSelected: null,
 		imagesToUpload: [],
@@ -311,8 +311,6 @@ export default () => {
 
 	return {
 		oninit(vnode) {
-			updateRender();
-
 			state.target = vnode.attrs.target;
 			state.editMode = vnode.attrs.editmode ?? false;
 			state.onRender = vnode.attrs.onrender;
@@ -325,11 +323,14 @@ export default () => {
 					state.entries = entries ?? [];
 				});
 			}
+
+			updateRender();
 		},
 		view(vnode) {
-			if (!state.target) {
-				return;
+			if (!state.target || !state.entries) {
+				return <Loading />;
 			}
+
 			return (
 				<SplitView
 					content={state.lastRender}

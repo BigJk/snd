@@ -6,7 +6,7 @@ import { render as renderTemplate } from './templating';
 //
 // TODO: include it locally
 const rngScript = (seed) => `
-		<script src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
 		<script src="https://unpkg.com/mathjs@9.3.2/lib/browser/math.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/random-js@2.1.0/dist/random-js.umd.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@dice-roller/rpg-dice-roller@5.2.1/lib/umd/bundle.min.js"></script>

@@ -5,34 +5,9 @@ on:
     branches: [ actions-build ]
 
 jobs:
-  build:
-    name: Build App
+  build-frontend:
+    name: Build Frontend
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          # ELECTRON
-          - arch: "amd64"
-            os: "windows"
-            tags: "ELECTRON"
-          - arch: "amd64"
-            os: "linux"
-            tags: "ELECTRON"
-          - arch: "amd64"
-            os: "darwin"
-            tags: "ELECTRON"
-          - arch: "arm64"
-            os: "darwin"
-            tags: "ELECTRON"
-          # HEADLESS
-          - arch: "amd64"
-            os: "linux"
-          - arch: "arm64"
-            os: "linux"
-          - arch: "386"
-            os: "linux"
-          - arch: "arm"
-            os: "linux"
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
@@ -42,15 +17,67 @@ jobs:
         node-version: 18
         cache: npm
         cache-dependency-path: frontend/package-lock.json
+    - name: Install Frontend Dependencies
+      working-directory: frontend
+      run: npm ci
+    - name: Build Frontend
+      working-directory: frontend
+      run: npm run build
+    - name: Archive Frontend
+      uses: actions/upload-artifact@v3
+      with:
+        name: frontend
+        path: frontend/dist
+        if-no-files-found: error
+        retention-days: 1
+  build-apps:
+    name: Build App
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          # ELECTRON
+          - arch: "amd64"
+            os: "windows"
+            tags: "ELECTRON"
+            artifact: "Windows GUI (amd64)"
+          - arch: "amd64"
+            os: "linux"
+            tags: "ELECTRON"
+            artifact: "Linux GUI (amd64)"
+          - arch: "amd64"
+            os: "darwin"
+            tags: "ELECTRON"
+            artifact: "MacOS GUI (amd64)"
+          - arch: "arm64"
+            os: "darwin"
+            tags: "ELECTRON"
+            artifact: "MacOS GUI (arm64)"
+          # HEADLESS
+          - arch: "amd64"
+            os: "linux"
+            artifact: "Headless (amd64)"
+          - arch: "arm64"
+            os: "linux"
+            artifact: "Headless (arm64)"
+          - arch: "386"
+            os: "linux"
+            artifact: "Headless (386)"
+          - arch: "arm"
+            os: "linux"
+            artifact: "Headless (arm)"
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+    - uses: actions/download-artifact@v3
+      with:
+        name: frontend
     - name: Setup Go environment
       uses: actions/setup-go@v3
       with:
         cache: true
         go-version-file: go.mod
         cache-dependency-path: go.sum
-    - name: Install Frontend Dependencies
-      working-directory: frontend
-      run: npm ci
     - name: Install Backend Dependencies
       run: go mod tidy
     - name: Run Build
@@ -59,3 +86,8 @@ jobs:
         GOOS: ${{ matrix.os }}
         GOARCH: ${{ matrix.arch }}
         SND_TAGS: ${{ matrix.tags }}
+    - name: Archive Frontend
+      uses: actions/upload-artifact@v3
+      with:
+        path: build/**.zip
+        name: ${{ matrix.artifact }}

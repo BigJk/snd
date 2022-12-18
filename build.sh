@@ -15,14 +15,8 @@ echo "Build Arch : ${GOARCH:=$(go env GOARCH)}"
 echo "Build Tags : ${SND_TAGS}"
 
 echo "Clearing old data..."
-rm -r frontend/dist build || true
+rm -r build || true
 mkdir -p build/release build/release/frontend/dist build/release/data
-
-echo "Building Frontend..."
-cd frontend
-npm run build
-cd ..
-cp -r frontend/dist build/release/frontend
 
 echo "Building App..."
 case "${GOOS}" in
@@ -49,5 +43,5 @@ echo "Build Time: ${BUILD_TIME}" >> build/release/version.txt
 echo "Creating release zip..."
 cd build/release
 RELEASE_NAME="snd_${GOOS}_${GOARCH}_${GIT_COMMIT:0:7}"
-7z a -tzip "../build/${RELEASE_NAME}.zip" ./*
+7z a -tzip "../${RELEASE_NAME}.zip" ./*
 cd ../..

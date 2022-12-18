@@ -1,0 +1,41 @@
+name: Validate
+
+on:
+  pull_request:
+    branches: [ master ]
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+
+    #FRONTEND
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+    - name: Install Frontend Dependencies
+      working-directory: frontend
+      run: npm ci
+    - name: Lint Frontend
+      working-directory: frontend
+      run: npm run lint-check && npm run format-check
+    - name: Build Frontend
+      working-directory: frontend
+      run: npm run build
+
+    # BACKEND
+    - name: Setup Go environment
+      uses: actions/setup-go@v3
+      with:
+        go-version-file: 'go.mod'
+    - name: Install Backend Dependencies
+      run: go mod tidy
+    - name: Build Backend
+      working-directory: cmd/app
+      run: go build -o snd

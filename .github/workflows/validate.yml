@@ -7,14 +7,12 @@ on:
     branches: [ master, actions ]
 
 jobs:
-  build:
-    name: Build and Test
+  validate-frontend:
+    name: Validate Frontend
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
-
-    #FRONTEND
     - name: Setup Node.js environment
       uses: actions/setup-node@v3
       with:
@@ -23,15 +21,19 @@ jobs:
         cache-dependency-path: frontend/package-lock.json
     - name: Install Frontend Dependencies
       working-directory: frontend
-      run: npm ci
+      run: npm ci --loglevel verbose
     - name: Lint Frontend
       working-directory: frontend
       run: npm run lint-check && npm run format-check
     - name: Build Frontend
       working-directory: frontend
       run: npm run build
-
-    # BACKEND
+  validate-backend:
+    name: Validate Backend
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
     - name: Setup Go environment
       uses: actions/setup-go@v3
       with:

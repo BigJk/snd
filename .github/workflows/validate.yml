@@ -19,6 +19,8 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 18
+        cache: npm
+        cache-dependency-path: frontend/package-lock.json
     - name: Install Frontend Dependencies
       working-directory: frontend
       run: npm ci
@@ -33,7 +35,9 @@ jobs:
     - name: Setup Go environment
       uses: actions/setup-go@v3
       with:
-        go-version-file: 'go.mod'
+        cache: true
+        go-version-file: go.mod
+        cache-dependency-path: go.sum
     - name: Install Backend Dependencies
       run: go mod tidy
     - name: Build Backend

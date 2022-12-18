@@ -51,7 +51,7 @@ func startElectron(db database.Database, debug bool) {
 		BaseDirectoryPath:  "./data",
 		DataDirectoryPath:  "./data",
 		AppIconDefaultPath: "icon.png",
-		AppIconDarwinPath:  "SND.icns",
+		AppIconDarwinPath:  "icon.icns",
 		VersionAstilectron: "0.49.0",
 		VersionElectron:    "11.1.0",
 		SingleInstance:     true,

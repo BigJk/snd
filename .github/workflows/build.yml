@@ -33,6 +33,7 @@ jobs:
   build-apps:
     name: Build App
     runs-on: ubuntu-latest
+    needs: build-frontend
     strategy:
       matrix:
         include:

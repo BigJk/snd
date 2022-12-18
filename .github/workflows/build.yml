@@ -1,6 +1,8 @@
 name: Build
 
-on: workflow_dispatch
+on:
+  push: 
+    branches: [ actions-build ]
 
 jobs:
   build:

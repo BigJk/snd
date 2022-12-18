@@ -24,6 +24,14 @@ import (
 var browser *rod.Browser
 
 func init() {
+	initBrowser()
+}
+
+func initBrowser() {
+	if browser != nil {
+		_ = browser.Close()
+	}
+
 	if os.Getenv("SND_DEBUG") == "1" {
 		l := launcher.New().
 			Headless(false).
@@ -33,6 +41,28 @@ func init() {
 	} else {
 		browser = rod.New().MustConnect()
 	}
+}
+
+func tryOpenPage(url string) (*rod.Page, error) {
+	var page *rod.Page
+	var err error
+
+	for i := 0; i < 2; i++ {
+		page, err = browser.Page(proto.TargetCreateTarget{
+			URL: url,
+		})
+
+		if err == nil {
+			return page, nil
+		}
+
+		// if the pc has gone into standby the cdp session closes,
+		// so we try to init it again and try once more.
+		initBrowser()
+	}
+
+	// after retry return last error
+	return nil, err
 }
 
 func screenshotPage(page *rod.Page, width int) (image.Image, error) {
@@ -55,7 +85,11 @@ func screenshotPage(page *rod.Page, width int) (image.Image, error) {
 
 // RenderHTML renders the element #content into an image.
 func RenderHTML(html string, width int) (image.Image, error) {
-	page := browser.MustPage("data:text/html," + url.PathEscape(html))
+	page, err := tryOpenPage("data:text/html," + url.PathEscape(html))
+	if err != nil {
+		return nil, err
+	}
+
 	page.MustWaitLoad().MustWaitIdle()
 	defer page.Close()
 
@@ -64,7 +98,11 @@ func RenderHTML(html string, width int) (image.Image, error) {
 
 // RenderURL opens the URL and renders the element #content into an image.
 func RenderURL(url string, width int) (image.Image, error) {
-	page := browser.MustPage(url)
+	page, err := tryOpenPage(url)
+	if err != nil {
+		return nil, err
+	}
+
 	page.MustWaitLoad().MustWaitIdle()
 	defer page.Close()
 
@@ -73,7 +111,11 @@ func RenderURL(url string, width int) (image.Image, error) {
 
 // ExtractHTML opens the URL, lets the page executes and returns the HTML.
 func ExtractHTML(url string, selector string) (string, error) {
-	page := browser.MustPage(url)
+	page, err := tryOpenPage(url)
+	if err != nil {
+		return "", err
+	}
+
 	page.MustWaitLoad().MustWaitIdle()
 	defer page.Close()
 

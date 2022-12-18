@@ -10,7 +10,7 @@ import (
 )
 
 func RegisterGit(route *echo.Group, db database.Database) {
-	route.POST("/getPublicPackages", echo.WrapHandler(nra.MustBind(func() ([]git.Public, error) {
+	route.POST("/getPublicPackages", echo.WrapHandler(nra.MustBind(func() ([]git.PublicList, error) {
 		set, err := db.GetSettings()
 		if err != nil {
 			return nil, err
@@ -18,7 +18,7 @@ func RegisterGit(route *echo.Group, db database.Database) {
 
 		packageRepos := append([]string{"https://raw.githubusercontent.com/BigJk/snd-package-repo/main/packages.json"}, set.PackageRepos...)
 
-		var publics []git.Public
+		var publics []git.PublicList
 		for i := range packageRepos {
 			if pub, err := git.GetPackages(packageRepos[i]); err == nil {
 				publics = append(publics, pub)

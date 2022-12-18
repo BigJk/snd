@@ -26,6 +26,17 @@ func (r *csvReaderWrapper) ReadFile(s string) ([]byte, error) {
 	return nil, errors.New("not found")
 }
 
+// ImportDataSourceCSV will import a data source and entry data from a given csv file.
+//
+// It expects the csv files to have a header with the basic information in the first two lines
+// and after that the header with value names and values, example:
+//
+//   Name, Author, Slug, Description
+//   Cool Source, BigJk, cool-source, This is a cool source
+//   Name, Price, Weight
+//   Sword, 10gp, 10lb
+//   Mace, 22gp, 12lb
+//   ...
 func ImportDataSourceCSV(reader io.Reader) (snd.DataSource, []snd.Entry, error) {
 	csvReader := csv.NewReader(reader)
 	csvReader.FieldsPerRecord = 4

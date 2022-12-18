@@ -6,7 +6,16 @@ export default {
 	view: () => ({
 		oninit() {},
 		view(vnode) {
-			return <Input value={vnode.attrs.value} label={vnode.attrs.label} oninput={(e) => vnode.attrs.oninput(parseInt(e.target.value) | 0)} />;
+			return (
+				<Input
+					value={vnode.attrs.value}
+					label={vnode.attrs.label}
+					oninput={(e) => {
+						const value = parseInt(e.target.value);
+						vnode.attrs.oninput(isNaN(value) ? '' : value);
+					}}
+				/>
+			);
 		},
 	}),
 };

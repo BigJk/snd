@@ -1,6 +1,6 @@
 import { debounce, isArray, map, mergeWith, uniq } from 'lodash-es';
 
-import api from '/js/core/api';
+import { fetchMultipleEntries } from '/js/core/api-helper';
 import htmlFormat from '/js/core/html-format';
 import snippets from '/js/core/snippets';
 import store from '/js/core/store';
@@ -9,6 +9,7 @@ import { render } from '/js/core/templating';
 import { Editor, Input, Select, SplitView, TextArea, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
+import { error } from '/js/ui/toast';
 
 function entryMerger(objValue, srcValue) {
 	if (typeof objValue === 'string' && typeof srcValue === 'string') {
@@ -70,6 +71,14 @@ export default () => {
 			state.onRender(state.lastRender);
 		}
 	}, 250);
+
+	let updateEntries = () => {
+		fetchMultipleEntries(
+			state.editMode ? [`tmpl:${state.target.author}+${state.target.slug}`, ...(state.target.dataSources ?? [])] : state.target.dataSources ?? []
+		)
+			.then((entries) => (state.entries = entries))
+			.catch(error);
+	};
 
 	let tabs = {
 		Information: () => (
@@ -179,6 +188,8 @@ export default () => {
 						state.target.dataSources.push(state.selectedSource);
 						state.target.dataSources = uniq(state.target.dataSources);
 						state.selectedSource = '';
+
+						updateEntries();
 					}}
 				>
 					Add Source
@@ -218,71 +229,69 @@ export default () => {
 						}
 					}}
 				/>
-				{state.editMode ? (
-					<div className='flex-shrink-0 h3 flex items-center ph3 flex'>
-						<div className='mr2 w4'>
-							<Input placeholder='Search...' value={state.entriesSearch} oninput={binder.inputString(state, 'entriesSearch')} />
-						</div>
-						<div className='mr2 w4'>
-							<Select
-								selected={state.entriesSelected}
-								keys={state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0).map((_, i) => i)}
-								names={state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0).map((e) => e.name)}
-								oninput={(e) => (state.entriesSelected = parseInt(e.target.value))}
-							/>
-						</div>
-						<Tooltip content='Loads the selected entry as skeleton data.'>
-							<div
-								className='btn btn-primary mr2'
-								onclick={() => {
-									if (state.entriesSelected === null) {
-										return;
-									}
-
-									state.skeletonDataRaw = JSON.stringify(
-										state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0)[state.entriesSelected].data,
-										null,
-										'\t'
-									);
-									state.target.skeletonData = state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0)[
-										state.entriesSelected
-									].data;
-									state.entriesSearch = '';
-									state.entriesSelected = null;
-								}}
-							>
-								Load as Skeleton
-							</div>
-						</Tooltip>
-						<Tooltip content='Merges the selected entry into the current skeleton.'>
-							<div
-								className='btn btn-primary'
-								onclick={() => {
-									if (state.entriesSelected === null) {
-										return;
-									}
-
-									state.target.skeletonData = mergeWith(state.target.skeletonData, ...[state.entries[state.entriesSelected].data], entryMerger);
-									state.skeletonDataRaw = JSON.stringify(state.target.skeletonData, null, '\t');
-								}}
-							>
-								Merge Into
-							</div>
-						</Tooltip>
-						<div className='divider divider-vert btn' />
-						<Tooltip content='Merges all entries and tries to build a full skeleton from it.'>
-							<div
-								className='btn btn-error'
-								onclick={() => {
-									state.target.skeletonData = mergeWith({}, ...state.entries.map((e) => e.data), entryMerger);
-									state.skeletonDataRaw = JSON.stringify(state.target.skeletonData, null, '\t');
-								}}
-							>
-								Merge All
-							</div>
-						</Tooltip>
+				<div className='flex-shrink-0 h3 flex items-center ph3 flex'>
+					<div className='mr2 w4'>
+						<Input placeholder='Search...' value={state.entriesSearch} oninput={binder.inputString(state, 'entriesSearch')} />
 					</div>
-				) : null}
+					<div className='mr2 w4'>
+						<Select
+							selected={state.entriesSelected}
+							keys={state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0).map((_, i) => i)}
+							names={state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0).map((e) => e.name)}
+							oninput={(e) => (state.entriesSelected = parseInt(e.target.value))}
+						/>
+					</div>
+					<Tooltip content='Loads the selected entry as skeleton data.'>
+						<div
+							className='btn btn-primary mr2'
+							onclick={() => {
+								if (state.entriesSelected === null) {
+									return;
+								}
+
+								state.skeletonDataRaw = JSON.stringify(
+									state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0)[state.entriesSelected].data,
+									null,
+									'\t'
+								);
+								state.target.skeletonData = state.entries.filter((e) => e.name.toLowerCase().indexOf(state.entriesSearch.toLowerCase()) >= 0)[
+									state.entriesSelected
+								].data;
+								state.entriesSearch = '';
+								state.entriesSelected = null;
+							}}
+						>
+							Load as Skeleton
+						</div>
+					</Tooltip>
+					<Tooltip content='Merges the selected entry into the current skeleton.'>
+						<div
+							className='btn btn-primary'
+							onclick={() => {
+								if (state.entriesSelected === null) {
+									return;
+								}
+
+								state.target.skeletonData = mergeWith(state.target.skeletonData, ...[state.entries[state.entriesSelected].data], entryMerger);
+								state.skeletonDataRaw = JSON.stringify(state.target.skeletonData, null, '\t');
+							}}
+						>
+							Merge Into
+						</div>
+					</Tooltip>
+					<div className='divider divider-vert btn' />
+					<Tooltip content='Merges all entries and tries to build a full skeleton from it.'>
+						<div
+							className='btn btn-error'
+							onclick={() => {
+								state.target.skeletonData = mergeWith({}, ...state.entries.map((e) => e.data), entryMerger);
+								state.skeletonDataRaw = JSON.stringify(state.target.skeletonData, null, '\t');
+							}}
+						>
+							Merge All
+						</div>
+					</Tooltip>
+				</div>
 			</div>
 		),
 		'Print Template': () => (
@@ -325,18 +334,13 @@ export default () => {
 
 	return {
 		oninit(vnode) {
-			updateRender();
-
 			state.target = vnode.attrs.target;
 			state.editMode = vnode.attrs.editmode ?? false;
 			state.onRender = vnode.attrs.onrender;
 			state.skeletonDataRaw = JSON.stringify(state.target.skeletonData, null, 2);
 
-			if (state.editMode) {
-				api.getEntriesWithSources(`tmpl:${state.target.author}+${state.target.slug}`).then((entries) => {
-					state.entries = entries ?? [];
-				});
-			}
+			updateEntries();
+			updateRender();
 		},
 		view(vnode) {
 			if (!state.target) {

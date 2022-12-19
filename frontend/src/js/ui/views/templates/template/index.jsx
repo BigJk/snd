@@ -397,6 +397,11 @@ export default () => {
 									Edit
 								</div>
 							) : null}
+							<Tooltip content='Duplicate'>
+								<div className='btn btn-primary mr2' onclick={() => m.route.set(`/templates/dupe/${state.template.id}`)}>
+									<i className='ion ion-md-copy' />
+								</div>
+							</Tooltip>
 							<Tooltip content='Import & Export'>
 								<div className='btn btn-primary mr2' onclick={() => (state.showExport = true)}>
 									<i className='ion ion-md-open' />

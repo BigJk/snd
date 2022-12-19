@@ -62,7 +62,7 @@ jobs:
             artifact: "Headless (arm64)"
           - arch: "386"
             os: "linux"
-            artifact: "Headless (386)"
+            artifact: "Headless (i386)"
           - arch: "arm"
             os: "linux"
             artifact: "Headless (arm)"
@@ -87,7 +87,7 @@ jobs:
         GOOS: ${{ matrix.os }}
         GOARCH: ${{ matrix.arch }}
         SND_TAGS: ${{ matrix.tags }}
-    - name: Archive Frontend
+    - name: Archive Build
       uses: actions/upload-artifact@v3
       with:
         path: build/**.zip

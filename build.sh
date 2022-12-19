@@ -30,6 +30,8 @@ go build -ldflags "${LD_FLAGS}" -o app -tags "${SND_TAGS}"
 cd ../..
 mv cmd/app/app "build/release/Sales & Dungeons${EXT}"
 
+echo "Copying frontend..."
+cp -r frontend/dist build/release/frontend
 
 echo "Copying resources..."
 cp data/icon.png build/release/data/icon.png

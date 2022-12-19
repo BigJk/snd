@@ -2,7 +2,7 @@ name: Build
 
 on:
   push: 
-    branches: [ actions-build ]
+    branches: [ matrix-build ]
 
 jobs:
   build-frontend:

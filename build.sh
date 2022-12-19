@@ -42,8 +42,8 @@ echo "Commit: ${GIT_COMMIT}" > build/release/version.txt
 echo "Branch: ${GIT_BRANCH}" >> build/release/version.txt
 echo "Build Time: ${BUILD_TIME}" >> build/release/version.txt
 
-echo "Creating release zip..."
-cd build/release
-RELEASE_NAME="snd_${GOOS}_${GOARCH}_${GIT_COMMIT:0:7}"
-7z a -tzip "../${RELEASE_NAME}.zip" ./*
-cd ../..
+# echo "Creating release zip..."
+# cd build/release
+# RELEASE_NAME="snd_${GOOS}_${GOARCH}_${GIT_COMMIT:0:7}"
+# 7z a -tzip "../${RELEASE_NAME}.zip" ./*
+# cd ../..

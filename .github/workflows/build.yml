@@ -26,7 +26,7 @@ jobs:
     - name: Archive Frontend
       uses: actions/upload-artifact@v3
       with:
-        name: Frontend Only
+        name: snd-frontend
         path: frontend/dist
         if-no-files-found: error
   build-apps:
@@ -40,38 +40,38 @@ jobs:
           - arch: "amd64"
             os: "windows"
             tags: "ELECTRON"
-            artifact: "Windows GUI (amd64)"
+            artifact: "snd-windows-amd64-gui"
           - arch: "amd64"
             os: "linux"
             tags: "ELECTRON"
-            artifact: "Linux GUI (amd64)"
+            artifact: "snd-linux-amd64-gui"
           - arch: "amd64"
             os: "darwin"
             tags: "ELECTRON"
-            artifact: "MacOS GUI (amd64)"
+            artifact: "snd-macos-amd64-gui"
           - arch: "arm64"
             os: "darwin"
             tags: "ELECTRON"
-            artifact: "MacOS GUI (arm64)"
+            artifact: "snd-macos-arm64-gui"
           # HEADLESS
           - arch: "amd64"
             os: "linux"
-            artifact: "Headless (amd64)"
+            artifact: "snd-linux-amd64-headless"
           - arch: "arm64"
             os: "linux"
-            artifact: "Headless (arm64)"
+            artifact: "snd-linux-arm64-headless"
           - arch: "386"
             os: "linux"
-            artifact: "Headless (i386)"
+            artifact: "snd-linux-i386-headless"
           - arch: "arm"
             os: "linux"
-            artifact: "Headless (arm)"
+            artifact: "snd-linux-arm-headless"
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
     - uses: actions/download-artifact@v3
       with:
-        name: Frontend Only
+        name: snd-frontend
         path: frontend/dist
     - name: Setup Go environment
       uses: actions/setup-go@v3
@@ -87,9 +87,12 @@ jobs:
         GOOS: ${{ matrix.os }}
         GOARCH: ${{ matrix.arch }}
         SND_TAGS: ${{ matrix.tags }}
+    - name: Generate Short SHA
+      id: sha
+      run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT 
     - name: Archive Build
       uses: actions/upload-artifact@v3
       with:
-        path: build/**.zip
-        name: ${{ matrix.artifact }}
+        path: build/release/
+        name: ${{ matrix.artifact }}-${{ steps.sha.outputs.short }}
         if-no-files-found: error

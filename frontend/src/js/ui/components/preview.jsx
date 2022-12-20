@@ -1,4 +1,5 @@
 import { startsWith } from 'lodash-es';
+import dither from '/js/core/dither'
 
 const pre = `
 <!DOCTYPE html>
@@ -30,7 +31,8 @@ const pre = `
   <body style="padding: 15px; overflow-y: {{OVERFLOW}}; zoom: {{ZOOM}};">
     <div id="content">`;
 
-const post = `    
+const post = `
+	${dither}
     </div>
   </body>
 </html>

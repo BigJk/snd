@@ -73,4 +73,4 @@ export default `
     }, { once: true })
   });
 </script>
-`
+`;

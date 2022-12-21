@@ -1,5 +1,6 @@
 import { startsWith } from 'lodash-es';
-import dither from '/js/core/dither'
+
+import dither from '/js/core/dither';
 
 const pre = `
 <!DOCTYPE html>

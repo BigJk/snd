@@ -153,12 +153,14 @@ jobs:
     - name: Install Backend Dependencies
       run: go mod tidy
     - name: Run Build
+      shell: bash
       run: ./build.sh
       env:
         GOOS: windows
         GOARCH: ${{ matrix.arch }}
         SND_TAGS: ${{ matrix.tags }}
     - name: Generate Short SHA
+      shell: bash
       id: sha
       run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT 
     - name: Archive Build

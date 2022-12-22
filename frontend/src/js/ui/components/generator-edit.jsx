@@ -238,7 +238,7 @@ export default () => {
 						</div>
 						<div className='w-50 flex-shrink-0 pr3'>
 							<Select
-								label='Printer Type'
+								label='Type'
 								keys={Object.keys(Types)}
 								names={Object.keys(Types).map((key) => Types[key].name)}
 								selected={val.type}

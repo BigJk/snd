@@ -1,0 +1,47 @@
+name: Validate
+
+on:
+  pull_request:
+    branches: [ master ]
+  push:
+    branches: [ master ]
+
+jobs:
+  validate-frontend:
+    name: Validate Frontend
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        cache: npm
+        cache-dependency-path: frontend/package-lock.json
+    - name: Install Frontend Dependencies
+      working-directory: frontend
+      run: npm ci --loglevel verbose
+    - name: Lint Frontend
+      working-directory: frontend
+      run: npm run lint-check && npm run format-check
+    - name: Build Frontend
+      working-directory: frontend
+      run: npm run build
+  validate-backend:
+    name: Validate Backend
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+    - name: Setup Go environment
+      uses: actions/setup-go@v3
+      with:
+        cache: true
+        go-version-file: go.mod
+        cache-dependency-path: go.sum
+    - name: Install Backend Dependencies
+      run: go mod tidy
+    - name: Build Backend
+      working-directory: cmd/app
+      run: go build -o snd

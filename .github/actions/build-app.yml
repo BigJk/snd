@@ -1,0 +1,49 @@
+name: Build App
+description: ''
+inputs:
+  os:
+    description: 'OS to build for'
+    required: true
+  arch:
+    description: 'CPU architecture to build for'
+    required: true
+  tags:
+    description: 'Build tags to pass to Go'
+    required: false
+  artifact-name:
+    description: 'Name of the resulting artifact'
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+    - uses: actions/download-artifact@v3
+      with:
+        name: snd-frontend
+        path: frontend/dist
+    - name: Setup Go environment
+      uses: actions/setup-go@v3
+      with:
+        cache: true
+        go-version-file: go.mod
+        cache-dependency-path: go.sum
+    - name: Install Backend Dependencies
+      run: go mod tidy
+    - name: Run Build
+      shell: bash
+      run: ./build.sh
+      env:
+        GOOS: ${{ inputs.os }}
+        GOARCH: ${{ inputs.arch }}
+        SND_TAGS: ${{ inputs.tags }}
+    - name: Generate Short SHA
+      shell: bash
+      id: sha
+      run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT 
+    - name: Archive Build
+      uses: actions/upload-artifact@v3
+      with:
+        path: build/release/
+        name: ${{ inputs.artifact-name }}-${{ steps.sha.outputs.short }}
+        if-no-files-found: error

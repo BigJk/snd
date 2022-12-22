@@ -39,46 +39,27 @@ jobs:
           # ELECTRON
           - arch: "amd64"
             tags: "ELECTRON"
-            artifact: "snd-linux-amd64-gui"
+            artifact-name: "snd-linux-amd64-gui"
           # HEADLESS
           - arch: "amd64"
-            artifact: "snd-linux-amd64-headless"
+            artifact-name: "snd-linux-amd64-headless"
           - arch: "arm64"
-            artifact: "snd-linux-arm64-headless"
+            artifact-name: "snd-linux-arm64-headless"
           - arch: "386"
-            artifact: "snd-linux-i386-headless"
+            artifact-name: "snd-linux-i386-headless"
           - arch: "arm"
-            artifact: "snd-linux-arm-headless"
+            artifact-name: "snd-linux-arm-headless"
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
-    - uses: actions/download-artifact@v3
+    - name: Run custom action
+      uses: ./.github/actions/build-app
       with:
-        name: snd-frontend
-        path: frontend/dist
-    - name: Setup Go environment
-      uses: actions/setup-go@v3
-      with:
-        cache: true
-        go-version-file: go.mod
-        cache-dependency-path: go.sum
-    - name: Install Backend Dependencies
-      run: go mod tidy
-    - name: Run Build
-      run: ./build.sh
-      env:
-        GOOS: linux
-        GOARCH: ${{ matrix.arch }}
-        SND_TAGS: ${{ matrix.tags }}
-    - name: Generate Short SHA
-      id: sha
-      run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT 
-    - name: Archive Build
-      uses: actions/upload-artifact@v3
-      with:
-        path: build/release/
-        name: ${{ matrix.artifact }}-${{ steps.sha.outputs.short }}
-        if-no-files-found: error
+        os: linux
+        arch: ${{ matrix.arch }}
+        tags: ${{ matrix.tags }}
+        artifact-name: ${{ matrix.artifact-name }}
+  
   build-windows-app:
     name: Build ${{ matrix.artifact }}
     runs-on: windows-latest
@@ -89,39 +70,18 @@ jobs:
           # ELECTRON
           - arch: "amd64"
             tags: "ELECTRON"
-            artifact: "snd-windows-amd64-gui"
+            artifact-name: "snd-windows-amd64-gui"
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
-    - uses: actions/download-artifact@v3
+    - name: Run custom action
+      uses: ./.github/actions/build-app
       with:
-        name: snd-frontend
-        path: frontend/dist
-    - name: Setup Go environment
-      uses: actions/setup-go@v3
-      with:
-        cache: true
-        go-version-file: go.mod
-        cache-dependency-path: go.sum
-    - name: Install Backend Dependencies
-      run: go mod tidy
-    - name: Run Build
-      shell: bash
-      run: ./build.sh
-      env:
-        GOOS: windows
-        GOARCH: ${{ matrix.arch }}
-        SND_TAGS: ${{ matrix.tags }}
-    - name: Generate Short SHA
-      shell: bash
-      id: sha
-      run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT 
-    - name: Archive Build
-      uses: actions/upload-artifact@v3
-      with:
-        path: build/release/
-        name: ${{ matrix.artifact }}-${{ steps.sha.outputs.short }}
-        if-no-files-found: error
+        os: windows
+        arch: ${{ matrix.arch }}
+        tags: ${{ matrix.tags }}
+        artifact-name: ${{ matrix.artifact-name }}
+  
   build-darwin-app:
     name: Build ${{ matrix.artifact }}
     runs-on: macos-latest
@@ -131,43 +91,18 @@ jobs:
         include:
           # ELECTRON
           - arch: "amd64"
-            os: "darwin"
             tags: "ELECTRON"
-            artifact: "snd-macos-amd64-gui"
+            artifact-name: "snd-macos-amd64-gui"
           - arch: "arm64"
-            os: "darwin"
             tags: "ELECTRON"
-            artifact: "snd-macos-arm64-gui"
-
+            artifact-name: "snd-macos-arm64-gui"
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
-    - uses: actions/download-artifact@v3
+    - name: Run custom action
+      uses: ./.github/actions/build-app
       with:
-        name: snd-frontend
-        path: frontend/dist
-    - name: Setup Go environment
-      uses: actions/setup-go@v3
-      with:
-        cache: true
-        go-version-file: go.mod
-        cache-dependency-path: go.sum
-    - name: Install Backend Dependencies
-      run: go mod tidy
-    - name: Run Build
-      shell: bash
-      run: ./build.sh
-      env:
-        GOOS: windows
-        GOARCH: ${{ matrix.arch }}
-        SND_TAGS: ${{ matrix.tags }}
-    - name: Generate Short SHA
-      shell: bash
-      id: sha
-      run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT 
-    - name: Archive Build
-      uses: actions/upload-artifact@v3
-      with:
-        path: build/release/
-        name: ${{ matrix.artifact }}-${{ steps.sha.outputs.short }}
-        if-no-files-found: error
+        os: darwin
+        arch: ${{ matrix.arch }}
+        tags: ${{ matrix.tags }}
+        artifact-name: ${{ matrix.artifact-name }}

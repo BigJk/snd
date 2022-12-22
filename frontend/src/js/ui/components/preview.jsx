@@ -32,22 +32,27 @@ const pre = `
   <body style="padding: 15px; overflow-y: {{OVERFLOW}}; zoom: {{ZOOM}};">
     <div id="content">`;
 
-const post = `
+const post = (id) => `
 	${dither}
+	<script>parent.postMessage({ type: 'done', id: ${id}}, '*')</script>
     </div>
   </body>
 </html>
 `;
 
 export default () => {
-	let lastContent = '';
+	let state = {
+		id: Math.floor(Math.random() * 10000000),
+		loading: false,
+		lastContent: ''
+	}
 
 	let updateContent = (iframe, content, stylesheets, scale, overflow) => {
-		if (content === lastContent) {
+		if (content === state.lastContent) {
 			return;
 		}
 
-		lastContent = content;
+		state.lastContent = content;
 
 		let preCss = pre
 			.replace(
@@ -89,22 +94,42 @@ export default () => {
 
 		// We need to reset the iframe to clear old javascript declarations.
 		// TODO: better way?
+		state.loading = true;
 		iframe.contentWindow.location.reload(true);
 		iframe.onload = () => {
 			let doc = iframe.contentWindow.document;
 
 			doc.open();
-			doc.write(preCss + fixed + post);
+			doc.write(preCss + fixed + post(state.id));
 			doc.close();
 		};
 	};
 
+	// wait for message emitted from iframe.
+	let onMessage = (event) => {
+		if (event.data.id !== state.id) {
+			return;
+		}
+
+		switch (event.data.type) {
+			case 'done':
+				state.loading = false;
+				m.redraw();
+				break;
+		}
+	}
+
 	return {
 		oncreate(vnode) {
-			updateContent(vnode.dom, vnode.attrs.content, vnode.attrs.stylesheets, vnode.attrs.scale ?? 1.0, vnode.attrs.overflow);
+			window.addEventListener('message', onMessage)
+
+			updateContent(vnode.dom.querySelector('iframe'), vnode.attrs.content, vnode.attrs.stylesheets, vnode.attrs.scale ?? 1.0, vnode.attrs.overflow);
 		},
 		onupdate(vnode) {
-			updateContent(vnode.dom, vnode.attrs.content, vnode.attrs.stylesheets, vnode.attrs.scale ?? 1.0, vnode.attrs.overflow);
+			updateContent(vnode.dom.querySelector('iframe'), vnode.attrs.content, vnode.attrs.stylesheets, vnode.attrs.scale ?? 1.0, vnode.attrs.overflow);
+		},
+		onremove(vnode) {
+			window.removeEventListener('message', onMessage)
 		},
 		view(vnode) {
 			let scale = vnode.attrs.scale ?? 1.0;
@@ -116,16 +141,21 @@ export default () => {
 			}
 
 			return (
-				<iframe
-					style={{ width: width }}
-					className={vnode.attrs.className}
-					name='result'
-					sandbox='allow-scripts allow-same-origin'
-					allowfullscreen='false'
-					allowpaymentrequest='false'
-					frameborder='0'
-					src=''
-				/>
+				<div className={`relative ${vnode.attrs.className}`}>
+					<iframe
+						style={{ width: width }}
+						className='h-100'
+						name='result'
+						sandbox='allow-scripts allow-same-origin'
+						allowFullScreen='false'
+						allowpaymentrequest='false'
+						frameBorder='0'
+						src=''
+					/>
+					{vnode.attrs.loading === true || state.loading ? <div className='absolute bottom-0 right-0 ma2'>
+						<div className='loading' />
+					</div> : null }
+				</div>
 			);
 		},
 	};

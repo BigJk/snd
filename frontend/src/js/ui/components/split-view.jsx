@@ -16,6 +16,7 @@ export default () => ({
 					scale={vnode.attrs.scale}
 					stylesheets={vnode.attrs.stylesheets ?? store.data.settings.stylesheets}
 					content={vnode.attrs.content}
+					loading={vnode.attrs.loading}
 				/>
 			</div>
 		);

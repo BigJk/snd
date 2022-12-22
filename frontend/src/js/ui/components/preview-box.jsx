@@ -16,6 +16,7 @@ export default function () {
 									stylesheets={store.data.settings.stylesheets}
 									width={150}
 									scale={150 / store.data.settings.printerWidth}
+									loading={vnode.attrs.loading}
 								/>
 							</div>
 						) : null}

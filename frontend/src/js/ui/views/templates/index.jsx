@@ -140,6 +140,7 @@ export default () => {
 												Open Template
 											</div>
 										}
+										loading={state.templates['tmpl:' + t.author + '+' + t.name] === undefined}
 									/>
 								))}
 							</div>

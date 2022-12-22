@@ -15,7 +15,7 @@ export function ModalInfo() {
 						This is the local endpoint if you want to remotely print this template. Just do a POST request containing the JSON encoded data that
 						should be inserted.
 					</div>
-					<Input value={location.origin + '/api/extern/print/template/' + vnode.attrs.id} />
+					<Input value={location.origin + '/api/extern/print/' + vnode.attrs.id} />
 				</Modal>
 			);
 		},

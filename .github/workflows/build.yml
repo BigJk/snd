@@ -84,6 +84,7 @@ jobs:
       if: matrix.libusb
       uses: msys2/setup-msys2@v2
       with:
+        path-type: inherit
         msystem: MINGW64
         update: true
         install: git mingw-w64-x86_64-cc mingw-w64-x86_64-pkg-config mingw-w64-x86_64-libusb

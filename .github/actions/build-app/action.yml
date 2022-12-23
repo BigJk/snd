@@ -1,5 +1,5 @@
 name: Build App
-description: ''
+description: 'Builds and archives S&D for a given configuration'
 inputs:
   os:
     description: 'OS to build for'

@@ -35,7 +35,7 @@ runs:
       shell: bash
       run: go mod tidy
     - name: Run Build (Bash)
-      if: inputs.os != "windows" || inputs.libusb-path == null
+      if: inputs.os != 'windows' || inputs.libusb-path == null
       shell: bash
       run: ./build.sh
       env:
@@ -43,7 +43,7 @@ runs:
         GOARCH: ${{ inputs.arch }}
         SND_TAGS: ${{ inputs.tags }}
     - name: Run Build (MSYS2)
-      if: inputs.os == "windows" && inputs.libusb-path != null
+      if: inputs.os == 'windows' && inputs.libusb-path != null
       shell: msys2 {0}
       run: ./build.sh
       env:

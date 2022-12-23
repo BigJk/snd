@@ -45,7 +45,7 @@ runs:
     - name: Run Build (MSYS2)
       if: inputs.os == 'windows' && inputs.libusb-path != null
       shell: msys2 {0}
-      run: ./build.sh
+      run: rm -rf C:/Strawberry/ && ./build.sh
       env:
         GOOS: ${{ inputs.os }}
         GOARCH: ${{ inputs.arch }}

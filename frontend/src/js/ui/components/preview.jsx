@@ -44,8 +44,8 @@ export default () => {
 	let state = {
 		id: Math.floor(Math.random() * 10000000),
 		loading: false,
-		lastContent: ''
-	}
+		lastContent: '',
+	};
 
 	let updateContent = (iframe, content, stylesheets, scale, overflow) => {
 		if (content === state.lastContent) {
@@ -117,11 +117,11 @@ export default () => {
 				m.redraw();
 				break;
 		}
-	}
+	};
 
 	return {
 		oncreate(vnode) {
-			window.addEventListener('message', onMessage)
+			window.addEventListener('message', onMessage);
 
 			updateContent(vnode.dom.querySelector('iframe'), vnode.attrs.content, vnode.attrs.stylesheets, vnode.attrs.scale ?? 1.0, vnode.attrs.overflow);
 		},
@@ -129,7 +129,7 @@ export default () => {
 			updateContent(vnode.dom.querySelector('iframe'), vnode.attrs.content, vnode.attrs.stylesheets, vnode.attrs.scale ?? 1.0, vnode.attrs.overflow);
 		},
 		onremove(vnode) {
-			window.removeEventListener('message', onMessage)
+			window.removeEventListener('message', onMessage);
 		},
 		view(vnode) {
 			let scale = vnode.attrs.scale ?? 1.0;
@@ -152,9 +152,11 @@ export default () => {
 						frameBorder='0'
 						src=''
 					/>
-					{vnode.attrs.loading === true || state.loading ? <div className='absolute bottom-0 right-0 ma2'>
-						<div className='loading' />
-					</div> : null }
+					{vnode.attrs.loading === true || state.loading ? (
+						<div className='absolute bottom-0 right-0 ma2'>
+							<div className='loading' />
+						</div>
+					) : null}
 				</div>
 			);
 		},

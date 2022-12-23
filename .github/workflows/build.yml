@@ -128,7 +128,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Install libusb
       if: matrix.libusb
-      run: brew install libusb
+      run: brew install libusb pkg-config && pkg-config --cflags libusb-1.0
     - name: Build App
       uses: ./.github/actions/build-app
       with:

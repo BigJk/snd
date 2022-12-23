@@ -119,10 +119,7 @@ jobs:
             libusb: true
             tags: "ELECTRON LIBUSB"
             artifact-name: "snd-macos-amd64-gui-usb"
-          - arch: "arm64"
-            libusb: true
-            tags: "ELECTRON LIBUSB"
-            artifact-name: "snd-macos-arm64-gui-usb"
+          # Note: arm64 + USB not possible until we have an M1 runner
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3

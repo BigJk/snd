@@ -1,6 +1,9 @@
 name: Build App
 description: 'Builds and archives S&D for a given configuration'
 inputs:
+  artifact-name:
+    description: 'Name of the resulting artifact'
+    required: true
   os:
     description: 'OS to build for'
     required: true
@@ -10,9 +13,9 @@ inputs:
   tags:
     description: 'Build tags to pass to Go'
     required: false
-  artifact-name:
-    description: 'Name of the resulting artifact'
-    required: true
+  libusb-path:
+    description: 'Optional path to libusb DLL to include'
+    required: false
 runs:
   using: composite
   steps:
@@ -38,6 +41,10 @@ runs:
         GOOS: ${{ inputs.os }}
         GOARCH: ${{ inputs.arch }}
         SND_TAGS: ${{ inputs.tags }}
+    - name: Copy libusb DLL
+      if: inputs.libusb-path != null
+      shell: bash
+      run: cp ${{inputs.libusb-path}} build/release/
     - name: Generate Short SHA
       shell: bash
       id: sha

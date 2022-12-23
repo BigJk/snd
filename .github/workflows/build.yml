@@ -30,6 +30,7 @@ jobs:
         path: frontend/dist
         if-no-files-found: error
   build-linux-app:
+    if: false
     name: Build ${{ matrix.artifact-name }}
     runs-on: ubuntu-latest
     needs: build-frontend
@@ -69,11 +70,28 @@ jobs:
         include:
           # ELECTRON
           - arch: "amd64"
+            libusb: false
             tags: "ELECTRON"
             artifact-name: "snd-windows-amd64-gui"
+          - arch: "amd64"
+            libusb: true
+            tags: "ELECTRON LIBUSB"
+            artifact-name: "snd-windows-amd64-gui-usb"
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
+    - name: Prepare libusb
+      if: matrix.libusb
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: git mingw-w64-x86_64-cc mingw-w64-x86_64-pkg-config mingw-w64-x86_64-libusb
+    - name: Check for libusb
+      if: matrix.libusb
+      run: |
+        pkg-config --cflags libusb-1.0
+        pkg-config --libs libusb-1.0
     - name: Run custom action
       uses: ./.github/actions/build-app
       with:
@@ -83,6 +101,7 @@ jobs:
         artifact-name: ${{ matrix.artifact-name }}
   
   build-darwin-app:
+    if: false
     name: Build ${{ matrix.artifact-name }}
     runs-on: macos-latest
     needs: build-frontend

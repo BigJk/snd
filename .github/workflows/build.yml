@@ -89,6 +89,7 @@ jobs:
         install: git mingw-w64-x86_64-cc mingw-w64-x86_64-pkg-config mingw-w64-x86_64-libusb
     - name: Check for libusb
       if: matrix.libusb
+      shell: msys2 {0}
       run: |
         pkg-config --cflags libusb-1.0
         pkg-config --libs libusb-1.0

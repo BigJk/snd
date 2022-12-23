@@ -116,14 +116,19 @@ jobs:
             tags: "ELECTRON"
             artifact-name: "snd-macos-arm64-gui"
           - arch: "amd64"
+            libusb: true
             tags: "ELECTRON LIBUSB"
             artifact-name: "snd-macos-amd64-gui-usb"
           - arch: "arm64"
+            libusb: true
             tags: "ELECTRON LIBUSB"
             artifact-name: "snd-macos-arm64-gui-usb"
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
+    - name: Install libusb
+      if: matrix.libusb
+      run: brew install libusb
     - name: Build App
       uses: ./.github/actions/build-app
       with:

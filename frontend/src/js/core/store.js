@@ -113,4 +113,5 @@ export default new PubSubStore({
 	printer: null,
 	version: null,
 	publicPackages: null,
+	newVersion: null,
 });

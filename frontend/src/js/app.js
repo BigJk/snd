@@ -87,11 +87,24 @@ store.sub(['reload_public_packages'], () => {
 	});
 });
 
+store.sub(['reload_new_version'], () => {
+	api
+		.newVersion()
+		.then((newVersion) => {
+			store.set('newVersion', newVersion);
+		})
+		.catch((err) => {
+			console.log(err);
+			store.set('newVersion', false);
+		});
+});
+
 store.pub('reload_settings');
 store.pub('reload_templates');
 store.pub('reload_generators');
 store.pub('reload_sources');
 store.pub('reload_public_packages');
+store.pub('reload_new_version');
 
 // Wait for settings to populate and then mount
 

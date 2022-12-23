@@ -30,7 +30,7 @@ jobs:
         path: frontend/dist
         if-no-files-found: error
   build-linux-app:
-    name: Build ${{ matrix.artifact }}
+    name: Build ${{ matrix.artifact-name }}
     runs-on: ubuntu-latest
     needs: build-frontend
     strategy:
@@ -61,7 +61,7 @@ jobs:
         artifact-name: ${{ matrix.artifact-name }}
   
   build-windows-app:
-    name: Build ${{ matrix.artifact }}
+    name: Build ${{ matrix.artifact-name }}
     runs-on: windows-latest
     needs: build-frontend
     strategy:
@@ -83,7 +83,7 @@ jobs:
         artifact-name: ${{ matrix.artifact-name }}
   
   build-darwin-app:
-    name: Build ${{ matrix.artifact }}
+    name: Build ${{ matrix.artifact-name }}
     runs-on: macos-latest
     needs: build-frontend
     strategy:

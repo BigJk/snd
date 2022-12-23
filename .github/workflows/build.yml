@@ -84,16 +84,15 @@ jobs:
       if: matrix.libusb
       uses: msys2/setup-msys2@v2
       with:
-        path-type: inherit
-        msystem: MINGW64
-        update: true
+        path-type: inherit # needs access to other executables like go
         install: git mingw-w64-x86_64-cc mingw-w64-x86_64-pkg-config mingw-w64-x86_64-libusb
     - name: Check for libusb
       if: matrix.libusb
       shell: msys2 {0}
       run: |
         pkg-config --cflags libusb-1.0
-        pkg-config --libs libusb-1.0
+        pkg-config --cflags libusb-1.0
+        ls D:/a/_temp/msys64/mingw64/bin/
     - name: Run custom action
       uses: ./.github/actions/build-app
       with:

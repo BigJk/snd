@@ -40,6 +40,10 @@ jobs:
           - arch: "amd64"
             tags: "ELECTRON"
             artifact-name: "snd-linux-amd64-gui"
+          - arch: "amd64"
+            libusb: true
+            tags: "ELECTRON LIBUSB"
+            artifact-name: "snd-linux-amd64-gui-usb"
           # HEADLESS
           - arch: "amd64"
             artifact-name: "snd-linux-amd64-headless"
@@ -52,6 +56,9 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
+    - name: Install libusb
+      if: matrix.libusb
+      run: sudo apt-get install libusb-1.0-0-dev pkg-config && pkg-config --cflags libusb-1.0
     - name: Build App
       uses: ./.github/actions/build-app
       with:

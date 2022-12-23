@@ -115,6 +115,12 @@ jobs:
           - arch: "arm64"
             tags: "ELECTRON"
             artifact-name: "snd-macos-arm64-gui"
+          - arch: "amd64"
+            tags: "ELECTRON LIBUSB"
+            artifact-name: "snd-macos-amd64-gui-usb"
+          - arch: "arm64"
+            tags: "ELECTRON LIBUSB"
+            artifact-name: "snd-macos-arm64-gui-usb"
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3

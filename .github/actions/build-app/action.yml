@@ -34,8 +34,17 @@ runs:
     - name: Install Backend Dependencies
       shell: bash
       run: go mod tidy
-    - name: Run Build
+    - name: Run Build (Bash)
+      if: inputs.os != "windows" || inputs.libusb-path == null
       shell: bash
+      run: ./build.sh
+      env:
+        GOOS: ${{ inputs.os }}
+        GOARCH: ${{ inputs.arch }}
+        SND_TAGS: ${{ inputs.tags }}
+    - name: Run Build (MSYS2)
+      if: inputs.os == "windows" && inputs.libusb-path != null
+      shell: msys2 {0}
       run: ./build.sh
       env:
         GOOS: ${{ inputs.os }}

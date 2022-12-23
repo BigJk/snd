@@ -25,6 +25,10 @@ type GitHubTags []struct {
 }
 
 func fetchTags() (GitHubTags, error) {
+	if len(snd.GitCommitHash) == 0 {
+		return nil, errors.New("non release build. Skipping latest version fetching")
+	}
+
 	resp, err := http.Get("https://api.github.com/repos/BigJk/snd/tags")
 	if err != nil {
 		return nil, err

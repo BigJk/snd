@@ -210,6 +210,7 @@ func main() {
 			_ = copy.Copy(fmt.Sprintf("./res/%s-%s", b.OS, b.Arch), target)
 			_ = copy.Copy("./cache/frontend/", filepath.Join(target, "/frontend"))
 			_ = copy.Copy("./data/icon.png", filepath.Join(target, "/data/icon.png"))
+			_ = copy.Copy("./data/icon.icns", filepath.Join(target, "/data/icon.icns"))
 			_ = ioutil.WriteFile(filepath.Join(target, "/version.txt"), []byte(fmt.Sprintf("Commit: %s\nBranch: %s\nBuild Time: %s", gitCommit, gitBranch, time.Now().Format(time.RFC3339))), 0666)
 
 			fmt.Printf("=========================== [%s-%s]\n", b.OS, b.Arch)

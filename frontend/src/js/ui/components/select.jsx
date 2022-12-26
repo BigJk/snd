@@ -35,7 +35,10 @@ export default () => {
 					maxVisibleItems: 7,
 				},
 				callbacks: {
-					onSelect: (value) => vnode.attrs.oninput({ target: { value: value } }),
+					onSelect: (value) => {
+						vnode.attrs.oninput({ target: { value: value } });
+						m.redraw();
+					},
 				},
 				classNames: {
 					root: `edd-root ${vnode.attrs.labelCol ? 'col-' + (12 - vnode.attrs.labelCol) : ''}`,

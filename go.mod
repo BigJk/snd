@@ -9,6 +9,7 @@ require (
 	github.com/BigJk/nra v1.0.0-rc
 	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/alexbrainman/printer v0.0.0-20181008173622-345afe414dee
+	github.com/antchfx/xmlquery v1.3.13
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/asticode/go-astikit v0.15.0
 	github.com/asticode/go-astilectron v0.27.0
@@ -26,6 +27,7 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pierrre/archivefile v0.0.0-20170218184037-e2d100bc74f5
 	github.com/samber/lo v1.11.0
+	github.com/sbabiv/xml2map v1.2.1
 	github.com/vmihailenco/msgpack/v5 v5.3.5
 	go.bug.st/serial v1.3.5
 	go.etcd.io/bbolt v1.3.3
@@ -39,7 +41,6 @@ require (
 	github.com/Sereal/Sereal v0.0.0-20200210135736-180ff2394e8a // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect
 	github.com/andybalholm/cascadia v1.1.0 // indirect
-	github.com/antchfx/xmlquery v1.3.13 // indirect
 	github.com/antchfx/xpath v1.2.1 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
@@ -67,7 +68,6 @@ require (
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/pjbgf/sha1cd v0.2.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/sbabiv/xml2map v1.2.1 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/skeema/knownhosts v1.1.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

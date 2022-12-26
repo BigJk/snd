@@ -31,8 +31,8 @@ export default () => {
 	let state = {
 		dropdown: null,
 		oninput: null,
-		open: false
-	}
+		open: false,
+	};
 
 	// we need to update the oninput value on create and update of component,
 	// otherwise we miss updates to this callback.
@@ -41,7 +41,7 @@ export default () => {
 			vnode.attrs.oninput({ target: { value: value } });
 			m.redraw();
 		};
-	}
+	};
 
 	return {
 		oncreate(vnode) {
@@ -60,7 +60,7 @@ export default () => {
 						state.oninput(value);
 					},
 					onOpen: () => (state.open = true),
-					onClose: () => (state.open = false)
+					onClose: () => (state.open = false),
 				},
 				classNames: {
 					root: `edd-root ${vnode.attrs.labelCol ? 'col-' + (12 - vnode.attrs.labelCol) : ''}`,

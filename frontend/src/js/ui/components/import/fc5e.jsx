@@ -16,7 +16,9 @@ export default {
 					<div>
 						<div className='mb2 lh-copy'>
 							You can import data from Fight Club 5e Compediums. This will convert all the included data (Items, Monsters, Races, Background, ...) and
-							add them as Data Sources. As the compediums don't contain the basic information like name, author, etc. please insert them manually:
+							add them as Data Sources. <br />
+							<br />
+							As the compediums don't contain the basic information like name, author, etc. Please insert them manually:
 						</div>
 						<Input label='Name' placeholder='Full Compedium' oninput={(e) => (state.name = e.target.value)} />
 						<Input label='Author' placeholder='User' oninput={(e) => (state.author = e.target.value)} />

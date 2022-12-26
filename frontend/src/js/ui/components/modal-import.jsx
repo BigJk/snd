@@ -28,6 +28,7 @@ export default function () {
 						keys={vnode.attrs.types}
 						names={vnode.attrs.types.map((t) => ImportTypes[t].name)}
 						oninput={(e) => (opened = e.target.value)}
+						noDefault={true}
 					/>
 					<div className='pv2'>
 						<div className='divider' />

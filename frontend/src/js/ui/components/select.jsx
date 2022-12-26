@@ -9,9 +9,11 @@ export default () => {
 			oninput={vnode.attrs.oninput}
 			style={{ width: '31px' }}
 		>
-			<option value='' selected={!vnode.attrs.selected || vnode.attrs.selected.length === 0}>
-				{vnode.attrs.default ?? 'Choose an option...'}
-			</option>
+			{vnode.attrs.noDefault ? null : (
+				<option value='' selected={!vnode.attrs.selected || vnode.attrs.selected.length === 0}>
+					{vnode.attrs.default ?? 'Choose an option...'}
+				</option>
+			)}
 			{vnode.attrs.keys.map((k, i) => {
 				let text = k;
 				if (vnode.attrs.names) {

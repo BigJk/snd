@@ -13,7 +13,8 @@ import (
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/imexport"
-	"github.com/BigJk/snd/vtt"
+	"github.com/BigJk/snd/imexport/fightclub5e"
+	"github.com/BigJk/snd/imexport/vtt"
 	"github.com/labstack/echo/v4"
 	"github.com/mattetti/filebuffer"
 )
@@ -150,6 +151,25 @@ func RegisterSources(route *echo.Group, db database.Database) {
 
 	route.POST("/importVttModule", echo.WrapHandler(nra.MustBind(func(moduleFile string) error {
 		sources, entries, err := vtt.ConvertDataSources(moduleFile)
+		if err != nil {
+			return err
+		}
+
+		for i := range sources {
+			_ = db.DeleteEntries(sources[i].ID())
+
+			if err := db.SaveSource(sources[i]); err == nil {
+				for j := range entries[i] {
+					_ = db.SaveEntry(sources[i].ID(), entries[i][j])
+				}
+			}
+		}
+
+		return nil
+	})))
+
+	route.POST("/importFC5eCompedium", echo.WrapHandler(nra.MustBind(func(file string, name string, author string, slug string, description string) error {
+		sources, entries, err := fightclub5e.ImportCompedium(file, name, author, slug, description)
 		if err != nil {
 			return err
 		}

@@ -71,7 +71,7 @@ export default () => {
 		if (
 			!store.data.newVersion ||
 			store.data.newVersion.localVersion.gitCommitHash === '' ||
-			store.data.newVersion.latestVersion.commit.sha === store.data.newVersion.localVersion.commit
+			store.data.newVersion.latestVersion.commit.sha === store.data.newVersion.localVersion.gitCommitHash
 		) {
 			return null;
 		}

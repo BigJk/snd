@@ -25,7 +25,7 @@ export default () => {
 		},
 	};
 
-	let onimport = (type, url) => {
+	let onimport = (type, importData) => {
 		switch (type) {
 			case 'zip':
 				{
@@ -86,7 +86,7 @@ export default () => {
 				{
 					state.importing.loading = true;
 					api
-						.importSourceUrl(url)
+						.importSourceUrl(importData)
 						.then((name) => {
 							success(`Imported '${name}' successful`);
 
@@ -130,6 +130,33 @@ export default () => {
 								.importSourceCSV(file)
 								.then((name) => {
 									success(`Imported '${name}' csv successful`);
+									store.pub('reload_sources');
+								})
+								.catch(error)
+								.then(() => {
+									state.importing.show = false;
+									state.importing.loading = false;
+								});
+						});
+					} else {
+						// TODO: error
+					}
+				}
+				break;
+			case 'fc5e':
+				{
+					if (importData.name.length === 0 || importData.author.length === 0 || importData.slug.length === 0 || importData.description.length === 0) {
+						error('Please fill in all information.');
+						return;
+					}
+
+					if (inElectron) {
+						openFileDialog().then((file) => {
+							state.importing.loading = true;
+							api
+								.importFC5eCompedium(file, importData.name, importData.author, importData.slug, importData.description)
+								.then(() => {
+									success(`Imported compedium successful`);
 									store.pub('reload_sources');
 								})
 								.catch(error)
@@ -269,35 +296,7 @@ export default () => {
 							show={state.importing.show}
 							onimport={onimport}
 							onclose={() => (state.importing.show = false)}
-							extra={
-								<div>
-									<div className='mt3'>
-										<div className='divider' />
-										<div>
-											<div className='mt2 mb3 lh-copy'>
-												<b className='db'>CSV Import</b>
-												You can also import data from simple CSV files that you exported from Google Sheets or Excel.
-											</div>
-											<div className='btn btn-primary mr2' onclick={() => onimport('csv')}>
-												Import CSV (data.csv)
-											</div>
-										</div>
-									</div>
-									<div className='mt3'>
-										<div className='divider' />
-										<div>
-											<div className='mt2 mb3 lh-copy'>
-												<b className='db'>FoundryVTT Import</b>
-												You can also import data from FoundryVTT Modules and Systems. This will convert all the included packs and add them as Data
-												Sources. To import a Module or System open the module.json or system.json file in it's folder.
-											</div>
-											<div className='btn btn-primary mr2' onclick={() => onimport('vtt')}>
-												Import FoundryVTT (module.json, system.json)
-											</div>
-										</div>
-									</div>
-								</div>
-							}
+							types={['base', 'csv', 'vtt', 'fc5e']}
 						/>
 						<ModalExport
 							type='data source'

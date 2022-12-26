@@ -231,6 +231,7 @@ export default () => {
 							state.importing.show = false;
 							state.importing.loading = false;
 						}}
+						types={['base']}
 					/>
 				</Base>
 			);

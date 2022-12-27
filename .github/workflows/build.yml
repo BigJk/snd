@@ -1,8 +1,9 @@
 name: Build
 
 on:
-  push: 
-    branches: [ matrix-build ]
+  push:
+    tags:
+      - v**
 
 jobs:
   build-frontend:
@@ -29,6 +30,7 @@ jobs:
         name: snd-frontend
         path: frontend/dist
         if-no-files-found: error
+  
   build-linux-app:
     name: Build ${{ matrix.artifact-name }}
     runs-on: ubuntu-latest
@@ -140,3 +142,16 @@ jobs:
         arch: ${{ matrix.arch }}
         tags: ${{ matrix.tags }}
         artifact-name: ${{ matrix.artifact-name }}
+
+  create-release:
+    runs-on: ubuntu-latest
+    needs: [build-linux-app, build-windows-app, build-darwin-app]
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Check release files
+        run: ls build/release/
+      # - name: Release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     draft: true

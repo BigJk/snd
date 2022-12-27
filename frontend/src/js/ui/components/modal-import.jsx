@@ -1,9 +1,13 @@
-import { Input, Modal } from '/js/ui/components';
+import { Modal, Select } from '/js/ui/components';
+import ImportTypes from '/js/ui/components/import/types';
 
 export default function () {
-	let url = '';
+	let opened = '';
 
 	return {
+		oninit(vnode) {
+			opened = vnode.attrs.types[0];
+		},
 		view(vnode) {
 			if (!vnode.attrs.show) return null;
 
@@ -18,31 +22,21 @@ export default function () {
 				);
 
 			return (
-				<Modal title='Import' onclose={vnode.attrs.onclose}>
-					<div className='mb3 lh-copy'>
-						<div className='mb2'>
-							<b>Import {vnode.attrs.type} either locally (e.g. .zip, folder) or from the internet via a URL</b>
-						</div>
-						<div>
-							<b>Warning:</b> A {vnode.attrs.type} with the same author and identification name will overwrite any previous imported version!
-						</div>
+				<Modal title='Import' onclose={vnode.attrs.onclose} className='mh450'>
+					<Select
+						selected={opened}
+						keys={vnode.attrs.types}
+						names={vnode.attrs.types.map((t) => ImportTypes[t].name)}
+						oninput={(e) => (opened = e.target.value)}
+						noDefault={true}
+					/>
+					<div className='pv2'>
+						<div className='divider' />
 					</div>
-					<div className='mb3'>
-						<div className='btn btn-primary mr2' onclick={() => vnode.attrs.onimport('zip')}>
-							Import .zip
-						</div>
-						<div className='btn btn-primary' onclick={() => vnode.attrs.onimport('folder')}>
-							Import Folder
-						</div>
-					</div>
-					<div className='divider' />
-					<div>
-						<Input label='Import URL' placeholder='http://example.com/example.zip' oninput={(e) => (url = e.target.value)} />
-						<div className='btn btn-primary' onclick={() => vnode.attrs.onimport('url', url)}>
-							Import
-						</div>
-					</div>
-					{vnode.attrs.extra}
+					{m(ImportTypes[opened].view, {
+						type: vnode.attrs.type,
+						onimport: vnode.attrs.onimport,
+					})}
 				</Modal>
 			);
 		},

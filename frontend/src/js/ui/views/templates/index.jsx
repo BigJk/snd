@@ -1,6 +1,6 @@
-import { groupBy, map } from 'lodash-es';
+import { groupBy, map, once } from 'lodash-es';
 
-import { inElectron, openFileDialog, openFolderDialog } from '/js/electron';
+import { inElectron, openFileDialog, openFolderDialog, shell } from '/js/electron';
 import { readFile } from '/js/file';
 
 import api from '/js/core/api';
@@ -10,7 +10,25 @@ import { render } from '/js/core/templating';
 import { Base, Header, Input, Loading, ModalImport, PreviewBox, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
-import { error, success } from '/js/ui/toast';
+import { dialog, error, success } from '/js/ui/toast';
+
+// check and notify for update once at the start of the application. If the local commit is empty it's a self
+// build version, so we don't notify the user in this case.
+let checkUpdate = once(() => {
+	if (
+		!store.data.newVersion ||
+		store.data.newVersion.localVersion.gitCommitHash === '' ||
+		store.data.newVersion.latestVersion.commit.sha === store.data.newVersion.localVersion.gitCommitHash
+	) {
+		return;
+	}
+
+	dialog(
+		`There is a new version of Sales & Dungeons available (${store.data.newVersion.latestVersion.name.split(' ')[0]}). Visit download page?`
+	).then(() => {
+		shell.openExternal('https://github.com/BigJk/snd/releases');
+	});
+});
 
 export default () => {
 	let state = {
@@ -22,6 +40,8 @@ export default () => {
 			url: '',
 		},
 	};
+
+	checkUpdate();
 
 	let onimport = (type, url) => {
 		switch (type) {
@@ -140,6 +160,7 @@ export default () => {
 												Open Template
 											</div>
 										}
+										loading={state.templates['tmpl:' + t.author + '+' + t.name] === undefined}
 									/>
 								))}
 							</div>
@@ -222,6 +243,7 @@ export default () => {
 								state.importing.show = false;
 								state.importing.loading = false;
 							}}
+							types={['base']}
 						/>
 					</div>
 				</Base>

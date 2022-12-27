@@ -28,6 +28,16 @@ export default () => {
 	);
 
 	return {
+		oninit(vnode) {
+			if (vnode.attrs.id) {
+				let dupeTemplate = store.data.templates.find((tmpl) => `tmpl:${tmpl.author}+${tmpl.slug}` === vnode.attrs.id);
+				if (dupeTemplate) {
+					state.template = dupeTemplate;
+					state.template.name += ' Copy';
+					state.template.slug += '-copy';
+				}
+			}
+		},
 		view(vnode) {
 			return (
 				<Base active='templates'>
@@ -38,6 +48,21 @@ export default () => {
 								onclick={() => {
 									if (state.template.name.length === 0) {
 										error('Please insert a name');
+										return;
+									}
+
+									if (state.template.author.length === 0) {
+										error('Please insert a author');
+										return;
+									}
+
+									if (state.template.slug.length === 0) {
+										error('Please insert a slug');
+										return;
+									}
+
+									if (store.data.templates.find((tmpl) => `tmpl:${tmpl.author}+${tmpl.slug}` === vnode.attrs.id)) {
+										error('This template already exists');
 										return;
 									}
 

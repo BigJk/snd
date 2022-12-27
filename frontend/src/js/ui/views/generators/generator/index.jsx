@@ -181,6 +181,11 @@ export default function () {
 							<div className='btn btn-primary mr2' onclick={() => m.route.set(`/generators/${vnode.attrs.id}/edit`)}>
 								Edit
 							</div>
+							<Tooltip content='Duplicate'>
+								<div className='btn btn-primary mr2' onclick={() => m.route.set(`/generators/dupe/${state.id}`)}>
+									<i className='ion ion-md-copy' />
+								</div>
+							</Tooltip>
 							<Tooltip content='Export Options'>
 								<div className='btn btn-primary w2 mr2' onclick={() => (state.showExport = true)}>
 									<i className='ion ion-md-open' />

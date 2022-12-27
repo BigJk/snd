@@ -5,13 +5,14 @@ package log
 import (
 	"errors"
 	"fmt"
-	"github.com/jwalton/go-supportscolor"
 	"io"
 	"os"
 	"runtime"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/jwalton/go-supportscolor"
 
 	"github.com/fatih/color"
 )
@@ -90,8 +91,8 @@ func printToStd(e Entry) {
 	}
 }
 
-func getCaller() string {
-	_, file, line, ok := runtime.Caller(2)
+func getCaller(offset int) string {
+	_, file, line, ok := runtime.Caller(2 + offset)
 	if ok {
 		packageIndex := strings.Index(file, "snd/")
 		if packageIndex >= 0 {
@@ -111,7 +112,7 @@ func SetOutput(writer io.Writer) {
 }
 
 // AddHook adds a hook that will be called with each
-// log entry that get's created.
+// log entry that gets created.
 func AddHook(fn func(e Entry)) {
 	mtx.Lock()
 	defer mtx.Unlock()
@@ -143,7 +144,7 @@ func ErrorString(err string, values ...Value) error {
 // ErrorUser logs the error with the given values and
 // returns err as it is was passed if len(userError) == 0
 // or a new error with userError as content. This is
-// useful if you want to return a more user friendly error
+// useful if you want to return a more user-friendly error
 // to the user while logging the original error in background.
 func ErrorUser(err error, userError string, values ...Value) error {
 	// Skip if no error is supplied.
@@ -155,7 +156,7 @@ func ErrorUser(err error, userError string, values ...Value) error {
 		Level:  LevelError,
 		Time:   time.Now(),
 		Text:   err.Error(),
-		Caller: getCaller(),
+		Caller: getCaller(1),
 		Values: values,
 	}
 
@@ -173,7 +174,7 @@ func Info(text string, values ...Value) {
 		Level:  LevelInfo,
 		Time:   time.Now(),
 		Text:   text,
-		Caller: getCaller(),
+		Caller: getCaller(0),
 		Values: values,
 	}
 

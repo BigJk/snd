@@ -1,6 +1,10 @@
 import { map } from 'lodash-es';
 
+import { shell } from '/js/electron';
+
 import { Logo } from './index';
+
+import store from '/js/core/store';
 
 let pages = {
 	templates: {
@@ -63,10 +67,32 @@ export default () => {
 			</div>
 		));
 
+	let update = () => {
+		if (
+			!store.data.newVersion ||
+			store.data.newVersion.localVersion.gitCommitHash === '' ||
+			store.data.newVersion.latestVersion.commit.sha === store.data.newVersion.localVersion.gitCommitHash
+		) {
+			return null;
+		}
+
+		let tag = store.data.newVersion.latestVersion.name.split(' ')[0];
+
+		return (
+			<div
+				className='tc mh3 br2 ph2 pv1 hover-bg-primary hover-white light-red pointer f7'
+				onclick={() => shell.openExternal('https://github.com/BigJk/snd/releases')}
+			>
+				{tag} Available
+			</div>
+		);
+	};
+
 	return {
 		view(vnode) {
 			return (
 				<div className='side-nav grid-bg relative flex flex-column flex-shrink-0'>
+					<div className='absolute bottom-0 left-0 w-100 tc mb3 z-999'>{update()}</div>
 					<div className='side-nav--shadow w-100 h-100 absolute bottom-0 left-0 z-0' />
 					<div className='ph2 pv3 header white flex-shrink-0'>
 						<div className='flex-centered'>

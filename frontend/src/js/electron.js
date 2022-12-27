@@ -15,15 +15,17 @@ try {
 
 export const electron = outsideRequire ? outsideRequire('electron') : null;
 export const inElectron = !!electron;
-export const dialog = electron?.remote.dialog;
-export const shell = electron?.shell;
+
+const remote = outsideRequire ? outsideRequire('@electron/remote') : null;
+
+export const shell = remote.shell;
 
 // Add right-click menu interactions
 if (electron) {
-	let Menu = electron.remote.Menu;
-	let MenuItem = electron.remote.MenuItem;
+	let Menu = remote.Menu;
+	let MenuItem = remote.MenuItem;
 
-	electron.remote.getCurrentWindow().webContents.on('context-menu', (event, params) => {
+	remote.getCurrentWindow().webContents.on('context-menu', (event, params) => {
 		const menu = new Menu();
 
 		if (params.dictionarySuggestions.length === 0) {
@@ -37,7 +39,7 @@ if (electron) {
 				menu.append(
 					new MenuItem({
 						label: suggestion,
-						click: () => electron.remote.getCurrentWindow().webContents.replaceMisspelling(suggestion),
+						click: () => remote.getCurrentWindow().webContents.replaceMisspelling(suggestion),
 					})
 				);
 			}
@@ -86,7 +88,7 @@ export function close() {
 		return;
 	}
 
-	electron.remote.getCurrentWindow().close();
+	remote.getCurrentWindow().close();
 }
 
 export function setSpellcheckerLanguages(languages) {
@@ -94,7 +96,7 @@ export function setSpellcheckerLanguages(languages) {
 		return;
 	}
 
-	electron.remote.session.defaultSession.setSpellCheckerLanguages(languages ?? ['en-US']);
+	remote.session.defaultSession.setSpellCheckerLanguages(languages ?? ['en-US']);
 }
 
 export function openFolderDialog(title) {
@@ -104,7 +106,7 @@ export function openFolderDialog(title) {
 	}
 
 	return new Promise((resolve, reject) => {
-		dialog
+		remote.dialog
 			.showOpenDialog({
 				properties: ['openDirectory'],
 				message: title ?? 'Select Folder',
@@ -128,7 +130,7 @@ export function openFileDialog(title) {
 	}
 
 	return new Promise((resolve, reject) => {
-		dialog
+		remote.dialog
 			.showOpenDialog({
 				properties: ['openFile'],
 				message: title ?? 'Select File',

@@ -22,6 +22,16 @@ export default () => {
 	};
 
 	return {
+		oninit(vnode) {
+			if (vnode.attrs.id) {
+				let dupeGenerator = store.data.generators.find((tmpl) => `gen:${tmpl.author}+${tmpl.slug}` === vnode.attrs.id);
+				if (dupeGenerator) {
+					state.generator = dupeGenerator;
+					state.generator.name += ' Copy';
+					state.generator.slug += '-copy';
+				}
+			}
+		},
 		view(vnode) {
 			return (
 				<Base active='generators'>
@@ -32,6 +42,21 @@ export default () => {
 								onclick={() => {
 									if (state.generator.name.length === 0) {
 										error('Please insert a name');
+										return;
+									}
+
+									if (state.generator.author.length === 0) {
+										error('Please insert a author');
+										return;
+									}
+
+									if (state.generator.slug.length === 0) {
+										error('Please insert a slug');
+										return;
+									}
+
+									if (store.data.generators.find((gen) => `gen:${gen.author}+${gen.slug}` === vnode.attrs.id)) {
+										error('This generator already exists');
 										return;
 									}
 

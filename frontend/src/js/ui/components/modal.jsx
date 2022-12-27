@@ -8,7 +8,7 @@ export default {
 						<div className='modal-title f4'>{vnode.attrs.title}</div>
 						{vnode.attrs.noclose === true ? null : <div className='btn btn-clear mt1' onclick={vnode.attrs.onclose} />}
 					</div>
-					<div className='modal-body'>
+					<div className={`modal-body ${vnode.attrs.className}`}>
 						<div className='content pb2'>{vnode.children}</div>
 					</div>
 				</div>

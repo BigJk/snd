@@ -108,8 +108,10 @@ class PubSubStore {
 export default new PubSubStore({
 	settings: null,
 	templates: null,
+	generators: null,
 	sources: null,
 	printer: null,
 	version: null,
 	publicPackages: null,
+	newVersion: null,
 });

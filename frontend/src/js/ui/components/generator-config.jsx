@@ -19,7 +19,7 @@ export default () => ({
 				</div>
 				<div className='divider' />
 				{vnode.attrs.config.map((val) => {
-					if (!Types[val.type] || !vnode.attrs.value[val.key]) {
+					if (!Types[val.type] || vnode.attrs.value[val.key] === undefined) {
 						return null;
 					}
 

@@ -7,9 +7,9 @@ import MarkdownItReplaceLink from 'markdown-it-replace-link';
 import api from '/js/core/api';
 import store from '/js/core/store';
 
-import { Base, Header, Select } from '/js/ui/components';
+import { Base, Header, Input, Select } from '/js/ui/components';
 
-import { error, success } from '/js/ui/toast';
+import { dialog, error, success } from '/js/ui/toast';
 
 // Markdown instance with syntax highlighting
 let markdown = new MarkdownIt({
@@ -48,6 +48,10 @@ export default function () {
 		selectedVersion: null,
 		repos: [],
 		packages: [],
+		filter: {
+			type: '',
+			search: '',
+		},
 	};
 
 	let anyLoading = () => state.loading.some((l) => l);
@@ -145,53 +149,155 @@ export default function () {
 					</div>
 				) : null}
 				<div className='pa2 bg-black-05 bb b--black-10 f5 b'>Packages</div>
+				<div className='pa2 bg-black-05 bb b--black-10 f5 b flex'>
+					<Input value={state.filter.search} oninput={(e) => (state.filter.search = e.target.value)} placeholder='Search...' />
+					<div className='ml2 w-50'>
+						<Select
+							selected={state.filter.type}
+							keys={['', 'template', 'generator', 'data source']}
+							names={['All', 'Template', 'Generator', 'Data Source']}
+							oninput={(e) => (state.filter.type = e.target.value)}
+							noDefault={true}
+						/>
+					</div>
+				</div>
 				<div className='flex-grow-1 overflow-auto' style={{ flex: 1 }}>
-					{state.packages.map((p) => {
-						let id = '';
-						let data = null;
+					{state.packages
+						.filter((p) => {
+							if (state.filter.type.length > 0 && p.type !== state.filter.type) {
+								return false;
+							}
+							if (state.filter.search.length > 0) {
+								let name = '';
+								switch (p.type) {
+									case 'template':
+										name = p.template.name;
+										break;
+									case 'generator':
+										name = p.generator.name;
+										break;
+									case 'data source':
+										name = p.dataSource.name;
+										break;
+								}
 
-						switch (p.type) {
-							case 'template':
-								id = `tmpl:${p.template.author}+${p.template.slug}`;
-								data = p.template;
-								break;
-							case 'generator':
-								id = `gen:${p.generator.author}+${p.generator.slug}`;
-								data = p.generator;
-								break;
-							case 'data source':
-								id = `ds:${p.dataSource.author}+${p.dataSource.slug}`;
-								data = p.dataSource;
-								break;
-							default:
-								return null;
-						}
+								if (name.toLowerCase().indexOf(state.filter.search.toLowerCase()) === -1) {
+									return false;
+								}
+							}
+							return true;
+						})
+						.map((p) => {
+							let id = '';
+							let data = null;
+							let present = false;
 
-						return (
-							<div className='pa2 bb b--black-10 flex justify-between items-end lh-copy'>
-								<div className='pr3'>
-									<div className='f6'>
-										<b>{capitalize(p.type)}:</b> {data.name}
+							switch (p.type) {
+								case 'template':
+									id = `tmpl:${p.template.author}+${p.template.slug}`;
+									data = p.template;
+									present = store.data.templates.some((tmpl) => tmpl.author === data.author && tmpl.slug === data.slug);
+									break;
+								case 'generator':
+									id = `gen:${p.generator.author}+${p.generator.slug}`;
+									data = p.generator;
+									present = store.data.generators.some((gen) => gen.author === data.author && gen.slug === data.slug);
+									break;
+								case 'data source':
+									id = `ds:${p.dataSource.author}+${p.dataSource.slug}`;
+									data = p.dataSource;
+									present = store.data.sources.some((ds) => ds.author === data.author && ds.slug === data.slug);
+									break;
+								default:
+									return null;
+							}
+
+							return (
+								<div className='pa2 bb b--black-10 flex justify-between items-end lh-copy'>
+									<div className='pr3'>
+										<div className='f6'>
+											{present ? <i className='ion ion-md-checkmark green' /> : null} <b>{capitalize(p.type)}:</b> {data.name}
+										</div>
+										<div className='text-muted'>{data.description}</div>
 									</div>
-									<div className='text-muted'>{data.description}</div>
-								</div>
-								<div
-									className='btn'
-									onclick={() => {
-										state.loading[2] = true;
+									<div
+										className='btn'
+										onclick={() => {
+											state.loading[2] = true;
 
-										api
-											.importPackage(state.repos[state.selectedRepo].url, state.selectedVersion, id)
-											.then(() => success('Import successful.'))
-											.catch(error)
-											.then(() => (state.loading[2] = false));
-									}}
-								>
-									Import
+											api
+												.importPackage(state.repos[state.selectedRepo].url, state.selectedVersion, id)
+												.then(() => {
+													success('Import successful.');
+
+													// if data sources are referenced try to find them in the same repository.
+													if (data.dataSources) {
+														let missingSources = data.dataSources.filter(
+															(ds) => !store.data.sources.some((ods) => ds.author === ods.author && ds.slug === ods.author)
+														);
+
+														if (missingSources.length > 0) {
+															dialog(`There are ${missingSources.length} missing Data Sources. Try fetching them?`).then(() => {
+																let found = missingSources
+																	.map((missing) => {
+																		let foundDs = state.packages.find(
+																			(pack) => pack.type === 'data source' && `ds:${pack.dataSource.author}+${pack.dataSource.slug}` === missing
+																		);
+
+																		if (foundDs) {
+																			return `ds:${foundDs.dataSource.author}+${foundDs.dataSource.slug}`;
+																		}
+
+																		return null;
+																	})
+																	.filter((ds) => ds !== null)
+																	.map((id) => api.importPackage(state.repos[state.selectedRepo].url, state.selectedVersion, id));
+
+																if (found.length === 0) {
+																	error('could not find the missing Data Sources.');
+																	return;
+																}
+
+																Promise.all(found)
+																	.then(() => {
+																		if (found.length === missingSources.length) {
+																			success('Found and imported all Data Sources.');
+																		} else {
+																			success(`Imported ${found.length} related Data Sources. ${missingSources.length - found.length} missing!`);
+																		}
+
+																		store.pub('reload_sources');
+
+																		m.redraw();
+																	})
+																	.catch(error);
+															});
+														}
+													}
+
+													switch (p.type) {
+														case 'template':
+															store.pub('reload_templates');
+															break;
+														case 'generator':
+															store.pub('reload_generators');
+															break;
+														case 'data source':
+															store.pub('reload_sources');
+															break;
+													}
+
+													m.redraw();
+												})
+												.catch(error)
+												.then(() => (state.loading[2] = false));
+										}}
+									>
+										{present ? 'Re-Import' : 'Import'}
+									</div>
 								</div>
-							</div>
-						);
-					})}
+							);
+						})}
 				</div>
 			</div>
 		);

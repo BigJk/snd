@@ -155,7 +155,9 @@ jobs:
           path: build/release
       - name: Check release files
         run: ls build/release/
-      # - name: Release
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     draft: true
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          fail_on_unmatched_files: true
+          files: build/release/snd-*

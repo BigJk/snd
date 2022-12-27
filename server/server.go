@@ -222,7 +222,7 @@ func (s *Server) Start(bind string) error {
 		}
 
 		s.e.Use(middleware.ProxyWithConfig(middleware.ProxyConfig{Skipper: func(c echo.Context) bool {
-			return strings.HasPrefix(c.Request().URL.Path, "/api") || strings.HasPrefix(c.Request().URL.Path, "/proxy")
+			return strings.HasPrefix(c.Request().URL.Path, "/api") || strings.HasPrefix(c.Request().URL.Path, "/proxy") || strings.HasPrefix(c.Request().URL.Path, "/fetch")
 		}, Balancer: middleware.NewRoundRobinBalancer([]*middleware.ProxyTarget{{URL: viteUrl}})}))
 	} else {
 		s.e.Static("/", "./frontend/dist")

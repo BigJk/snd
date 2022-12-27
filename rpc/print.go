@@ -249,6 +249,11 @@ func RegisterPrint(route *echo.Group, extern *echo.Group, db database.Database, 
 		return ioutil.WriteFile(file, buf.Bytes(), 0666)
 	})))
 
+	route.POST("/previewCache", echo.WrapHandler(nra.MustBind(func(id string, html string) (string, error) {
+		renderCache.SetDefault(id, html)
+		return fmt.Sprintf("http://127.0.0.1:7123/api/html/%s", id), nil
+	})))
+
 	//
 	//	External API Routes
 	//

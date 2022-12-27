@@ -349,6 +349,7 @@ export default () => {
 			return (
 				<SplitView
 					content={state.lastRender}
+					devTools={true}
 					width={340}
 					scale={340.0 / store.data.settings.printerWidth}
 					stylesheets={store.data.settings.stylesheets}

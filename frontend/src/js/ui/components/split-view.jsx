@@ -12,6 +12,7 @@ export default () => ({
 				))}
 				<Preview
 					className='br1 ba b--black-10 bg-black-05 flex-shrink-0'
+					devTools={vnode.attrs.devTools}
 					width={vnode.attrs.width}
 					scale={vnode.attrs.scale}
 					stylesheets={vnode.attrs.stylesheets ?? store.data.settings.stylesheets}

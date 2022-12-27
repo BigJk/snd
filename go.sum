@@ -1,4 +1,6 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
+github.com/BigJk/go-astilectron v0.0.1 h1:HkwWJeWIr0i5/DvBp7R34HQb46nf+/jtV9wMkAi0WAc=
+github.com/BigJk/go-astilectron v0.0.1/go.mod h1:o7wZ7KDr3XH3xcEwcxfpWzNVf63JsMKtif/6IP4mpHk=
 github.com/BigJk/nra v1.0.0-rc h1:yPMGxFNQDVn4pw6eCWWH4hhkqbPyzjxjGEk9ZKR2xLo=
 github.com/BigJk/nra v1.0.0-rc/go.mod h1:xFN5BEZxQgG1okawi6MVeuvRl96xqiU+ub/snHr1WRw=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
@@ -31,10 +33,8 @@ github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 h1:0CwZNZbxp69SHPd
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5/go.mod h1:wHh0iHkYZB8zMSxRWpUBQtwG5a7fFgvEO+odwuTv2gs=
 github.com/asdine/storm v2.1.2+incompatible h1:dczuIkyqwY2LrtXPz8ixMrU/OFgZp71kbKTHGrXYt/Q=
 github.com/asdine/storm v2.1.2+incompatible/go.mod h1:RarYDc9hq1UPLImuiXK3BIWPJLdIygvV3PsInK0FbVQ=
-github.com/asticode/go-astikit v0.15.0 h1:mpy55njSQ9SS9gP9vmPAfo08YpRt+4pr5/1emK6DFF0=
-github.com/asticode/go-astikit v0.15.0/go.mod h1:h4ly7idim1tNhaVkdVBeXQZEE3L0xblP7fCWbgwipF0=
-github.com/asticode/go-astilectron v0.27.0 h1:SbY6xDsPZ+BvQTb/daZpFBTJF5QWzSQ2IEj9destNIw=
-github.com/asticode/go-astilectron v0.27.0/go.mod h1:Tx+aS0IvbV0cO4TlQbOO1NFA/lATj11vEStydyIjMjM=
+github.com/asticode/go-astikit v0.29.1 h1:w27sLYXK84mDwArf/Vw1BiD5dfD5PBDB+iHoIcpYq0w=
+github.com/asticode/go-astikit v0.29.1/go.mod h1:h4ly7idim1tNhaVkdVBeXQZEE3L0xblP7fCWbgwipF0=
 github.com/bwesterb/go-ristretto v1.2.0/go.mod h1:fUIoIZaG73pV5biE2Blr2xEzDoMj7NFEuV9ekS419A0=
 github.com/cespare/xxhash v1.1.0 h1:a6HrQnmkObjyL+Gs60czilIUGqrzKutQD6XZog3p+ko=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=

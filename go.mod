@@ -5,13 +5,16 @@ go 1.18
 // CGO Problem: https://github.com/go-git/go-git/issues/624
 replace github.com/pjbgf/sha1cd => github.com/pjbgf/sha1cd v0.2.3
 
+// Replace with fork to support newer electron versions
+replace github.com/asticode/go-astilectron => github.com/BigJk/go-astilectron v0.0.1
+
 require (
 	github.com/BigJk/nra v1.0.0-rc
 	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/alexbrainman/printer v0.0.0-20181008173622-345afe414dee
 	github.com/antchfx/xmlquery v1.3.13
 	github.com/asdine/storm v2.1.2+incompatible
-	github.com/asticode/go-astikit v0.15.0
+	github.com/asticode/go-astikit v0.29.1
 	github.com/asticode/go-astilectron v0.27.0
 	github.com/dgraph-io/badger/v3 v3.2103.2
 	github.com/fatih/color v1.9.0

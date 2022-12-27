@@ -108,12 +108,12 @@ export default () => {
 				});
 		});
 
-		// create a 3-second timeout. If this timeout is triggered we most likely have an infinite loop
+		// create a 5-second timeout. If this timeout is triggered we most likely have an infinite loop
 		// in the template. We stop the webview and show a warning message.
 		let timeout = setTimeout(() => {
 			frame.stop();
-			frame.loadURL('data:text/html,Template stopped after not responding for 3 seconds! Please check your code for infinite loops.');
-		}, 10000);
+			frame.loadURL('data:text/html,Template stopped after not responding for 5 seconds! Please check your code for infinite loops.');
+		}, 5000);
 
 		// Wait for the finish load event to stop the loading indicator and clear the infinite loop timeout.
 		frame.addEventListener(

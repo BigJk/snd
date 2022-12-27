@@ -41,6 +41,10 @@ or a letter that the group found to little character sheets of your players to u
 - Access Community Templates, Generators & Data Sources from within the App
 - Edit templates in your favorite editor (e.g. Visual Studio Code) and get live preview
 
+## Download
+
+Check our github release page: https://github.com/BigJk/snd/releases
+
 ## Printer Requirements
 
 At the moment Sales & Dungeons only supports the [ESC/POS](https://en.wikipedia.org/wiki/ESC/P) (Epson Standard Code) control codes, which is still one of the most used control code set. Check if a thermal printer you are interested in mentions ESC/POS or Epson in the description or manual.
@@ -73,10 +77,6 @@ to the "draw image" command of the printer.
 **Printer:** The generated command will then be sent to the printer and printed. Now your template is ready to be used!
 
 :tada: :tada: :tada:
-
-## Binaries
-
-Check our github release page: https://github.com/BigJk/snd/releases
 
 ## Printers, Templating & Building
 

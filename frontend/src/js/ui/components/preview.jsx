@@ -1,9 +1,9 @@
 import { startsWith } from 'lodash-es';
 
-import { Tooltip } from '/js/ui/components'
-
 import api from '/js/core/api';
 import dither from '/js/core/dither';
+
+import { Tooltip } from '/js/ui/components';
 
 const pre = `
 <!DOCTYPE html>
@@ -164,8 +164,7 @@ export default () => {
 					{vnode.attrs.devTools === true ? (
 						<Tooltip content='Opens the DevTools for this Template View. Great for debugging Javascript.'>
 							<div className='absolute bottom-0 left-0 ma2'>
-								<div className='btn btn-primary btn-sm'
-									 onclick={() => vnode.dom.querySelector('webview').openDevTools()}>
+								<div className='btn btn-primary btn-sm' onclick={() => vnode.dom.querySelector('webview').openDevTools()}>
 									DevTools
 								</div>
 							</div>

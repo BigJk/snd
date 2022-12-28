@@ -154,10 +154,12 @@ jobs:
         with:
           path: build/release
       - name: Check release files
-        run: ls build/release/
+        run: ls -hal build/release/
+      - name: Zip release folders
+        run: cd build/release && { for i in */; do zip -r "${i%/}.zip" "$i"; done }
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
           fail_on_unmatched_files: true
-          files: build/release/snd-*
+          files: build/release/*.zip

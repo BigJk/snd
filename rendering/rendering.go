@@ -13,8 +13,10 @@ import (
 	_ "image/png"
 	"net/url"
 	"os"
+	"runtime"
 	"time"
 
+	"github.com/BigJk/snd/log"
 	"github.com/go-rod/rod/lib/launcher"
 
 	"github.com/go-rod/rod"
@@ -32,15 +34,23 @@ func initBrowser() {
 		_ = browser.Close()
 	}
 
-	if os.Getenv("SND_DEBUG") == "1" {
-		l := launcher.New().
-			Headless(false).
-			Devtools(true)
+	l := launcher.New()
 
-		browser = rod.New().ControlURL(l.MustLaunch()).MustConnect()
-	} else {
-		browser = rod.New().MustConnect()
+	// disable leakless for now on windows (https://github.com/BigJk/snd/issues/28)
+	if runtime.GOOS == "windows" {
+		log.Info("disabling leakless on windows")
+		l = l.Leakless(false)
 	}
+
+	if os.Getenv("SND_DEBUG") == "1" {
+		l = l.Headless(false).Devtools(true)
+	}
+
+	browser = rod.New().ControlURL(l.MustLaunch()).MustConnect()
+}
+
+func Shutdown() error {
+	return browser.Close()
 }
 
 func tryOpenPage(url string) (*rod.Page, error) {

@@ -6,14 +6,16 @@ package main
 import (
 	"io"
 	"io/ioutil"
-	"os"
-	"time"
-
 	stdlog "log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/log"
 	"github.com/BigJk/snd/printing/preview"
+	"github.com/BigJk/snd/rendering"
 	"github.com/BigJk/snd/server"
 
 	"github.com/asticode/go-astikit"
@@ -93,7 +95,27 @@ func startElectron(db database.Database, debug bool) {
 		_ = w.OpenDevTools()
 	}
 
+	// Wait for interrupt signal to trigger shutdown of application.
+	go func() {
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, os.Interrupt, os.Kill, syscall.SIGTERM, syscall.SIGQUIT)
+		recvSignal := <-quit
+
+		// Close electron.
+		log.Info("interrupt signal received", log.WithValue("signal", recvSignal))
+		a.Close()
+	}()
+
 	a.Wait()
-	db.Close()
+
+	log.Info("Shutting down...")
+
+	if err := db.Close(); err != nil {
+		_ = log.ErrorUser(err, "could not shutdown database")
+	}
+	if err := rendering.Shutdown(); err != nil {
+		_ = log.ErrorUser(err, "could not shutdown html to image rendering")
+	}
+
 	time.Sleep(time.Second * 1)
 }

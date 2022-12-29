@@ -25,6 +25,7 @@ userdata/
 .cache/
 cache/
 release/
+build/
 
 *.db
 *.bin

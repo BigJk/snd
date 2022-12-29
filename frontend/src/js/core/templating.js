@@ -49,7 +49,7 @@ export const parseError = (e) => {
 	if (match) {
 		return {
 			line: parseInt(match[1]),
-			column: parseInt(match[2]),
+			column: parseInt(match[2]) + 1,
 			error: match[3],
 		};
 	}

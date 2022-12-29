@@ -22,12 +22,21 @@ const rngScript = (seed) => `
 			window.dice = new rpgDiceRoller.DiceRoller();
 		</script>
 `;
+const rngScriptLines = rngScript(0).split('\n').length - 1;
 
 export function render(generator, entries, config) {
-	return renderTemplate(
-		(generator.passEntriesToJS ? `<script> let entries = ${JSON.stringify(entries)};</script>` : '') +
-			rngScript(config.seed ?? 'test-seed') +
-			generator.printTemplate,
-		{ config: config, images: generator.images, entries: entries }
-	);
+	return new Promise((resolve, reject) => {
+		renderTemplate(
+			(generator.passEntriesToJS ? `<script> let entries = ${JSON.stringify(entries)};</script>` : '') +
+				rngScript(config.seed ?? 'test-seed') +
+				generator.printTemplate,
+			{ config: config, images: generator.images, entries: entries }
+		)
+			.then(resolve)
+			.catch((err) => {
+				// fix the error line number by removing the rngScript lines from it.
+				err.line -= rngScriptLines;
+				reject(err);
+			});
+	});
 }

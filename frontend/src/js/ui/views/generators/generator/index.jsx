@@ -123,6 +123,13 @@ export default function () {
 		updateRender().then(m.redraw);
 	};
 
+	let screenshot = () => {
+		openFolderDialog().then((folder) => {
+			let file = folder + '/' + state.config.seed + '.png';
+			api.screenshot(state.rendered, folder + '/' + state.config.seed + '.png').then(() => success(`Screenshot '${file}' created`), error);
+		});
+	};
+
 	let body = (vnode) => {
 		if (!state.gen || !store.data.settings) {
 			return <Loading />;
@@ -146,9 +153,14 @@ export default function () {
 							<div className='flex-grow-1 mr2'>
 								<Input value={state.amount} oninput={binder.inputNumber(state, 'amount')} />
 							</div>
-							<div className='w-80 btn btn-success' onclick={print}>
+							<div className='w-70 btn btn-success mr2' onclick={print}>
 								<i className='ion ion-md-print mr1' /> Print
 							</div>
+							<Tooltip content='Screenshot the currently generated template.'>
+								<div className='w-10 btn btn-primary' onclick={screenshot}>
+									<i className='ion ion-md-camera' />
+								</div>
+							</Tooltip>
 						</div>
 					</div>
 				</div>

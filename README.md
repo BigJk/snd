@@ -11,7 +11,7 @@ or a letter that the group found to little character sheets of your players to u
 
 [Printer Setup](https://github.com/BigJk/snd/wiki/Printer-Setup) • [Tested Printer](https://github.com/BigJk/snd/wiki/Printer-Settings) • [Wiki](https://github.com/BigJk/snd/wiki)
 
-**Warning:** This is still rough and early version. If you want to get this working the best way is to jump on the Discord and ask for help.
+**Important:** If you have trouble getting this to work it's best to drop by our [Discord](https://discord.gg/5MUZEjc).
 
 ![Screenshot](./data/screenshot.png)
 
@@ -41,9 +41,10 @@ or a letter that the group found to little character sheets of your players to u
 - Access Community Templates, Generators & Data Sources from within the App
 - Edit templates in your favorite editor (e.g. Visual Studio Code) and get live preview
 
-## Download
+## Download 📁
 
-Check our github release page: https://github.com/BigJk/snd/releases
+You can find the latest version on the release page:
+- https://github.com/BigJk/snd/releases
 
 ## Printer Requirements
 
@@ -81,6 +82,12 @@ to the "draw image" command of the printer.
 ## Printers, Templating & Building
 
 If you want to see what printers were already tested, which settings they need, how the templates work or how you can build Sales & Dungeons yourself please visit the [**wiki**](https://github.com/BigJk/snd/wiki).
+
+## Thanks to all contributors ❤
+
+<a href="https://github.com/BigJk/snd/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=BigJk/snd" />
+</a>
 
 ## Credits
 

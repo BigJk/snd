@@ -1,106 +1,45 @@
-import MarkdownIt from 'markdown-it';
-import * as nunjucks from 'nunjucks';
 import hash from 'object-hash';
 
-import EvalWorker from '/js/workers/eval?worker';
+import TemplatingWorker from '/js/workers/templating-worker?worker';
 
-import api from '/js/core/api';
 import store from '/js/core/store';
 
-// DataImportExtension
+// Worker Pool
 //
-// This nunjucks extension makes it possible to parse
-// and add JSON to the context. This can help to embed
-// static data into the templates.
-function DataImportExtension() {
-	this.tags = ['data'];
+//
+let cache = {};
+let workerSelect = 0;
+let workerPromises = {};
+let workers = new Array(navigator.hardwareConcurrency || 4).fill(null).map((_, i) => {
+	let worker = new TemplatingWorker();
 
-	this.parse = function (parser, nodes) {
-		let tok = parser.nextToken();
-
-		let args = parser.parseSignature(null, true);
-		parser.advanceAfterBlockEnd(tok.value);
-
-		let body = parser.parseUntilBlocks('enddata');
-		parser.advanceAfterBlockEnd();
-
-		return new nodes.CallExtension(this, 'run', args, [body]);
-	};
-
-	this.run = function (context, name, body) {
-		try {
-			context.ctx[name] = JSON.parse(body());
-		} catch (e) {
-			console.log(e);
-		}
-		return '';
-	};
-}
-
-function JavascriptExecuteExtension() {
-	this.tags = ['js'];
-
-	this.parse = function (parser, nodes) {
-		let tok = parser.nextToken();
-
-		let args = parser.parseSignature(null, true);
-		parser.advanceAfterBlockEnd(tok.value);
-
-		let body = parser.parseUntilBlocks('endjs');
-		parser.advanceAfterBlockEnd();
-
-		return new nodes.CallExtensionAsync(this, 'run', args, [body]);
-	};
-
-	this.run = function (context, name, fn, callback) {
-		let worker = new EvalWorker();
-
-		// Kill worker after timeout. This is important if
-		// the code has a infinite loop.
-		let timeout = setTimeout(() => {
-			worker.terminate();
-			callback('eval worker: timeout');
-		}, 1000);
-
-		// Wait for response.
-		worker.onmessage = (e) => {
-			clearTimeout(timeout);
-			worker.terminate();
-			context.ctx[name] = e.data;
-			callback(null, '');
-		};
-
-		// Send request.
-		worker.postMessage([context.ctx, fn()]);
-	};
-}
-
-let env = new nunjucks.Environment();
-let markdown = new MarkdownIt();
-
-env.addExtension('DataImportExtension', new DataImportExtension());
-env.addExtension('JavascriptExecuteExtension', new JavascriptExecuteExtension());
-
-env.addFilter('markdown', (md) => new nunjucks.runtime.SafeString(markdown.render(md)));
-env.addFilter('markdowni', (md) => new nunjucks.runtime.SafeString(markdown.renderInline(md)));
-env.addFilter('json', (data) => new nunjucks.runtime.SafeString(JSON.stringify(data)));
-env.addFilter(
-	'source',
-	(source, cb) => {
-		let found = store.data.sources.find((s) => `ds:${s.author}+${s.slug}` === source);
-
-		if (!found) {
-			cb(null, 'not found');
+	// when rendered response is received call the related resolve or reject.
+	worker.onmessage = (e) => {
+		if (e.data.log) {
+			console.log(`Template Web-Worker ${i + 1}: ${e.data.log}`);
 			return;
 		}
 
-		api
-			.getEntries(source)
-			.then((res) => cb(null, res))
-			.catch((err) => cb(err, null));
-	},
-	true
-);
+		let { resolve, reject, timeout, hashed } = workerPromises[e.data.id];
+		let res = e.data;
+
+		// stop timeout handler
+		clearTimeout(timeout);
+
+		if (res.err) {
+			let parsedErr = parseError(res.err);
+			cache[hashed] = parsedErr;
+			reject(parsedErr);
+		} else {
+			cache[hashed] = res.res;
+			resolve(res.res);
+		}
+
+		delete workerPromises[res.id];
+	};
+
+	return worker;
+});
 
 // Exports
 //
@@ -117,28 +56,28 @@ export const parseError = (e) => {
 	return null;
 };
 
-let cache = {};
-
 export const render = (template, state) => {
 	state.settings = store.data.settings;
 
 	return new Promise((resolve, reject) => {
-		let id = hash(template) + hash(state);
-		if (cache[id]) {
+		// check if data is present in cache
+		let hashed = hash(template) + hash(state);
+		if (cache[hashed]) {
 			console.log('templating: cache hit');
-			resolve(cache[id]);
+			resolve(cache[hashed]);
 			return;
 		}
 
-		env.renderString(template, state, (err, res) => {
-			if (err) {
-				let parsedErr = parseError(err);
-				cache[id] = parsedErr;
-				reject(parsedErr);
-			} else {
-				cache[id] = res;
-				resolve(res);
-			}
-		});
+		// setup promises for response
+		let id = hash + '-' + Math.ceil(Math.random() * 10000000).toString();
+		workerPromises[id] = {
+			hashed,
+			resolve,
+			reject,
+			timeout: setTimeout(() => reject('timeout'), 2000),
+		};
+
+		// post message (round-robin style) to some worker
+		workers[workerSelect++ % workers.length].postMessage({ id, template, state });
 	});
 };

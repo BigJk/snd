@@ -207,7 +207,7 @@ export default () => {
 												<PreviewBox
 													className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}
 													value={g}
-													previewContent={state.rendered[id]}
+													previewContent={state.rendered[id] ?? 'Rendering...'}
 													loading={state.rendered[id] === undefined}
 													bottomRight={
 														<div className='btn' onclick={() => m.route.set(`/generators/gen:${g.author}+${g.slug}`)}>

@@ -18,7 +18,7 @@ export const inElectron = !!electron;
 
 const remote = outsideRequire ? outsideRequire('@electron/remote') : null;
 
-export const shell = remote.shell;
+export const shell = remote?.shell;
 
 // Add right-click menu interactions
 if (electron) {

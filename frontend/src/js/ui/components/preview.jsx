@@ -1,5 +1,7 @@
 import { startsWith } from 'lodash-es';
 
+import { inElectron } from '/js/electron';
+
 import api from '/js/core/api';
 import dither from '/js/core/dither';
 
@@ -94,53 +96,97 @@ export default () => {
 			})
 			.replace(/src="h/gi, 'src="/proxy/h');
 
-		// save the final template to the cache in the backend. The webview won't load scripts if we use
-		// data urls or some local files, so we serve it temporarily and serve it via the backend
-		// webserver.
-		state.loading = true;
-		api.previewCache(state.id.toString(), preCss + fixed + post).then((url) => {
-			frame.stop();
-			frame
-				.loadURL(url)
-				.then(() => {})
-				.catch(() => {
-					// TODO: investigate IPC error that doesn't seem to have any negative impact.
-				});
-		});
+		if (inElectron) {
+			// save the final template to the cache in the backend. The webview won't load scripts if we use
+			// data urls or some local files, so we serve it temporarily and serve it via the backend
+			// webserver.
+			state.loading = true;
+			api.previewCache(state.id.toString(), preCss + fixed + post).then((url) => {
+				frame.stop();
+				frame
+					.loadURL(url)
+					.then(() => {})
+					.catch(() => {
+						// TODO: investigate IPC error that doesn't seem to have any negative impact.
+					});
+			});
 
-		// create a 5-second timeout. If this timeout is triggered we most likely have an infinite loop
-		// in the template. We stop the webview and show a warning message.
-		let timeout = setTimeout(() => {
-			frame.stop();
-			frame.loadURL('data:text/html,Template stopped after not responding for 5 seconds! Please check your code for infinite loops.');
-		}, 5000);
+			// create a 5-second timeout. If this timeout is triggered we most likely have an infinite loop
+			// in the template. We stop the webview and show a warning message.
+			let timeout = setTimeout(() => {
+				frame.stop();
+				frame.loadURL('data:text/html,Template stopped after not responding for 5 seconds! Please check your code for infinite loops.');
+			}, 5000);
 
-		// Wait for the finish load event to stop the loading indicator and clear the infinite loop timeout.
-		frame.addEventListener(
-			'did-finish-load',
-			() => {
-				clearTimeout(timeout);
+			// Wait for the finish load event to stop the loading indicator and clear the infinite loop timeout.
+			frame.addEventListener(
+				'did-finish-load',
+				() => {
+					clearTimeout(timeout);
+					state.loading = false;
+					m.redraw();
+				},
+				{ once: true }
+			);
+		} else {
+			// For headless mode we fall back to iframe and we need to reset the iframe to clear old javascript declarations.
+			state.loading = true;
+			frame.contentWindow.location.reload(true);
+			frame.onload = () => {
+				let doc = frame.contentWindow.document;
+
+				doc.open();
+				doc.write(preCss + fixed + `<script>parent.postMessage({ type: 'done', id: ${state.id}}, '*')</script>` + post);
+				doc.close();
+			};
+		}
+	};
+
+	let targetElement = inElectron ? 'webview' : 'iframe';
+
+	let onIFrameMessage = (event) => {
+		if (event.data.id !== state.id) {
+			return;
+		}
+
+		switch (event.data.type) {
+			case 'done':
 				state.loading = false;
 				m.redraw();
-			},
-			{ once: true }
-		);
+				break;
+		}
 	};
 
 	return {
 		oncreate(vnode) {
-			let frame = vnode.dom.querySelector('webview');
-			frame.addEventListener(
-				'dom-ready',
-				() => updateContent(frame, vnode.attrs.content, vnode.attrs.stylesheets, vnode.attrs.scale ?? 1.0, vnode.attrs.overflow),
-				{ once: true }
-			);
+			let frame = vnode.dom.querySelector(targetElement);
+
+			if (inElectron) {
+				frame.addEventListener(
+					'dom-ready',
+					() => updateContent(frame, vnode.attrs.content, vnode.attrs.stylesheets, vnode.attrs.scale ?? 1.0, vnode.attrs.overflow),
+					{ once: true }
+				);
+			} else {
+				window.addEventListener('message', onIFrameMessage);
+				updateContent(frame, vnode.attrs.content, vnode.attrs.stylesheets, vnode.attrs.scale ?? 1.0, vnode.attrs.overflow);
+			}
 		},
 		onupdate(vnode) {
-			updateContent(vnode.dom.querySelector('webview'), vnode.attrs.content, vnode.attrs.stylesheets, vnode.attrs.scale ?? 1.0, vnode.attrs.overflow);
+			updateContent(
+				vnode.dom.querySelector(targetElement),
+				vnode.attrs.content,
+				vnode.attrs.stylesheets,
+				vnode.attrs.scale ?? 1.0,
+				vnode.attrs.overflow
+			);
 		},
 		onremove(vnode) {
-			vnode.dom.querySelector('webview').closeDevTools();
+			if (inElectron) {
+				vnode.dom.querySelector('webview').closeDevTools();
+			} else {
+				window.removeEventListener('message', onIFrameMessage);
+			}
 		},
 		view(vnode) {
 			let scale = vnode.attrs.scale ?? 1.0;
@@ -153,13 +199,26 @@ export default () => {
 
 			return (
 				<div className={`relative ${vnode.attrs.className}`}>
-					<webview
-						src='data:text/html,'
-						disablewebsecurity
-						webpreferences='allowRunningInsecureContent, javascript=yes'
-						style={{ width: width }}
-						className='h-100'
-					/>
+					{inElectron ? (
+						<webview
+							src='data:text/html,'
+							disablewebsecurity
+							webpreferences='allowRunningInsecureContent, javascript=yes'
+							style={{ width: width }}
+							className='h-100'
+						/>
+					) : (
+						<iframe
+							style={{ width: width }}
+							className='h-100'
+							name='result'
+							sandbox='allow-scripts allow-same-origin'
+							allowFullScreen='false'
+							allowpaymentrequest='false'
+							frameBorder='0'
+							src=''
+						/>
+					)}
 
 					{vnode.attrs.devTools === true ? (
 						<Tooltip content='Opens the DevTools for this Template View. Great for debugging Javascript.'>

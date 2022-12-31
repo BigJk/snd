@@ -26,14 +26,13 @@ require (
 	github.com/jwalton/go-supportscolor v1.1.0
 	github.com/labstack/echo/v4 v4.9.0
 	github.com/mattetti/filebuffer v1.0.1
-	github.com/otiai10/copy v1.7.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/pierrre/archivefile v0.0.0-20170218184037-e2d100bc74f5
 	github.com/samber/lo v1.11.0
 	github.com/sbabiv/xml2map v1.2.1
 	github.com/vmihailenco/msgpack/v5 v5.3.5
 	go.bug.st/serial v1.3.5
 	go.etcd.io/bbolt v1.3.3
+	golang.org/x/net v0.2.0
 	gopkg.in/olahol/melody.v1 v1.0.0-20170518105555-d52139073376
 )
 
@@ -84,7 +83,6 @@ require (
 	go.opencensus.io v0.22.5 // indirect
 	golang.org/x/crypto v0.3.0 // indirect
 	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
-	golang.org/x/net v0.2.0 // indirect
 	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/term v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect

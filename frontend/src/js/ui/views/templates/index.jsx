@@ -7,14 +7,14 @@ import api from '/js/core/api';
 import store from '/js/core/store';
 import { render } from '/js/core/templating';
 
-import { Base, Header, Input, Loading, ModalImport, PreviewBox, Tooltip } from '/js/ui/components';
+import { Base, Header, Input, Loading, ModalImport, Preview, PreviewBox, Select, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
 import { dialog, error, success } from '/js/ui/toast';
 
 // check and notify for update once at the start of the application. If the local commit is empty it's a self
 // build version, so we don't notify the user in this case.
-let checkUpdate = once(() => {
+const checkUpdate = once(() => {
 	if (
 		!store.data.newVersion ||
 		store.data.newVersion.localVersion.gitCommitHash === '' ||
@@ -29,6 +29,81 @@ let checkUpdate = once(() => {
 		shell.openExternal('https://github.com/BigJk/snd/releases');
 	});
 });
+
+const viewModes = {
+	default: {
+		name: 'Default',
+		view(state, t, i) {
+			return (
+				<PreviewBox
+					className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}
+					value={t}
+					previewContent={state.templates['tmpl:' + t.author + '+' + t.name] ?? 'Rendering...'}
+					bottomLeft={
+						<div className='lh-solid'>
+							<div className='f4 b'>{t.count}</div>
+							<span className='fw4 f6 black-50'>Entries</span>
+						</div>
+					}
+					bottomRight={
+						<div className='btn' onclick={() => m.route.set(`/templates/tmpl:${t.author}+${t.slug}`)}>
+							Open Template
+						</div>
+					}
+					loading={state.templates['tmpl:' + t.author + '+' + t.name] === undefined}
+				/>
+			);
+		},
+	},
+	compact: {
+		name: 'Compact',
+		view(state, t, i) {
+			return (
+				<div className={`w-33 ${i % 3 === 1 ? 'ph2' : ''}`}>
+					<div className='flex justify-between items-center bg-white ba b--black-10 pa2 mb2'>
+						<div className='b f6 flex-shrink-0'>{t.name}</div>
+						<div className='btn flex-shrink-0' onclick={() => m.route.set(`/templates/tmpl:${t.author}+${t.slug}`)}>
+							Open Template
+						</div>
+					</div>
+				</div>
+			);
+		},
+	},
+	card: {
+		name: 'Card',
+		view(state, t) {
+			return (
+				<div className='bg-white ba b--black-10 mr2 mb2'>
+					<div className='bg-white b f6 flex-shrink-0 bb b--black-10 pa2'>{t.name}</div>
+					<div className='h-100 relative' style={{ height: '200px' }}>
+						<div className='pa2 bg-gray'>
+							<Preview
+								className='h-100'
+								content={state.templates['tmpl:' + t.author + '+' + t.name] ?? 'Rendering...'}
+								stylesheets={store.data.settings.stylesheets}
+								width={140}
+								scale={140 / store.data.settings.printerWidth}
+							/>
+						</div>
+						<div
+							className='absolute w-100 h-100 left-0 top-0 z-2'
+							style={{ background: 'linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0.80) 100%)' }}
+						>
+							<div className='flex flex-column justify-between h-100 pa2'>
+								<div className='lh-copy text-muted text-overflow-hide flex-grow-1'>{t.description}</div>
+								<div className='btn flex-shrink-0' onclick={() => m.route.set(`/templates/tmpl:${t.author}+${t.slug}`)}>
+									Open Template
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			);
+		},
+	},
+};
+let selectedViewMode = 'default';
 
 export default () => {
 	let state = {
@@ -143,27 +218,7 @@ export default () => {
 							<div className='mb2 f5'>
 								Templates by <b>{key}</b>
 							</div>
-							<div className='flex flex-wrap'>
-								{val.map((t, i) => (
-									<PreviewBox
-										className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}
-										value={t}
-										previewContent={state.templates['tmpl:' + t.author + '+' + t.name] ?? 'Rendering...'}
-										bottomLeft={
-											<div className='lh-solid'>
-												<div className='f4 b'>{t.count}</div>
-												<span className='fw4 f6 black-50'>Entries</span>
-											</div>
-										}
-										bottomRight={
-											<div className='btn' onclick={() => m.route.set(`/templates/tmpl:${t.author}+${t.slug}`)}>
-												Open Template
-											</div>
-										}
-										loading={state.templates['tmpl:' + t.author + '+' + t.name] === undefined}
-									/>
-								))}
-							</div>
+							<div className='flex flex-wrap'>{val.map((t, i) => viewModes[selectedViewMode].view(state, t, i))}</div>
 						</div>
 					)
 				)}
@@ -232,6 +287,16 @@ export default () => {
 							</Tooltip>
 							<div className='divider-vert' />
 							<Input placeholder='Search...' value={state.search} oninput={binder.inputString(state, 'search')} />
+							<div className='divider-vert' />
+							<div className='w5'>
+								<Select
+									value={selectedViewMode}
+									keys={Object.keys(viewModes)}
+									names={Object.keys(viewModes).map((t) => viewModes[t].name + ' View')}
+									oninput={(e) => (selectedViewMode = e.target.value)}
+									noDefault={true}
+								/>
+							</div>
 						</Header>
 						{body()}
 						<ModalImport

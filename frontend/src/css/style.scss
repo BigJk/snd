@@ -169,9 +169,14 @@ body {
 }
 
 .cut-text {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.text-overflow-hide {
   text-overflow: ellipsis;
   overflow: hidden;
-  white-space: nowrap;
 }
 
 .grid-bg {

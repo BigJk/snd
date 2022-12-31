@@ -74,23 +74,30 @@ export default () => {
 									({printerType}) {endpoint}
 								</div>
 							</div>
-							<div className='h2 flex justify-between items-center'>
-								<div
-									className='btn btn-success mr2'
-									onclick={() => {
-										store.data.settings.printerType = printerType;
-										store.data.settings.printerEndpoint = endpoint;
-										api.saveSettings(store.data.settings).then(() => {
-											success('Settings changed');
-										}, error);
-									}}
-								>
-									Use
-								</div>
-							</div>
+							<div className='h2 flex justify-between items-center'>{useButton(printerType, endpoint)}</div>
 						</div>
 					))
 				)}
+			</div>
+		);
+	};
+
+	const useButton = (printerType, endpoint) => {
+		const selected = printerType === store.data.settings.printerType && endpoint === store.data.settings.printerEndpoint;
+
+		return (
+			<div
+				className='btn btn-success mr2'
+				onclick={() => {
+					store.data.settings.printerType = printerType;
+					store.data.settings.printerEndpoint = endpoint;
+					api.saveSettings(store.data.settings).then(() => {
+						success('Settings changed');
+					}, error);
+				}}
+				disabled={selected}
+			>
+				{selected ? 'In Use' : 'Use'}
 			</div>
 		);
 	};

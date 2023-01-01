@@ -74,7 +74,7 @@ const viewModes = {
 		name: 'Card',
 		view(state, t) {
 			return (
-				<div className='bg-white ba b--black-10 mr2 mb2'>
+				<div className='bg-white ba b--black-10 mr2 mb2' style={{ width: '195px' }}>
 					<div className='bg-white b f6 flex-shrink-0 bb b--black-10 pa2'>{t.name}</div>
 					<div className='h-100 relative' style={{ height: '200px' }}>
 						<div className='pa2 bg-gray'>

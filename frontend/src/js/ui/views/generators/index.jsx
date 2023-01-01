@@ -7,11 +7,80 @@ import api from '/js/core/api';
 import { render } from '/js/core/generator';
 import store from '/js/core/store';
 
-import { Header, Input, ModalImport, PreviewBox, Tooltip } from '/js/ui/components';
+import { Header, Input, ModalImport, Preview, PreviewBox, Select, Tooltip } from '/js/ui/components';
 import Base from '/js/ui/components/base';
 
 import binder from '/js/ui/binder';
 import { error, success } from '/js/ui/toast';
+
+const viewModes = {
+	default: {
+		name: 'Default',
+		view(state, id, g, i) {
+			return (
+				<PreviewBox
+					className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}
+					value={g}
+					previewContent={state.rendered[id] ?? 'Rendering...'}
+					loading={state.rendered[id] === undefined}
+					bottomRight={
+						<div className='btn' onclick={() => m.route.set(`/generators/gen:${g.author}+${g.slug}`)}>
+							Open Generator
+						</div>
+					}
+				/>
+			);
+		},
+	},
+	compact: {
+		name: 'Compact',
+		view(state, id, g, i) {
+			return (
+				<div className={`w-33 ${i % 3 === 1 ? 'ph2' : ''}`}>
+					<div className='flex justify-between items-center bg-white ba b--black-10 pa2 mb2'>
+						<div className='b f6 flex-shrink-0'>{g.name}</div>
+						<div className='btn flex-shrink-0' onclick={() => m.route.set(`/generators/gen:${g.author}+${g.slug}`)}>
+							Open Generator
+						</div>
+					</div>
+				</div>
+			);
+		},
+	},
+	card: {
+		name: 'Card',
+		view(state, id, g) {
+			return (
+				<div className='bg-white ba b--black-10 mr2 mb2' style={{ width: '195px' }}>
+					<div className='bg-white b f6 flex-shrink-0 bb b--black-10 pa2'>{g.name}</div>
+					<div className='h-100 relative' style={{ height: '200px' }}>
+						<div className='pa2 bg-gray'>
+							<Preview
+								className='h-100'
+								content={state.rendered[id] ?? 'Rendering...'}
+								stylesheets={store.data.settings.stylesheets}
+								width={140}
+								scale={140 / store.data.settings.printerWidth}
+							/>
+						</div>
+						<div
+							className='absolute w-100 h-100 left-0 top-0 z-2'
+							style={{ background: 'linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0.80) 100%)' }}
+						>
+							<div className='flex flex-column justify-between h-100 pa2'>
+								<div className='lh-copy text-muted text-overflow-hide flex-grow-1'>{g.description}</div>
+								<div className='btn flex-shrink-0' onclick={() => m.route.set(`/generators/gen:${g.author}+${g.slug}`)}>
+									Open Generator
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			);
+		},
+	},
+};
+let selectedViewMode = 'default';
 
 export default () => {
 	let state = {
@@ -163,6 +232,16 @@ export default () => {
 						</Tooltip>
 						<div className='divider-vert' />
 						<Input placeholder='Search...' value={state.search} oninput={binder.inputString(state, 'search')} />
+						<div className='divider-vert' />
+						<div className='w5'>
+							<Select
+								value={selectedViewMode}
+								keys={Object.keys(viewModes)}
+								names={Object.keys(viewModes).map((t) => viewModes[t].name + ' View')}
+								oninput={(e) => (selectedViewMode = e.target.value)}
+								noDefault={true}
+							/>
+						</div>
 					</Header>
 					<div className='ph3 flex flex-wrap'>
 						{map(
@@ -182,13 +261,6 @@ export default () => {
 									</div>
 									<div className='flex flex-wrap'>
 										{val.map((g, i) => {
-											if (
-												g.name.toLowerCase().indexOf(state.search.toLowerCase()) === -1 &&
-												g.author.toLowerCase().indexOf(state.search.toLowerCase()) === -1
-											) {
-												return;
-											}
-
 											let id = `gen:${g.author}+${g.slug}`;
 
 											sanitizeConfig(g);
@@ -203,19 +275,7 @@ export default () => {
 												});
 											}
 
-											return (
-												<PreviewBox
-													className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}
-													value={g}
-													previewContent={state.rendered[id] ?? 'Rendering...'}
-													loading={state.rendered[id] === undefined}
-													bottomRight={
-														<div className='btn' onclick={() => m.route.set(`/generators/gen:${g.author}+${g.slug}`)}>
-															Open Template
-														</div>
-													}
-												/>
-											);
+											return viewModes[selectedViewMode].view(state, id, g, i);
 										})}
 									</div>
 								</div>

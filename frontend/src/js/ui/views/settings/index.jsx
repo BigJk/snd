@@ -233,9 +233,10 @@ export default () => {
 		// Non-custom device:
 		return (
 			<div className='flex items-center lh-copy pa3 mr3 ba b--black-05 br4'>
+				<i className='ion ion-md-print mr2 black-50 f4' />
 				<div className='flex-auto'>
-					<span className='f6 db fw7 truncate'>{store.data.settings.printerType}</span>
-					<span className='f8 db black-50 truncate'>{store.data.settings.printerEndpoint}</span>
+					<span className='f6 db fw7 truncate'>{store.data.settings.printerEndpoint}</span>
+					<span className='f8 db black-50 truncate'>{store.data.settings.printerType}</span>
 				</div>
 				<div
 					className='btn'

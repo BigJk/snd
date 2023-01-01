@@ -123,7 +123,7 @@ func RegisterGenerator(route *echo.Group, extern *echo.Group, db database.Databa
 	})))
 
 	// ZIP export route so export is possible in headless mode
-	route.GET("/export/Generator/zip/:id", func(c echo.Context) error {
+	route.GET("/export/generator/zip/:id", func(c echo.Context) error {
 		gen, err := db.GetGenerator(c.Param("id"))
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, err)

@@ -14,7 +14,18 @@ export default () => {
 	let state = {
 		spellcheckerLanguages: (store.data.settings?.spellcheckerLanguages ?? []).join(', '),
 		packageRepos: (store.data.settings?.packageRepos ?? []).join('\n'),
+		editingDevice: false,
 	};
+
+	let fetchDevices = () => {
+		api.getAvailablePrinter().then((devices) => {
+			devices = devices ?? {};
+			const isDeviceSelected = Object.values(devices[store.data.settings.printerType])?.includes(store.data.settings.printerEndpoint);
+			if (!isDeviceSelected) state.editingDevice = true;
+		}, error);
+	};
+
+	fetchDevices();
 
 	let version = () => {
 		if (store.data.version === null || store.data.version?.gitCommitHash.length === 0) return null;
@@ -94,25 +105,17 @@ export default () => {
 							<i className='ion ion-md-print mr1' />
 							Printer Settings
 						</div>
-						<div className='w-50'>
-							<Form className='mr3 f7 black-70' horizontal={true}>
-								<Select
-									label='Printer Type'
-									keys={Object.keys(store.data.printer)}
-									selected={store.data.settings.printerType}
-									labelCol={4}
-									oninput={binder.inputString(store.data.settings, 'printerType')}
-								/>
-								<Input
-									label='Endpoint'
-									labelCol={4}
-									placeholder='e.g. POS-80'
-									value={store.data.settings.printerEndpoint}
-									oninput={binder.inputString(store.data.settings, 'printerEndpoint')}
-								/>
-								<div className='mt3 lh-copy o-70'>{store.data.printer?.[store.data.settings.printerType]}</div>
-							</Form>
+						<div className='w-100'>
+							<div
+								className='btn btn-primary mb2'
+								onclick={() => {
+									m.route.set('/devices');
+								}}
+							>
+								Pick Device
+							</div>
 						</div>
+						<div className='w-50'>{printerSelection()}</div>
 						<Form className='w-50 f7 black-70' horizontal={true}>
 							<Input
 								label='Printing Width'
@@ -199,6 +202,49 @@ export default () => {
 				</div>
 				<div className='ph3 pb4'>
 					Software made with <i className='ion ion-md-heart red' /> by <a onclick={() => shell.openExternal('https://github.com/BigJk')}>BigJk</a>
+				</div>
+			</div>
+		);
+	};
+
+	const printerSelection = () => {
+		if (state.editingDevice) {
+			return (
+				<Form className='mr3 f7 black-70' horizontal={true}>
+					<Select
+						label='Printer Type'
+						keys={Object.keys(store.data.printer)}
+						selected={store.data.settings.printerType}
+						labelCol={4}
+						oninput={binder.inputString(store.data.settings, 'printerType')}
+					/>
+					<Input
+						label='Endpoint'
+						labelCol={4}
+						placeholder='e.g. POS-80'
+						value={store.data.settings.printerEndpoint}
+						oninput={binder.inputString(store.data.settings, 'printerEndpoint')}
+					/>
+					<div className='mt3 lh-copy o-70'>{store.data.printer?.[store.data.settings.printerType]}</div>
+				</Form>
+			);
+		}
+
+		// Non-custom device:
+		return (
+			<div className='flex items-center lh-copy pa3 mr3 ba b--black-05 br4'>
+				<i className='ion ion-md-print mr2 black-50 f4' />
+				<div className='flex-auto'>
+					<span className='f6 db fw7 truncate'>{store.data.settings.printerEndpoint}</span>
+					<span className='f8 db black-50 truncate'>{store.data.settings.printerType}</span>
+				</div>
+				<div
+					className='btn'
+					onclick={() => {
+						state.editingDevice = true;
+					}}
+				>
+					Edit
 				</div>
 			</div>
 		);

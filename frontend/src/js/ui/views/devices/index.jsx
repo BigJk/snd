@@ -10,7 +10,6 @@ import { error, success } from '/js/ui/toast';
 export default () => {
 	let state = {
 		devices: {},
-		hasFeature: true,
 	};
 
 	let fetch = () => {
@@ -27,23 +26,31 @@ export default () => {
 		</div>
 	);
 
+	const useButton = (printerType, endpoint) => {
+		const selected = printerType === store.data.settings.printerType && endpoint === store.data.settings.printerEndpoint;
+
+		return (
+			<div
+				className='btn btn-success mr2'
+				onclick={() => {
+					store.data.settings.printerType = printerType;
+					store.data.settings.printerEndpoint = endpoint;
+					api.saveSettings(store.data.settings).then(() => {
+						success('Settings changed');
+					}, error);
+				}}
+				disabled={selected}
+			>
+				{selected ? 'In Use' : 'Use'}
+			</div>
+		);
+	};
+
 	let body = () => {
 		if (!store.data.settings || !store.data.printer) {
 			return (
 				<div className='flex-grow-1 flex justify-center items-center'>
 					<div className='loading loading-lg' />
-				</div>
-			);
-		}
-
-		if (!state.hasFeature) {
-			return (
-				<div className='h-100 br1 bg-white overflow-auto ba b--black-10 flex justify-center items-center'>
-					<div className='tc'>
-						<i className='red f2 ion ion-md-alert' />
-						<div className='f5 b'>Feature not Enabled</div>
-						<div className='black-50'>LibUSB is not available in your version of Sales & Dungeons.</div>
-					</div>
 				</div>
 			);
 		}
@@ -78,26 +85,6 @@ export default () => {
 						</div>
 					))
 				)}
-			</div>
-		);
-	};
-
-	const useButton = (printerType, endpoint) => {
-		const selected = printerType === store.data.settings.printerType && endpoint === store.data.settings.printerEndpoint;
-
-		return (
-			<div
-				className='btn btn-success mr2'
-				onclick={() => {
-					store.data.settings.printerType = printerType;
-					store.data.settings.printerEndpoint = endpoint;
-					api.saveSettings(store.data.settings).then(() => {
-						success('Settings changed');
-					}, error);
-				}}
-				disabled={selected}
-			>
-				{selected ? 'In Use' : 'Use'}
 			</div>
 		);
 	};

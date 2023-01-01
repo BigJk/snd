@@ -14,6 +14,7 @@ import (
 	"github.com/BigJk/snd/printing/cups"
 	"github.com/BigJk/snd/printing/dump"
 	"github.com/BigJk/snd/printing/remote"
+	"github.com/BigJk/snd/printing/rsnd"
 	"github.com/BigJk/snd/printing/serial"
 	"github.com/BigJk/snd/server"
 )
@@ -84,7 +85,7 @@ func openDatabase() database.Database {
 func startServer(db database.Database, debug bool) {
 	rand.Seed(time.Now().UnixNano())
 
-	s, err := server.New(db, append(serverOptions, server.WithDebug(debug), server.WithPrinter(&cups.CUPS{}), server.WithPrinter(&remote.Remote{}), server.WithPrinter(&serial.Serial{}), server.WithPrinter(&dump.Dump{}))...)
+	s, err := server.New(db, append(serverOptions, server.WithDebug(debug), server.WithPrinter(&cups.CUPS{}), server.WithPrinter(&remote.Remote{}), server.WithPrinter(&serial.Serial{}), server.WithPrinter(&rsnd.RemoteSND{}), server.WithPrinter(&dump.Dump{}))...)
 	if err != nil {
 		panic(err)
 	}

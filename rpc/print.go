@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"image"
 	"image/png"
 	"io/ioutil"
 	"math/rand"
@@ -277,6 +278,36 @@ func RegisterPrint(route *echo.Group, extern *echo.Group, db database.Database, 
 
 		if err := print(db, printer, html); err != nil {
 			return c.JSON(http.StatusBadRequest, err.Error())
+		}
+
+		return c.NoContent(http.StatusOK)
+	})
+
+	extern.POST("/print_raw", func(c echo.Context) error {
+		data, err := ioutil.ReadAll(c.Request().Body)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err.Error())
+		}
+
+		// Get current settings
+		settings, err := db.GetSettings()
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err.Error())
+		}
+
+		if settings.PrinterWidth < 50 {
+			return c.JSON(http.StatusBadRequest, errors.New("print width is too low").Error())
+		}
+
+		// Get printer
+		selectedPrinter, ok := printer[settings.PrinterType]
+		if !ok {
+			return fmt.Errorf("printer nout found: %w", err)
+		}
+
+		err = selectedPrinter.Print(settings.PrinterEndpoint, image.NewRGBA(image.Rect(0, 0, 0, 0)), data)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, fmt.Errorf("printer wasn't able to print: %w", err))
 		}
 
 		return c.NoContent(http.StatusOK)

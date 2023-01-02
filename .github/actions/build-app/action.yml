@@ -10,6 +10,9 @@ inputs:
   arch:
     description: 'CPU architecture to build for'
     required: true
+  armv:
+    description: 'arm version to build for'
+    required: false
   tags:
     description: 'Build tags to pass to Go'
     required: false
@@ -41,6 +44,7 @@ runs:
       env:
         GOOS: ${{ inputs.os }}
         GOARCH: ${{ inputs.arch }}
+        GOARM: ${{ inputs.armv }}
         SND_TAGS: ${{ inputs.tags }}
     - name: Run Build (MSYS2)
       if: inputs.os == 'windows' && inputs.libusb-path != null

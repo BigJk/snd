@@ -54,7 +54,14 @@ jobs:
           - arch: "386"
             artifact-name: "snd-linux-i386-headless"
           - arch: "arm"
-            artifact-name: "snd-linux-arm-headless"
+            armv: "5"
+            artifact-name: "snd-linux-armv5-headless"
+          - arch: "arm"
+            armv: "6"
+            artifact-name: "snd-linux-armv6-headless"
+          - arch: "arm"
+            armv: "7"
+            artifact-name: "snd-linux-armv7-headless"
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3

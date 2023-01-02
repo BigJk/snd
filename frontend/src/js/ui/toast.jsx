@@ -13,6 +13,7 @@ export function success(message) {
 }
 
 export function error(message) {
+	console.error(message);
 	Toastify({
 		text: message,
 		duration: 3000,

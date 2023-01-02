@@ -21,7 +21,7 @@ require (
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/go-git/go-billy/v5 v5.3.1
 	github.com/go-git/go-git/v5 v5.5.0
-	github.com/go-rod/rod v0.101.8
+	github.com/go-rod/rod v0.112.2
 	github.com/google/gousb v1.1.2
 	github.com/jwalton/go-supportscolor v1.1.0
 	github.com/labstack/echo/v4 v4.9.0
@@ -32,7 +32,6 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.3.5
 	go.bug.st/serial v1.3.5
 	go.etcd.io/bbolt v1.3.3
-	golang.org/x/net v0.2.0
 	gopkg.in/olahol/melody.v1 v1.0.0-20170518105555-d52139073376
 )
 
@@ -77,12 +76,13 @@ require (
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.2 // indirect
-	github.com/ysmood/goob v0.3.0 // indirect
-	github.com/ysmood/gson v0.6.4 // indirect
-	github.com/ysmood/leakless v0.7.0 // indirect
+	github.com/ysmood/goob v0.4.0 // indirect
+	github.com/ysmood/gson v0.7.3 // indirect
+	github.com/ysmood/leakless v0.8.0 // indirect
 	go.opencensus.io v0.22.5 // indirect
 	golang.org/x/crypto v0.3.0 // indirect
 	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
+	golang.org/x/net v0.2.0 // indirect
 	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/term v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect

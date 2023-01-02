@@ -62,6 +62,24 @@ func RegisterTemplate(route *echo.Group, extern *echo.Group, db database.Databas
 		return filepath.Join(path, folderName), nil
 	})))
 
+	route.POST("/exportTemplateJSON", echo.WrapHandler(nra.MustBind(func(id string) (string, error) {
+		tmpl, err := db.GetTemplate(id)
+		if err != nil {
+			return "", err
+		}
+
+		entries, err := db.GetEntries(id)
+		if err != nil {
+			return "", err
+		}
+
+		json, err := imexport.ExportTemplateJSON(tmpl, entries)
+		if err != nil {
+			return "", err
+		}
+		return string(json), nil
+	})))
+
 	route.POST("/importTemplateZip", echo.WrapHandler(nra.MustBind(func(file string) (string, error) {
 		var tmpl snd.Template
 		var entries []snd.Entry
@@ -105,6 +123,23 @@ func RegisterTemplate(route *echo.Group, extern *echo.Group, db database.Databas
 
 	route.POST("/importTemplateFolder", echo.WrapHandler(nra.MustBind(func(folder string) (string, error) {
 		tmpl, entries, err := imexport.ImportTemplateFolder(folder)
+		if err != nil {
+			return "", err
+		}
+
+		if err := db.SaveTemplate(tmpl); err != nil {
+			return "", err
+		}
+		_ = db.DeleteEntries(tmpl.ID())
+		for i := range entries {
+			_ = db.SaveEntry(tmpl.ID(), entries[i])
+		}
+
+		return tmpl.Name, nil
+	})))
+
+	route.POST("/importTemplateJSON", echo.WrapHandler(nra.MustBind(func(json string) (string, error) {
+		tmpl, entries, err := imexport.ImportTemplateJSON(json)
 		if err != nil {
 			return "", err
 		}

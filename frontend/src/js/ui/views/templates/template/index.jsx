@@ -5,6 +5,7 @@ import { inElectron, openFolderDialog } from '/js/electron';
 import { ModalInfo, ModalSync } from './modals';
 
 import api from '/js/core/api';
+import * as fileApi from '/js/core/file-api';
 import store from '/js/core/store';
 import { render } from '/js/core/templating';
 import { keepOpen, on } from '/js/core/ws';
@@ -123,7 +124,7 @@ export default () => {
 		},
 	];
 
-	let onexport = (type) => {
+	let onexport = async (type) => {
 		switch (type) {
 			case 'zip':
 				{
@@ -141,14 +142,27 @@ export default () => {
 				}
 				break;
 			case 'folder':
-				{
-					openFolderDialog().then((folder) => {
-						api
-							.exportTemplateFolder(state.template.id, folder)
-							.then((file) => success('Wrote ' + file))
-							.catch(error)
-							.then(() => (state.showExport = false));
-					});
+				if (inElectron) {
+					try {
+						const folder = await openFolderDialog();
+						const file = await api.exportTemplateFolder(state.template.id, folder);
+						success('Wrote ' + file);						
+					} catch (e) {
+						error(e);
+					}
+					state.showExport = false;
+				} else if (fileApi.hasFileApi) {
+					try {
+						const folder = await fileApi.openFolderDialog(true);
+						const json = await api.exportTemplateJSON(state.template.id);
+						await fileApi.writeJSONToFolder(folder, json);
+						success('Saved');
+					} catch (e) {
+						error(e);
+					}
+					state.showExport = false;
+				} else {
+					error('Browser does not support File API');
 				}
 				break;
 		}

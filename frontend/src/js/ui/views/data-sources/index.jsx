@@ -4,6 +4,7 @@ import { inElectron, openFileDialog, openFolderDialog } from '/js/electron';
 import { readFile } from '/js/file';
 
 import api from '/js/core/api';
+import * as fileApi from '/js/core/file-api';
 import store from '/js/core/store';
 
 import { Base, Header, Input, ModalExport, ModalImport, PreviewBox, Tooltip } from '/js/ui/components';
@@ -25,7 +26,7 @@ export default () => {
 		},
 	};
 
-	let onimport = (type, importData) => {
+	let onimport = async (type, importData) => {
 		switch (type) {
 			case 'zip':
 				{
@@ -64,22 +65,33 @@ export default () => {
 				}
 				break;
 			case 'folder':
-				{
-					openFolderDialog().then((folder) => {
+				if (inElectron) {
+					try {
+						const folder = await openFolderDialog();
 						state.importing.loading = true;
-						api
-							.importSourceFolder(folder)
-							.then((name) => {
-								success(`Imported '${name}' successful`);
-
-								store.pub('reload_sources');
-							})
-							.catch(error)
-							.then(() => {
-								state.importing.show = false;
-								state.importing.loading = false;
-							});
-					});
+						const name = await api.importSourceFolder(folder);
+						success(`Imported '${name}' successful`);
+						store.pub('reload_sources');
+					} catch (e) {
+						error(e);
+					}
+					state.importing.show = false;
+					state.importing.loading = false;
+				} else if (fileApi.hasFileApi) {
+					try {
+						const folder = await fileApi.openFolderDialog(false);
+						state.importing.loading = true;
+						const folderJsonString = await fileApi.folderToJSON(folder);
+						await api.importSourceJSON(folderJsonString);
+						success(`Imported '${folder.name}' successful`);
+						store.pub('reload_sources');
+					} catch (e) {
+						error(e);
+					}
+					state.importing.show = false;
+					state.importing.loading = false;
+				} else {
+					error('Browser does not support File API');
 				}
 				break;
 			case 'url':
@@ -173,7 +185,7 @@ export default () => {
 		}
 	};
 
-	let onexport = (type) => {
+	let onexport = async (type) => {
 		switch (type) {
 			case 'zip':
 				{
@@ -192,14 +204,27 @@ export default () => {
 				}
 				break;
 			case 'folder':
-				{
-					openFolderDialog().then((folder) => {
-						api
-							.exportSourceFolder(state.exporting.id, folder)
-							.then((file) => success('Wrote ' + file))
-							.catch(error)
-							.then(() => (state.exporting.show = false));
-					});
+				if (inElectron) {
+					try {
+						const folder = await openFolderDialog();
+						const file = api.exportSourceFolder(state.exporting.id, folder);
+						success('Wrote ' + file);
+					} catch (e) {
+						error(e);
+					}
+					state.exporting.show = false;
+				} else if (fileApi.hasFileApi) {
+					try {
+						const folder = await fileApi.openFolderDialog(true);
+						const json = await api.exportSourceJSON(state.exporting.id);
+						await fileApi.writeJSONToFolder(folder, json);
+						success('Saved');
+					} catch (e) {
+						error(e);
+					}
+					state.exporting.show = false;
+				} else {
+					error('Browser does not support File API');
 				}
 				break;
 		}

@@ -4,6 +4,7 @@ import { inElectron, openFileDialog, openFolderDialog, shell } from '/js/electro
 import { readFile } from '/js/file';
 
 import api from '/js/core/api';
+import * as fileApi from '/js/core/file-api';
 import store from '/js/core/store';
 import { render } from '/js/core/templating';
 
@@ -118,7 +119,7 @@ export default () => {
 
 	checkUpdate();
 
-	let onimport = (type, url) => {
+	let onimport = async (type, url) => {
 		switch (type) {
 			case 'zip':
 				{
@@ -158,22 +159,32 @@ export default () => {
 				}
 				break;
 			case 'folder':
-				{
-					openFolderDialog().then((folder) => {
+				if (inElectron) {
+					try {
+						const folder = await openFolderDialog();
 						state.importing.loading = true;
-						api
-							.importTemplateFolder(folder)
-							.then((name) => {
-								success(`Imported '${name}' successful`);
-
-								store.pub('reload_templates');
-							})
-							.catch(error)
-							.then(() => {
-								state.importing.show = false;
-								state.importing.loading = false;
-							});
-					});
+						const name = await api.importTemplateFolder(folder);
+						success(`Imported '${name}' successful`);
+						store.pub('reload_templates');
+					} catch (e) {
+						error(e);
+					}
+					state.importing.show = false;
+					state.importing.loading = false;
+				} else if (fileApi.hasFileApi) {
+					try {
+						const folder = await fileApi.openFolderDialog(false);
+						const folderJsonString = await fileApi.folderToJSON(folder);
+						await api.importTemplateJSON(folderJsonString);
+						success(`Imported '${folder.name}' successful`);
+						store.pub('reload_generators');
+					} catch (e) {
+						error(e);
+					}
+					state.importing.show = false;
+					state.importing.loading = false;
+				} else {
+					error('Browser does not support File API');
 				}
 				break;
 			case 'url':

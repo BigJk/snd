@@ -5,6 +5,7 @@ import { inElectron, openFolderDialog } from '/js/electron';
 import { ModalInfo } from './modals';
 
 import api from '/js/core/api';
+import * as fileApi from '/js/core/file-api';
 import { render } from '/js/core/generator';
 import store from '/js/core/store';
 
@@ -58,7 +59,7 @@ export default function () {
 		state.config = pickBy(state.config, (val, key) => key === 'seed' || state.gen.config.some((conf) => conf.key === key));
 	};
 
-	let onexport = (type) => {
+	let onexport = async (type) => {
 		switch (type) {
 			case 'zip':
 				{
@@ -77,14 +78,26 @@ export default function () {
 				}
 				break;
 			case 'folder':
-				{
-					openFolderDialog().then((folder) => {
-						api
-							.exportGeneratorFolder(state.id, folder)
-							.then((file) => success('Wrote ' + file))
-							.catch(error)
-							.then(() => (state.showExport = false));
-					});
+				if (inElectron) {
+					try {
+						const folder = await openFolderDialog();
+						const file = api.exportGeneratorFolder(state.id, folder);
+						success('Wrote ' + file);
+					} catch (e) {
+						error(e);
+					}
+					state.showExport = false;
+				} else if (fileApi.hasFileApi) {
+					try {
+						const folder = await fileApi.openFolderDialog(true);
+						const json = await api.exportGeneratorJSON(state.id);
+						await fileApi.writeJSONToFolder(folder, json);
+					} catch (e) {
+						error(e);
+					}
+					state.showExport = false;
+				} else {
+					error('Browser does not support File API');
 				}
 				break;
 		}

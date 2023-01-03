@@ -8,7 +8,7 @@ import { ModalCreate } from './modals';
 import api from '/js/core/api';
 import store from '/js/core/store';
 
-import { Base, Header, Input, ModalExport, ModalImport, PreviewBox, Tooltip } from '/js/ui/components';
+import { Base, Header, Input, ModalExport, ModalImport, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
 import { dialogWarning, error, success } from '/js/ui/toast';
@@ -248,50 +248,57 @@ export default () => {
 						<div className='mb2 f5'>
 							Sources by <b>{key}</b>
 						</div>
-						<div className='flex flex-wrap'>
-							{val.map((t, i) => (
-								<PreviewBox
-									className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}
-									value={t}
-									bottomLeft={
-										<div className='lh-solid'>
-											<div className='f4 b'>{t.count}</div>
-											<span className='fw4 f6 black-50'>Entries</span>
-										</div>
-									}
-									bottomRight={
-										<div>
-											<div className='btn mr2' onclick={() => m.route.set(`/data-sources/ds:${t.author}+${t.slug}`)}>
-												Edit Source
-											</div>
-											<Tooltip content='Export Options'>
-												<div
-													className='btn btn-primary w2 mr2'
-													onclick={() => {
-														state.exporting.ds = t;
-														state.exporting.id = `ds:${t.author}+${t.slug}`;
-														state.exporting.show = true;
-													}}
-												>
-													<i className='ion ion-md-open' />
+						<div className='bg-white pa2 ba b--black-10'>
+							<table className='table'>
+								<thead>
+									<tr>
+										<th className='w-40'>Name</th>
+										<th className='w-30'>Description</th>
+										<th className='w-10'>Entries</th>
+										<th className='w-20' />
+									</tr>
+								</thead>
+								<tbody>
+									{val.map((t, i) => (
+										<tr>
+											<td className='b'>{t.name}</td>
+											<td className='f8'>{t.description}</td>
+											<td>{t.count}</td>
+											<td>
+												<div className='flex items-center justify-end'>
+													<div className='btn btn-sm mr2' onclick={() => m.route.set(`/data-sources/ds:${t.author}+${t.slug}`)}>
+														Edit Source
+													</div>
+													<Tooltip content='Export Options'>
+														<div
+															className='btn btn-sm btn-primary w2 mr2'
+															onclick={() => {
+																state.exporting.ds = t;
+																state.exporting.id = `ds:${t.author}+${t.slug}`;
+																state.exporting.show = true;
+															}}
+														>
+															<i className='ion ion-md-open' />
+														</div>
+													</Tooltip>
+													<div
+														className='btn btn-sm btn-error'
+														onclick={() =>
+															dialogWarning(`Do you really want to delete the '${t.name}' source ?`).then(() =>
+																api.deleteSource(`ds:${t.author}+${t.slug}`).then(() => {
+																	store.pub('reload_sources');
+																})
+															)
+														}
+													>
+														<i className='ion ion-md-close-circle-outline' />
+													</div>
 												</div>
-											</Tooltip>
-											<div
-												className='btn btn-error'
-												onclick={() =>
-													dialogWarning(`Do you really want to delete the '${t.name}' source ?`).then(() =>
-														api.deleteSource(`ds:${t.author}+${t.slug}`).then(() => {
-															store.pub('reload_sources');
-														})
-													)
-												}
-											>
-												<i className='ion ion-md-close-circle-outline' />
-											</div>
-										</div>
-									}
-								/>
-							))}
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
 						</div>
 					</div>
 				)

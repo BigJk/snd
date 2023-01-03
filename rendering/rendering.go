@@ -25,13 +25,23 @@ import (
 
 var browser *rod.Browser
 
-func init() {
-	initBrowser()
-}
-
-func initBrowser() {
+func InitBrowser() {
 	if browser != nil {
 		_ = browser.Close()
+	}
+
+	// if you want rod to connect to a custom chrome instance instead of downloading and
+	// auto connecting you can set the SND_CHROME_ADDR to the address of target instance.
+	// Input might look like: 2814, 127.0.0.1:2814, ws://127.0.0.1:2814, ...
+	//
+	// you can use the rod docker container:
+	// - https://github.com/go-rod/rod/pkgs/container/rod
+	// - https://github.com/go-rod/rod/blob/master/lib/examples/connect-browser/main.go#L21
+	customChromeUrl := os.Getenv("SND_CHROME_ADDR")
+	if len(customChromeUrl) > 0 {
+		u := launcher.MustResolveURL(customChromeUrl)
+		browser = rod.New().ControlURL(u).MustConnect()
+		return
 	}
 
 	l := launcher.New()
@@ -68,7 +78,7 @@ func tryOpenPage(url string) (*rod.Page, error) {
 
 		// if the pc has gone into standby the cdp session closes,
 		// so we try to init it again and try once more.
-		initBrowser()
+		InitBrowser()
 	}
 
 	// after retry return last error

@@ -1,3 +1,7 @@
+![S&D Header](./data/readme_header.png)
+
+----
+
 <img align="right" width="120px" alt="Sales &amp; Dungeons" src="./data/preview.png">
 <img width="100" alt="Sales &amp; Dungeons" src="./data/round_icon.png">
 

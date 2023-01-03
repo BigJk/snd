@@ -16,6 +16,7 @@ import (
 	"github.com/BigJk/snd/printing/remote"
 	"github.com/BigJk/snd/printing/rsnd"
 	"github.com/BigJk/snd/printing/serial"
+	"github.com/BigJk/snd/rendering"
 	"github.com/BigJk/snd/server"
 )
 
@@ -114,6 +115,8 @@ ________________________________________`)
 		fmt.Println("Commit Branch :", snd.GitBranch)
 		fmt.Println("Commit Hash   :", snd.GitCommitHash)
 	}
+
+	rendering.InitBrowser()
 
 	startFunc(openDatabase(), *debug)
 }

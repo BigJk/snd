@@ -7,6 +7,7 @@ import MarkdownItReplaceLink from 'markdown-it-replace-link';
 import api from '/js/core/api';
 import { dataSourceId, generatorId, templateId } from '/js/core/model-helper';
 import store from '/js/core/store';
+import { dataSourceById, generatorById, templateById } from '/js/core/store-helper';
 
 import { Base, Header, Input, Select } from '/js/ui/components';
 
@@ -239,15 +240,15 @@ export default function () {
 						switch (p.type) {
 							case 'template':
 								data = p.template;
-								present = store.data.templates.some((tmpl) => tmpl.author === data.author && tmpl.slug === data.slug);
+								present = !!templateById(templateId(data));
 								break;
 							case 'generator':
 								data = p.generator;
-								present = store.data.generators.some((gen) => gen.author === data.author && gen.slug === data.slug);
+								present = !!generatorById(generatorId(data));
 								break;
 							case 'data source':
 								data = p.dataSource;
-								present = store.data.sources.some((ds) => ds.author === data.author && ds.slug === data.slug);
+								present = !!dataSourceById(dataSourceId(data));
 								break;
 							default:
 								return null;

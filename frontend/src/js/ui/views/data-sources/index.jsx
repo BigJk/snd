@@ -69,14 +69,14 @@ export default () => {
 					openFolderDialog()
 						.then((folder) => {
 							state.importing.loading = true;
-							api.importSourceFolder(folder);
+							return api.importSourceFolder(folder);
 						})
 						.then((name) => {
 							success(`Imported '${name}' successful`);
 							store.pub('reload_sources');
 						})
 						.catch(error)
-						.then(() => {
+						.finally(() => {
 							state.importing.show = false;
 							state.importing.loading = false;
 						});
@@ -85,18 +85,16 @@ export default () => {
 						.openFolderDialog(false)
 						.then((folder) => {
 							state.importing.loading = true;
-							fileApi
+							return fileApi
 								.folderToJSON(folder)
-								.then((folderJsonString) => {
-									api.importSourceJSON(folderJsonString);
-								})
+								.then((folderJsonString) => api.importSourceJSON(folderJsonString))
 								.then(() => {
 									success(`Imported '${folder.name}' successful`);
 									store.pub('reload_sources');
 								});
 						})
 						.catch(error)
-						.then(() => {
+						.finally(() => {
 							state.importing.show = false;
 							state.importing.loading = false;
 						});
@@ -115,7 +113,7 @@ export default () => {
 							store.pub('reload_sources');
 						})
 						.catch(error)
-						.then(() => {
+						.finally(() => {
 							state.importing.show = false;
 							state.importing.loading = false;
 						});
@@ -219,13 +217,13 @@ export default () => {
 						.then((folder) => api.exportSourceFolder(state.exporting.id, folder))
 						.then((file) => success('Wrote ' + file))
 						.catch(error)
-						.then(() => (state.exporting.show = false));
+						.finally(() => (state.exporting.show = false));
 				} else if (fileApi.hasFileApi) {
 					Promise.all([fileApi.openFolderDialog(true), api.exportSourceJSON(state.exporting.id)])
 						.then(([folder, json]) => fileApi.writeJSONToFolder(folder, json))
 						.then(() => success('Saved'))
 						.catch(error)
-						.then(() => (state.exporting.show = false));
+						.finally(() => (state.exporting.show = false));
 				} else {
 					error('Browser does not support File API');
 				}

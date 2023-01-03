@@ -119,7 +119,7 @@ export default () => {
 
 	checkUpdate();
 
-	let onimport = async (type, url) => {
+	let onimport = (type, url) => {
 		switch (type) {
 			case 'zip':
 				{
@@ -160,29 +160,37 @@ export default () => {
 				break;
 			case 'folder':
 				if (inElectron) {
-					try {
-						const folder = await openFolderDialog();
-						state.importing.loading = true;
-						const name = await api.importTemplateFolder(folder);
-						success(`Imported '${name}' successful`);
-						store.pub('reload_templates');
-					} catch (e) {
-						error(e);
-					}
-					state.importing.show = false;
-					state.importing.loading = false;
+					openFolderDialog()
+						.then((folder) => {
+							state.importing.loading = true;
+							return api.importTemplateFolder(folder);
+						})
+						.then((name) => {
+							success(`Imported '${name}' successful`);
+							store.pub('reload_templates');
+						})
+						.catch(error)
+						.finally(() => {
+							state.importing.show = false;
+							state.importing.loading = false;
+						});
 				} else if (fileApi.hasFileApi) {
-					try {
-						const folder = await fileApi.openFolderDialog(false);
-						const folderJsonString = await fileApi.folderToJSON(folder);
-						await api.importTemplateJSON(folderJsonString);
-						success(`Imported '${folder.name}' successful`);
-						store.pub('reload_generators');
-					} catch (e) {
-						error(e);
-					}
-					state.importing.show = false;
-					state.importing.loading = false;
+					fileApi
+						.openFolderDialog(false)
+						.then((folder) =>
+							fileApi
+								.folderToJSON(folder)
+								.then((folderJsonString) => api.importTemplateJSON(folderJsonString))
+								.then(() => {
+									success(`Imported '${folder.name}' successful`);
+									store.pub('reload_generators');
+								})
+						)
+						.catch(error)
+						.finally(() => {
+							state.importing.show = false;
+							state.importing.loading = false;
+						});
 				} else {
 					error('Browser does not support File API');
 				}

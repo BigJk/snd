@@ -83,12 +83,12 @@ export default function () {
 						.then((folder) => api.exportGeneratorFolder(state.id, folder))
 						.then((file) => success('Wrote ' + file))
 						.catch(error)
-						.then(() => (state.showExport = false));
+						.finally(() => (state.showExport = false));
 				} else if (fileApi.hasFileApi) {
 					Promise.all([fileApi.openFolderDialog(true), api.exportGeneratorJSON(state.id)])
 						.then(([folder, json]) => fileApi.writeJSONToFolder(folder, json))
 						.catch(error)
-						.then(() => (state.showExport = false));
+						.finally(() => (state.showExport = false));
 				} else {
 					error('Browser does not support File API');
 				}

@@ -176,31 +176,31 @@ export default () => {
 						openFolderDialog()
 							.then((folder) => {
 								state.importing.loading = true;
-								api.importGeneratorFolder(folder);
+								return api.importGeneratorFolder(folder);
 							})
 							.then((name) => {
 								success(`Imported '${name}' successful`);
 								store.pub('reload_generators');
 							})
 							.catch(error)
-							.then(() => {
+							.finally(() => {
 								state.importing.show = false;
 								state.importing.loading = false;
 							});
 					} else if (fileApi.hasFileApi) {
 						fileApi
 							.openFolderDialog(false)
-							.then((folder) => {
+							.then((folder) =>
 								fileApi
 									.folderToJSON(folder)
 									.then((folderJsonString) => api.importGeneratorJSON(folderJsonString))
 									.then(() => {
 										success(`Imported '${folder.name}' successful`);
 										store.pub('reload_generators');
-									});
-							})
+									})
+							)
 							.catch(error)
-							.then(() => {
+							.finally(() => {
 								state.importing.show = false;
 								state.importing.loading = false;
 							});

@@ -66,11 +66,20 @@ export default () => {
 										return;
 									}
 
-									api.saveTemplate(state.template).then(() => {
-										success('Template saved');
-										store.pub('reload_templates');
-										m.route.set('/templates');
-									}, error);
+									api
+										.saveTemplate(state.template)
+										.then(() => {
+											// if this is a duplication we want to copy the entries from the original to the duplicated.
+											if (vnode.attrs.id) {
+												return api.copyEntries(vnode.attrs.id, `tmpl:${state.template.author}+${state.template.slug}`);
+											}
+										})
+										.then(() => {
+											success('Template saved');
+											store.pub('reload_templates');
+											m.route.set('/templates');
+										})
+										.catch(error);
 								}}
 							>
 								Save

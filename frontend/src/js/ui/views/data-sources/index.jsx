@@ -3,6 +3,8 @@ import { groupBy, map } from 'lodash-es';
 import { inElectron, openFileDialog, openFolderDialog } from '/js/electron';
 import { readFile } from '/js/file';
 
+import { ModalCreate } from './modals';
+
 import api from '/js/core/api';
 import store from '/js/core/store';
 
@@ -14,6 +16,7 @@ import { dialogWarning, error, success } from '/js/ui/toast';
 export default () => {
 	let state = {
 		search: '',
+		showCreate: false,
 		importing: {
 			show: false,
 			loading: false,
@@ -205,6 +208,34 @@ export default () => {
 		}
 	};
 
+	let createDataSource = (data) => {
+		if (data.name.length === 0) {
+			error('Please insert a name');
+			return;
+		}
+
+		if (data.author.length === 0) {
+			error('Please insert a author');
+			return;
+		}
+
+		if (data.slug.length === 0) {
+			error('Please insert a slug');
+			return;
+		}
+
+		if (store.data.sources.find((ds) => `ds:${ds.author}+${ds.slug}` === `ds:${data.author}+${data.slug}`)) {
+			error('This Data Source already exists');
+			return;
+		}
+
+		api.saveSource(data).then(() => {
+			success('Data Source saved');
+			store.pub('reload_sources');
+			m.route.set(`/data-sources/ds:${data.author}+${data.slug}`);
+		}, error);
+	};
+
 	let body = () => (
 		<div className='ph3 pb3'>
 			{map(
@@ -230,6 +261,9 @@ export default () => {
 									}
 									bottomRight={
 										<div>
+											<div className='btn mr2' onclick={() => m.route.set(`/data-sources/ds:${t.author}+${t.slug}`)}>
+												Edit Source
+											</div>
 											<Tooltip content='Export Options'>
 												<div
 													className='btn btn-primary w2 mr2'
@@ -282,6 +316,9 @@ export default () => {
 				<Base active='dataSources'>
 					<div className='h-100 flex flex-column'>
 						<Header title='Data Sources' subtitle='Manage collection of data.'>
+							<div className='btn btn-success mr2' onclick={() => (state.showCreate = true)}>
+								Create New
+							</div>
 							<Tooltip content='Import'>
 								<div className='btn btn-primary' onclick={() => (state.importing.show = true)}>
 									<i className='ion ion-md-log-in' />
@@ -291,6 +328,7 @@ export default () => {
 							<Input placeholder='Search...' value={state.search} oninput={binder.inputString(state, 'search')} />
 						</Header>
 						{body()}
+						<ModalCreate show={state.showCreate} onclose={() => (state.showCreate = false)} onconfirm={createDataSource} />
 						<ModalImport
 							type='data source'
 							show={state.importing.show}

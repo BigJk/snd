@@ -7,7 +7,7 @@ export default () => ({
 				<div className='modal-overlay' />
 				<div className='absolute flex flex-column'>
 					<div className='loading loading-lg mb2' />
-					<div className='black-70'>Printing...</div>
+					<div className='black-70'>{vnode.attrs.content ? vnode.attrs.content : 'Printing...'}</div>
 				</div>
 			</div>
 		);

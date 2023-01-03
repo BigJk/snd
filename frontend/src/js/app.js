@@ -14,6 +14,7 @@ import api from '/js/core/api';
 import store from '/js/core/store';
 
 import DataSources from '/js/ui/views/data-sources';
+import DataSource from '/js/ui/views/data-sources/data-source';
 import Devices from '/js/ui/views/devices';
 import ExternPrintGenerator from '/js/ui/views/extern-print/generator';
 import ExternPrintTemplate from '/js/ui/views/extern-print/template';
@@ -131,6 +132,7 @@ let wait = setInterval(() => {
 		'/workshop/:id': WorkshopRepo,
 		'/help': Help,
 		'/data-sources': DataSources,
+		'/data-sources/:id': DataSource,
 		'/settings': Settings,
 		'/devices': Devices,
 		'/extern-print/template/:id/:json': ExternPrintTemplate,

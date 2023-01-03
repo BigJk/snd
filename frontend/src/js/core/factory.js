@@ -42,13 +42,3 @@ export function NewEntry() {
 		data: {},
 	};
 }
-
-export function NewScript() {
-	return {
-		name: '',
-		slug: '',
-		author: '',
-		source: '',
-		description: '',
-	};
-}

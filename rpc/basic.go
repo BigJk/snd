@@ -5,12 +5,14 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/log"
 	"github.com/labstack/echo/v4"
+	"golang.org/x/exp/slices"
 )
 
 type GitHubTags []struct {
@@ -23,6 +25,8 @@ type GitHubTags []struct {
 	} `json:"commit"`
 	NodeID string `json:"node_id"`
 }
+
+var tagNameRegex = regexp.MustCompile(`^v\d+.\d+.\d+`)
 
 func fetchTags() (GitHubTags, error) {
 	if len(snd.GitCommitHash) == 0 {
@@ -43,6 +47,14 @@ func fetchTags() (GitHubTags, error) {
 	var tags GitHubTags
 	if err := json.Unmarshal(data, &tags); err != nil {
 		return nil, err
+	}
+
+	// filter tags that don't match vX.X.X pattern.
+	for i := 0; i < len(tags); i++ {
+		if !tagNameRegex.MatchString(tags[i].Name) {
+			tags = slices.Delete(tags, i, i+1)
+			i--
+		}
 	}
 
 	if len(tags) == 0 {

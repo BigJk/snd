@@ -3,6 +3,7 @@ import { debounce, map, pickBy, uniq } from 'lodash-es';
 import { fetchMultipleEntries } from '/js/core/api-helper';
 import { render } from '/js/core/generator';
 import htmlFormat from '/js/core/html-format';
+import { dataSourceId } from '/js/core/model-helper';
 import snippets from '/js/core/snippets';
 import store from '/js/core/store';
 
@@ -16,6 +17,7 @@ export default () => {
 	let state = {
 		target: null,
 		editMode: false,
+		rendering: false,
 		lastRender: '',
 		selectedTab: '',
 		selectedSource: '',
@@ -44,6 +46,7 @@ export default () => {
 
 	let updateRender = debounce(() => {
 		state.templateErrors = [];
+		state.rendering = true;
 
 		sanitizeConfig();
 
@@ -62,6 +65,8 @@ export default () => {
 		if (state.onRender) {
 			state.onRender(state.lastRender);
 		}
+
+		m.redraw();
 	}, 1000);
 
 	let updateRenderSanitize = () => {
@@ -173,7 +178,7 @@ export default () => {
 				<Select
 					label='Add Sources'
 					selected={state.selectedSource}
-					keys={store.data.sources?.map((s) => `ds:${s.author}+${s.slug}`)}
+					keys={store.data.sources?.map(dataSourceId)}
 					names={store.data.sources?.map((s) => `${s.name} (${s.author})`)}
 					oninput={(e) => (state.selectedSource = e.target.value)}
 				/>
@@ -340,9 +345,11 @@ export default () => {
 			return (
 				<SplitView
 					content={state.lastRender}
+					devTools={true}
 					width={340}
 					scale={340.0 / store.data.settings.printerWidth}
 					stylesheets={store.data.settings.stylesheets}
+					loading={state.rendering}
 				>
 					<ul className='tab tab-block tab-m0 flex-shrink-0'>
 						{map(tabs, (v, k) => (

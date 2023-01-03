@@ -2,6 +2,7 @@ import { debounce, isArray, map, mergeWith, uniq } from 'lodash-es';
 
 import { fetchMultipleEntries } from '/js/core/api-helper';
 import htmlFormat from '/js/core/html-format';
+import { dataSourceId, templateId } from '/js/core/model-helper';
 import snippets from '/js/core/snippets';
 import store from '/js/core/store';
 import { render } from '/js/core/templating';
@@ -73,9 +74,7 @@ export default () => {
 	}, 250);
 
 	let updateEntries = () => {
-		fetchMultipleEntries(
-			state.editMode ? [`tmpl:${state.target.author}+${state.target.slug}`, ...(state.target.dataSources ?? [])] : state.target.dataSources ?? []
-		)
+		fetchMultipleEntries(state.editMode ? [templateId(state.target), ...(state.target.dataSources ?? [])] : state.target.dataSources ?? [])
 			.then((entries) => (state.entries = entries))
 			.catch(error);
 	};
@@ -170,7 +169,7 @@ export default () => {
 				<Select
 					label='Add Sources'
 					selected={state.selectedSource}
-					keys={store.data.sources?.map((s) => `ds:${s.author}+${s.slug}`)}
+					keys={store.data.sources?.map(dataSourceId)}
 					names={store.data.sources?.map((s) => `${s.name} (${s.author})`)}
 					oninput={(e) => (state.selectedSource = e.target.value)}
 				/>

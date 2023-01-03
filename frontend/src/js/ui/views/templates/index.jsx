@@ -5,6 +5,7 @@ import { readFile } from '/js/file';
 
 import api from '/js/core/api';
 import * as fileApi from '/js/core/file-api';
+import { templateId } from '/js/core/model-helper';
 import store from '/js/core/store';
 import { render } from '/js/core/templating';
 
@@ -39,7 +40,7 @@ const viewModes = {
 				<PreviewBox
 					className={`w-50 ${(i & 1) === 0 ? 'pr2' : ''}`}
 					value={t}
-					previewContent={state.templates['tmpl:' + t.author + '+' + t.name] ?? 'Rendering...'}
+					previewContent={state.templates[templateId(t)] ?? 'Rendering...'}
 					bottomLeft={
 						<div className='lh-solid'>
 							<div className='f4 b'>{t.count}</div>
@@ -47,11 +48,11 @@ const viewModes = {
 						</div>
 					}
 					bottomRight={
-						<div className='btn' onclick={() => m.route.set(`/templates/tmpl:${t.author}+${t.slug}`)}>
+						<div className='btn' onclick={() => m.route.set(`/templates/${templateId(t)}`)}>
 							Open Template
 						</div>
 					}
-					loading={state.templates['tmpl:' + t.author + '+' + t.name] === undefined}
+					loading={state.templates[templateId(t)] === undefined}
 				/>
 			);
 		},
@@ -63,7 +64,7 @@ const viewModes = {
 				<div className={`w-33 ${i % 3 === 1 ? 'ph2' : ''}`}>
 					<div className='flex justify-between items-center bg-white ba b--black-10 pa2 mb2'>
 						<div className='b f6 flex-shrink-0'>{t.name}</div>
-						<div className='btn flex-shrink-0' onclick={() => m.route.set(`/templates/tmpl:${t.author}+${t.slug}`)}>
+						<div className='btn flex-shrink-0' onclick={() => m.route.set(`/templates/${templateId(t)}`)}>
 							Open Template
 						</div>
 					</div>
@@ -81,7 +82,7 @@ const viewModes = {
 						<div className='pa2 bg-gray'>
 							<Preview
 								className='h-100'
-								content={state.templates['tmpl:' + t.author + '+' + t.name] ?? 'Rendering...'}
+								content={state.templates[templateId(t)] ?? 'Rendering...'}
 								stylesheets={store.data.settings.stylesheets}
 								width={140}
 								scale={140 / store.data.settings.printerWidth}
@@ -93,7 +94,7 @@ const viewModes = {
 						>
 							<div className='flex flex-column justify-between h-100 pa2'>
 								<div className='lh-copy text-muted text-overflow-hide flex-grow-1'>{t.description}</div>
-								<div className='btn flex-shrink-0' onclick={() => m.route.set(`/templates/tmpl:${t.author}+${t.slug}`)}>
+								<div className='btn flex-shrink-0' onclick={() => m.route.set(`/templates/${templateId(t)}`)}>
 									Open Template
 								</div>
 							</div>
@@ -252,7 +253,7 @@ export default () => {
 			store.data.templates.map(
 				(t) =>
 					new Promise((resolve) => {
-						let id = 'tmpl:' + t.author + '+' + t.name;
+						let id = templateId(t);
 						render(t.printTemplate, { it: t.skeletonData, images: t.images })
 							.then((res) => {
 								resolve({

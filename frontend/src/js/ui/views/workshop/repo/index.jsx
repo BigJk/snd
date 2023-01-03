@@ -5,6 +5,7 @@ import MarkdownIt from 'markdown-it';
 import MarkdownItReplaceLink from 'markdown-it-replace-link';
 
 import api from '/js/core/api';
+import { dataSourceId, generatorId, templateId } from '/js/core/model-helper';
 import store from '/js/core/store';
 
 import { Base, Header, Input, Select } from '/js/ui/components';
@@ -143,11 +144,11 @@ export default function () {
 	let getIdFromPackage = (p) => {
 		switch (p.type) {
 			case 'template':
-				return `tmpl:${p.template.author}+${p.template.slug}`;
+				return templateId(p.template);
 			case 'generator':
-				return `gen:${p.generator.author}+${p.generator.slug}`;
+				return generatorId(p.generator);
 			case 'data source':
-				return `ds:${p.dataSource.author}+${p.dataSource.slug}`;
+				return dataSourceId(p.dataSource);
 			default:
 				return '';
 		}
@@ -284,11 +285,11 @@ export default function () {
 															let found = missingSources
 																.map((missing) => {
 																	let foundDs = state.packages.find(
-																		(pack) => pack.type === 'data source' && `ds:${pack.dataSource.author}+${pack.dataSource.slug}` === missing
+																		(pack) => pack.type === 'data source' && dataSourceId(pack.dataSource) === missing
 																	);
 
 																	if (foundDs) {
-																		return `ds:${foundDs.dataSource.author}+${foundDs.dataSource.slug}`;
+																		return dataSourceId(foundDs.dataSource);
 																	}
 
 																	return null;

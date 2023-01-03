@@ -6,6 +6,7 @@ import { readFile } from '/js/file';
 import api from '/js/core/api';
 import * as fileApi from '/js/core/file-api';
 import { render } from '/js/core/generator';
+import { generatorId } from '/js/core/model-helper';
 import store from '/js/core/store';
 
 import { Header, Input, ModalImport, Preview, PreviewBox, Select, Tooltip } from '/js/ui/components';
@@ -96,7 +97,7 @@ export default () => {
 	};
 
 	let sanitizeConfig = (g) => {
-		let id = `gen:${g.author}+${g.slug}`;
+		let id = generatorId(g);
 
 		// create base config
 		if (state.configs[id] === undefined) {
@@ -122,7 +123,7 @@ export default () => {
 	};
 
 	let rerender = (g) => {
-		let id = `gen:${g.author}+${g.slug}`;
+		let id = generatorId(g);
 
 		return render(g, state.entries[id], state.configs[id])
 			.then((res) => {
@@ -283,7 +284,7 @@ export default () => {
 									</div>
 									<div className='flex flex-wrap'>
 										{val.map((g, i) => {
-											let id = `gen:${g.author}+${g.slug}`;
+											let id = generatorId(g);
 
 											sanitizeConfig(g);
 
@@ -292,7 +293,7 @@ export default () => {
 											}
 
 											if (state.entries[id] === undefined) {
-												api.getEntriesWithSources(`gen:${g.author}+${g.slug}`).then((entries) => {
+												api.getEntriesWithSources(generatorId(g)).then((entries) => {
 													state.entries[id] = entries ?? [];
 												});
 											}

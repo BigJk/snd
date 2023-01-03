@@ -7,7 +7,10 @@ import { ModalCreate, ModalDuplicate } from './modals';
 
 import api from '/js/core/api';
 import * as fileApi from '/js/core/file-api';
+import { validBaseInformation } from '/js/core/model-helper';
+import { dataSourceId } from '/js/core/model-helper';
 import store from '/js/core/store';
+import { dataSourceById } from '/js/core/store-helper';
 
 import { Base, Header, Input, ModalExport, ModalImport, Tooltip } from '/js/ui/components';
 
@@ -240,22 +243,15 @@ export default () => {
 	};
 
 	let createDataSource = (data, skipNavigate, cb) => {
-		if (data.name.length === 0) {
-			error('Please insert a name');
+		let { valid, reason } = validBaseInformation(data);
+
+		if (!valid) {
+			error(reason);
 			return;
 		}
 
-		if (data.author.length === 0) {
-			error('Please insert a author');
-			return;
-		}
-
-		if (data.slug.length === 0) {
-			error('Please insert a slug');
-			return;
-		}
-
-		if (store.data.sources.find((ds) => `ds:${ds.author}+${ds.slug}` === `ds:${data.author}+${data.slug}`)) {
+		// check if data source with same id already exists
+		if (dataSourceById(dataSourceId(data))) {
 			error('This Data Source already exists');
 			return;
 		}
@@ -270,7 +266,7 @@ export default () => {
 				}
 
 				store.pub('reload_sources');
-				m.route.set(`/data-sources/ds:${data.author}+${data.slug}`);
+				m.route.set(`/data-sources/${dataSourceId(data)}`);
 			})
 			.then(cb)
 			.catch(error);
@@ -279,11 +275,11 @@ export default () => {
 	let duplicateDataSource = (data) => {
 		createDataSource(data, true, () => {
 			api
-				.copyEntries(state.duplicate.id, `ds:${data.author}+${data.slug}`)
+				.copyEntries(state.duplicate.id, dataSourceId(data))
 				.then(() => {
 					success('Data Source duplicated.');
 					store.pub('reload_sources');
-					m.route.set(`/data-sources/ds:${data.author}+${data.slug}`);
+					m.route.set(`/data-sources/${dataSourceId(data)}`);
 				})
 				.catch(error);
 		});
@@ -316,13 +312,13 @@ export default () => {
 										<tr>
 											<td>
 												<div className='b'>{t.name}</div>
-												<div className='f8 text-muted'>{`ds:${t.author}+${t.slug}`}</div>
+												<div className='f8 text-muted'>{dataSourceId(t)}</div>
 											</td>
 											<td className='f8'>{t.description}</td>
 											<td>{t.count}</td>
 											<td>
 												<div className='flex items-center justify-end'>
-													<div className='btn btn-sm mr2' onclick={() => m.route.set(`/data-sources/ds:${t.author}+${t.slug}`)}>
+													<div className='btn btn-sm mr2' onclick={() => m.route.set(`/data-sources/${dataSourceId(t)}`)}>
 														Edit Source
 													</div>
 													<Tooltip content='Export Options'>
@@ -330,7 +326,7 @@ export default () => {
 															className='btn btn-sm btn-primary w2 mr2'
 															onclick={() => {
 																state.exporting.ds = t;
-																state.exporting.id = `ds:${t.author}+${t.slug}`;
+																state.exporting.id = dataSourceId(t);
 																state.exporting.show = true;
 															}}
 														>
@@ -342,7 +338,7 @@ export default () => {
 															className='btn btn-sm btn-primary w2 mr2'
 															onclick={() => {
 																state.duplicate.show = true;
-																state.duplicate.id = `ds:${t.author}+${t.slug}`;
+																state.duplicate.id = dataSourceId(t);
 																state.duplicate.ds = t;
 															}}
 														>
@@ -353,7 +349,7 @@ export default () => {
 														className='btn btn-sm btn-error'
 														onclick={() =>
 															dialogWarning(`Do you really want to delete the '${t.name}' source ?`).then(() =>
-																api.deleteSource(`ds:${t.author}+${t.slug}`).then(() => {
+																api.deleteSource(dataSourceId(t)).then(() => {
 																	store.pub('reload_sources');
 																})
 															)

@@ -164,7 +164,7 @@ export default () => {
 		},
 		view(vnode) {
 			return (
-				<Base active='data-sources'>
+				<Base active='dataSources'>
 					<LoadingFullscreen show={state.loading} content='Saving...' />
 					<div className='h-100 flex flex-column'>
 						<Header breadcrumbs={breadcrumbs()} subtitle='Create & Edit Data Source Entries' pt={2}>

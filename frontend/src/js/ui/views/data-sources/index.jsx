@@ -3,7 +3,7 @@ import { groupBy, map } from 'lodash-es';
 import { inElectron, openFileDialog, openFolderDialog } from '/js/electron';
 import { readFile } from '/js/file';
 
-import { ModalCreate } from './modals';
+import { ModalCreate, ModalDuplicate } from './modals';
 
 import api from '/js/core/api';
 import store from '/js/core/store';
@@ -17,6 +17,11 @@ export default () => {
 	let state = {
 		search: '',
 		showCreate: false,
+		duplicate: {
+			show: false,
+			id: '',
+			ds: null,
+		},
 		importing: {
 			show: false,
 			loading: false,
@@ -208,7 +213,7 @@ export default () => {
 		}
 	};
 
-	let createDataSource = (data) => {
+	let createDataSource = (data, skipNavigate, cb) => {
 		if (data.name.length === 0) {
 			error('Please insert a name');
 			return;
@@ -229,11 +234,33 @@ export default () => {
 			return;
 		}
 
-		api.saveSource(data).then(() => {
-			success('Data Source saved');
-			store.pub('reload_sources');
-			m.route.set(`/data-sources/ds:${data.author}+${data.slug}`);
-		}, error);
+		return api
+			.saveSource(data)
+			.then(() => {
+				success('Data Source saved');
+
+				if (skipNavigate) {
+					return;
+				}
+
+				store.pub('reload_sources');
+				m.route.set(`/data-sources/ds:${data.author}+${data.slug}`);
+			})
+			.then(cb)
+			.catch(error);
+	};
+
+	let duplicateDataSource = (data) => {
+		createDataSource(data, true, () => {
+			api
+				.copyEntries(state.duplicate.id, `ds:${data.author}+${data.slug}`)
+				.then(() => {
+					success('Data Source duplicated.');
+					store.pub('reload_sources');
+					m.route.set(`/data-sources/ds:${data.author}+${data.slug}`);
+				})
+				.catch(error);
+		});
 	};
 
 	let body = () => (
@@ -249,7 +276,7 @@ export default () => {
 							Sources by <b>{key}</b>
 						</div>
 						<div className='bg-white pa2 ba b--black-10'>
-							<table className='table'>
+							<table className='table lh-copy'>
 								<thead>
 									<tr>
 										<th className='w-40'>Name</th>
@@ -259,9 +286,12 @@ export default () => {
 									</tr>
 								</thead>
 								<tbody>
-									{val.map((t, i) => (
+									{val.map((t) => (
 										<tr>
-											<td className='b'>{t.name}</td>
+											<td>
+												<div className='b'>{t.name}</div>
+												<div className='f8 text-muted'>{`ds:${t.author}+${t.slug}`}</div>
+											</td>
 											<td className='f8'>{t.description}</td>
 											<td>{t.count}</td>
 											<td>
@@ -279,6 +309,18 @@ export default () => {
 															}}
 														>
 															<i className='ion ion-md-open' />
+														</div>
+													</Tooltip>
+													<Tooltip content='Duplicate'>
+														<div
+															className='btn btn-sm btn-primary w2 mr2'
+															onclick={() => {
+																state.duplicate.show = true;
+																state.duplicate.id = `ds:${t.author}+${t.slug}`;
+																state.duplicate.ds = t;
+															}}
+														>
+															<i className='ion ion-md-copy' />
 														</div>
 													</Tooltip>
 													<div
@@ -335,6 +377,12 @@ export default () => {
 							<Input placeholder='Search...' value={state.search} oninput={binder.inputString(state, 'search')} />
 						</Header>
 						{body()}
+						<ModalDuplicate
+							target={state.duplicate.ds}
+							show={state.duplicate.show}
+							onclose={() => (state.duplicate.show = false)}
+							onconfirm={duplicateDataSource}
+						/>
 						<ModalCreate show={state.showCreate} onclose={() => (state.showCreate = false)} onconfirm={createDataSource} />
 						<ModalImport
 							type='data source'

@@ -74,4 +74,19 @@ func RegisterEntry(route *echo.Group, db database.Database) {
 
 		return entriesSources, nil
 	})))
+
+	route.POST("/copyEntries", echo.WrapHandler(nra.MustBind(func(from string, to string) error {
+		entries, err := db.GetEntries(from)
+		if err != nil {
+			return err
+		}
+
+		for i := range entries {
+			if err := db.SaveEntry(to, entries[i]); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})))
 }

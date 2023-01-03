@@ -1,5 +1,7 @@
 import { chunk, debounce } from 'lodash-es';
 
+import { ModalChangeInfo } from './modals';
+
 import api from '/js/core/api';
 
 import { Base, Editor, Header, Input, LoadingFullscreen } from '/js/ui/components';
@@ -24,6 +26,7 @@ export default () => {
 			data: null,
 			content: '',
 		},
+		showEdit: false,
 	};
 
 	let fetch = () => {
@@ -97,6 +100,17 @@ export default () => {
 			.then(() => (state.loading = false));
 	};
 
+	let editInfo = (data) => {
+		api
+			.saveSource({ ...state.source, ...data })
+			.then(() => {
+				success('Information updated.');
+				state.source = { ...state.source, ...data };
+				state.showEdit = false;
+			})
+			.catch(error);
+	};
+
 	let editContent = () => {
 		if (state.selected.id === null) {
 			return (
@@ -154,6 +168,14 @@ export default () => {
 					<LoadingFullscreen show={state.loading} content='Saving...' />
 					<div className='h-100 flex flex-column'>
 						<Header breadcrumbs={breadcrumbs()} subtitle='Create & Edit Data Source Entries' pt={2}>
+							<div
+								className='btn btn-primary mr2'
+								onclick={() => {
+									state.showEdit = true;
+								}}
+							>
+								Edit Info
+							</div>
 							<div
 								className='btn btn-success'
 								onclick={() => {
@@ -242,6 +264,7 @@ export default () => {
 									/>
 								</div>
 							</div>
+							<ModalChangeInfo show={state.showEdit} onclose={() => (state.showEdit = false)} onconfirm={editInfo} target={state.source} />
 							{editContent()}
 						</div>
 					</div>

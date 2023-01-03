@@ -54,7 +54,10 @@ export default () => {
 			.catch((err) => {
 				state.templateErrors = [err];
 			})
-			.then(m.redraw);
+			.finally(() => {
+				state.rendering = false;
+				m.redraw();
+			});
 
 		if (state.onRender) {
 			state.onRender(state.lastRender);

@@ -86,7 +86,7 @@ export default function () {
 				state.repos = res;
 			})
 			.catch(error)
-			.then(() => (state.loading[1] = false));
+			.finally(() => (state.loading[1] = false));
 	};
 
 	let openRepo = (rep, i) => {
@@ -111,7 +111,7 @@ export default function () {
 				state.packages = packages;
 			})
 			.catch(error)
-			.then(() => (state.loading[2] = false));
+			.finally(() => (state.loading[2] = false));
 	};
 
 	let filteredPackages = () =>
@@ -220,7 +220,7 @@ export default function () {
 									store.pub('reload_sources');
 								})
 								.catch(error)
-								.then(() => {
+								.finally(() => {
 									state.loading[2] = false;
 									m.redraw();
 								});
@@ -314,7 +314,7 @@ export default function () {
 																	m.redraw();
 																})
 																.catch(error)
-																.then(() => (state.loading[2] = false));
+																.finally(() => (state.loading[2] = false));
 														});
 													}
 												}
@@ -334,7 +334,7 @@ export default function () {
 												m.redraw();
 											})
 											.catch(error)
-											.then(() => (state.loading[2] = false));
+											.finally(() => (state.loading[2] = false));
 									}}
 								>
 									{present ? 'Re-Import' : 'Import'}

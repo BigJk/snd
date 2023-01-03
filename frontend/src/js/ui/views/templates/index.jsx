@@ -134,7 +134,7 @@ export default () => {
 									store.pub('reload_templates');
 								})
 								.catch(error)
-								.then(() => {
+								.finally(() => {
 									state.importing.show = false;
 									state.importing.loading = false;
 								});
@@ -150,7 +150,7 @@ export default () => {
 									store.pub('reload_templates');
 								})
 								.catch(error)
-								.then(() => {
+								.finally(() => {
 									state.importing.show = false;
 									state.importing.loading = false;
 								});
@@ -206,7 +206,7 @@ export default () => {
 							store.pub('reload_templates');
 						})
 						.catch(error)
-						.then(() => {
+						.finally(() => {
 							state.importing.show = false;
 							state.importing.loading = false;
 						});

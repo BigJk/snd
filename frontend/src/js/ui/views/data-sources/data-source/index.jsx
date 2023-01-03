@@ -97,7 +97,7 @@ export default () => {
 				state.selected.create = false;
 			})
 			.catch(error)
-			.then(() => (state.loading = false));
+			.finally(() => (state.loading = false));
 	};
 
 	let editInfo = (data) => {

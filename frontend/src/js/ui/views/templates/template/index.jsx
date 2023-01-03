@@ -134,7 +134,7 @@ export default () => {
 								.exportTemplateZip(state.template.id, folder)
 								.then(() => success('Wrote ' + folder))
 								.catch(error)
-								.then(() => (state.showExport = false));
+								.finally(() => (state.showExport = false));
 						});
 					} else {
 						window.open('/api/export/template/zip/' + state.template.id, '_blank');
@@ -147,13 +147,13 @@ export default () => {
 						.then((folder) => api.exportTemplateFolder(state.template.id, folder))
 						.then((file) => success('Wrote ' + file))
 						.catch(error)
-						.then(() => (state.showExport = false));
+						.finally(() => (state.showExport = false));
 				} else if (fileApi.hasFileApi) {
 					Promise.all([fileApi.openFolderDialog(true), api.exportTemplateJSON(state.template.id)])
 						.then(([folder, json]) => fileApi.writeJSONToFolder(folder, json))
 						.then(() => success('Saved'))
 						.catch(error)
-						.then(() => (state.showExport = false));
+						.finally(() => (state.showExport = false));
 				} else {
 					error('Browser does not support File API');
 				}

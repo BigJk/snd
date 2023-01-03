@@ -69,7 +69,7 @@ export default function () {
 								.exportGeneratorZip(state.id, folder)
 								.then((file) => success('Wrote ' + file))
 								.catch(error)
-								.then(() => (state.showExport = false));
+								.finally(() => (state.showExport = false));
 						});
 					} else {
 						window.open('/api/export/generator/zip/' + state.id, '_blank');
@@ -116,7 +116,7 @@ export default function () {
 						.print(res)
 						.then(() => success('Printing send'))
 						.catch(error)
-						.then(() => {
+						.finally(() => {
 							if (last) {
 								state.printing = false;
 							}

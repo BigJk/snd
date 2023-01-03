@@ -48,7 +48,7 @@ export default () => {
 									store.pub('reload_sources');
 								})
 								.catch(error)
-								.then(() => {
+								.finally(() => {
 									state.importing.show = false;
 									state.importing.loading = false;
 								});
@@ -64,7 +64,7 @@ export default () => {
 									store.pub('reload_sources');
 								})
 								.catch(error)
-								.then(() => {
+								.finally(() => {
 									state.importing.show = false;
 									state.importing.loading = false;
 								});
@@ -139,7 +139,7 @@ export default () => {
 									store.pub('reload_sources');
 								})
 								.catch(error)
-								.then(() => {
+								.finally(() => {
 									state.importing.show = false;
 									state.importing.loading = false;
 								});
@@ -161,7 +161,7 @@ export default () => {
 									store.pub('reload_sources');
 								})
 								.catch(error)
-								.then(() => {
+								.finally(() => {
 									state.importing.show = false;
 									state.importing.loading = false;
 								});
@@ -188,7 +188,7 @@ export default () => {
 									store.pub('reload_sources');
 								})
 								.catch(error)
-								.then(() => {
+								.finally(() => {
 									state.importing.show = false;
 									state.importing.loading = false;
 								});
@@ -211,7 +211,7 @@ export default () => {
 								.exportSourceZip(state.exporting.id, folder)
 								.then((file) => success('Wrote ' + file))
 								.catch(error)
-								.then(() => (state.exporting.show = false));
+								.finally(() => (state.exporting.show = false));
 						});
 					} else {
 						// TODO: headless export

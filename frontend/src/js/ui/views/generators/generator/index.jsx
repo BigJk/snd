@@ -59,7 +59,7 @@ export default function () {
 		state.config = pickBy(state.config, (val, key) => key === 'seed' || state.gen.config.some((conf) => conf.key === key));
 	};
 
-	let onexport = async (type) => {
+	let onexport = (type) => {
 		switch (type) {
 			case 'zip':
 				{
@@ -79,23 +79,16 @@ export default function () {
 				break;
 			case 'folder':
 				if (inElectron) {
-					try {
-						const folder = await openFolderDialog();
-						const file = api.exportGeneratorFolder(state.id, folder);
-						success('Wrote ' + file);
-					} catch (e) {
-						error(e);
-					}
-					state.showExport = false;
+					openFolderDialog()
+						.then((folder) => api.exportGeneratorFolder(state.id, folder))
+						.then((file) => success('Wrote ' + file))
+						.catch(error)
+						.then(() => (state.showExport = false));
 				} else if (fileApi.hasFileApi) {
-					try {
-						const folder = await fileApi.openFolderDialog(true);
-						const json = await api.exportGeneratorJSON(state.id);
-						await fileApi.writeJSONToFolder(folder, json);
-					} catch (e) {
-						error(e);
-					}
-					state.showExport = false;
+					Promise.all([fileApi.openFolderDialog(true), api.exportGeneratorJSON(state.id)])
+						.then(([folder, json]) => fileApi.writeJSONToFolder(folder, json))
+						.catch(error)
+						.then(() => (state.showExport = false));
 				} else {
 					error('Browser does not support File API');
 				}

@@ -133,7 +133,7 @@ export default () => {
 			});
 	};
 
-	let onimport = async (type, url) => {
+	let onimport = (type, url) => {
 		switch (type) {
 			case 'zip':
 				{
@@ -173,29 +173,37 @@ export default () => {
 			case 'folder':
 				{
 					if (inElectron) {
-						try {
-							const folder = await openFolderDialog();
-							state.importing.loading = true;
-							const name = api.importGeneratorFolder(folder);
-							success(`Imported '${name}' successful`);
-							store.pub('reload_generators');
-						} catch (e) {
-							error(e);
-						}
-						state.importing.show = false;
-						state.importing.loading = false;
+						openFolderDialog()
+							.then((folder) => {
+								state.importing.loading = true;
+								api.importGeneratorFolder(folder);
+							})
+							.then((name) => {
+								success(`Imported '${name}' successful`);
+								store.pub('reload_generators');
+							})
+							.catch(error)
+							.then(() => {
+								state.importing.show = false;
+								state.importing.loading = false;
+							});
 					} else if (fileApi.hasFileApi) {
-						try {
-							const folder = await fileApi.openFolderDialog(false);
-							const folderJsonString = await fileApi.folderToJSON(folder);
-							await api.importGeneratorJSON(folderJsonString);
-							success(`Imported '${folder.name}' successful`);
-							store.pub('reload_generators');
-						} catch (e) {
-							error(e);
-						}
-						state.importing.show = false;
-						state.importing.loading = false;
+						fileApi
+							.openFolderDialog(false)
+							.then((folder) => {
+								fileApi
+									.folderToJSON(folder)
+									.then((folderJsonString) => api.importGeneratorJSON(folderJsonString))
+									.then(() => {
+										success(`Imported '${folder.name}' successful`);
+										store.pub('reload_generators');
+									});
+							})
+							.catch(error)
+							.then(() => {
+								state.importing.show = false;
+								state.importing.loading = false;
+							});
 					} else {
 						error('Browser does not support File API');
 					}

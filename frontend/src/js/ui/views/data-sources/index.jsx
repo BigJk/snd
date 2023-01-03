@@ -6,6 +6,7 @@ import { readFile } from '/js/file';
 import { ModalCreate, ModalDuplicate } from './modals';
 
 import api from '/js/core/api';
+import * as fileApi from '/js/core/file-api';
 import store from '/js/core/store';
 
 import { Base, Header, Input, ModalExport, ModalImport, Tooltip } from '/js/ui/components';
@@ -72,22 +73,41 @@ export default () => {
 				}
 				break;
 			case 'folder':
-				{
-					openFolderDialog().then((folder) => {
-						state.importing.loading = true;
-						api
-							.importSourceFolder(folder)
-							.then((name) => {
-								success(`Imported '${name}' successful`);
-
-								store.pub('reload_sources');
-							})
-							.catch(error)
-							.then(() => {
-								state.importing.show = false;
-								state.importing.loading = false;
-							});
-					});
+				if (inElectron) {
+					openFolderDialog()
+						.then((folder) => {
+							state.importing.loading = true;
+							return api.importSourceFolder(folder);
+						})
+						.then((name) => {
+							success(`Imported '${name}' successful`);
+							store.pub('reload_sources');
+						})
+						.catch(error)
+						.finally(() => {
+							state.importing.show = false;
+							state.importing.loading = false;
+						});
+				} else if (fileApi.hasFileApi) {
+					fileApi
+						.openFolderDialog(false)
+						.then((folder) => {
+							state.importing.loading = true;
+							return fileApi
+								.folderToJSON(folder)
+								.then((folderJsonString) => api.importSourceJSON(folderJsonString))
+								.then(() => {
+									success(`Imported '${folder.name}' successful`);
+									store.pub('reload_sources');
+								});
+						})
+						.catch(error)
+						.finally(() => {
+							state.importing.show = false;
+							state.importing.loading = false;
+						});
+				} else {
+					error('Browser does not support File API');
 				}
 				break;
 			case 'url':
@@ -101,7 +121,7 @@ export default () => {
 							store.pub('reload_sources');
 						})
 						.catch(error)
-						.then(() => {
+						.finally(() => {
 							state.importing.show = false;
 							state.importing.loading = false;
 						});
@@ -200,14 +220,20 @@ export default () => {
 				}
 				break;
 			case 'folder':
-				{
-					openFolderDialog().then((folder) => {
-						api
-							.exportSourceFolder(state.exporting.id, folder)
-							.then((file) => success('Wrote ' + file))
-							.catch(error)
-							.then(() => (state.exporting.show = false));
-					});
+				if (inElectron) {
+					openFolderDialog()
+						.then((folder) => api.exportSourceFolder(state.exporting.id, folder))
+						.then((file) => success('Wrote ' + file))
+						.catch(error)
+						.finally(() => (state.exporting.show = false));
+				} else if (fileApi.hasFileApi) {
+					Promise.all([fileApi.openFolderDialog(true), api.exportSourceJSON(state.exporting.id)])
+						.then(([folder, json]) => fileApi.writeJSONToFolder(folder, json))
+						.then(() => success('Saved'))
+						.catch(error)
+						.finally(() => (state.exporting.show = false));
+				} else {
+					error('Browser does not support File API');
 				}
 				break;
 		}

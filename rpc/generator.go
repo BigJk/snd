@@ -51,6 +51,19 @@ func RegisterGenerator(route *echo.Group, extern *echo.Group, db database.Databa
 		return filepath.Join(path, folderName), nil
 	})))
 
+	route.POST("/exportGeneratorJSON", echo.WrapHandler(nra.MustBind(func(id string) (string, error) {
+		gen, err := db.GetGenerator(id)
+		if err != nil {
+			return "", err
+		}
+
+		json, err := imexport.ExportGeneratorJSON(gen)
+		if err != nil {
+			return "", err
+		}
+		return string(json), nil
+	})))
+
 	route.POST("/importGeneratorZip", echo.WrapHandler(nra.MustBind(func(file string) (string, error) {
 		var gen snd.Generator
 		var err error
@@ -89,6 +102,19 @@ func RegisterGenerator(route *echo.Group, extern *echo.Group, db database.Databa
 
 	route.POST("/importGeneratorFolder", echo.WrapHandler(nra.MustBind(func(folder string) (string, error) {
 		gen, err := imexport.ImportGeneratorFolder(folder)
+		if err != nil {
+			return "", err
+		}
+
+		if err := db.SaveGenerator(gen); err != nil {
+			return "", err
+		}
+
+		return gen.Name, nil
+	})))
+
+	route.POST("/importGeneratorJSON", echo.WrapHandler(nra.MustBind(func(json string) (string, error) {
+		gen, err := imexport.ImportGeneratorJSON(json)
 		if err != nil {
 			return "", err
 		}

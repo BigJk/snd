@@ -5,6 +5,7 @@ import { inElectron, openFolderDialog } from '/js/electron';
 import { ModalInfo } from './modals';
 
 import api from '/js/core/api';
+import * as fileApi from '/js/core/file-api';
 import { render } from '/js/core/generator';
 import store from '/js/core/store';
 
@@ -77,14 +78,19 @@ export default function () {
 				}
 				break;
 			case 'folder':
-				{
-					openFolderDialog().then((folder) => {
-						api
-							.exportGeneratorFolder(state.id, folder)
-							.then((file) => success('Wrote ' + file))
-							.catch(error)
-							.then(() => (state.showExport = false));
-					});
+				if (inElectron) {
+					openFolderDialog()
+						.then((folder) => api.exportGeneratorFolder(state.id, folder))
+						.then((file) => success('Wrote ' + file))
+						.catch(error)
+						.finally(() => (state.showExport = false));
+				} else if (fileApi.hasFileApi) {
+					Promise.all([fileApi.openFolderDialog(true), api.exportGeneratorJSON(state.id)])
+						.then(([folder, json]) => fileApi.writeJSONToFolder(folder, json))
+						.catch(error)
+						.finally(() => (state.showExport = false));
+				} else {
+					error('Browser does not support File API');
 				}
 				break;
 		}

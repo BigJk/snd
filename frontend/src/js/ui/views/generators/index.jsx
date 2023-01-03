@@ -4,6 +4,7 @@ import { inElectron, openFileDialog, openFolderDialog } from '/js/electron';
 import { readFile } from '/js/file';
 
 import api from '/js/core/api';
+import * as fileApi from '/js/core/file-api';
 import { render } from '/js/core/generator';
 import store from '/js/core/store';
 
@@ -171,20 +172,41 @@ export default () => {
 				break;
 			case 'folder':
 				{
-					openFolderDialog().then((folder) => {
-						state.importing.loading = true;
-						api
-							.importGeneratorFolder(folder)
+					if (inElectron) {
+						openFolderDialog()
+							.then((folder) => {
+								state.importing.loading = true;
+								return api.importGeneratorFolder(folder);
+							})
 							.then((name) => {
 								success(`Imported '${name}' successful`);
 								store.pub('reload_generators');
 							})
 							.catch(error)
-							.then(() => {
+							.finally(() => {
 								state.importing.show = false;
 								state.importing.loading = false;
 							});
-					});
+					} else if (fileApi.hasFileApi) {
+						fileApi
+							.openFolderDialog(false)
+							.then((folder) =>
+								fileApi
+									.folderToJSON(folder)
+									.then((folderJsonString) => api.importGeneratorJSON(folderJsonString))
+									.then(() => {
+										success(`Imported '${folder.name}' successful`);
+										store.pub('reload_generators');
+									})
+							)
+							.catch(error)
+							.finally(() => {
+								state.importing.show = false;
+								state.importing.loading = false;
+							});
+					} else {
+						error('Browser does not support File API');
+					}
 				}
 				break;
 			case 'url':

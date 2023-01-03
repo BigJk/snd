@@ -52,7 +52,9 @@ func InitBrowser() {
 		l = l.Leakless(false)
 	}
 
-	if os.Getenv("SND_DEBUG") == "1" {
+	// if SND_CHROME_DEBUG=1 we start the chrome instance in non-headless and with opened
+	// devtools so that we can see and debug the rendering that happens.
+	if os.Getenv("SND_CHROME_DEBUG") == "1" {
 		l = l.Headless(false).Devtools(true)
 	}
 

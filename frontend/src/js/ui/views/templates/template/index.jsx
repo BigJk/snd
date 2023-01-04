@@ -42,7 +42,7 @@ export default () => {
 	};
 
 	let getSelectedTemplate = () => {
-		if (state.renderedTemplate.id !== state.selected.id) {
+		if (state.renderedTemplate.id !== state.selected.id || state.renderedTemplate.template.length === 0) {
 			state.renderedTemplate.id = state.selected.id;
 
 			render(state.template.printTemplate, {
@@ -357,14 +357,8 @@ export default () => {
 					state.template = template;
 					state.template.id = vnode.attrs.id;
 
-					// Render skeleton template
-					render(state.template.printTemplate, {
-						it: state.template.skeletonData,
-						images: state.template.images,
-					}).then((res) => {
-						state.renderedTemplate.template = res;
-						m.redraw();
-					});
+					// Render template
+					getSelectedTemplate();
 				})
 				.then(loadEntries);
 

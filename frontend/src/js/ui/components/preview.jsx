@@ -3,7 +3,6 @@ import { startsWith } from 'lodash-es';
 import { inElectron } from '/js/electron';
 
 import api from '/js/core/api';
-import dither from '/js/core/dither';
 
 import { Tooltip } from '/js/ui/components';
 
@@ -38,7 +37,6 @@ const pre = `
     <div id="content">`;
 
 const post = `
-	${dither}
     </div>
   </body>
 </html>

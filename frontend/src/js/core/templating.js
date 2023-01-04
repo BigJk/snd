@@ -2,6 +2,7 @@ import hash from 'object-hash';
 
 import TemplatingWorker from '/js/workers/templating-worker?worker';
 
+import dither from '/js/core/dither';
 import store from '/js/core/store';
 
 // Worker Pool
@@ -78,6 +79,6 @@ export const render = (template, state) => {
 		};
 
 		// post message (round-robin style) to some worker
-		workers[workerSelect++ % workers.length].postMessage({ id, template, state });
+		workers[workerSelect++ % workers.length].postMessage({ id, template: template + dither, state });
 	});
 };

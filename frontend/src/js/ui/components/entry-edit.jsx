@@ -85,7 +85,7 @@ export default () => {
 
 										reader.onload = (e) => {
 											set(state.parsedData, curPath, e.target.result);
-											m.redraw();
+											updateRender();
 										};
 
 										reader.readAsDataURL(f);
@@ -102,6 +102,7 @@ export default () => {
 										className='btn btn-error mr3'
 										onclick={() => {
 											set(state.parsedData, curPath, '');
+											updateRender();
 										}}
 									>
 										Delete

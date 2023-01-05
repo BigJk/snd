@@ -53,7 +53,7 @@ export default () => {
 				m.redraw();
 			}
 		});
-	}
+	};
 
 	let getSelectedTemplate = () => {
 		if (state.renderedTemplate.id !== state.selected.id || state.renderedTemplate.template.length === 0) {

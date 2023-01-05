@@ -1,69 +1,97 @@
 import { camelCase, cloneDeep, flattenDeep, get, map, some, startCase } from 'lodash-es';
 
+import * as diceRoller from '@airjp73/dice-notation';
+
 import { Form, Input, Select, Switch } from './index';
 
 import binder from '/js/ui/binder';
 
+function isArgValOk(val, args) {
+	if (args.length === 0 || args[0] === null) {
+		return true;
+	}
+	return val !== null;
+}
+
+function mayParse(val) {
+	if (typeof val === 'string') {
+		return parseInt(val);
+	}
+	return val;
+}
+
+function runDice(format, config) {
+	let tokens = diceRoller.tokenize(format);
+	let roll = diceRoller.rollDice(tokens, config);
+	return diceRoller.calculateFinalResult(tokens, diceRoller.tallyRolls(tokens, roll));
+}
+
 const matcher = {
 	string_contains(val, args) {
-		if (args.length === 0 || args[0] === null) {
-			return true;
+		return isArgValOk(val, args) && val.toLowerCase().indexOf(args[0].toLowerCase()) >= 0;
+	},
+	string_starts_with(val, args) {
+		return isArgValOk(val, args) && val.toLowerCase().indexOf(args[0].toLowerCase()) === 0;
+	},
+	dice_can_reach(val, args) {
+		if (!isArgValOk(val, args)) return false;
+
+		try {
+			// run all dice with the maximum achievable values
+			return (
+				runDice(val, {
+					random(min, max) {
+						return max;
+					},
+				}) >= args[0]
+			);
+		} catch (e) {
+			// ignore
 		}
-		if (val === null) {
-			return false;
+
+		return false;
+	},
+	dice_at_least(val, args) {
+		if (!isArgValOk(val, args)) return false;
+
+		try {
+			// run all dice with the minimum achievable values
+			return (
+				runDice(val, {
+					random(min) {
+						return min;
+					},
+				}) >= args[0]
+			);
+		} catch (e) {
+			// ignore
 		}
-		return val.toLowerCase().indexOf(args[0].toLowerCase()) >= 0;
+
+		return false;
 	},
 	number_equal(val, args) {
-		if (args.length === 0 || args[0] === null) {
-			return true;
-		}
-		if (val === null) {
-			return false;
-		}
-		return val === args[0];
+		return isArgValOk(val, args) && mayParse(val) === args[0];
 	},
 	number_gt(val, args) {
-		if (args.length === 0 || args[0] === null) {
-			return true;
-		}
-		if (val === null) {
-			return false;
-		}
-		return val >= args[0];
+		return isArgValOk(val, args) && mayParse(val) >= args[0];
 	},
 	number_lt(val, args) {
-		if (args.length === 0 || args[0] === null) {
-			return true;
-		}
-		if (val === null) {
-			return false;
-		}
-		return val <= args[0];
+		return isArgValOk(val, args) && mayParse(val) <= args[0];
 	},
 	array_count(val, args) {
-		if (args.length === 0 || args[0] === null) {
-			return true;
-		}
-		if (val === null) {
+		if (!isArgValOk(val, args)) {
 			return false;
 		}
 		return val.length === args[0];
 	},
 	array_gt(val, args) {
-		if (args.length === 0 || args[0] === null) {
-			return true;
-		}
-		if (val === null) {
+		if (!isArgValOk(val, args)) {
 			return false;
 		}
 		return val.length >= args[0];
 	},
 	array_lt(val, args) {
-		if (args.length === 0 || args[0] === null) {
-			return true;
-		}
-		if (val === null) {
+		if (!isArgValOk(val, args)) {
 			return false;
 		}
 		return val.length <= args[0];
@@ -73,7 +101,7 @@ const matcher = {
 const constrains = [
 	{
 		for: ['string'],
-		name: 'Contains',
+		name: 'Text: Contains',
 		args: [
 			{
 				name: 'Text',
@@ -83,8 +111,41 @@ const constrains = [
 		match: 'string_contains',
 	},
 	{
-		for: ['number'],
-		name: 'Equal',
+		for: ['string'],
+		name: 'Text: Starts with',
+		args: [
+			{
+				name: 'Text',
+				type: 'string',
+			},
+		],
+		match: 'string_starts_with',
+	},
+	{
+		for: ['string'],
+		name: 'Dice: Can reach',
+		args: [
+			{
+				name: '#',
+				type: 'number',
+			},
+		],
+		match: 'dice_can_reach',
+	},
+	{
+		for: ['string'],
+		name: 'Dice: Minimum value',
+		args: [
+			{
+				name: '#',
+				type: 'number',
+			},
+		],
+		match: 'dice_at_least',
+	},
+	{
+		for: ['number', 'string'],
+		name: 'Number: Equal',
 		args: [
 			{
 				name: '#',
@@ -94,8 +155,8 @@ const constrains = [
 		match: 'number_equal',
 	},
 	{
-		for: ['number'],
-		name: 'Greater than',
+		for: ['number', 'string'],
+		name: 'Number: Greater than',
 		args: [
 			{
 				name: '#',
@@ -105,8 +166,8 @@ const constrains = [
 		match: 'number_gt',
 	},
 	{
-		for: ['number'],
-		name: 'Less than',
+		for: ['number', 'string'],
+		name: 'Number: Less than',
 		args: [
 			{
 				name: '#',
@@ -117,7 +178,7 @@ const constrains = [
 	},
 	{
 		for: ['array'],
-		name: 'Item count',
+		name: 'List: Item count',
 		args: [
 			{
 				name: 'Count',
@@ -128,7 +189,7 @@ const constrains = [
 	},
 	{
 		for: ['array'],
-		name: 'More items than',
+		name: 'List: More items than',
 		args: [
 			{
 				name: 'Count',
@@ -139,7 +200,7 @@ const constrains = [
 	},
 	{
 		for: ['array'],
-		name: 'Less items than',
+		name: 'List: Less items than',
 		args: [
 			{
 				name: 'Count',
@@ -197,14 +258,21 @@ export default () => {
 		});
 	};
 
+	let updateCallbacks = (vnode) => {
+		if (vnode.attrs.onchange) {
+			state.onChange = vnode.attrs.onchange;
+		}
+		if (vnode.attrs.onclose) {
+			state.onClose = vnode.attrs.onclose;
+		}
+	};
+
 	return {
 		oninit(vnode) {
-			if (vnode.attrs.onchange) {
-				state.onChange = vnode.attrs.onchange;
-			}
-			if (vnode.attrs.onclose) {
-				state.onClose = vnode.attrs.onclose;
-			}
+			updateCallbacks(vnode);
+		},
+		onupdate(vnode) {
+			updateCallbacks(vnode);
 		},
 		view(vnode) {
 			let paths = allPaths(vnode.attrs.target, '');

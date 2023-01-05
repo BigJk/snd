@@ -17,6 +17,7 @@
   "author": "BigJk",
   "license": "MIT",
   "devDependencies": {
+    "@airjp73/dice-notation": "^2.2.2",
     "@emmetio/codemirror-plugin": "^0.5.4",
     "@trivago/prettier-plugin-sort-imports": "^3.3.0",
     "browserslist": "^4.9.1",

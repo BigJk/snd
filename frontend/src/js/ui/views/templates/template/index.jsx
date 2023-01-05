@@ -403,7 +403,7 @@ export default () => {
 									<i className='ion ion-md-copy' />
 								</div>
 							</Tooltip>
-							<Tooltip content='Import & Export'>
+							<Tooltip content='Export'>
 								<div className='btn btn-primary mr2' onclick={() => (state.showExport = true)}>
 									<i className='ion ion-md-open' />
 								</div>

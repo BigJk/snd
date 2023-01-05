@@ -215,7 +215,7 @@ export default function () {
 
 							Promise.all(fetching)
 								.then(() => {
-									success(`Successfully imported ${fetching.length} packages.`);
+									success(`Successfully imported ${fetching.length} packages`);
 
 									store.pub('reload_templates');
 									store.pub('reload_generators');
@@ -270,7 +270,7 @@ export default function () {
 										api
 											.importPackage(state.repos[state.selectedRepo].url, state.selectedVersion, id)
 											.then(() => {
-												success('Import successful.');
+												success('Import successful');
 
 												// if data sources are referenced try to find them in the same repository.
 												if (data.dataSources) {
@@ -306,7 +306,7 @@ export default function () {
 															Promise.all(found)
 																.then(() => {
 																	if (found.length === missingSources.length) {
-																		success('Found and imported all Data Sources.');
+																		success('Found and imported all Data Sources');
 																	} else {
 																		success(`Imported ${found.length} related Data Sources. ${missingSources.length - found.length} missing!`);
 																	}

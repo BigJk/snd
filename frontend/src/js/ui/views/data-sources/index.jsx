@@ -277,7 +277,7 @@ export default () => {
 			api
 				.copyEntries(state.duplicate.id, dataSourceId(data))
 				.then(() => {
-					success('Data Source duplicated.');
+					success('Data Source duplicated');
 					store.pub('reload_sources');
 					m.route.set(`/data-sources/${dataSourceId(data)}`);
 				})

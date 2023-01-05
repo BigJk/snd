@@ -92,7 +92,7 @@ export default () => {
 				data: state.selected.data,
 			})
 			.then(() => {
-				success(`Saved '${state.selected.name}' entry.`);
+				success(`Saved '${state.selected.name}' entry`);
 				fetch();
 				state.selected.create = false;
 			})
@@ -104,7 +104,7 @@ export default () => {
 		api
 			.saveSource({ ...state.source, ...data })
 			.then(() => {
-				success('Information updated.');
+				success('Information updated');
 				state.source = { ...state.source, ...data };
 				state.showEdit = false;
 			})

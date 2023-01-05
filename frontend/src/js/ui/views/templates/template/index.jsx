@@ -41,19 +41,23 @@ export default () => {
 		printing: false,
 	};
 
+	let renderTemplate = () => {
+		state.renderedTemplate.id = state.selected.id;
+
+		render(state.template.printTemplate, {
+			it: state.selected.data ?? state.template.skeletonData,
+			images: state.template.images,
+		}).then((res) => {
+			if (state.renderedTemplate.id === state.selected.id) {
+				state.renderedTemplate.template = res;
+				m.redraw();
+			}
+		});
+	}
+
 	let getSelectedTemplate = () => {
 		if (state.renderedTemplate.id !== state.selected.id || state.renderedTemplate.template.length === 0) {
-			state.renderedTemplate.id = state.selected.id;
-
-			render(state.template.printTemplate, {
-				it: state.selected.data ?? state.template.skeletonData,
-				images: state.template.images,
-			}).then((res) => {
-				if (state.renderedTemplate.id === state.selected.id) {
-					state.renderedTemplate.template = res;
-					m.redraw();
-				}
-			});
+			renderTemplate();
 		}
 
 		return state.renderedTemplate.template;
@@ -358,7 +362,7 @@ export default () => {
 					state.template.id = vnode.attrs.id;
 
 					// Render template
-					getSelectedTemplate();
+					renderTemplate();
 				})
 				.then(loadEntries);
 

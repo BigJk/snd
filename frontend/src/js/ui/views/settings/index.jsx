@@ -161,6 +161,36 @@ export default () => {
 									oninput={binder.checkbox(store.data.settings.commands, 'cut')}
 								/>
 							</Form>
+							<div className='divider' />
+						</div>
+						<div className='w-50 mb2'>
+							<div className='f5 mb2 pt2'>Print Chunking</div>
+							<div className='lh-copy o-70'>
+								If you are using a old printer with a small print buffer you can tell Sales & Dungeons to split the printing into smaller chunks. This
+								might help in avoiding gibberish print-outs.
+							</div>
+							<Form horizontal={true}>
+								<Switch
+									label='Enable'
+									labelCol={4}
+									value={store.data.settings.commands.splitPrinting}
+									oninput={binder.checkbox(store.data.settings.commands, 'splitPrinting')}
+								/>
+								<Input
+									label='Split Height'
+									labelCol={4}
+									placeholder='Pixel height to split like 300'
+									value={store.data.settings.commands.splitHeight}
+									oninput={binder.inputNumber(store.data.settings.commands, 'splitHeight')}
+								/>
+								<Input
+									label='Split Delay'
+									labelCol={4}
+									placeholder='Delay after a print in milliseconds like 1000'
+									value={store.data.settings.commands.splitDelay}
+									oninput={binder.inputNumber(store.data.settings.commands, 'splitDelay')}
+								/>
+							</Form>
 						</div>
 					</div>
 				</div>

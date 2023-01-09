@@ -36,24 +36,26 @@ func LineBreak(buf io.Writer) {
 func Image(buf io.Writer, image image.Image) {
 	bb := image.Bounds()
 
-	width := bb.Max.X
+	height := bb.Max.Y - bb.Min.Y
+	realWidth := bb.Max.X - bb.Min.X
+	width := realWidth
 	if width%8 != 0 {
 		width += 8
 	}
 
 	xL := uint8(width % 2048 / 8)
 	xH := uint8(width / 2048)
-	yL := uint8(bb.Max.Y % 256)
-	yH := uint8(bb.Max.Y / 256)
+	yL := uint8(height % 256)
+	yH := uint8(height / 256)
 
 	_, _ = buf.Write([]byte{0x1d, 0x76, 0x30, 48, xL, xH, yL, yH})
 
 	var cb byte
 	var bindex byte
-	for y := 0; y < bb.Max.Y; y++ {
-		for x := 0; x < int(math.Ceil(float64(bb.Max.X)/8.0))*8; x++ {
-			if x < bb.Max.X {
-				r, g, b, a := image.At(x, y).RGBA()
+	for y := 0; y < height; y++ {
+		for x := 0; x < int(math.Ceil(float64(realWidth)/8.0))*8; x++ {
+			if x < realWidth {
+				r, g, b, a := image.At(bb.Min.X+x, bb.Min.Y+y).RGBA()
 				r, g, b, a = r>>8, g>>8, b>>8, a>>8
 
 				if a > 255/2 {

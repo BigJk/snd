@@ -8,6 +8,7 @@ import (
 	"image"
 	"image/png"
 	"io/ioutil"
+	"math"
 	"math/rand"
 	"net"
 	"net/http"
@@ -147,33 +148,75 @@ func print(db database.Database, printer printing.PossiblePrinter, html string) 
 	renderCache.SetDefault(tempId, finalHtml)
 
 	// Render the html to image
-	image, err := rendering.RenderURL(fmt.Sprintf("http://127.0.0.1:7123/api/html/%s", tempId), settings.PrinterWidth)
+	renderedImage, err := rendering.RenderURL(fmt.Sprintf("http://127.0.0.1:7123/api/html/%s", tempId), settings.PrinterWidth)
 	if err != nil {
 		return fmt.Errorf("html to image rendering failed: %w", err)
 	}
 
+	imageRgb := renderedImage.(*image.RGBA)
+	height := imageRgb.Bounds().Max.Y
+	width := imageRgb.Bounds().Max.X
+
+	var images []image.Image
+	if settings.Commands.SplitPrinting && height > settings.Commands.SplitHeight {
+		if settings.Commands.SplitHeight < 100 {
+			return fmt.Errorf("please use a split height of at least 100")
+		}
+
+		chunks := int(math.Ceil(float64(height) / float64(settings.Commands.SplitHeight)))
+
+		// Chunk the images
+		for i := 0; i < chunks; i++ {
+			y1 := i * settings.Commands.SplitHeight
+			y2 := y1 + settings.Commands.SplitHeight
+			if y2 > height {
+				y2 = height
+			}
+
+			images = append(images, imageRgb.SubImage(image.Rect(0, y1, width, y2)))
+		}
+	} else {
+		images = []image.Image{renderedImage}
+	}
+
 	// Print
-	buf := &bytes.Buffer{}
+	for i, img := range images {
+		buf := &bytes.Buffer{}
 
-	if settings.Commands.ExplicitInit {
-		epson.InitPrinter(buf)
-	}
+		// At the first chunk set modes and lines
+		if i == 0 {
+			if settings.Commands.ExplicitInit {
+				epson.InitPrinter(buf)
+			}
 
-	if settings.Commands.ForceStandardMode {
-		epson.SetStandardMode(buf)
-	}
+			if settings.Commands.ForceStandardMode {
+				epson.SetStandardMode(buf)
+			}
 
-	buf.WriteString(strings.Repeat("\n", settings.Commands.LinesBefore))
-	epson.Image(buf, image)
-	buf.WriteString(strings.Repeat("\n", 5+settings.Commands.LinesAfter))
+			buf.WriteString(strings.Repeat("\n", settings.Commands.LinesBefore))
+		}
 
-	if settings.Commands.Cut {
-		epson.CutPaper(buf)
-	}
+		epson.Image(buf, img)
 
-	err = selectedPrinter.Print(settings.PrinterEndpoint, image, buf.Bytes())
-	if err != nil {
-		return fmt.Errorf("printer wasn't able to print: %w", err)
+		// At the last chunk insert lines and cut
+		if i == len(images)-1 {
+			buf.WriteString(strings.Repeat("\n", 5+settings.Commands.LinesAfter))
+
+			if settings.Commands.Cut {
+				epson.CutPaper(buf)
+			}
+		}
+
+		// Print chunk
+		err = selectedPrinter.Print(settings.PrinterEndpoint, renderedImage, buf.Bytes())
+		if err != nil {
+			return fmt.Errorf("printer wasn't able to print: %w", err)
+		}
+
+		// Add delay to consecutive prints
+		if len(images) > 1 && settings.Commands.SplitDelay > 0 {
+			time.Sleep(time.Millisecond * time.Duration(settings.Commands.SplitDelay))
+		}
 	}
 
 	return nil

@@ -11,6 +11,9 @@ type Settings struct {
 		ForceStandardMode bool `json:"forceStandardMode"`
 		LinesBefore       int  `json:"linesBefore"`
 		LinesAfter        int  `json:"linesAfter"`
+		SplitPrinting     bool `json:"splitPrinting"`
+		SplitHeight       int  `json:"splitHeight"`
+		SplitDelay        int  `json:"splitDelay"`
 	} `json:"commands"`
 	Stylesheets           []string `json:"stylesheets"`
 	SpellcheckerLanguages []string `json:"spellcheckerLanguages"`

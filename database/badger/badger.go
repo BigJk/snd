@@ -21,7 +21,7 @@ type Badger struct {
 }
 
 func New(folder string) (*Badger, error) {
-	db, err := badger.Open(badger.DefaultOptions(folder))
+	db, err := badger.Open(badger.DefaultOptions(folder).WithValueLogFileSize(30_000_000).WithCompactL0OnClose(true))
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +98,7 @@ func (b *Badger) DeleteTemplate(id string) error {
 	if err := b.DeleteEntries(id); err != nil {
 		return err
 	}
-	
+
 	return dropSingle(b.db, id)
 }
 

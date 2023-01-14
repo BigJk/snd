@@ -9,11 +9,14 @@ package rendering
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"image"
 	_ "image/png"
 	"net/url"
 	"os"
+	"os/exec"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/BigJk/snd/log"
@@ -25,6 +28,39 @@ import (
 )
 
 var browser *rod.Browser
+
+var macChromePath = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+var windowsChromePaths = []string{"Program Files (x86)/Google/Chrome/Application/chrome.exe", "Program Files/Google/Chrome/Application/chrome.exe"}
+
+// detectChrome tries to search for a local chrome instance to use to avoid downloading a chrome browser.
+func detectChrome() (string, error) {
+	chrome, err := exec.LookPath("chrome")
+	if err == nil {
+		return chrome, nil
+	}
+
+	chromium, err := exec.LookPath("chromium")
+	if err == nil {
+		return chromium, nil
+	}
+
+	if runtime.GOOS == "darwin" {
+		if file, err := os.Stat(macChromePath); err == nil && !file.IsDir() {
+			return macChromePath, nil
+		}
+	} else if runtime.GOOS == "windows" {
+		for _, drive := range strings.Split("CABDEFGHIJKLMNOPQRSTUVWXYZ", "") {
+			for _, path := range windowsChromePaths {
+				executable := fmt.Sprintf("%s:/%s", drive, path)
+				if file, err := os.Stat(executable); err == nil && !file.IsDir() {
+					return executable, nil
+				}
+			}
+		}
+	}
+
+	return "", errors.New("local chrome not found")
+}
 
 func InitBrowser() {
 	if browser != nil {
@@ -51,6 +87,14 @@ func InitBrowser() {
 	customChromeBinary := os.Getenv("SND_CHROME_BIN")
 	if len(customChromeBinary) > 0 {
 		l.Set(flags.Bin, customChromeBinary)
+	} else if os.Getenv("SND_CHROME_SKIP_LOCAL") != "1" {
+		// try to auto-detect chrome
+		if chrome, err := detectChrome(); err == nil {
+			l.Set(flags.Bin, chrome)
+			log.Info("local chrome found! If rendering causes problems start S&D with the environment flag SND_CHROME_SKIP_LOCAL=1", log.WithValue("bin", chrome))
+		} else {
+			log.Info("local chrome not found")
+		}
 	}
 
 	// disable leakless for now on windows (https://github.com/BigJk/snd/issues/28)

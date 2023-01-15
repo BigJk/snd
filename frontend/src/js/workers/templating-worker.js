@@ -72,7 +72,9 @@ function JavascriptExecuteExtension() {
 }
 
 let env = new nunjucks.Environment();
-let markdown = new MarkdownIt();
+let markdown = new MarkdownIt({
+	html: true,
+});
 
 env.addExtension('DataImportExtension', new DataImportExtension());
 env.addExtension('JavascriptExecuteExtension', new JavascriptExecuteExtension());

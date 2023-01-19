@@ -100,7 +100,7 @@ func fixHtml(html string, settings snd.Settings) (string, error) {
 	finalHtml = urlRegex.ReplaceAllStringFunc(finalHtml, func(s string) string {
 		match := urlRegex.FindStringSubmatch(s)
 
-		content := match[1][1:]
+		content := strings.Replace(match[1][1:], "#39;", "'", -1)
 		symbol := ""
 
 		switch content[len(content)-1] {
@@ -109,6 +109,8 @@ func fixHtml(html string, settings snd.Settings) (string, error) {
 		case '\'':
 			symbol = content[len(content)-1:]
 		}
+
+		content = strings.TrimLeft(content, symbol+"/")
 
 		if strings.HasPrefix(content, "data:") || strings.HasPrefix(content, "http") {
 			return s

@@ -7,7 +7,7 @@ import snippets from '/js/core/snippets';
 import store from '/js/core/store';
 import { render } from '/js/core/templating';
 
-import { Editor, Input, Select, SplitView, TextArea, Tooltip } from '/js/ui/components';
+import { Editor, ImageDataURI, Input, Select, SplitView, TextArea, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
 import { error } from '/js/ui/toast';
@@ -112,52 +112,28 @@ export default () => {
 						<code>&#123;&#123; images[IMAGE_NAME.png] &#125;&#125;</code>
 					</div>
 				</div>
-				<input
-					className='mb1'
-					type='file'
-					id='files'
-					name='files[]'
-					multiple
-					onchange={(e) => {
-						let files = e.target.files;
-
-						for (let i = 0, f; (f = files[i]); i++) {
-							if (!f.type.match('image.*')) {
-								continue;
-							}
-
-							let reader = new FileReader();
-
-							reader.onload = ((name) => (e) => {
-								if (!state.target.images) {
-									state.target.images = {};
-								}
-								state.target.images[name] = e.target.result;
-								m.redraw();
-							})(f.name);
-
-							reader.readAsDataURL(f);
-						}
-					}}
-				/>
-				<div className='divider' />
-				<div className='mt1'>
-					{map(state.target.images, (val, key) => (
-						<div className='flex items-center justify-between mb2'>
-							<div className='flex items-center'>
-								<img src={val} alt='' width={64} className='mr2' />
-								{key}
+				<div className='flex'>
+					<ImageDataURI oninput={(name, data) => (state.target.images[name] = data)} />
+					<div className='ml3 flex-grow-1'>
+						<div className='mb2 f5'>Imported Images</div>
+						<div className='divider' />
+						{map(state.target.images, (val, key) => (
+							<div className='flex items-center justify-between mb2'>
+								<div className='flex items-center'>
+									<img src={val} alt='' width={64} className='mr2' />
+									{key}
+								</div>
+								<div
+									className='btn btn-error'
+									onclick={() => {
+										delete state.target.images[key];
+									}}
+								>
+									Delete
+								</div>
 							</div>
-							<div
-								className='btn btn-error'
-								onclick={() => {
-									delete state.target.images[key];
-								}}
-							>
-								Delete
-							</div>
-						</div>
-					))}
+						))}
+					</div>
 				</div>
 			</div>
 		),

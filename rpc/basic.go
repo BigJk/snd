@@ -6,12 +6,14 @@ import (
 	"io/ioutil"
 	"net/http"
 	"regexp"
+	"strings"
 
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/log"
 	"github.com/labstack/echo/v4"
+	"github.com/vincent-petithory/dataurl"
 	"golang.org/x/exp/slices"
 )
 
@@ -97,5 +99,23 @@ func RegisterBasic(route *echo.Group, db database.Database) {
 			LocalVersion  interface{} `json:"localVersion"`
 			LatestVersion interface{} `json:"latestVersion"`
 		}{localVersion, tags[0]}, nil
+	})))
+
+	route.POST("/fetchImage", echo.WrapHandler(nra.MustBind(func(url string) (string, error) {
+		resp, err := http.Get(url)
+		if err != nil {
+			return "", err
+		}
+
+		if !strings.HasPrefix(resp.Header.Get("Content-Type"), "image/") {
+			return "", errors.New("not a image")
+		}
+
+		data, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return "", err
+		}
+
+		return dataurl.EncodeBytes(data), nil
 	})))
 }

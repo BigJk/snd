@@ -11,7 +11,7 @@ export default () => {
 			return (
 				<div className={`form-group w-100 ${vnode.attrs.className ?? ''}`}>
 					{getLabel(vnode.attrs.label, vnode.attrs.labelCol, vnode.attrs.type)}
-					{vnode.attrs.elem}
+					{vnode.attrs.elem ?? vnode.children}
 				</div>
 			);
 		},

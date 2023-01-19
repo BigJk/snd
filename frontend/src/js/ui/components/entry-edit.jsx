@@ -3,6 +3,7 @@ import { camelCase, debounce, defaultsDeep, get, map, set, startCase } from 'lod
 import store from '/js/core/store';
 import { render } from '/js/core/templating';
 
+import ImageDataURI from '/js/ui/components/image-data-uri';
 import Input from '/js/ui/components/input';
 import SplitView from '/js/ui/components/split-view';
 
@@ -64,35 +65,13 @@ export default () => {
 		switch (typeof obj) {
 			case 'number':
 			case 'string':
-				if (get(state.template.skeletonData, curPath) === '!IMAGE') {
+				// eslint-disable-next-line no-case-declarations
+				let isNum = typeof obj === 'number';
+
+				if (!isNum && get(state.template.skeletonData, curPath).indexOf('!IMAGE') === 0) {
 					return (
 						<div>
 							<label className='form-label'>{startCase(camelCase(name))}</label>
-							<input
-								className='mb1'
-								type='file'
-								id='files'
-								name='files[]'
-								onchange={(e) => {
-									let files = e.target.files;
-
-									for (let i = 0, f; (f = files[i]); i++) {
-										if (!f.type.match('image.*')) {
-											continue;
-										}
-
-										let reader = new FileReader();
-
-										reader.onload = (e) => {
-											set(state.parsedData, curPath, e.target.result);
-											updateRender();
-										};
-
-										reader.readAsDataURL(f);
-									}
-								}}
-							/>
-
 							{obj.indexOf('data:image') === 0 ? (
 								<div className='flex justify-between items-center'>
 									<div className='flex items-center'>
@@ -108,13 +87,18 @@ export default () => {
 										Delete
 									</div>
 								</div>
-							) : null}
+							) : (
+								<ImageDataURI
+									oninput={(_, data) => {
+										set(state.parsedData, curPath, data);
+										updateRender();
+									}}
+									hideName={true}
+								/>
+							)}
 						</div>
 					);
 				}
-
-				// eslint-disable-next-line no-case-declarations
-				let isNum = typeof obj === 'number';
 
 				return (
 					<div className='form-group mw-50 mr3'>

@@ -16,7 +16,7 @@ require (
 	github.com/asdine/storm v2.1.2+incompatible
 	github.com/asticode/go-astikit v0.29.1
 	github.com/asticode/go-astilectron v0.27.0
-	github.com/dgraph-io/badger/v3 v3.2103.2
+	github.com/dgraph-io/badger/v3 v3.2103.5
 	github.com/fatih/color v1.9.0
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/go-git/go-billy/v5 v5.3.1
@@ -29,9 +29,11 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/samber/lo v1.11.0
 	github.com/sbabiv/xml2map v1.2.1
+	github.com/vincent-petithory/dataurl v1.0.0
 	github.com/vmihailenco/msgpack/v5 v5.3.5
 	go.bug.st/serial v1.3.5
 	go.etcd.io/bbolt v1.3.3
+	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17
 	gopkg.in/olahol/melody.v1 v1.0.0-20170518105555-d52139073376
 )
 
@@ -47,7 +49,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/cloudflare/circl v1.1.0 // indirect
 	github.com/creack/goselect v0.1.2 // indirect
-	github.com/dgraph-io/ristretto v0.1.0 // indirect
+	github.com/dgraph-io/ristretto v0.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/go-git/gcfg v1.5.0 // indirect
@@ -73,7 +75,6 @@ require (
 	github.com/skeema/knownhosts v1.1.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
-	github.com/vincent-petithory/dataurl v1.0.0 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.2 // indirect
@@ -82,7 +83,6 @@ require (
 	github.com/ysmood/leakless v0.8.0 // indirect
 	go.opencensus.io v0.22.5 // indirect
 	golang.org/x/crypto v0.3.0 // indirect
-	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
 	golang.org/x/net v0.2.0 // indirect
 	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/term v0.2.0 // indirect

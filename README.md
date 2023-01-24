@@ -49,7 +49,9 @@ or a letter that the group found to little character sheets of your players to u
 
 You can find the latest version on the release page:
 - https://github.com/BigJk/snd/releases
-- **Linux / Mac**: You might need to ``chmod +x`` the executable before you can run it!
+- **Linux / Mac**:
+   - You might need to ``chmod +x`` the executable before you can run it.
+   - Always run from the terminal instead of double clicking the executable! (e.g. run ``./Sales\ &\ Dungeons``)
 
 ## Printer Requirements
 

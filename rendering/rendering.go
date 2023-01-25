@@ -24,6 +24,9 @@ import (
 	"github.com/go-rod/rod/lib/proto"
 )
 
+const IdleRequestTimeout = 5
+const ReadyTimeout = 5
+
 var browser *rod.Browser
 
 func InitBrowser() {
@@ -128,6 +131,8 @@ func RenderHTML(html string, width int) (image.Image, error) {
 	}
 
 	page.MustWaitLoad().MustWaitIdle()
+	page.Timeout(time.Second * IdleRequestTimeout).MustWaitRequestIdle()()
+
 	defer page.Close()
 
 	return screenshotPage(page, width)
@@ -141,6 +146,8 @@ func RenderURL(url string, width int) (image.Image, error) {
 	}
 
 	page.MustWaitLoad().MustWaitIdle()
+	page.Timeout(time.Second * IdleRequestTimeout).MustWaitRequestIdle()()
+
 	defer page.Close()
 
 	return screenshotPage(page, width)
@@ -154,9 +161,11 @@ func ExtractHTML(url string, selector string) (string, error) {
 	}
 
 	page.MustWaitLoad().MustWaitIdle()
+	page.Timeout(time.Second * IdleRequestTimeout).MustWaitRequestIdle()()
+
 	defer page.Close()
 
-	if err := page.Timeout(time.Second*5).WaitElementsMoreThan(selector, 0); err != nil {
+	if err := page.Timeout(time.Second*ReadyTimeout).WaitElementsMoreThan(selector, 0); err != nil {
 		return "", err
 	}
 

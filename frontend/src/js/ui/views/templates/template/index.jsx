@@ -376,6 +376,7 @@ export default () => {
 				api.getTemplate(templateId).then((template) => {
 					state.template = template;
 					state.template.id = vnode.attrs.id;
+					renderTemplate();
 				});
 			});
 			keepOpenRemove = keepOpen(templateId);

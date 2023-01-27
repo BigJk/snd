@@ -1,6 +1,9 @@
 package snd
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type GeneratorConfig struct {
 	Key         string      `json:"key"`
@@ -28,4 +31,8 @@ type Generator struct {
 
 func (t Generator) ID() string {
 	return fmt.Sprintf("gen:%s+%s", t.Author, t.Slug)
+}
+
+func IsGeneratorID(id string) bool {
+	return strings.HasPrefix(id, "gen:")
 }

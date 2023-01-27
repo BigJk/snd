@@ -1,6 +1,9 @@
 package snd
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // Template represents one S&D template.
 type Template struct {
@@ -18,4 +21,8 @@ type Template struct {
 
 func (t Template) ID() string {
 	return fmt.Sprintf("tmpl:%s+%s", t.Author, t.Slug)
+}
+
+func IsTemplateID(id string) bool {
+	return strings.HasPrefix(id, "tmpl:")
 }

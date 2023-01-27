@@ -24,3 +24,26 @@ export function ModalInfo() {
 		},
 	};
 }
+
+export function ModalSync() {
+	return {
+		view(vnode) {
+			if (!vnode.attrs.show) return null;
+
+			return (
+				<Modal title='Live Sync' onclose={vnode.attrs.onclose}>
+					<div className='mb3'>You can synchronise a generator to a folder so that you are able to edit it in an external editor.</div>
+					{vnode.attrs.active ? (
+						<div className='btn btn-error' onclick={vnode.attrs.onstop}>
+							Stop Sync
+						</div>
+					) : (
+						<div className='btn btn-primary' onclick={vnode.attrs.onstart}>
+							Start Sync
+						</div>
+					)}
+				</Modal>
+			);
+		},
+	};
+}

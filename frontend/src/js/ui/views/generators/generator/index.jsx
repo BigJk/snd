@@ -2,12 +2,13 @@ import { clone, pickBy } from 'lodash-es';
 
 import { inElectron, openFolderDialog } from '/js/electron';
 
-import { ModalInfo } from './modals';
+import { ModalInfo, ModalSync } from './modals';
 
 import api from '/js/core/api';
 import * as fileApi from '/js/core/file-api';
 import { render } from '/js/core/generator';
 import store from '/js/core/store';
+import { keepOpen, on } from '/js/core/ws';
 
 import { Base, GeneratorConfig, Header, Input, Loading, LoadingFullscreen, ModalExport, SplitView, Tooltip } from '/js/ui/components';
 
@@ -26,6 +27,8 @@ export default function () {
 		amount: 1,
 		showExport: false,
 		showInfo: false,
+		showSync: false,
+		syncActive: false,
 	};
 
 	let breadcrumbs = () => [
@@ -57,6 +60,30 @@ export default function () {
 
 		// remove old fields that are not present in the config anymore.
 		state.config = pickBy(state.config, (val, key) => key === 'seed' || state.gen.config.some((conf) => conf.key === key));
+	};
+
+	let stopSync = () => {
+		api
+			.syncStop(state.id)
+			.then(() => {
+				success(`Synced stopped`);
+				state.syncActive = false;
+				state.showSync = false;
+			})
+			.catch(error);
+	};
+
+	let startSync = () => {
+		openFolderDialog().then((folder) => {
+			api
+				.syncStart(state.id, folder)
+				.then((folder) => {
+					success(`Synced to '${folder}'`);
+					state.syncActive = true;
+					state.showSync = false;
+				})
+				.catch(error);
+		});
 	};
 
 	let onexport = (type) => {
@@ -174,6 +201,9 @@ export default function () {
 		);
 	};
 
+	let wsOnRemove = null;
+	let keepOpenRemove = null;
+
 	return {
 		oninit(vnode) {
 			state.id = vnode.attrs.id;
@@ -186,10 +216,33 @@ export default function () {
 				});
 				sanitizeConfig();
 			});
+
+			// check if sync is active
+			api.syncActive(state.id).then((active) => (state.syncActive = active));
+
+			// websocket events
+			wsOnRemove = on('GeneratorUpdated/' + state.id, () => {
+				console.log('update got');
+
+				api.getGenerator(state.id).then((gen) => {
+					state.gen = gen;
+					updateRender();
+				});
+			});
+			keepOpenRemove = keepOpen(state.id);
 		},
 		onupdate(vnode) {
 			sanitizeConfig();
 			updateRender();
+		},
+		onremove() {
+			if (state.syncActive) {
+				api.syncStop(state.id);
+			}
+
+			keepOpenRemove();
+			wsOnRemove();
+			store.set('lastTemplateState', state);
 		},
 		view(vnode) {
 			return (
@@ -207,6 +260,11 @@ export default function () {
 							<Tooltip content='Export Options'>
 								<div className='btn btn-primary w2 mr2' onclick={() => (state.showExport = true)}>
 									<i className='ion ion-md-open' />
+								</div>
+							</Tooltip>
+							<Tooltip content='Template sync'>
+								<div className={`btn ${state.syncActive ? 'btn-success' : 'btn-primary'} mr2`} onclick={() => (state.showSync = true)}>
+									<i className={`ion ion-md-sync ${state.syncActive ? 'rotating' : ''}`} />
 								</div>
 							</Tooltip>
 							<Tooltip content='API Information'>
@@ -242,6 +300,13 @@ export default function () {
 							onclose={() => (state.showExport = false)}
 						/>
 						<ModalInfo show={state.showInfo} id={vnode.attrs.id} config={state.config} onclose={() => (state.showInfo = false)} />
+						<ModalSync
+							show={state.showSync}
+							active={state.syncActive}
+							onstart={startSync}
+							onstop={stopSync}
+							onclose={() => (state.showSync = false)}
+						/>
 					</div>
 				</Base>
 			);

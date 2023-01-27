@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/BigJk/nra"
+	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/imexport"
 	"github.com/BigJk/snd/log"
@@ -62,15 +63,7 @@ func RegisterSync(route *echo.Group, m *melody.Melody, db database.Database) {
 		return ok, nil
 	})))
 
-	route.POST("/syncStart", echo.WrapHandler(nra.MustBind(func(id string, folder string) (string, error) {
-		sessionsMtx.Lock()
-		defer sessionsMtx.Unlock()
-
-		_, ok := sessions[id]
-		if ok {
-			return "", errors.New("already running")
-		}
-
+	syncTemplate := func(id string, folder string) (string, error) {
 		// export template
 		tmpl, err := db.GetTemplate(id)
 		if err != nil {
@@ -98,7 +91,10 @@ func RegisterSync(route *echo.Group, m *melody.Melody, db database.Database) {
 			close:    make(chan struct{}),
 		}
 		session.wg.Add(1)
+
+		sessionsMtx.Lock()
 		sessions[id] = session
+		sessionsMtx.Unlock()
 
 		go func() {
 		watcher:
@@ -148,6 +144,108 @@ func RegisterSync(route *echo.Group, m *melody.Melody, db database.Database) {
 		}()
 
 		return filepath.Join(folder, tmplFolder), nil
+	}
+
+	syncGenerator := func(id string, folder string) (string, error) {
+		// export generator
+		gen, err := db.GetGenerator(id)
+		if err != nil {
+			return "", err
+		}
+
+		tmplFolder, err := imexport.ExportGeneratorFolder(gen, folder)
+		if err != nil {
+			return "", err
+		}
+
+		// create file watcher
+		watcher, err := fsnotify.NewWatcher()
+		if err != nil {
+			return "", err
+		}
+		if err := watcher.Add(filepath.Join(folder, tmplFolder)); err != nil {
+			return "", err
+		}
+
+		session := &syncSession{
+			lastPing: time.Now(),
+			folder:   filepath.Join(folder, tmplFolder),
+			watcher:  watcher,
+			close:    make(chan struct{}),
+		}
+		session.wg.Add(1)
+
+		sessionsMtx.Lock()
+		sessions[id] = session
+		sessionsMtx.Unlock()
+
+		go func() {
+		watcher:
+			for {
+				select {
+				case event, ok := <-watcher.Events:
+					if !ok {
+						return
+					}
+					if event.Op&fsnotify.Write == fsnotify.Write {
+						updated, err := imexport.ImportGeneratorFolder(session.folder)
+						if err != nil {
+							_ = log.ErrorString(fmt.Sprintf("error in '%s' watcher: %s", session.folder, err))
+							continue
+						}
+
+						updated.Slug = gen.Slug
+						updated.Author = gen.Author
+
+						if err := db.SaveGenerator(updated); err != nil {
+							_ = log.ErrorString(fmt.Sprintf("error while saving templatae in '%s' watcher: %s", session.folder, err))
+						}
+
+						data, _ := json.Marshal(wsEvent{
+							Type: "GeneratorUpdated/" + id,
+							Data: nil,
+						})
+
+						_ = m.Broadcast(data)
+					}
+				case err, ok := <-watcher.Errors:
+					if !ok {
+						return
+					}
+					_ = log.ErrorString(fmt.Sprintf("error in '%s' watcher: %s", session.folder, err))
+				case <-session.close:
+					break watcher
+				}
+			}
+
+			// remove session
+			sessionsMtx.Lock()
+			delete(sessions, id)
+			sessionsMtx.Unlock()
+
+			session.wg.Done()
+		}()
+
+		return filepath.Join(folder, tmplFolder), nil
+	}
+
+	route.POST("/syncStart", echo.WrapHandler(nra.MustBind(func(id string, folder string) (string, error) {
+		sessionsMtx.Lock()
+
+		_, ok := sessions[id]
+		if ok {
+			return "", errors.New("already running")
+		}
+
+		sessionsMtx.Unlock()
+
+		if snd.IsTemplateID(id) {
+			return syncTemplate(id, folder)
+		} else if snd.IsGeneratorID(id) {
+			return syncGenerator(id, folder)
+		}
+
+		return "", errors.New("not a valid id")
 	})))
 
 	route.POST("/syncStop", echo.WrapHandler(nra.MustBind(func(id string) error {

@@ -1,6 +1,9 @@
 package snd
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // DataSource represents a data source in S&D.
 type DataSource struct {
@@ -13,4 +16,8 @@ type DataSource struct {
 
 func (ds DataSource) ID() string {
 	return fmt.Sprintf("ds:%s+%s", ds.Author, ds.Slug)
+}
+
+func IsDataSourceID(id string) bool {
+	return strings.HasPrefix(id, "ds:")
 }

@@ -28,7 +28,7 @@ export function ModalSync() {
 			if (!vnode.attrs.show) return null;
 
 			return (
-				<Modal title='Live Sync' onclose={vnode.attrs.show}>
+				<Modal title='Live Sync' onclose={vnode.attrs.onclose}>
 					<div className='mb3'>You can synchronise a template to a folder so that you are able to edit it in an external editor.</div>
 					{vnode.attrs.active ? (
 						<div className='btn btn-error' onclick={vnode.attrs.onstop}>

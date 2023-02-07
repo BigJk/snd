@@ -8,7 +8,7 @@ let subscriptions = {};
 	Websocket
  */
 
-const rws = new ReconnectingWebSocket('ws://127.0.0.1:7123/api/ws');
+const rws = new ReconnectingWebSocket('ws://' + location.host + '/api/ws');
 
 rws.addEventListener('open', () => {});
 

@@ -338,14 +338,18 @@ export default () => {
 						: []
 				}
 			>
-				<ul className='tab tab-block tab-m0 flex-shrink-0'>
-					{map(tabs, (v, k) => (
-						<li className={'tab-item ' + (k === state.selectedTab ? 'active' : '')} onclick={() => (state.selectedTab = k)}>
-							<a className='pointer'>{k}</a>
-						</li>
-					))}
-				</ul>
-				{tabs[state.selectedTab]()}
+				{Object.keys(state.template.config).length === 0
+					? entries()
+					: [
+							<ul className='tab tab-block tab-m0 flex-shrink-0'>
+								{map(tabs, (v, k) => (
+									<li className={'tab-item ' + (k === state.selectedTab ? 'active' : '')} onclick={() => (state.selectedTab = k)}>
+										<a className='pointer'>{k}</a>
+									</li>
+								))}
+							</ul>,
+							tabs[state.selectedTab](),
+					  ]}
 				<div className='ph3 pv2 flex-shrink-0 bt b--black-10 bg-light-gray flex justify-between items-center'>
 					<i
 						className='ion ion-md-arrow-dropleft f3 pointer dim'
@@ -397,6 +401,7 @@ export default () => {
 				.then((template) => {
 					state.template = template;
 					state.template.id = vnode.attrs.id;
+					state.template.config = state.template.config || [];
 					state.config = buildDefaultConfig(state.template.config);
 
 					// Render template

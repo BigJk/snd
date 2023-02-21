@@ -20,7 +20,7 @@ dist/
 vendor/
 templates/
 !src/**/templates/**
-userdata/
+userdata*/
 
 .idea/
 .cache/

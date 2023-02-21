@@ -3,6 +3,7 @@ import { debounce, isArray, map, mergeWith, pickBy, uniq } from 'lodash-es';
 import Types from './config/types';
 
 import { fetchMultipleEntries } from '/js/core/api-helper';
+import { buildDefaultConfig } from '/js/core/config';
 import htmlFormat from '/js/core/html-format';
 import { dataSourceId, templateId } from '/js/core/model-helper';
 import snippets from '/js/core/snippets';
@@ -289,6 +290,16 @@ export default () => {
 		),
 		'Global Config': () => (
 			<div className='pa3'>
+				<div className='toast toast-primary lh-copy mb3'>
+					Here you can add global configurations that apply to all templates and can be changed by the user.
+					<br />
+					<br />
+					You can access the data in the template via:
+					<br />
+					<div className='mt1'>
+						<code>&#123;&#123; config.key &#125;&#125;</code>
+					</div>
+				</div>
 				<div
 					className='btn btn-primary mb1'
 					onclick={() => {
@@ -361,14 +372,20 @@ export default () => {
 		),
 		'Test Config': () => (
 			<div className='ph3 pt2'>
-				<TemplateConfig
-					config={state.target.config}
-					value={state.testConfig}
-					onchange={(key, val) => {
-						state.testConfig[key] = val;
-						updateRenderSanitize();
-					}}
-				/>
+				{Object.keys(state.testConfig).length === 0 ? (
+					<div className='toast mt2 flex items-center'>
+						<i className='ion ion-md-information-circle f4 mr2' /> No configuration values present. Start by adding some in the 'Global Config' tab.
+					</div>
+				) : (
+					<TemplateConfig
+						config={state.target.config}
+						value={state.testConfig}
+						onchange={(key, val) => {
+							state.testConfig[key] = val;
+							updateRenderSanitize();
+						}}
+					/>
+				)}
 			</div>
 		),
 		'Print Template': () => (
@@ -416,7 +433,7 @@ export default () => {
 			state.editMode = vnode.attrs.editmode ?? false;
 			state.onRender = vnode.attrs.onrender;
 			state.skeletonDataRaw = JSON.stringify(state.target.skeletonData, null, 2);
-			state.testConfig = vnode.attrs.testConfig ?? {};
+			state.testConfig = buildDefaultConfig(state.target.config);
 
 			updateEntries();
 			updateRender();

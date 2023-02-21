@@ -7,6 +7,7 @@ export function NewTemplate() {
 		printTemplate: '',
 		listTemplate: '',
 		skeletonData: {},
+		config: [],
 		images: {},
 		dataSources: [],
 	};

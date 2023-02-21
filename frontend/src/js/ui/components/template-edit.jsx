@@ -1,4 +1,6 @@
-import { debounce, isArray, map, mergeWith, uniq } from 'lodash-es';
+import { debounce, isArray, map, mergeWith, pickBy, uniq } from 'lodash-es';
+
+import Types from './config/types';
 
 import { fetchMultipleEntries } from '/js/core/api-helper';
 import htmlFormat from '/js/core/html-format';
@@ -7,10 +9,10 @@ import snippets from '/js/core/snippets';
 import store from '/js/core/store';
 import { render } from '/js/core/templating';
 
-import { Editor, ImageDataURI, Input, Select, SplitView, TextArea, Tooltip } from '/js/ui/components';
+import { Editor, ImageDataURI, Input, Select, SplitView, TemplateConfig, TextArea, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
-import { error } from '/js/ui/toast';
+import { dialogWarning, error } from '/js/ui/toast';
 
 function entryMerger(objValue, srcValue) {
 	if (typeof objValue === 'string' && typeof srcValue === 'string') {
@@ -37,6 +39,7 @@ export default () => {
 		selectedTab: '',
 		selectedSource: '',
 		skeletonDataRaw: '',
+		testConfig: {},
 		onRender: null,
 		templateErrors: [],
 		listTemplateErrors: [],
@@ -46,12 +49,22 @@ export default () => {
 		imagesToUpload: [],
 	};
 
+	let sanitizeConfig = () => {
+		state.target.config.forEach((conf) => {
+			if (state.testConfig[conf.key] === undefined) {
+				state.testConfig[conf.key] = conf.default;
+			}
+		});
+
+		state.testConfig = pickBy(state.testConfig, (val, key) => state.target.config.some((conf) => conf.key === key));
+	};
+
 	let updateRender = debounce(() => {
 		state.templateErrors = [];
 		state.listTemplateErrors = [];
 
 		Promise.all([
-			render(state.target.printTemplate, { it: state.target.skeletonData, images: state.target.images })
+			render(state.target.printTemplate, { it: state.target.skeletonData, config: state.testConfig, images: state.target.images })
 				.then((res) => {
 					state.lastRender = res;
 				})
@@ -59,7 +72,7 @@ export default () => {
 					state.templateErrors = [err];
 				}),
 
-			render(state.target.listTemplate, { it: state.target.skeletonData, images: state.target.images })
+			render(state.target.listTemplate, { it: state.target.skeletonData, config: state.testConfig, images: state.target.images })
 				.then((res) => {
 					state.lastListRender = res;
 				})
@@ -71,7 +84,12 @@ export default () => {
 		if (state.onRender) {
 			state.onRender(state.lastRender);
 		}
-	}, 250);
+	}, 1000);
+
+	let updateRenderSanitize = () => {
+		sanitizeConfig();
+		updateRender();
+	};
 
 	let updateEntries = () => {
 		fetchMultipleEntries(state.editMode ? [templateId(state.target), ...(state.target.dataSources ?? [])] : state.target.dataSources ?? [])
@@ -269,6 +287,90 @@ export default () => {
 				</div>
 			</div>
 		),
+		'Global Config': () => (
+			<div className='pa3'>
+				<div
+					className='btn btn-primary mb1'
+					onclick={() => {
+						state.target.config.push({
+							key: 'option_key_' + Math.ceil(Math.random() * 10000),
+							name: 'Option Name',
+							description: 'Option description',
+							type: 'Text',
+							data: 'hello world',
+							default: 'hello world',
+						});
+
+						updateRenderSanitize();
+					}}
+				>
+					New Config Value
+				</div>
+				<div className='divider' />
+				{state.target.config.map((val, i) => [
+					<div className='flex w-100'>
+						<div className='w-50 flex-shrink-0 mr3'>
+							<Input label='Key' placeholder='Key' value={val.key} oninput={binder.inputString(val, 'key', updateRenderSanitize)} />
+							<Input label='Name' placeholder='Name' value={val.name} oninput={binder.inputString(val, 'name', updateRenderSanitize)} />
+							<Input
+								label='Description'
+								placeholder='Description'
+								value={val.description}
+								oninput={binder.inputString(val, 'description', updateRenderSanitize)}
+							/>
+						</div>
+						<div className='w-50 flex-shrink-0 pr3'>
+							<Select
+								label='Type'
+								keys={Object.keys(Types)}
+								names={Object.keys(Types).map((key) => Types[key].name)}
+								selected={val.type}
+								labelCol={4}
+								oninput={binder.inputString(val, 'type', (newType) => {
+									val.default = Types[newType].defaultValue();
+									state.testConfig[val.key] = val.default;
+									updateRenderSanitize();
+								})}
+							/>
+							{m(Types[val.type].view, {
+								value: val.default,
+								oninput: (newVal) => {
+									val.default = newVal;
+									state.testConfig[val.key] = val.default;
+									updateRenderSanitize();
+								},
+								inEdit: true,
+								label: 'Default Value',
+							})}
+						</div>
+					</div>,
+					<div
+						className='btn btn-error mt3 mb1'
+						onclick={() => {
+							dialogWarning(`Do you really want to delete the '${val.name}' option?`).then(() => {
+								state.target.config.splice(i, 1);
+								updateRenderSanitize();
+							});
+						}}
+					>
+						Delete
+					</div>,
+					<div className='divider' />,
+				])}
+			</div>
+		),
+		'Test Config': () => (
+			<div className='ph3 pt2'>
+				<TemplateConfig
+					config={state.target.config}
+					value={state.testConfig}
+					onchange={(key, val) => {
+						state.testConfig[key] = val;
+						updateRenderSanitize();
+					}}
+				/>
+			</div>
+		),
 		'Print Template': () => (
 			<Editor
 				className='h-100 w-100'
@@ -279,7 +381,7 @@ export default () => {
 					updateRender();
 				}}
 				snippets={snippets}
-				autocompleteData={{ it: state.target.skeletonData, settings: store.data.settings }}
+				autocompleteData={{ it: state.target.skeletonData, settings: store.data.settings, config: state.testConfig }}
 				errorProvider={() => state.templateErrors}
 				formatter={htmlFormat}
 			/>
@@ -294,7 +396,7 @@ export default () => {
 					updateRender();
 				}}
 				snippets={snippets}
-				autocompleteData={{ it: state.target.skeletonData, settings: store.data.settings }}
+				autocompleteData={{ it: state.target.skeletonData, settings: store.data.settings, config: state.testConfig }}
 				errorProvider={() => state.listTemplateErrors}
 				formatter={htmlFormat}
 			/>,
@@ -310,9 +412,11 @@ export default () => {
 	return {
 		oninit(vnode) {
 			state.target = vnode.attrs.target;
+			state.target.config = state.target.config ?? [];
 			state.editMode = vnode.attrs.editmode ?? false;
 			state.onRender = vnode.attrs.onrender;
 			state.skeletonDataRaw = JSON.stringify(state.target.skeletonData, null, 2);
+			state.testConfig = vnode.attrs.testConfig ?? {};
 
 			updateEntries();
 			updateRender();

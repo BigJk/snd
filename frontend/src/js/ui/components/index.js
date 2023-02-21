@@ -24,3 +24,4 @@ export { default as ModalExport } from './modal-export';
 export { default as PreviewBox } from './preview-box';
 export { default as LoadingFullscreen } from './loading-fullscreen';
 export { default as ImageDataURI } from './image-data-uri';
+export { default as TemplateConfig } from './template-config';

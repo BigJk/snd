@@ -1,16 +1,17 @@
-import { chunk, debounce } from 'lodash-es';
+import { chunk, debounce, map } from 'lodash-es';
 
 import { inElectron, openFolderDialog } from '/js/electron';
 
 import { ModalInfo, ModalSync } from './modals';
 
 import api from '/js/core/api';
+import { buildDefaultConfig } from '/js/core/config';
 import * as fileApi from '/js/core/file-api';
 import store from '/js/core/store';
 import { render } from '/js/core/templating';
 import { keepOpen, on } from '/js/core/ws';
 
-import { AdvancedSearch, Base, Header, Input, Loading, LoadingFullscreen, ModalExport, SplitView, Tooltip } from '/js/ui/components';
+import { AdvancedSearch, Base, Header, Input, Loading, LoadingFullscreen, ModalExport, SplitView, TemplateConfig, Tooltip } from '/js/ui/components';
 
 import binder from '/js/ui/binder';
 import { dialogWarning, error, success } from '/js/ui/toast';
@@ -18,6 +19,7 @@ import { dialogWarning, error, success } from '/js/ui/toast';
 export default () => {
 	let state = {
 		template: null,
+		config: {},
 		entries: [],
 		entriesTemplate: {},
 		filtered: [],
@@ -39,6 +41,7 @@ export default () => {
 		showSync: false,
 		showInfo: false,
 		printing: false,
+		selectedTab: 'Entries',
 	};
 
 	let renderTemplate = () => {
@@ -46,6 +49,7 @@ export default () => {
 
 		render(state.template.printTemplate, {
 			it: state.selected.data ?? state.template.skeletonData,
+			config: state.config,
 			images: state.template.images,
 		}).then((res) => {
 			if (state.renderedTemplate.id === state.selected.id) {
@@ -72,7 +76,7 @@ export default () => {
 			return state.entriesTemplate[entry.id];
 		}
 
-		render(state.template.listTemplate, { it: entry.data }).then((res) => {
+		render(state.template.listTemplate, { it: entry.data, config: state.config }).then((res) => {
 			state.entriesTemplate[entry.id] = res;
 			m.redraw();
 		});
@@ -189,6 +193,119 @@ export default () => {
 		});
 	};
 
+	let entries = () => (
+		<div className='flex-grow-1 overflow-auto' id='entry-page'>
+			{state.filtered.length === 0
+				? null
+				: state.filtered[state.page].map((e) => (
+						<div
+							className={`w-100 bb b--black-10 mh55 pa2 flex justify-between items-center ${
+								e.id !== state.selected.id ? 'hover-bg-secondary pointer' : 'bg-secondary'
+							}`}
+							onclick={() => {
+								state.selected.data = e.data;
+								state.selected.id = e.id;
+							}}
+						>
+							<div>
+								<div className='fw6 f5'>{e.name}</div>
+								<div className='black-50'>{m.trust(getListTemplate(e))}</div>
+							</div>
+							<div>
+								{e.id === state.selected.id ? (
+									<div className='flex'>
+										<div
+											className='btn btn-success btn-sm mr2'
+											onclick={() => {
+												state.printing = true;
+
+												render(state.template.printTemplate, {
+													it: e.data,
+													images: state.template.images,
+												})
+													.then((res) => {
+														api
+															.print(res)
+															.then(() => success('Printing send'), error)
+															.then(() => (state.printing = false));
+													})
+													.catch((err) => {
+														error(err);
+														state.printing = false;
+													});
+											}}
+										>
+											<i className='ion ion-md-print' />
+										</div>
+										<div
+											className='btn btn-primary btn-sm mr2'
+											onclick={() => {
+												openFolderDialog().then((folder) => {
+													render(state.template.printTemplate, {
+														it: e.data,
+														images: state.template.images,
+													}).then((res) => {
+														api.screenshot(res, folder + '/' + e.name + '.png').then(() => success('Screenshot created'), error);
+													});
+												});
+											}}
+										>
+											<i className='ion ion-md-camera' />
+										</div>
+										{e.source === state.template.id ? (
+											<div>
+												<div
+													className='btn btn-primary btn-sm mr2'
+													onclick={() => m.route.set(`/templates/${state.template.id}/edit/${state.selected.id}`)}
+												>
+													<i className='ion ion-md-create' />
+												</div>
+												<div
+													className='btn btn-error btn-sm'
+													onclick={() =>
+														api
+															.deleteEntry(state.template.id, e.id)
+															.then(() => {
+																success('Entry deleted');
+																state.selected.id = null;
+																state.selected.data = null;
+															}, error)
+															.then(loadEntries)
+													}
+												>
+													<i className='ion ion-md-close-circle-outline' />
+												</div>
+											</div>
+										) : (
+											''
+										)}
+									</div>
+								) : null}
+							</div>
+						</div>
+				  ))}
+		</div>
+	);
+
+	let config = () => (
+		<div className='ph3 pt2 flex-grow-1 overflow-auto'>
+			<TemplateConfig
+				config={state.template.config}
+				value={state.config}
+				onchange={(key, val) => {
+					state.entriesTemplate = {};
+					state.config[key] = val;
+					renderTemplate();
+				}}
+			/>
+		</div>
+	);
+
+	let tabs = {
+		Entries: entries,
+		'Global Config': config,
+	};
+
 	let body = (vnode) => {
 		if (!state.template || !store.data.settings) {
 			return <Loading />;
@@ -221,94 +338,14 @@ export default () => {
 						: []
 				}
 			>
-				<div className='flex-grow-1 overflow-auto' id='entry-page'>
-					{state.filtered.length === 0
-						? null
-						: state.filtered[state.page].map((e) => (
-								<div
-									className={`w-100 bb b--black-10 mh55 pa2 flex justify-between items-center ${
-										e.id !== state.selected.id ? 'hover-bg-secondary pointer' : 'bg-secondary'
-									}`}
-									onclick={() => {
-										state.selected.data = e.data;
-										state.selected.id = e.id;
-									}}
-								>
-									<div>
-										<div className='fw6 f5'>{e.name}</div>
-										<div className='black-50'>{m.trust(getListTemplate(e))}</div>
-									</div>
-									<div>
-										{e.id === state.selected.id ? (
-											<div className='flex'>
-												<div
-													className='btn btn-success btn-sm mr2'
-													onclick={() => {
-														state.printing = true;
-
-														render(state.template.printTemplate, { it: e.data, images: state.template.images })
-															.then((res) => {
-																api
-																	.print(res)
-																	.then(() => success('Printing send'), error)
-																	.then(() => (state.printing = false));
-															})
-															.catch((err) => {
-																error(err);
-																state.printing = false;
-															});
-													}}
-												>
-													<i className='ion ion-md-print' />
-												</div>
-												<div
-													className='btn btn-primary btn-sm mr2'
-													onclick={() => {
-														openFolderDialog().then((folder) => {
-															render(state.template.printTemplate, {
-																it: e.data,
-																images: state.template.images,
-															}).then((res) => {
-																api.screenshot(res, folder + '/' + e.name + '.png').then(() => success('Screenshot created'), error);
-															});
-														});
-													}}
-												>
-													<i className='ion ion-md-camera' />
-												</div>
-												{e.source === state.template.id ? (
-													<div>
-														<div
-															className='btn btn-primary btn-sm mr2'
-															onclick={() => m.route.set(`/templates/${state.template.id}/edit/${state.selected.id}`)}
-														>
-															<i className='ion ion-md-create' />
-														</div>
-														<div
-															className='btn btn-error btn-sm'
-															onclick={() =>
-																api
-																	.deleteEntry(state.template.id, e.id)
-																	.then(() => {
-																		success('Entry deleted');
-																		state.selected.id = null;
-																		state.selected.data = null;
-																	}, error)
-																	.then(loadEntries)
-															}
-														>
-															<i className='ion ion-md-close-circle-outline' />
-														</div>
-													</div>
-												) : (
-													''
-												)}
-											</div>
-										) : null}
-									</div>
-								</div>
-						  ))}
-				</div>
+				<ul className='tab tab-block tab-m0 flex-shrink-0'>
+					{map(tabs, (v, k) => (
+						<li className={'tab-item ' + (k === state.selectedTab ? 'active' : '')} onclick={() => (state.selectedTab = k)}>
+							<a className='pointer'>{k}</a>
+						</li>
+					))}
+				</ul>
+				{tabs[state.selectedTab]()}
 				<div className='ph3 pv2 flex-shrink-0 bt b--black-10 bg-light-gray flex justify-between items-center'>
 					<i
 						className='ion ion-md-arrow-dropleft f3 pointer dim'
@@ -360,6 +397,7 @@ export default () => {
 				.then((template) => {
 					state.template = template;
 					state.template.id = vnode.attrs.id;
+					state.config = buildDefaultConfig(state.template.config);
 
 					// Render template
 					renderTemplate();

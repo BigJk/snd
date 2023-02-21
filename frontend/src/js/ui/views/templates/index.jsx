@@ -4,6 +4,7 @@ import { inElectron, openFileDialog, openFolderDialog, shell } from '/js/electro
 import { readFile } from '/js/file';
 
 import api from '/js/core/api';
+import { buildDefaultConfig } from '/js/core/config';
 import * as fileApi from '/js/core/file-api';
 import { templateId } from '/js/core/model-helper';
 import store from '/js/core/store';
@@ -254,7 +255,7 @@ export default () => {
 				(t) =>
 					new Promise((resolve) => {
 						let id = templateId(t);
-						render(t.printTemplate, { it: t.skeletonData, images: t.images })
+						render(t.printTemplate, { it: t.skeletonData, config: buildDefaultConfig(t.config), images: t.images })
 							.then((res) => {
 								resolve({
 									id,

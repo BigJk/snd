@@ -8,7 +8,7 @@ import snippets from '/js/core/snippets';
 import store from '/js/core/store';
 
 import { Editor, GeneratorConfig, ImageDataURI, Input, Loading, Select, SplitView, Switch, TextArea } from '/js/ui/components';
-import Types from '/js/ui/components/generator/types';
+import Types from '/js/ui/components/config/types';
 
 import binder from '/js/ui/binder';
 import { dialogWarning, error } from '/js/ui/toast';

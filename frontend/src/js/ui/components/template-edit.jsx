@@ -43,6 +43,7 @@ export default () => {
 		testConfig: {},
 		onRender: null,
 		templateErrors: [],
+		skeletonErrors: [],
 		listTemplateErrors: [],
 		entries: [],
 		entriesSearch: '',
@@ -213,13 +214,40 @@ export default () => {
 						}
 						return data;
 					}}
+					errorProvider={() => state.skeletonErrors}
 					onchange={(data) => {
 						state.skeletonDataRaw = data;
 						try {
 							state.target.skeletonData = JSON.parse(data);
 							updateRender();
+							state.skeletonErrors = [];
 						} catch (e) {
 							console.log(e);
+
+							let match = /at position (\d+)/.exec(e.toString());
+							if (!match) {
+								state.skeletonErrors = [
+									{
+										error: e.toString(),
+										line: data.split('\n').length,
+										column: 2,
+									},
+								];
+								return;
+							}
+
+							let errPos = parseInt(match[1]);
+							let lines = data.substring(0, errPos).split('\n');
+							let line = lines.length;
+							let column = 2;
+
+							state.skeletonErrors = [
+								{
+									error: e.toString(),
+									line: line,
+									column: column,
+								},
+							];
 						}
 					}}
 				/>

@@ -39,15 +39,15 @@ func (r *csvReaderWrapper) ReadFile(s string) ([]byte, error) {
 //   ...
 func ImportDataSourceCSV(reader io.Reader) (snd.DataSource, []snd.Entry, error) {
 	csvReader := csv.NewReader(reader)
-	csvReader.FieldsPerRecord = 4
+	csvReader.FieldsPerRecord = -1
 
 	metaHeader, err := csvReader.Read()
-	if err != nil && err != csv.ErrFieldCount || len(metaHeader) != 4 {
+	if err != nil && err != csv.ErrFieldCount || len(metaHeader) < 4 {
 		return snd.DataSource{}, nil, errors.New(fmt.Sprintf("header not present or incomplete (%s)", err))
 	}
 
 	metaValues, err := csvReader.Read()
-	if err != nil && err != csv.ErrFieldCount || len(metaValues) != 4 {
+	if err != nil && err != csv.ErrFieldCount || len(metaValues) < 4 {
 		return snd.DataSource{}, nil, errors.New(fmt.Sprintf("meta values (name, author, description, slug etc.) not fully present (%s)", err))
 	}
 

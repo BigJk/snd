@@ -221,6 +221,7 @@ export default () => {
 
 												render(state.template.printTemplate, {
 													it: e.data,
+													config: state.config,
 													images: state.template.images,
 												})
 													.then((res) => {

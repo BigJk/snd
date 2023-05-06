@@ -20,4 +20,5 @@ RUN cd /build/frontend && npm i && npm run build
 RUN ./build.sh
 RUN chmod +x /app/snd
 
+WORKDIR /app
 CMD ["/app/snd"]

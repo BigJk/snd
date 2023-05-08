@@ -49,9 +49,18 @@ or a letter that the group found to little character sheets of your players to u
 
 You can find the latest version on the release page:
 - https://github.com/BigJk/snd/releases
-- **Linux / Mac**:
-   - You might need to ``chmod +x`` the executable before you can run it.
-   - Always run from the terminal instead of double clicking the executable! (e.g. run ``./Sales\ &\ Dungeons``)
+
+### Mac & Linux
+
+- If you are on a unix system you can use the install script to download and install the latest version of Sales & Dungeons automatically
+- The script will create a ``snd`` folder in your home directory
+- To update to the newest version just run the command again. Your user data won't be deleted.
+
+**Open your terminal and copy and paste the following command:**
+
+```
+curl -s https://raw.githubusercontent.com/BigJk/snd/master/install.sh | bash
+```
    
 ### :whale: Docker
 

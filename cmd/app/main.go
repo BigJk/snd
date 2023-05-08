@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/BigJk/snd"
@@ -98,6 +100,50 @@ func startServer(db database.Database, debug bool) {
 	_ = s.Start(":7123")
 }
 
+// fixWorkingDir will change the working directory to the directory of the executable if snd files are not present.
+// This fixes a problem on macOS where if you double-click the executable it will start with working directory set
+// to the home of the user.
+func fixWorkingDir() bool {
+	if runtime.GOOS == "windows" {
+		return false
+	}
+
+	pwd, err := os.Getwd()
+	if err == nil {
+		ensure := []string{"/frontend", "/data"}
+		correctDir := true
+
+		// Check if all relevant folders are present
+		for i := range ensure {
+			if stat, err := os.Stat(filepath.Join(pwd, ensure[i])); err != nil || !stat.IsDir() {
+				correctDir = false
+				break
+			}
+		}
+
+		// If they are present we don't change working dir
+		if correctDir {
+			return false
+		}
+
+		// Change working dir to executable dir in hopes to resolve the problem
+		execDir, err := os.Executable()
+		if err == nil && pwd != execDir {
+			if err := os.Chdir(filepath.Dir(execDir)); err != nil {
+				fmt.Println("ERROR: could not set working dir to", execDir, err)
+				return false
+			}
+			return true
+		} else {
+			fmt.Println("ERROR: could not get exec dir", err)
+		}
+	} else {
+		fmt.Println("ERROR: could not get working dir", err)
+	}
+
+	return false
+}
+
 func main() {
 	debug := flag.Bool("debug", false, "")
 	flag.Parse()
@@ -115,6 +161,16 @@ ________________________________________`)
 		fmt.Println("Commit Branch :", snd.GitBranch)
 		fmt.Println("Commit Hash   :", snd.GitCommitHash)
 	}
+
+	if fixWorkingDir() {
+		fmt.Println("\nWARNING        : The working directory didn't seem to contain the app data. Switching to executable directory!")
+	}
+
+	wd, _ := os.Getwd()
+	exec, _ := os.Executable()
+
+	fmt.Println("Working Dir   :", wd)
+	fmt.Println("Exec Dir      :", exec)
 
 	rendering.InitBrowser()
 

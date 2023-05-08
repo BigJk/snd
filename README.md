@@ -57,8 +57,25 @@ You can find the latest version on the release page:
 
 The headless version of Sales & Dungeons (using LibUSB) is also available via a docker container:
 1. ``docker pull ghcr.io/bigjk/snd:master`` ([container](https://github.com/BigJk/snd/pkgs/container/snd))
-2. ``docker run --expose 7123:7123 --device=/dev/bus/usb ghcr.io/bigjk/snd:master`` (change ``/dev/bus/usb`` to the usb port your printer is connected)
+2. ``docker run --expose 7123:7123 --device=/dev/bus/usb -v /some/place/to/persist:/app/userdata ghcr.io/bigjk/snd:master`` (change ``/some/place/to/persist`` to a folder where the user data should be persisted to)
 3. Open ``http://127.0.0.1:7123`` in your favorite browser
+
+<details><summary>Docker Compose Example</summary>
+
+```
+version: "3"
+services:
+  snd:
+    image: ghcr.io/bigjk/snd:master
+    ports:
+      - "7123:7123"
+    devices:
+      - "/dev/bus/usb"
+    volumes:
+      - "/some/place/to/persist:/app/userdata"
+```
+
+</details>
 
 ## Printer Requirements
 

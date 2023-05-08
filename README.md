@@ -52,6 +52,13 @@ You can find the latest version on the release page:
 - **Linux / Mac**:
    - You might need to ``chmod +x`` the executable before you can run it.
    - Always run from the terminal instead of double clicking the executable! (e.g. run ``./Sales\ &\ Dungeons``)
+   
+### :whale: Docker
+
+The headless version of Sales & Dungeons (using LibUSB) is also available via a docker container:
+1. ``docker pull ghcr.io/bigjk/snd:master`` ([container](https://github.com/BigJk/snd/pkgs/container/snd))
+2. ``docker run --expose 7123:7123 --device=/dev/bus/usb ghcr.io/bigjk/snd:master`` (change ``/dev/bus/usb`` to the usb port your printer is connected)
+3. Open ``http://127.0.0.1:7123`` in your favorite browser
 
 ## Printer Requirements
 

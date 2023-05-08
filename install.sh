@@ -28,7 +28,7 @@ echo "Arch : $arch"
 echo "Type : $type"
 
 # Fetch latest zip url
-url=$(cat ./test.json | grep /snd-$os-$arch-$type- | grep -o 'https://.*\.zip' | head -n 1)
+url=$(curl https://api.github.com/repos/BigJk/snd/releases | grep /snd-$os-$arch-$type- | grep -o 'https://.*\.zip' | head -n 1)
 
 echo "========================================================"
 echo "Downloading: ${url}"

@@ -12,11 +12,12 @@
     "^lodash-es",
     "<THIRD_PARTY_MODULES>",
     "^./(.*)$",
-    "^/js/workers/(.*)$",
-    "^/js/core/(.*)$",
-    "^/js/ui/components(.*)$",
-    "^/js/ui/views/(.*)$",
-    "^/js/ui/[^\/]+$"
+    "js/types/(.*)$",
+    "js/workers/(.*)$",
+    "js/core/(.*)$",
+    "js/ui/components(.*)$",
+    "js/ui/views/(.*)$",
+    "js/ui/[^\/]+$"
   ],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true

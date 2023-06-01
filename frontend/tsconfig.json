@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "lib": [
+      "dom",
+      "es2015"
+    ],
+    "strict": true,
+    "baseUrl": "./",
+    "paths": {
+      "src/*": [
+        "./src/*"
+      ],
+      "js/*": [
+        "./src/js/*"
+      ],
+      "assets/*": [
+        "./src/assets/*"
+      ],
+      "css/*": [
+        "./src/css/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

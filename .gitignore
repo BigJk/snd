@@ -21,6 +21,7 @@ vendor/
 templates/
 !src/**/templates/**
 userdata*/
+frontend_old/
 
 .idea/
 .cache/

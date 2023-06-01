@@ -1,4 +1,8 @@
-export default {
+import { defineConfig } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
+
+export default defineConfig({
+	plugins: [tsconfigPaths()],
 	root: 'src/',
 	esbuild: {
 		jsxInject: "import m from 'mithril'",
@@ -19,4 +23,4 @@ export default {
 		host: '127.0.0.1',
 		port: 3000,
 	},
-};
+});

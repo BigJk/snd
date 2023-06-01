@@ -5,7 +5,9 @@ $colours: ( "primary": #5755d9,
 	        "warning": #ffb700,
 	        "error": #e85600,
 	        "dark": #303742,
-            "secondary": #f1f1fc );
+            "secondary": #f1f1fc,
+			"alt-dark": #0D1B2A
+);
 
 @mixin linear-gradient($direction, $color-stops...) {
   background: nth(nth($color-stops, 1), 1);

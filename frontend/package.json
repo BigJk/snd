@@ -17,6 +17,7 @@
     "@airjp73/dice-notation": "^2.2.2",
     "@emmetio/codemirror-plugin": "^0.5.4",
     "@trivago/prettier-plugin-sort-imports": "^3.3.0",
+    "@types/lodash-es": "^4.17.7",
     "@types/mithril": "^2.0.12",
     "browserslist": "^4.9.1",
     "caniuse-lite": "^1.0.30001030",

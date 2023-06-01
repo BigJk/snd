@@ -42,5 +42,26 @@ export const GET_TEMPLATE = 'getTemplate';
 export const SAVE_TEMPLATE = 'saveTemplate';
 export const DELETE_TEMPLATE = 'deleteTemplate';
 
+// Generators
+export const GET_GENERATORS = 'getGenerators';
+export const GET_GENERATOR = 'getGenerator';
+export const SAVE_GENERATOR = 'saveGenerator';
+export const DELETE_GENERATOR = 'deleteGenerator';
+
+// Data Sources
+export const GET_SOURCES = 'getSources';
+export const GET_SOURCE = 'getSource';
+export const SAVE_SOURCE = 'saveSource';
+export const DELETE_SOURCE = 'deleteSource';
+
+// Packages
+export const GET_PUBLIC_LIST = 'getPublicPackages';
+export const GET_PACKAGES = 'getPackages';
+export const GET_REPO = 'getRepo';
+export const IMPORT_PACKAGE = 'importPackage';
+
+// Printer
+export const GET_PRINTER = 'getPrinter';
+
 // Misc function
 export const FETCH_IMAGE = 'fetchImage';

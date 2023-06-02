@@ -61,6 +61,7 @@ export const GET_REPO = 'getRepo';
 export const IMPORT_PACKAGE = 'importPackage';
 
 // Printer
+export const GET_AVAILABLE_PRINTER = 'getAvailablePrinter';
 export const GET_PRINTER = 'getPrinter';
 
 // Misc function

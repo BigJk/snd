@@ -15,6 +15,7 @@
     "js/types/(.*)$",
     "js/workers/(.*)$",
     "js/core/(.*)$",
+    "js/ui/spectre(.*)$",
     "js/ui/components(.*)$",
     "js/ui/views/(.*)$",
     "js/ui/[^\/]+$"

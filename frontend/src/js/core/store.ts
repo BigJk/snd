@@ -14,7 +14,7 @@ type Store = {
 	templates: Template[] | null;
 	generators: Generator[] | null;
 	sources: DataSource[] | null;
-	printer: Record<string, Printer> | null;
+	printer: Record<string, Printer>;
 	publicLists: PublicList[] | null;
 };
 
@@ -23,7 +23,7 @@ const initialState: Store = {
 	templates: null,
 	generators: null,
 	sources: null,
-	printer: null,
+	printer: {},
 	publicLists: null,
 };
 
@@ -95,7 +95,7 @@ const store = create(initialState, (atom) => ({
 	 * loadPrinter loads the printer from the backend.
 	 */
 	loadPrinter() {
-		return API.exec<Record<string, Printer>>(API.GET_PRINTER).then((res) => {
+		return API.exec<Record<string, Printer>>(API.GET_AVAILABLE_PRINTER).then((res) => {
 			atom.update((state) => {
 				return {
 					...state,

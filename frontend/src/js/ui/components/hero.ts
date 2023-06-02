@@ -1,17 +1,23 @@
 import m from 'mithril';
 
-import Button from 'js/ui/spectre/button';
+type HeroProps = {
+	classNames?: string;
+	title: m.Children;
+	subtitle: m.Children;
+	footer?: m.Children;
+	icon?: m.Children;
+};
 
-export default (): m.Component => {
+export default (): m.Component<HeroProps> => {
 	return {
 		view(vnode) {
-			return m('div.ph4.pv3.grid-bg.br3.w-100.white', [
-				m('div.f5.mb3', 'Welcome to Sales & Dungeons!'),
-				m(
-					'div.white-70.lh-copy.mb3',
-					'With Sales & Dungeons you can create highly customizable handouts, quick reference and much more for your Dungeons and Dragons (or other PnP) Sessions. Most Thermal Printer are small in size and can be taken with you and kept right at the gaming table. Use-cases range from printing out magic items, spells or a letter that the group found to little character sheets of your players to use as DM note. The possibilities are nearly endless!'
-				),
-				m('div.flex', [m(Button, { classNames: '.mr3' }, 'Documentation'), m(Button, { intend: 'primary' }, 'Join Discord')]),
+			return m('div.ph4.pv4.grid-bg.br3.w-100.white.flex' + (vnode.attrs.classNames ?? ''), [
+				m('div', [
+					m('div.f5.mb3', vnode.attrs.title),
+					m('div.white-70.lh-copy' + (vnode.attrs.footer ? '.mb3' : ''), vnode.attrs.subtitle),
+					m('div.flex', vnode.attrs.footer),
+				]),
+				vnode.attrs.icon,
 			]);
 		},
 	};

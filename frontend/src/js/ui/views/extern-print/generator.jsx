@@ -23,11 +23,13 @@ export default () => {
 							})
 							.catch((err) => {
 								state.gen = 'Generator Error: ' + err;
-							});
+							})
+							.finally(m.redraw);
 					});
 				})
 				.catch((err) => {
 					state.gen = 'Generator Error: ' + err;
+					m.redraw();
 				});
 		},
 		view(vnode) {

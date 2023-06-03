@@ -13,6 +13,8 @@ export default () => {
 			state.id = vnode.attrs.id;
 			state.json = JSON.parse(atob(vnode.attrs.json));
 
+			console.log(state);
+
 			api
 				.getTemplate(state.id)
 				.then((tmpl) => {
@@ -22,10 +24,12 @@ export default () => {
 						})
 						.catch((err) => {
 							state.tmpl = 'Template Error: ' + err;
-						});
+						})
+						.finally(m.redraw);
 				})
 				.catch((err) => {
 					state.tmpl = 'Template Error: ' + err;
+					m.redraw();
 				});
 		},
 		view(vnode) {

@@ -8,7 +8,7 @@ import Tooltip from 'js/ui/components/tooltip';
 const pages = {
 	dashboard: {
 		name: 'Dashboard',
-		icon: 'analytics',
+		icon: 'home',
 		url: '',
 	},
 	templates: {

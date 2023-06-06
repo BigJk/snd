@@ -17,6 +17,7 @@ const ItemHeight = 60;
 import FuseResult = Fuse.FuseResult;
 
 type SpotlightState = {
+	id: string;
 	query: string;
 	selected: number;
 	result?: FuseResult<FuseSearch>[] | null;
@@ -30,12 +31,15 @@ const icons = {
 
 export default (): m.Component => {
 	let state: SpotlightState = {
+		id: 'spotlight-' + Math.ceil(Math.random() * 1000000) + '',
 		query: '',
 		selected: -1,
 		result: null,
 	};
 
 	const updateSearch = debounce(() => {
+		state.selected = -1;
+		document.querySelector('.' + state.id)?.scrollTo(0, 0);
 		state.result = store.value.fuzzySearch?.search(state.query);
 		m.redraw();
 	}, 250);
@@ -46,12 +50,24 @@ export default (): m.Component => {
 	};
 
 	const openItem = (item: FuseResult<FuseSearch>) => {
-		m.route.set('/' + item.item.type + '/' + item.item[item.item.type]?.slug);
+		if (item.item.type === 'operation') {
+			item.item.operation?.onExecute();
+		} else {
+			m.route.set('/' + item.item.type + '/' + item.item[item.item.type]?.slug);
+		}
 
 		// TODO: This component should not be responsible for this.
 		// Move this to a onOpen callback and let the parent handle it.
 		// At the moment we don't do this as props are not passable to the portal yet.
 		clearPortal();
+	};
+
+	const itemBackground = (type: string) => {
+		switch (type) {
+			case 'operation':
+				return '.bg-dark';
+		}
+		return '.bg-primary';
 	};
 
 	// Render the results.
@@ -87,8 +103,8 @@ export default (): m.Component => {
 						[
 							m(
 								Flex,
-								{ className: '.w2.h2.bg-primary.br2.white.mr2', items: 'center', justify: 'center' },
-								m(Icon, { icon: icons[item.item.type], size: 5 })
+								{ className: `.w2.h2.br2.white.mr2${itemBackground(item.item.type)}`, items: 'center', justify: 'center' },
+								m(Icon, { icon: item.item.type != 'operation' ? icons[item.item.type] : item.item.operation?.icon ?? '', size: 5 })
 							), //
 							m('div', [
 								m('div.b', name), //
@@ -160,12 +176,19 @@ export default (): m.Component => {
 					}
 				}
 			});
+
+			// Prevent the input to be affected by the up arrow.
+			vnode.dom.querySelector('input')?.addEventListener('keydown', function (e) {
+				if (e.keyCode == 38 || e.keyCode == 40) {
+					e.preventDefault();
+				}
+			});
 		},
 		view() {
 			return m('div.bg-white.ba.b--black-10.br2', { style: { width: '600px', 'box-shadow': 'rgba(149, 157, 165, 0.2) 0px 8px 24px' } }, [
 				header(), //
 				m(
-					'div.overflow-auto',
+					'div.overflow-auto.' + state.id,
 					{ style: { minHeight: '200px', maxHeight: '70vh', height: state.result ? state.result.length * ItemHeight + 'px' : '200px' } },
 					results()
 				),

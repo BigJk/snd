@@ -12,21 +12,26 @@ import Template from 'js/types/template';
 import * as Version from 'js/types/version';
 
 import * as API from 'js/core/api';
+import { Operations, SpotlightOperation } from 'js/core/spotlight-operations';
 
 export type FuseSearch = {
-	type: 'template' | 'generator' | 'source';
+	type: 'template' | 'generator' | 'source' | 'operation';
 	template?: Template;
 	generator?: Generator;
 	source?: DataSource;
+	operation?: SpotlightOperation;
 };
 
 const FuseKeys = flatten<string[]>(
-	['template', 'generator', 'source'].map((key) => {
+	['template', 'generator', 'source', 'operation'].map((key) => {
 		return [`${key}.name`, `${key}.description`, `${key}.author`, `${key}.slug`];
 	})
 );
 
-const toFuseSearch = (type: 'template' | 'generator' | 'source', item: Template | Generator | DataSource): FuseSearch => {
+const toFuseSearch = (
+	type: 'template' | 'generator' | 'source' | 'operation',
+	item: Template | Generator | DataSource | SpotlightOperation
+): FuseSearch => {
 	return {
 		type,
 		[type]: item,
@@ -200,9 +205,12 @@ const store = create(initialState, (atom) => ({
 						...(state.templates ?? []).map((template) => toFuseSearch('template', template)),
 						...(state.generators ?? []).map((generator) => toFuseSearch('generator', generator)),
 						...(state.sources ?? []).map((source) => toFuseSearch('source', source)),
+						...Operations.map((operation) => toFuseSearch('operation', operation)),
 					],
 					{
 						keys: FuseKeys,
+						minMatchCharLength: 2,
+						threshold: 0.4,
 					}
 				),
 			};

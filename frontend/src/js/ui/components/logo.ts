@@ -11,7 +11,7 @@ type LogoProps = {
 };
 
 export default (): m.Component<LogoProps> => ({
-	view: (vnode) => {
+	view(vnode) {
 		return m('div.flex.items-center.z-5' + (vnode.attrs.classNames ?? ''), { style: { zoom: vnode.attrs.scale ?? 1.0 } }, [
 			m('img.z-1', { src: dungeonSvg, alt: '', height: 40 }),
 			m('img.z-0', { src: buySvg, alt: '', height: 32, style: { margin: '-15px 0 0 -20px', transform: 'rotate(25deg)' } }),

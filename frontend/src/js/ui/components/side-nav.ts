@@ -49,7 +49,7 @@ type SideNavProps = {
 };
 
 export default (): m.Component<SideNavProps> => {
-	let onClickHandler = (v: any, k: string) => {
+	const onClickHandler = (v: any, k: string) => {
 		if (v.newPage) {
 			window.open('http://127.0.0.1:7123/#!/' + (v.url ?? k), 'targetWindow', `width=${v.width},height=${v.height}`);
 		} else {
@@ -57,7 +57,7 @@ export default (): m.Component<SideNavProps> => {
 		}
 	};
 
-	let menu = (active: string) =>
+	const menu = (active: string) =>
 		map(pages, (v: any, k) => {
 			return m(
 				Tooltip,

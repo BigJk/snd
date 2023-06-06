@@ -3,19 +3,33 @@ import m from 'mithril';
 import Tippy from 'tippy.js';
 
 type TooltipProps = {
-	content: string;
+	content: m.Children;
 	placement?: 'top' | 'bottom' | 'left' | 'right';
+	interactive?: boolean;
 };
 
+function renderTooltipContent(content: m.Children) {
+	if (typeof content === 'string') {
+		return content;
+	}
+
+	const tooltipContent = document.createElement('div');
+	m.render(tooltipContent, content);
+	return tooltipContent;
+}
+
 export default (): m.Component<TooltipProps> => ({
-	oncreate: function (vnode) {
+	oncreate(vnode) {
+		const tooltipContent = renderTooltipContent(vnode.attrs.content);
+
 		Tippy(vnode.dom, {
 			maxWidth: 220,
-			content: vnode.attrs.content,
+			content: tooltipContent,
+			interactive: vnode.attrs.interactive ?? false,
 			placement: vnode.attrs.placement ?? 'top',
 		});
 	},
-	view: function (vnode) {
+	view(vnode) {
 		return vnode.children;
 	},
 });

@@ -5,7 +5,9 @@
     "esModuleInterop": true,
     "lib": [
       "dom",
-      "es2015"
+      "es2015",
+      "es2018",
+      "es2020"
     ],
     "strict": true,
     "baseUrl": "./",

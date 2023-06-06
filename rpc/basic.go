@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 
@@ -17,16 +18,20 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-type GitHubTags []struct {
-	Name       string `json:"name"`
-	ZipballURL string `json:"zipball_url"`
-	TarballURL string `json:"tarball_url"`
-	Commit     struct {
-		Sha string `json:"sha"`
-		URL string `json:"url"`
-	} `json:"commit"`
-	NodeID string `json:"node_id"`
+type GitHubCommit struct {
+	Sha string `json:"sha"`
+	URL string `json:"url"`
 }
+
+type GitHubTag struct {
+	Name       string       `json:"name"`
+	ZipballURL string       `json:"zipball_url"`
+	TarballURL string       `json:"tarball_url"`
+	Commit     GitHubCommit `json:"commit"`
+	NodeID     string       `json:"node_id"`
+}
+
+type GitHubTags []GitHubTag
 
 var tagNameRegex = regexp.MustCompile(`^v\d+.\d+.\d+`)
 
@@ -77,6 +82,18 @@ func RegisterBasic(route *echo.Group, db database.Database) {
 		GitBranch:     snd.GitBranch,
 	}
 
+	if len(os.Getenv("SND_MOCK_BUILD_TIME")) > 0 {
+		localVersion.BuildTime = os.Getenv("SND_MOCK_BUILD_TIME")
+	}
+
+	if len(os.Getenv("SND_MOCK_GIT_COMMIT_HASH")) > 0 {
+		localVersion.GitCommitHash = os.Getenv("SND_MOCK_GIT_COMMIT_HASH")
+	}
+
+	if len(os.Getenv("SND_MOCK_GIT_BRANCH")) > 0 {
+		localVersion.GitBranch = os.Getenv("SND_MOCK_GIT_BRANCH")
+	}
+
 	tags, err := fetchTags()
 	if err != nil {
 		_ = log.Error(err)
@@ -91,14 +108,32 @@ func RegisterBasic(route *echo.Group, db database.Database) {
 	route.POST("/getLogs", echo.WrapHandler(nra.MustBind(db.GetLogs)))
 
 	route.POST("/newVersion", echo.WrapHandler(nra.MustBind(func() (interface{}, error) {
+		type resp struct {
+			LocalVersion  interface{} `json:"localVersion"`
+			LatestVersion interface{} `json:"latestVersion"`
+			Newest        bool        `json:"newest"`
+		}
+
+		if len(os.Getenv("SND_MOCK_NEWEST")) > 0 {
+			isNew := os.Getenv("SND_MOCK_NEWEST") == "1"
+
+			return resp{localVersion, GitHubTag{
+				Name:       os.Getenv("SND_MOCK_NEWEST_TAG"),
+				ZipballURL: "",
+				TarballURL: "",
+				Commit: GitHubCommit{
+					Sha: "",
+					URL: "",
+				},
+				NodeID: "",
+			}, isNew}, nil
+		}
+
 		if len(tags) == 0 {
 			return nil, errors.New("could not fetch newest version")
 		}
 
-		return struct {
-			LocalVersion  interface{} `json:"localVersion"`
-			LatestVersion interface{} `json:"latestVersion"`
-		}{localVersion, tags[0]}, nil
+		return resp{localVersion, tags[0], localVersion.GitCommitHash == tags[0].Commit.Sha}, nil
 	})))
 
 	route.POST("/fetchImage", echo.WrapHandler(nra.MustBind(func(url string) (string, error) {

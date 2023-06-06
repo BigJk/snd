@@ -6,8 +6,10 @@ import Printer from 'js/types/printer';
 import PublicList from 'js/types/public-list';
 import Settings from 'js/types/settings';
 import Template from 'js/types/template';
+import * as Version from 'js/types/version';
 
 import * as API from 'js/core/api';
+import { NEW_VERSION } from 'js/core/api';
 
 type Store = {
 	settings: Settings | null;
@@ -16,6 +18,10 @@ type Store = {
 	sources: DataSource[] | null;
 	printer: Record<string, Printer>;
 	publicLists: PublicList[] | null;
+	version: {
+		current: Version.LocalVersion | null;
+		latest: Version.NewVersion | null;
+	};
 };
 
 const initialState: Store = {
@@ -25,6 +31,10 @@ const initialState: Store = {
 	sources: null,
 	printer: {},
 	publicLists: null,
+	version: {
+		current: null,
+		latest: null,
+	},
 };
 
 const store = create(initialState, (atom) => ({
@@ -39,6 +49,7 @@ const store = create(initialState, (atom) => ({
 			this.loadSources(),
 			this.loadPrinter(),
 			this.loadPublicList(),
+			this.loadVersion(),
 		]);
 	},
 
@@ -128,6 +139,23 @@ const store = create(initialState, (atom) => ({
 				return {
 					...state,
 					settings: res,
+				};
+			});
+		});
+	},
+
+	/**
+	 * loadVersion loads the version from the backend.
+	 */
+	loadVersion() {
+		return Promise.allSettled([API.exec<Version.LocalVersion>(API.GET_VERSION), API.exec<Version.NewVersion>(API.NEW_VERSION)]).then((res) => {
+			atom.update((state) => {
+				return {
+					...state,
+					version: {
+						current: res[0].status === 'fulfilled' ? res[0].value : null,
+						latest: res[1].status === 'fulfilled' ? res[1].value : null,
+					},
 				};
 			});
 		});

@@ -1,8 +1,9 @@
 import m from 'mithril';
 
 type BoxProps = {
-	classNames?: string;
+	className?: string;
 	maxWidth?: number;
+	minWidth?: number;
 	width?: number;
 };
 
@@ -18,11 +19,15 @@ export default (): m.Component<BoxProps> => {
 				style['max-width'] = `${attrs.maxWidth}px`;
 			}
 
+			if (attrs.minWidth !== undefined && attrs.minWidth > 0) {
+				style['min-width'] = `${attrs.minWidth}px`;
+			}
+
 			if (attrs.width !== undefined && attrs.width > 0) {
 				style['width'] = `${attrs.width}px`;
 			}
 
-			return m(`div.br3.dib.pa2.bg-black-05${attrs.classNames ?? ''}`, { style }, children);
+			return m(`div.br3.dib.pa2.bg-black-05${attrs.className ?? ''}`, { style }, children);
 		},
 	};
 };

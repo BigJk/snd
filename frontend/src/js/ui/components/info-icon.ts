@@ -3,7 +3,7 @@ import m from 'mithril';
 import Tooltip from 'js/ui/components/tooltip';
 
 type InfoIconProps = {
-	classNames?: string;
+	className?: string;
 	size?: number;
 	placement?: 'top' | 'bottom' | 'left' | 'right';
 };

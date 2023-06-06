@@ -17,6 +17,8 @@ type Settings = {
 	stylesheets: string[];
 	spellcheckerLanguages: string[];
 	packageRepos: string[];
+	syncKey: string;
+	enableSync: boolean;
 };
 
 export default Settings;

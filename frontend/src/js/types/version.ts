@@ -16,7 +16,6 @@ export type GitTag = {
 };
 
 export type NewVersion = {
-	localVersion: LocalVersion;
-	latestVersion: GitTag;
+	tag: GitTag;
 	newest: boolean;
 };

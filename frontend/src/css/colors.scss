@@ -33,6 +33,9 @@ $colours: ( "primary": #5755d9,
 	.col-#{nth($i, 1)} {
 		color: nth($i, 2);
 	}
+	.b--col-#{nth($i, 1)} {
+		border-color: nth($i, 2);
+	}
 }
 
 $primary-color: map.get($colours, "primary");

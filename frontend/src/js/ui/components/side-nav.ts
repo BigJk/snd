@@ -45,7 +45,7 @@ const pages = {
 
 type SideNavProps = {
 	active: string;
-	classNames?: string;
+	className?: string;
 };
 
 /**
@@ -66,7 +66,7 @@ export default (): m.Component<SideNavProps> => {
 				Tooltip,
 				{ content: v.name, placement: 'right' },
 				m(
-					'div.mb2.br2.hover-bg-primary.hover-white.pointer.z-999.f7.flex.items-center.justify-center' +
+					'div.mb2.br2.hover-bg-primary.hover-white.pointer.z-1.f7.flex.items-center.justify-center' +
 						(active === k ? '.white.bg-primary' : '.bg-white-05.white-60'),
 					{
 						onclick: () => onClickHandler(v, k),
@@ -83,7 +83,7 @@ export default (): m.Component<SideNavProps> => {
 	return {
 		view(vnode) {
 			return m(
-				'div.grid-bg' + vnode.attrs.classNames,
+				'div.grid-bg' + vnode.attrs.className,
 				{ style: { width: '70px' } },
 				m('div.flex.flex-column.items-center.pt3', [m(Logo, { scale: 0.75 }), m('div.mb3'), ...menu(vnode.attrs.active)])
 			);

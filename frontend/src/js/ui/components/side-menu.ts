@@ -9,7 +9,7 @@ type SideMenuItemProps = {
 };
 
 type SideMenuProps = {
-	classNames?: string;
+	className?: string;
 	items: SideMenuItemProps[];
 };
 

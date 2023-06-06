@@ -19,6 +19,7 @@
     "@trivago/prettier-plugin-sort-imports": "^3.3.0",
     "@types/lodash-es": "^4.17.7",
     "@types/mithril": "^2.0.12",
+    "@types/toastify-js": "^1.11.1",
     "browserslist": "^4.9.1",
     "caniuse-lite": "^1.0.30001030",
     "codemirror": "^5.51.0",

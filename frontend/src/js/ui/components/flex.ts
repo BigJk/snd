@@ -1,10 +1,10 @@
 import m from 'mithril';
 
 type FlexProps = {
-	classNames?: string;
+	className?: string;
 	direction?: 'row' | 'column';
-	align?: 'start' | 'center' | 'end';
-	justify?: 'start' | 'center' | 'end';
+	items?: 'start' | 'center' | 'end';
+	justify?: 'start' | 'center' | 'end' | 'between';
 	wrap?: 'wrap' | 'nowrap';
 	inline?: boolean;
 };
@@ -25,8 +25,8 @@ export default (): m.Component<FlexProps> => {
 				flexClasses += `.flex-${attrs.direction}`;
 			}
 
-			if (attrs.align !== undefined) {
-				flexClasses += `.items-${attrs.align}`;
+			if (attrs.items !== undefined) {
+				flexClasses += `.items-${attrs.items}`;
 			}
 
 			if (attrs.justify !== undefined) {
@@ -37,7 +37,7 @@ export default (): m.Component<FlexProps> => {
 				flexClasses += `.flex-${attrs.wrap}`;
 			}
 
-			return m(`div.relative${flexClasses}${attrs.classNames ?? ''}`, children);
+			return m(`div.relative${flexClasses}${attrs.className ?? ''}`, children);
 		},
 	};
 };

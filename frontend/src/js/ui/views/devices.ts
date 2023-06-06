@@ -12,7 +12,7 @@ export default (): m.Component => {
 		view(vnode) {
 			return m(
 				Base,
-				{ title: m(Title, 'Devices'), active: 'devices', classNames: '.pa3' },
+				{ title: m(Title, 'Devices'), active: 'devices', className: '.pa3' },
 				m(
 					'div.mw5',
 					m(Select, {

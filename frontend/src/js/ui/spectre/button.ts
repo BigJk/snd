@@ -5,7 +5,7 @@ type ButtonProps = {
 	intend?: 'primary' | 'success' | 'error' | 'warning' | 'link';
 	size?: 'sm' | 'lg';
 	loading?: boolean;
-	classNames?: string;
+	className?: string;
 };
 
 export default (): m.Component<ButtonProps> => {
@@ -22,7 +22,7 @@ export default (): m.Component<ButtonProps> => {
 				classes += '.loading';
 			}
 
-			return m('button' + classes + (vnode.attrs.classNames ?? ''), { onclick: vnode.attrs.onclick }, vnode.children);
+			return m('button' + classes + (vnode.attrs.className ?? ''), { onclick: vnode.attrs.onclick }, vnode.children);
 		},
 	};
 };

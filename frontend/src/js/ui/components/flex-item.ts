@@ -1,7 +1,7 @@
 import m from 'mithril';
 
 type FlexItemProps = {
-	classNames?: string;
+	className?: string;
 	grow?: number;
 	shrink?: number;
 };
@@ -22,7 +22,7 @@ export default (): m.Component<FlexItemProps> => {
 				flexClasses += `.flex-shrink-${attrs.shrink}`;
 			}
 
-			return m(`div.flex-grow${flexClasses}${attrs.classNames ?? ''}`, children);
+			return m(`div.flex-grow${flexClasses}${attrs.className ?? ''}`, children);
 		},
 	};
 };

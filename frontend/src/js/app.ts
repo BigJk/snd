@@ -16,7 +16,7 @@ import Home from 'js/ui/views/home';
 store.actions.loadAll().then(() => {
 	console.log(store.value);
 
-	m.route(document.body, '/', {
+	m.route(document.getElementById('app') ?? document.body, '/', {
 		'/': Home,
 		'/devices': Devices,
 	});

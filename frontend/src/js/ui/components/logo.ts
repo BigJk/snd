@@ -10,6 +10,9 @@ type LogoProps = {
 	scale?: number;
 };
 
+/**
+ * Logo component: renders the logo of the app.
+ */
 export default (): m.Component<LogoProps> => ({
 	view(vnode) {
 		return m('div.flex.items-center.z-5' + (vnode.attrs.classNames ?? ''), { style: { zoom: vnode.attrs.scale ?? 1.0 } }, [

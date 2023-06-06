@@ -8,6 +8,9 @@ type HeroProps = {
 	icon?: m.Children;
 };
 
+/**
+ * Hero component: renders a hero section with a title, subtitle, footer, and icon.
+ */
 export default (): m.Component<HeroProps> => {
 	return {
 		view(vnode) {

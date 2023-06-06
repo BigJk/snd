@@ -13,6 +13,9 @@ type SideMenuProps = {
 	items: SideMenuItemProps[];
 };
 
+/**
+ * SideMenu component: renders a side menu with clickable items.
+ */
 export default (): m.Component<SideMenuProps> => {
 	const menuItem = (item: SideMenuItemProps) => {
 		return m(`div.ph3.pv1.br2.mb1.flex.items-center.pointer.bg-animate${item.active ? '.bg-black-05.hover-bg-black-10' : '.hover-bg-black-05'}`, [

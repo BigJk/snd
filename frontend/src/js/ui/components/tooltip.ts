@@ -18,6 +18,9 @@ function renderTooltipContent(content: m.Children) {
 	return tooltipContent;
 }
 
+/**
+ * Tooltip component: renders a tooltip.
+ */
 export default (): m.Component<TooltipProps> => ({
 	oncreate(vnode) {
 		const tooltipContent = renderTooltipContent(vnode.attrs.content);

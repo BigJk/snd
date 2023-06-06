@@ -6,6 +6,9 @@ type BoxProps = {
 	width?: number;
 };
 
+/**
+ * Box component: renders a box with a max width or width.
+ */
 export default (): m.Component<BoxProps> => {
 	return {
 		view({ attrs, children }) {

@@ -48,6 +48,9 @@ type SideNavProps = {
 	classNames?: string;
 };
 
+/**
+ * SideNav component: renders the main side navigation of the app.
+ */
 export default (): m.Component<SideNavProps> => {
 	const onClickHandler = (v: any, k: string) => {
 		if (v.newPage) {

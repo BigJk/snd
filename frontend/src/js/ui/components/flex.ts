@@ -9,6 +9,9 @@ type FlexProps = {
 	inline?: boolean;
 };
 
+/**
+ * Flex component: renders a flex container.
+ */
 export default (): m.Component<FlexProps> => {
 	return {
 		view({ attrs, children }) {

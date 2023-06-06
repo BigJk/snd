@@ -6,6 +6,9 @@ type FlexItemProps = {
 	shrink?: number;
 };
 
+/**
+ * FlexItem component: renders a flex item.
+ */
 export default (): m.Component<FlexItemProps> => {
 	return {
 		view({ attrs, children }) {

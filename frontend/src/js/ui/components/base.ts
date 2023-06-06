@@ -8,6 +8,9 @@ type BaseProps = {
 	classNames?: string;
 };
 
+/**
+ * Base component: renders a side nav and a main content area.
+ */
 export default (): m.Component<BaseProps> => {
 	return {
 		view(vnode) {

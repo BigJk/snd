@@ -8,6 +8,10 @@ type InfoIconProps = {
 	placement?: 'top' | 'bottom' | 'left' | 'right';
 };
 
+/**
+ * InfoIcon component: renders an info icon with a tooltip containing some info text.
+ * This is intended to be used to show information about a particular field or section.
+ */
 export default (): m.Component<InfoIconProps> => {
 	return {
 		view({ attrs, children }) {

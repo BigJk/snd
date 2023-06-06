@@ -109,15 +109,14 @@ func RegisterBasic(route *echo.Group, db database.Database) {
 
 	route.POST("/newVersion", echo.WrapHandler(nra.MustBind(func() (interface{}, error) {
 		type resp struct {
-			LocalVersion  interface{} `json:"localVersion"`
-			LatestVersion interface{} `json:"latestVersion"`
-			Newest        bool        `json:"newest"`
+			Tag    *GitHubTag `json:"tag"`
+			Newest bool       `json:"newest"`
 		}
 
 		if len(os.Getenv("SND_MOCK_NEWEST")) > 0 {
 			isNew := os.Getenv("SND_MOCK_NEWEST") == "1"
 
-			return resp{localVersion, GitHubTag{
+			return resp{&GitHubTag{
 				Name:       os.Getenv("SND_MOCK_NEWEST_TAG"),
 				ZipballURL: "",
 				TarballURL: "",
@@ -133,7 +132,7 @@ func RegisterBasic(route *echo.Group, db database.Database) {
 			return nil, errors.New("could not fetch newest version")
 		}
 
-		return resp{localVersion, tags[0], localVersion.GitCommitHash == tags[0].Commit.Sha}, nil
+		return resp{&tags[0], localVersion.GitCommitHash == tags[0].Commit.Sha}, nil
 	})))
 
 	route.POST("/fetchImage", echo.WrapHandler(nra.MustBind(func(url string) (string, error) {

@@ -18,4 +18,6 @@ type Settings struct {
 	Stylesheets           []string `json:"stylesheets"`
 	SpellcheckerLanguages []string `json:"spellcheckerLanguages"`
 	PackageRepos          []string `json:"packageRepos"`
+	SyncKey               string   `json:"syncKey"`
+	EnableSync            bool     `json:"enableSync"`
 }

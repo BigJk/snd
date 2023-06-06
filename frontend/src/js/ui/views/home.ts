@@ -11,12 +11,6 @@ import Hero from 'js/ui/components/hero';
 import Logo from 'js/ui/components/logo';
 import Title from 'js/ui/components/title';
 
-import { setPortal } from 'js/ui/portal';
-
-setTimeout(() => {
-	setPortal(m('div', 'hello world'));
-}, 2000);
-
 export default (): m.Component => {
 	return {
 		view(vnode) {

@@ -1,3 +1,6 @@
+import { flatten } from 'lodash-es';
+
+import Fuse from 'fuse.js';
 import { create } from 'xoid';
 
 import DataSource from 'js/types/data-source';
@@ -9,7 +12,26 @@ import Template from 'js/types/template';
 import * as Version from 'js/types/version';
 
 import * as API from 'js/core/api';
-import { NEW_VERSION } from 'js/core/api';
+
+export type FuseSearch = {
+	type: 'template' | 'generator' | 'source';
+	template?: Template;
+	generator?: Generator;
+	source?: DataSource;
+};
+
+const FuseKeys = flatten<string[]>(
+	['template', 'generator', 'source'].map((key) => {
+		return [`${key}.name`, `${key}.description`, `${key}.author`, `${key}.slug`];
+	})
+);
+
+const toFuseSearch = (type: 'template' | 'generator' | 'source', item: Template | Generator | DataSource): FuseSearch => {
+	return {
+		type,
+		[type]: item,
+	};
+};
 
 type Store = {
 	settings: Settings | null;
@@ -22,6 +44,7 @@ type Store = {
 		current: Version.LocalVersion | null;
 		latest: Version.NewVersion | null;
 	};
+	fuzzySearch: Fuse<FuseSearch> | null;
 };
 
 const initialState: Store = {
@@ -35,6 +58,7 @@ const initialState: Store = {
 		current: null,
 		latest: null,
 	},
+	fuzzySearch: null,
 };
 
 const store = create(initialState, (atom) => ({
@@ -57,11 +81,11 @@ const store = create(initialState, (atom) => ({
 	 * loadSettings loads the settings from the backend.
 	 */
 	loadSettings() {
-		return API.exec<Template[]>(API.GET_TEMPLATES).then((res) => {
+		return API.exec<Settings>(API.GET_SETTINGS).then((res) => {
 			atom.update((state) => {
 				return {
 					...state,
-					templates: res,
+					settings: res,
 				};
 			});
 		});
@@ -85,6 +109,8 @@ const store = create(initialState, (atom) => ({
 					generators: res,
 				};
 			});
+
+			this.updateFuzzySearch();
 		});
 	},
 
@@ -99,6 +125,8 @@ const store = create(initialState, (atom) => ({
 					sources: res,
 				};
 			});
+
+			this.updateFuzzySearch();
 		});
 	},
 
@@ -134,13 +162,15 @@ const store = create(initialState, (atom) => ({
 	 * loadTemplates loads the templates from the backend.
 	 */
 	loadTemplates() {
-		return API.exec<Settings>(API.GET_SETTINGS).then((res) => {
+		return API.exec<Template[]>(API.GET_TEMPLATES).then((res) => {
 			atom.update((state) => {
 				return {
 					...state,
-					settings: res,
+					templates: res,
 				};
 			});
+
+			this.updateFuzzySearch();
 		});
 	},
 
@@ -158,6 +188,24 @@ const store = create(initialState, (atom) => ({
 					},
 				};
 			});
+		});
+	},
+
+	updateFuzzySearch() {
+		atom.update((state) => {
+			return {
+				...state,
+				fuzzySearch: new Fuse<FuseSearch>(
+					[
+						...(state.templates ?? []).map((template) => toFuseSearch('template', template)),
+						...(state.generators ?? []).map((generator) => toFuseSearch('generator', generator)),
+						...(state.sources ?? []).map((source) => toFuseSearch('source', source)),
+					],
+					{
+						keys: FuseKeys,
+					}
+				),
+			};
 		});
 	},
 }));

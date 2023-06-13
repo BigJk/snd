@@ -5,6 +5,9 @@ type BoxProps = {
 	maxWidth?: number;
 	minWidth?: number;
 	width?: number;
+	maxHeight?: number;
+	minHeight?: number;
+	height?: number;
 };
 
 /**
@@ -25,6 +28,18 @@ export default (): m.Component<BoxProps> => {
 
 			if (attrs.width !== undefined && attrs.width > 0) {
 				style['width'] = `${attrs.width}px`;
+			}
+
+			if (attrs.maxHeight !== undefined && attrs.maxHeight > 0) {
+				style['max-height'] = `${attrs.maxHeight}px`;
+			}
+
+			if (attrs.minHeight !== undefined && attrs.minHeight > 0) {
+				style['min-height'] = `${attrs.minHeight}px`;
+			}
+
+			if (attrs.height !== undefined && attrs.height > 0) {
+				style['height'] = `${attrs.height}px`;
 			}
 
 			return m(`div.br3.dib.pa2.bg-black-05${attrs.className ?? ''}`, { style }, children);

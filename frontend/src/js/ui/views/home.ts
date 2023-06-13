@@ -16,7 +16,7 @@ export default (): m.Component => {
 		view(vnode) {
 			return m(
 				Base,
-				{ title: m(Title, 'Dashboard'), active: 'dashboard', className: '.pa3' },
+				{ title: m(Title, 'Dashboard'), active: 'dashboard', classNameContainer: '.pa3' },
 				m('div', [
 					m(Hero, {
 						title: 'Welcome to Sales & Dungeons!',

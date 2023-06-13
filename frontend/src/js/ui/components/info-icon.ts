@@ -15,7 +15,11 @@ type InfoIconProps = {
 export default (): m.Component<InfoIconProps> => {
 	return {
 		view({ attrs, children }) {
-			return m(Tooltip, { content: children, placement: attrs.placement }, m(`i.f${attrs.size ?? 5}.ion.ion-md-information-circle-outline`));
+			return m(
+				Tooltip,
+				{ content: children, placement: attrs.placement },
+				m(`i.f${attrs.size ?? 6}.ion.ion-md-information-circle-outline.black-50${attrs.className ?? ''}`)
+			);
 		},
 	};
 };

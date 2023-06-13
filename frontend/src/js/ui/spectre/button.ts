@@ -5,6 +5,7 @@ type ButtonProps = {
 	intend?: 'primary' | 'success' | 'error' | 'warning' | 'link';
 	size?: 'sm' | 'lg';
 	loading?: boolean;
+	disabled?: boolean;
 	className?: string;
 };
 
@@ -20,6 +21,9 @@ export default (): m.Component<ButtonProps> => {
 			}
 			if (vnode.attrs.loading) {
 				classes += '.loading';
+			}
+			if (vnode.attrs.disabled) {
+				classes += '.disabled';
 			}
 
 			return m('button' + classes + (vnode.attrs.className ?? ''), { onclick: vnode.attrs.onclick }, vnode.children);

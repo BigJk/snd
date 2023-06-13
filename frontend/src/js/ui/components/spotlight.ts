@@ -129,6 +129,7 @@ export default (): m.Component => {
 	const footer = () => {
 		return m(Flex, { className: '.pa2.bt.b--black-10', justify: 'end' }, [
 			m(
+				// @ts-ignore
 				Key,
 				{
 					key: [

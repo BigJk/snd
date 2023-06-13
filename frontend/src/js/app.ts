@@ -7,19 +7,32 @@ import 'tippy.js/dist/tippy.css';
 
 import m from 'mithril';
 
-import store from 'js/core/store';
+import store, { settings } from 'js/core/store';
 
 import Spotlight from 'js/ui/components/spotlight';
 
 import Devices from 'js/ui/views/devices';
 import Home from 'js/ui/views/home';
 
-// Init portal
 import * as Portal from 'js/ui/portal';
+import * as Toast from 'js/ui/toast';
 
 // Load all the data from the backend and then start the router.
 store.actions.loadAll().then(() => {
-	console.log('Store initalized:', store.value);
+	console.log('Store initialized:', store.value);
+
+	// Save settings when they change.
+	settings.subscribe((state) => {
+		if (!state) return;
+
+		store.actions
+			.saveSettings()
+			.then(() => Toast.success('Settings saved successfully.'))
+			.catch((e) => {
+				Toast.error(e);
+				console.error('Failed to save settings:', e);
+			});
+	});
 
 	m.route(document.getElementById('app') ?? document.body, '/', {
 		'/': Home,

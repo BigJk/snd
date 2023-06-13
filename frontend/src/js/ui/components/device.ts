@@ -27,7 +27,7 @@ export default (): m.Component<DeviceProps> => {
 		view({ attrs }) {
 			return m(
 				Box,
-				{ width: 350, minHeight: 150, className: `${attrs.active ? '.bt.bw1.b--col-success' : ''}${attrs.className}` },
+				{ minWidth: 300, minHeight: 150, className: `${attrs.active ? '.bt.bw1.b--col-success' : ''}${attrs.className ?? ''}` },
 				m(
 					'div.h-100.lh-copy',
 					{ style: { wordBreak: 'break-all' } },

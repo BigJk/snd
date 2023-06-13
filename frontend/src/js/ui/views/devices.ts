@@ -13,15 +13,33 @@ import Title from 'js/ui/components/title';
 
 const infoText = `On this page you can select the printer you want to use from the ones that were automatically detected.`;
 
+type DevicesState = {
+	search: string;
+	typeFilter: string;
+};
+
+const DevicesGridStyle = {
+	display: 'grid',
+	gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+	gridGap: '1rem',
+};
+
 export default (): m.Component => {
+	let state: DevicesState = {
+		search: '',
+		typeFilter: '',
+	};
+
 	const header = () => {
 		return m(
-			'div.mw5',
+			'div',
 			m(Select, {
+				width: 250,
+				default: 'Filter by type...',
 				keys: Object.keys(store.value.printer).filter((k) => Object.keys(store.value.printer[k]).length > 0),
 				selected: null,
 				oninput: (e) => {
-					console.log(e);
+					state.typeFilter = e.value;
 				},
 			})
 		);
@@ -29,9 +47,12 @@ export default (): m.Component => {
 
 	const devices = () => {
 		return m(
-			'div.flex.flex-wrap.mt3',
+			'div.w-100.h-100.overflow-auto',
+			{ style: DevicesGridStyle },
 			map(store.value.printer, (printers, type) => {
 				if (Object.keys(printers).length === 0) return null;
+
+				if (state.typeFilter.length > 0 && state.typeFilter !== type) return null;
 
 				return map(printers, (endpoint, name) => {
 					return m(Device, {
@@ -39,7 +60,6 @@ export default (): m.Component => {
 						printer: name,
 						type: type,
 						active: store.value.settings?.printerType == type && store.value.settings?.printerEndpoint == endpoint,
-						className: '.mr3.mb3',
 						onUse: (printer, endpoint, type) => {
 							settings.update((state) => {
 								if (!state) return state;
@@ -61,8 +81,13 @@ export default (): m.Component => {
 		view(vnode) {
 			return m(
 				Base,
-				{ title: m(Title, ['Devices', m(InfoIcon, { className: '.ml2', size: 7 }, infoText)]), active: 'devices', classNameContainer: '.pa3' },
-				m('div', [header(), devices()])
+				{
+					title: m(Title, ['Devices', m(InfoIcon, { className: '.ml2', size: 7 }, infoText)]),
+					rightElement: header(),
+					active: 'devices',
+					classNameContainer: '.pa3',
+				},
+				m('div.overflow-auto', [devices()])
 			);
 		},
 	};

@@ -21,7 +21,7 @@ export default (): m.Component<BaseProps> => {
 			return null;
 		}
 
-		return m(Flex, { justify: 'between', className: '.bb.b--black-10.pa3.bg-white-80' }, [
+		return m(Flex, { justify: 'between', items: 'center', className: '.bb.b--black-10.pa3.bg-white-80.flex-shrink-0' }, [
 			attrs.title, //
 			attrs.rightElement,
 		]);
@@ -31,7 +31,10 @@ export default (): m.Component<BaseProps> => {
 		view({ attrs, children }) {
 			return m('div.w-100.h-100.flex', [
 				m(SideNav, { className: '.flex-shrink-0', active: attrs.active }),
-				m('div.flex-grow-1.overflow-auto' + attrs.className, [header(attrs), m(`div${attrs.classNameContainer}`, children)]),
+				m(`div.flex-grow-1.flex.flex-column.overflow-auto${attrs.className ?? ''}`, [
+					header(attrs),
+					m(`div.overflow-auto${attrs.classNameContainer ?? ''}`, children),
+				]),
 			]);
 		},
 	};

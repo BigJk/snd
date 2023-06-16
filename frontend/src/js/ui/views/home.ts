@@ -7,6 +7,7 @@ import Button from 'js/ui/spectre/button';
 import Base from 'js/ui/components/base';
 import BoxVersion from 'js/ui/components/box-version';
 import DiscordWidget from 'js/ui/components/discord-widget';
+import Flex from 'js/ui/components/flex';
 import Hero from 'js/ui/components/hero';
 import Logo from 'js/ui/components/logo';
 import Title from 'js/ui/components/title';
@@ -29,12 +30,14 @@ export default (): m.Component => {
 							m(Button, { intend: 'error' }, 'Support the Project'),
 						],
 					}),
-					m(BoxVersion, {
-						className: '.mt3.mb3',
-						newVersion: false,
-						newVersionTag: store.value.version.latest?.tag.name ?? '',
-					}),
-					m('div', m(DiscordWidget)),
+					m(Flex, { className: '.mt3.mb3', items: 'start' }, [
+						m(BoxVersion, {
+							className: '.mr3',
+							newVersion: false,
+							newVersionTag: store.value.version.latest?.tag.name ?? '',
+						}),
+						m('div', m(DiscordWidget, { className: 'w-100', height: 400 })),
+					]),
 				])
 			);
 		},

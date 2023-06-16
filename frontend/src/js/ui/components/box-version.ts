@@ -16,7 +16,7 @@ export default (): m.Component<BoxVersionProps> => {
 	return {
 		view({ attrs }) {
 			if (!attrs.newVersion) {
-				return m(Box, { className: `.bt.bw1.b--col-success${attrs.className}`, minWidth: 350 }, [
+				return m(Box, { className: `.bt.bw1.b--col-success${attrs.className ?? ''}`, minWidth: 350 }, [
 					m(Flex, { justify: 'between', items: 'end' }, [
 						m(Icon, { className: '.mr3', icon: 'cloud-done', size: 3 }), //
 						m('div.f3.b', attrs.newVersionTag),
@@ -27,7 +27,7 @@ export default (): m.Component<BoxVersionProps> => {
 				]);
 			}
 
-			return m(Box, { className: `.bt.bw1.b--col-primary${attrs.className}`, minWidth: 350 }, [
+			return m(Box, { className: `.bt.bw1.b--col-primary${attrs.className ?? ''}`, minWidth: 350 }, [
 				m(Flex, { justify: 'between', items: 'end' }, [
 					m(Icon, { className: '.mr3', icon: 'cloud-download', size: 3 }),
 					m(Button, { intend: 'primary' }, 'Download'),

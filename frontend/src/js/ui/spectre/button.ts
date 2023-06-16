@@ -1,32 +1,53 @@
 import m from 'mithril';
 
-type ButtonProps = {
+// @ts-ignore
+import { shell } from 'src/js/electron';
+
+import Flex from 'js/ui/components/flex';
+
+export type ButtonProps = {
 	onclick?: () => void;
 	intend?: 'primary' | 'success' | 'error' | 'warning' | 'link';
 	size?: 'sm' | 'lg';
 	loading?: boolean;
 	disabled?: boolean;
 	className?: string;
+	link?: string;
 };
 
 export default (): m.Component<ButtonProps> => {
+	const openLink = (url: string | undefined) => {
+		if (!url) return;
+
+		if (url.startsWith('/')) {
+			m.route.set(url);
+		} else {
+			shell.openExternal(url);
+		}
+	};
+
 	return {
-		view(vnode) {
+		view({ attrs, children }) {
 			let classes = '.btn';
-			if (vnode.attrs.intend) {
-				classes += '.btn-' + vnode.attrs.intend;
+			if (attrs.intend) {
+				classes += '.btn-' + attrs.intend;
 			}
-			if (vnode.attrs.size) {
-				classes += '.btn-' + vnode.attrs.size;
+			if (attrs.size) {
+				classes += '.btn-' + attrs.size;
 			}
-			if (vnode.attrs.loading) {
+			if (attrs.loading) {
 				classes += '.loading';
 			}
-			if (vnode.attrs.disabled) {
+			if (attrs.disabled) {
 				classes += '.disabled';
 			}
 
-			return m('button' + classes + (vnode.attrs.className ?? ''), { onclick: vnode.attrs.onclick }, vnode.children);
+			let finalChildren: m.Children = children;
+			if (Array.isArray(children)) {
+				finalChildren = m(Flex, { items: 'center', gap: 10 }, children);
+			}
+
+			return m('button' + classes + (attrs.className ?? ''), { onclick: attrs.link ? () => openLink(attrs.link) : attrs.onclick }, finalChildren);
 		},
 	};
 };

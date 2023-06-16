@@ -22,6 +22,9 @@ $colours: ( "primary": #5755d9,
 	.bg-#{nth($i, 1)}-lighten {
 		background: lighten(nth($i, 2), 10%) !important;
 	}
+	.bg-#{nth($i, 1)}-muted {
+		background: transparentize(nth($i, 2), 0.9) !important;
+	}
 	.hover-bg-#{nth($i, 1)}-lighten:hover {
         transition: 200ms ease-in-out;
 		background: lighten(nth($i, 2), 10%) !important;

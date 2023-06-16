@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite';
+import monacoEditorPlugin from 'vite-plugin-monaco-editor';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-	plugins: [tsconfigPaths()],
+	plugins: [tsconfigPaths(), monacoEditorPlugin({})],
 	root: 'src/',
 	esbuild: {
 		jsxInject: "import m from 'mithril'",

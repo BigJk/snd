@@ -282,3 +282,12 @@ body {
         margin: 1rem 0;
     }
 }
+
+.monaco-container {
+  height: 100%;
+}
+
+// https://stackoverflow.com/a/71876526
+.monaco-editor {
+  position: absolute !important;
+}

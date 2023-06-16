@@ -13,6 +13,11 @@ import Spotlight from 'js/ui/components/spotlight';
 
 import Devices from 'js/ui/views/devices';
 import Home from 'js/ui/views/home';
+import Settings from 'js/ui/views/settings';
+import TemplateAll from 'js/ui/views/template/all';
+import TemplateCreate from 'js/ui/views/template/create';
+import TemplateEdit from 'js/ui/views/template/edit';
+import TemplateSingle from 'js/ui/views/template/single';
 
 import * as Portal from 'js/ui/portal';
 import * as Toast from 'js/ui/toast';
@@ -37,6 +42,11 @@ store.actions.loadAll().then(() => {
 	m.route(document.getElementById('app') ?? document.body, '/', {
 		'/': Home,
 		'/devices': Devices,
+		'/settings': Settings,
+		'/templates': TemplateAll,
+		'/templates/create': TemplateCreate,
+		'/templates/:id': TemplateSingle,
+		'/templates/:id/edit': TemplateEdit,
 	});
 
 	document.addEventListener('keydown', (e) => {

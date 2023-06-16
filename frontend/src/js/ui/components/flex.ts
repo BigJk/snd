@@ -8,6 +8,7 @@ type FlexProps = {
 	justify?: 'start' | 'center' | 'end' | 'between';
 	wrap?: 'wrap' | 'nowrap';
 	inline?: boolean;
+	gap?: number;
 };
 
 /**
@@ -38,7 +39,14 @@ export default (): m.Component<FlexProps> => {
 				flexClasses += `.flex-${attrs.wrap}`;
 			}
 
-			return m(`div.relative${flexClasses}${attrs.className ?? ''}`, { style: attrs.style }, children);
+			let additionalStyles = {};
+			if (attrs.gap !== undefined) {
+				additionalStyles = {
+					gap: `${attrs.gap}px`,
+				};
+			}
+
+			return m(`div.relative${flexClasses}${attrs.className ?? ''}`, { style: { ...additionalStyles, ...attrs.style } }, children);
 		},
 	};
 };

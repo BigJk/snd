@@ -23,20 +23,25 @@ export default (): m.Component<DiscordWidgetProps> => {
 		view({ attrs }) {
 			// If we are in electron we use a webview instead of an iframe.
 			if (inElectron) {
+				let width = attrs.width ? attrs.width + 'px' : '100%';
+				let height = attrs.height ? attrs.height + 'px' : '100%';
+
 				return m('webview', {
 					src: 'https://discord.com/widget?id=678654745803751579&theme=dark',
-					style: { width: attrs.width ?? '350px', height: attrs.height ?? '500px' },
+					style: { width, height },
 					nodeintegration: 'true',
+					className: attrs.className ?? '',
 				});
 			}
 
 			return m('iframe', {
 				src: 'https://discord.com/widget?id=678654745803751579&theme=dark',
-				width: attrs.width ?? '350',
-				height: attrs.height ?? '500',
+				width: attrs.width ?? undefined,
+				height: attrs.height ?? undefined,
 				allowtransparency: 'true',
 				frameborder: '0',
 				sandbox: 'allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts',
+				className: attrs.className ?? '',
 			});
 		},
 	};

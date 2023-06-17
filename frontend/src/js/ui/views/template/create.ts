@@ -4,12 +4,12 @@ import { createNunjucksCompletionProvider } from 'js/core/monaco/completion-nunj
 
 import IconButton from 'js/ui/spectre/icon-button';
 
-import Base from 'js/ui/components/base';
-import Breadcrumbs from 'js/ui/components/breadcrumbs';
 import BasicInfo from 'js/ui/components/editor/basic-info';
 import Images from 'js/ui/components/editor/images';
 import Monaco from 'js/ui/components/monaco';
-import SideMenuPager from 'js/ui/components/side-menu-pager';
+import Base from 'js/ui/components/view-layout/base';
+import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
+import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
 
 let testState = {
 	it: {

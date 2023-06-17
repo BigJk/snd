@@ -2,7 +2,7 @@ import m from 'mithril';
 
 import { css } from 'goober';
 
-import Flex from 'js/ui/components/flex';
+import Flex from 'js/ui/components/layout/flex';
 
 type HorizontalPropertyProps = {
 	className?: string;

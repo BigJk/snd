@@ -1,7 +1,7 @@
 import m from 'mithril';
 
-import Base from 'js/ui/components/base';
-import Title from 'js/ui/components/title';
+import Title from 'js/ui/components/atomic/title';
+import Base from 'js/ui/components/view-layout/base';
 
 const SettingsGridStyle = {
 	display: 'grid',

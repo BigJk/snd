@@ -3,7 +3,7 @@ import m from 'mithril';
 import Button from 'js/ui/spectre/button';
 
 import Box from 'js/ui/components/box';
-import Flex from 'js/ui/components/flex';
+import Flex from 'js/ui/components/layout/flex';
 
 type DeviceProps = {
 	className?: string;
@@ -27,7 +27,7 @@ export default (): m.Component<DeviceProps> => {
 		view({ attrs }) {
 			return m(
 				Box,
-				{ minWidth: 300, minHeight: 150, className: `${attrs.active ? '.bt.bw1.b--col-success' : ''}${attrs.className ?? ''}` },
+				{ minWidth: 300, minHeight: 150, className: `${attrs.active ? '.ba.b--dashed.bw1.b--col-success' : ''}${attrs.className ?? ''}` },
 				m(
 					'div.h-100.lh-copy',
 					{ style: { wordBreak: 'break-all' } },

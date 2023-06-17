@@ -2,8 +2,8 @@ import m from 'mithril';
 
 import { flatMap } from 'lodash-es';
 
-import Flex from 'js/ui/components/flex';
-import Icon from 'js/ui/components/icon';
+import Icon from 'js/ui/components/atomic/icon';
+import Flex from 'js/ui/components/layout/flex';
 
 import { dialogWarning } from 'js/ui/toast';
 

@@ -2,8 +2,8 @@ import m from 'mithril';
 
 import { map } from 'lodash-es';
 
-import Logo from 'js/ui/components/logo';
-import Tooltip from 'js/ui/components/tooltip';
+import Logo from 'js/ui/components/atomic/logo';
+import Tooltip from 'js/ui/components/atomic/tooltip';
 
 const pages = {
 	dashboard: {

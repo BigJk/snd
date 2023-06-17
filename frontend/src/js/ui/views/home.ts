@@ -4,13 +4,13 @@ import store from 'js/core/store';
 
 import Button from 'js/ui/spectre/button';
 
-import Base from 'js/ui/components/base';
+import Logo from 'js/ui/components/atomic/logo';
+import Title from 'js/ui/components/atomic/title';
 import BoxVersion from 'js/ui/components/box-version';
 import DiscordWidget from 'js/ui/components/discord-widget';
-import Flex from 'js/ui/components/flex';
 import Hero from 'js/ui/components/hero';
-import Logo from 'js/ui/components/logo';
-import Title from 'js/ui/components/title';
+import Flex from 'js/ui/components/layout/flex';
+import Base from 'js/ui/components/view-layout/base';
 
 export default (): m.Component => {
 	return {

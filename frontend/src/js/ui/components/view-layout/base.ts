@@ -1,7 +1,7 @@
 import m from 'mithril';
 
-import Flex from 'js/ui/components/flex';
-import SideNav from 'js/ui/components/side-nav';
+import Flex from 'js/ui/components/layout/flex';
+import SideNav from 'js/ui/components/view-layout/side-nav';
 
 type BaseProps = {
 	title?: m.Children;

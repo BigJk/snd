@@ -3,7 +3,7 @@ import m from 'mithril';
 // @ts-ignore
 import { shell } from 'src/js/electron';
 
-import Flex from 'js/ui/components/flex';
+import Flex from 'js/ui/components/layout/flex';
 
 export type ButtonProps = {
 	onClick?: () => void;

@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-import Tooltip from 'js/ui/components/tooltip';
+import Tooltip from 'js/ui/components/atomic/tooltip';
 
 type InfoIconProps = {
 	className?: string;

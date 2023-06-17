@@ -6,10 +6,10 @@ import store, { settings } from 'js/core/store';
 
 import Select from 'js/ui/spectre/select';
 
-import Base from 'js/ui/components/base';
+import InfoIcon from 'js/ui/components/atomic/info-icon';
+import Title from 'js/ui/components/atomic/title';
 import Device from 'js/ui/components/device';
-import InfoIcon from 'js/ui/components/info-icon';
-import Title from 'js/ui/components/title';
+import Base from 'js/ui/components/view-layout/base';
 
 const infoText = `On this page you can select the printer you want to use from the ones that were automatically detected.`;
 

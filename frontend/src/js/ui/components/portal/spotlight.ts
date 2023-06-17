@@ -7,9 +7,9 @@ import Fuse from 'fuse.js';
 import guid from 'js/core/guid';
 import store, { FuseSearch } from 'js/core/store';
 
-import Flex from 'js/ui/components/flex';
-import Icon from 'js/ui/components/icon';
-import Key from 'js/ui/components/key';
+import Icon from 'js/ui/components/atomic/icon';
+import Key from 'js/ui/components/atomic/key';
+import Flex from 'js/ui/components/layout/flex';
 
 import { clearPortal } from 'js/ui/portal';
 

@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-import Flex from 'js/ui/components/flex';
+import Flex from 'js/ui/components/layout/flex';
 
 type KeyProps = {
 	className?: string;

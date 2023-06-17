@@ -2,9 +2,9 @@ import m from 'mithril';
 
 import Button from 'js/ui/spectre/button';
 
+import Icon from 'js/ui/components/atomic/icon';
 import Box from 'js/ui/components/box';
-import Flex from 'js/ui/components/flex';
-import Icon from 'js/ui/components/icon';
+import Flex from 'js/ui/components/layout/flex';
 
 type BoxVersionProps = {
 	className?: string;
@@ -16,7 +16,7 @@ export default (): m.Component<BoxVersionProps> => {
 	return {
 		view({ attrs }) {
 			if (!attrs.newVersion) {
-				return m(Box, { className: `.bt.bw1.b--col-success${attrs.className ?? ''}`, minWidth: 350 }, [
+				return m(Box, { className: `.ba.b--dashed.bw1.b--col-success${attrs.className ?? ''}`, minWidth: 350 }, [
 					m(Flex, { justify: 'between', items: 'end' }, [
 						m(Icon, { className: '.mr3', icon: 'cloud-done', size: 3 }), //
 						m('div.f3.b', attrs.newVersionTag),

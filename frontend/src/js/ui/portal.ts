@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-import Flex from 'js/ui/components/flex';
+import Flex from 'js/ui/components/layout/flex';
 
 // Portal element target
 const target = document.getElementById('portal');

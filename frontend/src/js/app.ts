@@ -9,7 +9,7 @@ import m from 'mithril';
 
 import store, { settings } from 'js/core/store';
 
-import Spotlight from 'js/ui/components/spotlight';
+import Spotlight from 'js/ui/components/portal/spotlight';
 
 import Devices from 'js/ui/views/devices';
 import Home from 'js/ui/views/home';

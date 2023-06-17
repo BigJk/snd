@@ -66,3 +66,4 @@ export const GET_PRINTER = 'getPrinter';
 
 // Misc function
 export const FETCH_IMAGE = 'fetchImage';
+export const PREVIEW_CACHE = 'previewCache';

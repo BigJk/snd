@@ -1,9 +1,5 @@
-type DataSource = {
-	name: string;
-	slug: string;
-	author: string;
-	description: string;
-	version: string;
-};
+import BasicInfo from 'js/types/basic-info';
+
+type DataSource = BasicInfo;
 
 export default DataSource;

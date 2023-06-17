@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-type SideMenuItemProps = {
+export type SideMenuItem = {
 	id?: string;
 	title: string;
 	icon: string;
@@ -8,26 +8,34 @@ type SideMenuItemProps = {
 	onClick?: (id?: string) => void;
 };
 
-type SideMenuProps = {
+export type SideMenuProps = {
 	className?: string;
-	items: SideMenuItemProps[];
+	items: SideMenuItem[];
 };
 
 /**
  * SideMenu component: renders a side menu with clickable items.
  */
 export default (): m.Component<SideMenuProps> => {
-	const menuItem = (item: SideMenuItemProps) => {
-		return m(`div.ph2.pv1.br2.mb1.flex.items-center.pointer.bg-animate${item.active ? '.bg-black-05.hover-bg-black-10' : '.hover-bg-black-05'}`, [
-			m('div.w1.mr1', m(`i.ion.ion-md-${item.icon}.f7.col-primary`)),
-			m(`.f8`, { onclick: () => (item.onClick ? item.onClick(item.id) : null) }, item.title),
-		]);
+	const menuItem = (item: SideMenuItem) => {
+		return m(
+			`div.ph2.pv1.br2.mb1.flex.items-center.pointer.bg-animate${item.active ? '.bg-black-05.hover-bg-black-10' : '.hover-bg-black-05'}`,
+			{
+				onclick: () => {
+					if (!item.onClick) return;
+
+					item.onClick(item.id);
+					m.redraw();
+				},
+			},
+			[m('div.w1.mr1', m(`i.ion.ion-md-${item.icon}.f7.col-primary`)), m(`.f8`, item.title)]
+		);
 	};
 
 	return {
 		view({ attrs }) {
 			return m(
-				'div.dib',
+				`div${attrs.className ?? ''}`,
 				attrs.items.map((item) => {
 					return menuItem(item);
 				})

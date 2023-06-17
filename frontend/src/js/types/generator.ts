@@ -1,3 +1,5 @@
+import BasicInfo from 'js/types/basic-info';
+
 type GeneratorConfig = {
 	key: string;
 	name: string;
@@ -6,17 +8,12 @@ type GeneratorConfig = {
 	default: any;
 };
 
-type Generator = {
-	name: string;
-	slug: string;
-	author: string;
-	description: string;
+type Generator = BasicInfo & {
 	printTemplate: string;
 	passEntriesToJS: boolean;
 	config: GeneratorConfig[];
 	images: Record<string, string>;
 	dataSources: string[];
-	version: string;
 	count?: number;
 };
 

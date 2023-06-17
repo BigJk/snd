@@ -2,10 +2,15 @@ import m from 'mithril';
 
 import { emmetHTML } from 'emmet-monaco-es';
 import * as monaco from 'monaco-editor';
+// @ts-ignore
+import theme from 'monaco-themes/themes/Github.json';
 
 import guid from 'js/core/guid';
 import type { CompletionFunction } from 'js/core/monaco/completion';
 import * as monacoCompletion from 'js/core/monaco/completion';
+
+// https://github.com/brijeshb42/monaco-themes/tree/master/themes
+monaco.editor.defineTheme('main', theme);
 
 emmetHTML(monaco);
 
@@ -32,6 +37,7 @@ export default (): m.Component<MonacoProps> => {
 				value: attrs.value,
 				language: attrs.language,
 				automaticLayout: true,
+				theme: 'main',
 			});
 
 			editor.onDidChangeModelContent((event) => {

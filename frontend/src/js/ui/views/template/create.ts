@@ -6,9 +6,10 @@ import IconButton from 'js/ui/spectre/icon-button';
 
 import Base from 'js/ui/components/base';
 import Breadcrumbs from 'js/ui/components/breadcrumbs';
-import Flex from 'js/ui/components/flex';
+import BasicInfo from 'js/ui/components/editor/basic-info';
+import Images from 'js/ui/components/editor/images';
 import Monaco from 'js/ui/components/monaco';
-import SideMenu from 'js/ui/components/side-menu';
+import SideMenuPager from 'js/ui/components/side-menu-pager';
 
 let testState = {
 	it: {
@@ -37,23 +38,26 @@ export default (): m.Component => {
 					active: 'templates',
 					classNameContainer: '',
 				},
-				m(Flex, { className: '.overflow-auto.h-100' }, [
-					m(
-						'div.br.b--black-10.flex-shrink-0.pa2',
-						m(SideMenu, {
-							items: [
-								{ title: 'Basic Info', icon: 'clipboard' }, //
-								{ title: 'Images', icon: 'images' },
-								{ title: 'Data Sources', icon: 'analytics' },
-								{ title: 'Global Config', icon: 'cog' },
-								{ title: 'Data Skeleton', icon: 'body' },
-								{ title: 'Print Template', icon: 'code-working', active: true },
-								{ title: 'List Template', icon: 'code-working' },
-							],
-						})
-					),
-					m(Monaco, { language: 'html', value: '', className: '.flex-grow-1', completion: createNunjucksCompletionProvider(testState) }),
-				])
+				m(SideMenuPager, {
+					items: [
+						{
+							title: 'Basic Info',
+							icon: 'clipboard',
+							render: () => m(BasicInfo, { info: { name: 'Test', author: 'Test123', slug: 'asdasd', description: 'asdasd', version: ' ' } }),
+						}, //
+						{ title: 'Images', icon: 'images', render: () => m(Images) },
+						{ title: 'Data Sources', icon: 'analytics', render: () => null },
+						{ title: 'Global Config', icon: 'cog', render: () => null },
+						{ title: 'Data Skeleton', icon: 'body', render: () => null },
+						{
+							title: 'Print Template',
+							icon: 'code-working',
+							render: () =>
+								m(Monaco, { language: 'html', value: '', className: '.flex-grow-1', completion: createNunjucksCompletionProvider(testState) }),
+						},
+						{ title: 'List Template', icon: 'code-working', render: () => null },
+					],
+				})
 			);
 		},
 	};

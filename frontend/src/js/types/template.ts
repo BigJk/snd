@@ -1,3 +1,5 @@
+import BasicInfo from 'js/types/basic-info';
+
 type TemplateConfig = {
 	key: string;
 	name: string;
@@ -6,18 +8,13 @@ type TemplateConfig = {
 	default: any;
 };
 
-type Template = {
-	name: string;
-	slug: string;
-	author: string;
-	description: string;
+type Template = BasicInfo & {
 	printTemplate: string;
 	listTemplate: string;
 	skeletonData: Record<string, any>;
 	images: Record<string, string>;
 	config: TemplateConfig[];
 	dataSources: string[];
-	version: string;
 	count?: number;
 };
 

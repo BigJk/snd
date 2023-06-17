@@ -12,19 +12,25 @@ export const Operations: SpotlightOperation[] = [
 		name: 'New Template',
 		description: 'Create a new template',
 		icon: 'add',
-		onExecute: () => {},
+		onExecute: () => {
+			m.route.set('/templates/create');
+		},
 	},
 	{
 		name: 'New Generator',
 		description: 'Create a new generator',
 		icon: 'add',
-		onExecute: () => {},
+		onExecute: () => {
+			m.route.set('/generators/create');
+		},
 	},
 	{
 		name: 'New Source',
 		description: 'Create a new source',
 		icon: 'add',
-		onExecute: () => {},
+		onExecute: () => {
+			m.route.set('/sources/create');
+		},
 	},
 	{
 		name: 'Open Dashboard',
@@ -38,13 +44,17 @@ export const Operations: SpotlightOperation[] = [
 		name: 'Open Settings',
 		description: 'Open the settings',
 		icon: 'settings',
-		onExecute: () => {},
+		onExecute: () => {
+			m.route.set('/settings');
+		},
 	},
 	{
 		name: 'Open Workshop',
 		description: 'Open the workshop',
 		icon: 'cart',
-		onExecute: () => {},
+		onExecute: () => {
+			m.route.set('/workshop');
+		},
 	},
 	{
 		name: 'Open Devices',
@@ -58,12 +68,16 @@ export const Operations: SpotlightOperation[] = [
 		name: 'Open Data Sources',
 		description: 'Open the data sources',
 		icon: 'analytics',
-		onExecute: () => {},
+		onExecute: () => {
+			m.route.set('/sources');
+		},
 	},
 	{
 		name: 'Open Generators',
 		description: 'Open the generators',
 		icon: 'switch',
-		onExecute: () => {},
+		onExecute: () => {
+			m.route.set('/generators');
+		},
 	},
 ];

@@ -4,6 +4,7 @@ import { capitalize, debounce } from 'lodash-es';
 
 import Fuse from 'fuse.js';
 
+import guid from 'js/core/guid';
 import store, { FuseSearch } from 'js/core/store';
 
 import Flex from 'js/ui/components/flex';
@@ -31,7 +32,7 @@ const icons = {
 
 export default (): m.Component => {
 	let state: SpotlightState = {
-		id: 'spotlight-' + Math.ceil(Math.random() * 1000000) + '',
+		id: 'spotlight-' + guid(),
 		query: '',
 		selected: -1,
 		result: null,
@@ -186,7 +187,7 @@ export default (): m.Component => {
 			});
 		},
 		view() {
-			return m('div.bg-white.ba.b--black-10.br2', { style: { width: '600px', 'box-shadow': 'rgba(149, 157, 165, 0.2) 0px 8px 24px' } }, [
+			return m('div.bg-white.ba.b--black-10.br2', { style: { width: '600px', 'box-shadow': 'rgba(149, 157, 165, 0.35) 0px 8px 24px' } }, [
 				header(), //
 				m(
 					'div.overflow-auto.' + state.id,

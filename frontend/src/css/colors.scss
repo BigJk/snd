@@ -39,6 +39,9 @@ $colours: ( "primary": #5755d9,
 	.b--col-#{nth($i, 1)} {
 		border-color: nth($i, 2);
 	}
+	.b--col-#{nth($i, 1)}-muted {
+		border-color: transparentize(nth($i, 2), 0.9);
+	}
 }
 
 $primary-color: map.get($colours, "primary");

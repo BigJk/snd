@@ -16,6 +16,9 @@ type ImagesProps = {
 	onChange?: (images: Record<string, string>) => void;
 };
 
+/**
+ * Images component: Upload of images for the editor.
+ */
 export default (): m.Component<ImagesProps> => {
 	let id = guid();
 

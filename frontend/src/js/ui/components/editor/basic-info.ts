@@ -7,8 +7,10 @@ import BasicInfo from 'js/types/basic-info';
 import Input from 'js/ui/spectre/input';
 import TextArea from 'js/ui/spectre/text-area';
 
+import CenterHorizontal from 'js/ui/components/center-horizontal';
 import Flex from 'js/ui/components/flex';
 import HorizontalProperty from 'js/ui/components/horizontal-property';
+import Icon from 'js/ui/components/icon';
 
 import { author, slug } from 'js/ui/validator';
 
@@ -22,6 +24,9 @@ const containerClass = css`
 	max-width: 800px;
 `;
 
+/**
+ * Basic info component: Basic information about the template, generator...
+ */
 export default (): m.Component<BasicInfoProps> => {
 	return {
 		view({ attrs }) {
@@ -63,6 +68,15 @@ export default (): m.Component<BasicInfoProps> => {
 						{ label: 'Slug', description: "A identifier only containing alphanumerical characters and '-'", bottomBorder: true, centered: true },
 						m(Input, { value: attrs.info.slug, onChange: (value) => onChange({ ...attrs.info, slug: slug(value) }) })
 					),
+					//
+					// Name and slug preview
+					m(Flex, { className: '.mt3', items: 'center' }, [
+						m(Icon, { icon: 'arrow-forward', size: 3, className: '.o-50.mr3' }),
+						m('div.pa2.w5.bg-white.ba.b--black-10', [
+							m('div.f6', attrs.info.name), //
+							m('div.f8.text-muted', `${attrs.info.author}/${attrs.info.slug}`),
+						]),
+					]),
 				])
 			);
 		},

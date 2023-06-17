@@ -2,14 +2,15 @@ import m from 'mithril';
 
 import { emmetHTML } from 'emmet-monaco-es';
 import * as monaco from 'monaco-editor';
-// @ts-ignore
-import theme from 'monaco-themes/themes/Github.json';
 
 import guid from 'js/core/guid';
 import type { CompletionFunction } from 'js/core/monaco/completion';
 import * as monacoCompletion from 'js/core/monaco/completion';
+// @ts-ignore
+import theme from 'js/core/monaco/theme.json';
 
-// https://github.com/brijeshb42/monaco-themes/tree/master/themes
+console.log(theme);
+
 monaco.editor.defineTheme('main', theme);
 
 emmetHTML(monaco);

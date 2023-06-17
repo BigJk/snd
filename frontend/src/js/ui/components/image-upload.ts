@@ -1,5 +1,6 @@
 import m from 'mithril';
 
+import * as API from 'js/core/api';
 import guid from 'js/core/guid';
 
 import Button from 'js/ui/spectre/button';
@@ -26,7 +27,7 @@ export default (): m.Component<ImageUploadProps> => {
 					//
 					// Upload from computer
 					m(
-						'label.pointer.db.h-100.w-100.ba.bw1.br2.b--dashed.b--col-primary.bg-black-05',
+						'label.pointer.db.h-100.w-100.ba.bw1.br2.b--dashed.b--col-primary-muted.bg-black-05',
 						{ style: { height: attrs.height ? attrs.height + 'px' : '250px' }, for: id },
 						[
 							m(Flex, { className: '.w-100.h-100', justify: 'center', items: 'center', direction: 'column' }, [
@@ -58,14 +59,29 @@ export default (): m.Component<ImageUploadProps> => {
 					}),
 					//
 					// Divider
-					m(Icon, { icon: 'more', size: 3, className: '.mv3' }),
+					m(Icon, { icon: 'more', size: 3, className: '.mv3.o-50' }),
 					//
 					// Upload from URL
-					m('div.db.h-100.w-100.ba.bw1.br2.b--dashed.b--col-primary.bg-black-05.pa3', [
+					m('div.db.h-100.w-100.ba.bw1.br2.b--dashed.b--col-primary-muted.bg-black-05.pa3', [
 						m('div.tc.mb3.fw5', 'Download from URL'),
 						m(Flex, [
 							m(Input, { className: '.w-100', placeholder: 'https://example.com/image.png', value: url }), //
-							m(Button, { className: '.ml2', intend: 'primary' }, 'Download'),
+							m(
+								Button,
+								{
+									className: '.ml2',
+									intend: 'primary',
+									onClick: () => {
+										if (url.length === 0) return;
+
+										API.exec<string>(API.FETCH_IMAGE, url).then((base) => {
+											if (attrs.onUpload) attrs.onUpload(guid(), base);
+											m.redraw();
+										});
+									},
+								},
+								'Download'
+							),
 						]),
 					]), //
 				])

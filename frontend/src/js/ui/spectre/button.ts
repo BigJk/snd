@@ -6,7 +6,7 @@ import { shell } from 'src/js/electron';
 import Flex from 'js/ui/components/flex';
 
 export type ButtonProps = {
-	onclick?: () => void;
+	onClick?: () => void;
 	intend?: 'primary' | 'success' | 'error' | 'warning' | 'link';
 	size?: 'sm' | 'lg';
 	loading?: boolean;
@@ -47,7 +47,7 @@ export default (): m.Component<ButtonProps> => {
 				finalChildren = m(Flex, { items: 'center', gap: 10 }, children);
 			}
 
-			return m('button' + classes + (attrs.className ?? ''), { onclick: attrs.link ? () => openLink(attrs.link) : attrs.onclick }, finalChildren);
+			return m('button' + classes + (attrs.className ?? ''), { onclick: attrs.link ? () => openLink(attrs.link) : attrs.onClick }, finalChildren);
 		},
 	};
 };

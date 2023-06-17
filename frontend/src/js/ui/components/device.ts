@@ -17,7 +17,7 @@ type DeviceProps = {
 export default (): m.Component<DeviceProps> => {
 	const button = (attrs: DeviceProps) => {
 		if (!attrs.active) {
-			return m(Button, { intend: 'primary', onclick: () => (attrs.onUse ? attrs.onUse(attrs.printer, attrs.endpoint, attrs.type) : null) }, 'Use');
+			return m(Button, { intend: 'primary', onClick: () => (attrs.onUse ? attrs.onUse(attrs.printer, attrs.endpoint, attrs.type) : null) }, 'Use');
 		}
 
 		return m(Button, { intend: 'success', disabled: true }, 'Active');

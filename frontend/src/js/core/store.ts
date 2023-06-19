@@ -7,7 +7,7 @@ import DataSource from 'js/types/data-source';
 import Generator from 'js/types/generator';
 import Printer from 'js/types/printer';
 import PublicList from 'js/types/public-list';
-import Settings from 'js/types/settings';
+import Settings, { createEmpty } from 'js/types/settings';
 import Template from 'js/types/template';
 import * as Version from 'js/types/version';
 
@@ -39,12 +39,12 @@ const toFuseSearch = (
 };
 
 type Store = {
-	settings: Settings | null;
-	templates: Template[] | null;
-	generators: Generator[] | null;
-	sources: DataSource[] | null;
+	settings: Settings;
+	templates: Template[];
+	generators: Generator[];
+	sources: DataSource[];
 	printer: Record<string, Printer>;
-	publicLists: PublicList[] | null;
+	publicLists: PublicList[];
 	version: {
 		current: Version.LocalVersion | null;
 		latest: Version.NewVersion | null;
@@ -53,12 +53,12 @@ type Store = {
 };
 
 const initialState: Store = {
-	settings: null,
-	templates: null,
-	generators: null,
-	sources: null,
+	settings: createEmpty(),
+	templates: [],
+	generators: [],
+	sources: [],
 	printer: {},
-	publicLists: null,
+	publicLists: [],
 	version: {
 		current: null,
 		latest: null,

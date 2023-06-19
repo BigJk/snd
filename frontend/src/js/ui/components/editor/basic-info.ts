@@ -3,7 +3,7 @@ import m from 'mithril';
 import { css } from 'goober';
 
 import BasicInfo from 'js/types/basic-info';
-import EditorHeader from 'js/ui/components/editor/header'
+import EditorHeader from 'js/ui/components/view-layout/property-header'
 
 import type {PropertyAnnotation} from "js/ui/components/view-layout/property-edit";
 import PropertyEdit from "js/ui/components/view-layout/property-edit";

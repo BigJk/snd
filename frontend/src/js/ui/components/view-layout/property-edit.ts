@@ -16,6 +16,7 @@ export type PropertyAnnotation = {
 	description?: string;
 	validator?: (value: any) => any;
 	largeInput?: boolean;
+	customComponent?: m.Children;
 };
 
 export type PropertyEditProps<T> = {
@@ -24,11 +25,8 @@ export type PropertyEditProps<T> = {
 	annotations?: Record<string, PropertyAnnotation>;
 	onChange?: (properties: T) => void;
 	hide?: string[];
+	show?: string[];
 };
-
-const containerClass = css`
-	max-width: 800px;
-`;
 
 /**
  * Basic info component: Basic information about the template, generator...
@@ -43,8 +41,9 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => {
 			return m(
 				Flex,
 				{ className: '.w-100', direction: 'column', items: 'center' },
-				m(`div.w-100.lh-copy.${containerClass}`, [
+				m(`div.w-100.lh-copy`, [
 					...map(attrs.properties, (value, key) => {
+						if (attrs.show && !attrs.show.includes(key)) return null;
 						if (attrs.hide && attrs.hide.includes(key)) return null;
 
 						let label = key;
@@ -52,11 +51,23 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => {
 						let largeInput = false;
 						let validator = (value: any) => value;
 
-						if (attrs.annotations && attrs.annotations[key]) {
-							label = attrs.annotations[key].label ?? key;
-							description = attrs.annotations[key].description ?? '';
-							largeInput = attrs.annotations[key].largeInput ?? false;
-							validator = attrs.annotations[key].validator ?? validator;
+						if (attrs.annotations) {
+							let annotation = attrs.annotations[key];
+
+							if (annotation) {
+								label = attrs.annotations[key].label ?? key;
+								description = attrs.annotations[key].description ?? '';
+								largeInput = attrs.annotations[key].largeInput ?? false;
+								validator = attrs.annotations[key].validator ?? validator;
+
+								if (annotation.customComponent) {
+									return m(
+										HorizontalProperty,
+										{ label: label, description: description, bottomBorder: true, centered: true },
+										attrs.annotations[key].customComponent
+									);
+								}
+							}
 						}
 
 						switch (typeof value) {
@@ -75,8 +86,15 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => {
 									m(TextArea, { value: value.toString(), onChange: (value) => onChange({ ...attrs.properties, [key]: validator(value) }) })
 								);
 							case 'number':
-								// TODO: add number input
-								break;
+								return m(
+									HorizontalProperty,
+									{ label: label, description: description, bottomBorder: true, centered: true },
+									m(Input, {
+										value: value.toString(),
+										useBlur: true,
+										onChange: (value) => onChange({ ...attrs.properties, [key]: parseInt(validator(value)) }),
+									})
+								);
 							case 'boolean':
 								return m(
 									HorizontalProperty,

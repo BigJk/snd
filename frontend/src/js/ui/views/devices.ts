@@ -38,7 +38,7 @@ export default (): m.Component => {
 				default: 'Filter by type...',
 				keys: Object.keys(store.value.printer).filter((k) => Object.keys(store.value.printer[k]).length > 0),
 				selected: null,
-				oninput: (e) => {
+				onInput: (e) => {
 					state.typeFilter = e.value;
 				},
 			})

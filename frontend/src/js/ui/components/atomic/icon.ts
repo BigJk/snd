@@ -4,6 +4,7 @@ type IconProps = {
 	className?: string;
 	size?: number;
 	icon: string;
+	onClick?: () => void;
 };
 
 /**
@@ -12,7 +13,12 @@ type IconProps = {
 export default (): m.Component<IconProps> => {
 	return {
 		view({ attrs }) {
-			return m(`i.ion.ion-md-${attrs.icon}.f${attrs.size ?? 6}${attrs.className ?? ''}`);
+			return m(`i.ion.ion-md-${attrs.icon}.f${attrs.size ?? 6}${attrs.onClick ? '.pointer.dim' : ''}${attrs.className ?? ''}`, {
+				onclick: () => {
+					if (!attrs.onClick) return;
+					attrs.onClick();
+				},
+			});
 		},
 	};
 };

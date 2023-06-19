@@ -21,5 +21,28 @@ type Settings = {
 	enableSync: boolean;
 };
 
+export function createEmpty() {
+	return {
+		printerType: 'unknown',
+		printerEndpoint: '',
+		printerWidth: 384,
+		commands: {
+			explicitInit: false,
+			cut: false,
+			forceStandardMode: false,
+			linesBefore: 0,
+			linesAfter: 0,
+			splitPrinting: false,
+			splitHeight: 0,
+			splitDelay: 0,
+		},
+		stylesheets: [],
+		spellcheckerLanguages: [],
+		packageRepos: [],
+		syncKey: '',
+		enableSync: false,
+	};
+}
+
 export default Settings;
 export { Commands };

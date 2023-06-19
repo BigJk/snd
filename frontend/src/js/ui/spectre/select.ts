@@ -16,19 +16,19 @@ type SelectProps = {
 	default?: string;
 	noDefault?: boolean;
 	width?: number;
-	oninput: (e: OnInputEvent) => void;
+	onInput: (e: OnInputEvent) => void;
 };
 
 type SelectState = {
 	dropdown: any | null;
-	oninput: (e: any) => void;
+	onInput: (e: any) => void;
 	open: boolean;
 };
 
 export default (): m.Component<SelectProps> => {
 	const state: SelectState = {
 		dropdown: null,
-		oninput: (e) => {},
+		onInput: (e) => {},
 		open: false,
 	};
 
@@ -39,7 +39,7 @@ export default (): m.Component<SelectProps> => {
 			m(
 				'select.form-select',
 				{
-					oninput: vnode.attrs.oninput,
+					oninput: vnode.attrs.onInput,
 					style: { width: '31px' },
 				},
 				[
@@ -77,8 +77,8 @@ export default (): m.Component<SelectProps> => {
 	// we need to update the oninput value on create and update of component,
 	// otherwise we miss updates to this callback.
 	const setOnInput = (vnode: m.Vnode<SelectProps, {}>) => {
-		state.oninput = (value) => {
-			vnode.attrs.oninput({ target: { value: value }, value });
+		state.onInput = (value) => {
+			vnode.attrs.onInput({ target: { value: value }, value });
 			m.redraw();
 		};
 	};
@@ -107,7 +107,7 @@ export default (): m.Component<SelectProps> => {
 						// instead of passing vnode.attrs.oninput to onSelect we need to redirect
 						// it to the stored oninput, otherwise this onSelect would be fixed to the
 						// callback that was set in oncreate.
-						state.oninput(value);
+						state.onInput(value);
 					},
 					onOpen: () => (state.open = true),
 					onClose: () => (state.open = false),

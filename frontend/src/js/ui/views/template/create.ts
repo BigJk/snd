@@ -22,6 +22,8 @@ let testState = {
 	},
 };
 
+let images = {};
+
 export default (): m.Component => {
 	return {
 		view(vnode) {
@@ -45,7 +47,7 @@ export default (): m.Component => {
 							icon: 'clipboard',
 							render: () => m(BasicInfo, { info: { name: 'Test', author: 'Test123', slug: 'asdasd', description: 'asdasd', version: ' ' } }),
 						}, //
-						{ title: 'Images', icon: 'images', render: () => m(Images) },
+						{ title: 'Images', icon: 'images', render: () => m(Images, { images: images, onChange: (updated) => (images = updated) }) },
 						{ title: 'Data Sources', icon: 'analytics', render: () => null },
 						{ title: 'Global Config', icon: 'cog', render: () => null },
 						{ title: 'Data Skeleton', icon: 'body', render: () => null },

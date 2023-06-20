@@ -123,7 +123,9 @@ func (s *Server) Start(bind string) error {
 	api := s.e.Group("/api")
 	extern := api.Group("/extern")
 
-	rpc.RegisterBasic(api, s.db)
+	rpc.RegisterVersion(api)
+	rpc.RegisterImageUtilities(api)
+	rpc.RegisterSettings(api, s.db)
 	rpc.RegisterTemplate(api, extern, s.db)
 	rpc.RegisterGenerator(api, extern, s.db)
 	rpc.RegisterEntry(api, s.db)

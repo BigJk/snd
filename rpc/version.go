@@ -3,26 +3,24 @@ package rpc
 import (
 	"encoding/json"
 	"errors"
+	"github.com/BigJk/nra"
+	"github.com/BigJk/snd"
+	"github.com/BigJk/snd/log"
+	"github.com/labstack/echo/v4"
+	"golang.org/x/exp/slices"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"regexp"
-	"strings"
-
-	"github.com/BigJk/nra"
-	"github.com/BigJk/snd"
-	"github.com/BigJk/snd/database"
-	"github.com/BigJk/snd/log"
-	"github.com/labstack/echo/v4"
-	"github.com/vincent-petithory/dataurl"
-	"golang.org/x/exp/slices"
 )
 
+// GitHubCommit represents a GitHub commit.
 type GitHubCommit struct {
 	Sha string `json:"sha"`
 	URL string `json:"url"`
 }
 
+// GitHubTag represents a GitHub tag.
 type GitHubTag struct {
 	Name       string       `json:"name"`
 	ZipballURL string       `json:"zipball_url"`
@@ -31,10 +29,12 @@ type GitHubTag struct {
 	NodeID     string       `json:"node_id"`
 }
 
+// GitHubTags represents a list of GitHub tags.
 type GitHubTags []GitHubTag
 
 var tagNameRegex = regexp.MustCompile(`^v\d+.\d+.\d+`)
 
+// fetchTags fetches all tags from the GitHub API and filters out all tags that don't match vX.X.X pattern.
 func fetchTags() (GitHubTags, error) {
 	if len(snd.GitCommitHash) == 0 {
 		return nil, errors.New("non release build. Skipping latest version fetching")
@@ -71,7 +71,8 @@ func fetchTags() (GitHubTags, error) {
 	return tags, nil
 }
 
-func RegisterBasic(route *echo.Group, db database.Database) {
+// RegisterVersion registers the version rpc endpoints.
+func RegisterVersion(route *echo.Group) {
 	localVersion := struct {
 		BuildTime     string `json:"buildTime"`
 		GitCommitHash string `json:"gitCommitHash"`
@@ -99,14 +100,12 @@ func RegisterBasic(route *echo.Group, db database.Database) {
 		_ = log.Error(err)
 	}
 
+	// getVersion returns the local version.
 	route.POST("/getVersion", echo.WrapHandler(nra.MustBind(func() (interface{}, error) {
 		return localVersion, nil
 	})))
 
-	route.POST("/getSettings", echo.WrapHandler(nra.MustBind(db.GetSettings)))
-	route.POST("/saveSettings", echo.WrapHandler(nra.MustBind(db.SaveSettings)))
-	route.POST("/getLogs", echo.WrapHandler(nra.MustBind(db.GetLogs)))
-
+	// newVersion returns the newest version and if it is newer than the local version.
 	route.POST("/newVersion", echo.WrapHandler(nra.MustBind(func() (interface{}, error) {
 		type resp struct {
 			Tag    *GitHubTag `json:"tag"`
@@ -133,23 +132,5 @@ func RegisterBasic(route *echo.Group, db database.Database) {
 		}
 
 		return resp{&tags[0], localVersion.GitCommitHash == tags[0].Commit.Sha}, nil
-	})))
-
-	route.POST("/fetchImage", echo.WrapHandler(nra.MustBind(func(url string) (string, error) {
-		resp, err := http.Get(url)
-		if err != nil {
-			return "", err
-		}
-
-		if !strings.HasPrefix(resp.Header.Get("Content-Type"), "image/") {
-			return "", errors.New("not a image")
-		}
-
-		data, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return "", err
-		}
-
-		return dataurl.EncodeBytes(data), nil
 	})))
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/BigJk/snd/database/cloud"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -12,7 +13,6 @@ import (
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/database/badger"
-	"github.com/BigJk/snd/database/storm"
 	"github.com/BigJk/snd/printing/cups"
 	"github.com/BigJk/snd/printing/dump"
 	"github.com/BigJk/snd/printing/remote"
@@ -25,60 +25,32 @@ import (
 var serverOptions []server.Option
 var startFunc = startServer
 
+func syncBaseUrl() string {
+	override := os.Getenv("SND_SYNC_BASE_URL")
+	if override != "" {
+		fmt.Println("INFO: overriding sync base url with", override)
+		return override
+	}
+	// TODO: Set default sync base url
+	return ""
+}
+
 func openDatabase() database.Database {
 	db, err := badger.New("./userdata/")
 	if err != nil {
 		panic(err)
 	}
 
-	// Migrate old db to new one
-	if _, err := os.Stat("./data.db"); err == nil {
-		oldDb, err := storm.New("./data.db")
-		if err == nil {
-			fmt.Println("Old database detected. Migrating...")
-
-			templates, _ := oldDb.GetTemplates()
-			for i := range templates {
-				fmt.Println("Copying", templates[i].ID())
-
-				_ = db.SaveTemplate(templates[i].Template)
-
-				entries, _ := oldDb.GetEntries(templates[i].ID())
-				for j := range entries {
-					_ = db.SaveEntry(templates[i].ID(), entries[j])
-				}
+	if settings, err := db.GetSettings(); err == nil {
+		if settings.EnableSync {
+			if err := cloud.CheckKey(syncBaseUrl(), settings.SyncKey); err != nil {
+				fmt.Println("ERROR: could not validate sync key!", err, "=> disabling sync")
+				settings.EnableSync = false
+				_ = db.SaveSettings(settings)
+			} else {
+				fmt.Println("INFO: enabling sync")
+				return cloud.New(syncBaseUrl(), settings.SyncKey, db)
 			}
-
-			sources, _ := oldDb.GetSources()
-			for i := range sources {
-				fmt.Println("Copying", sources[i].ID())
-
-				_ = db.SaveSource(sources[i].DataSource)
-
-				entries, _ := oldDb.GetEntries(sources[i].ID())
-				for j := range entries {
-					_ = db.SaveEntry(sources[i].ID(), entries[j])
-				}
-			}
-
-			generators, _ := oldDb.GetGenerators()
-			for i := range generators {
-				fmt.Println("Copying", generators[i].ID())
-
-				_ = db.SaveGenerator(generators[i])
-			}
-
-			if err := oldDb.Close(); err != nil {
-				fmt.Println("Could not close old database:", err)
-			}
-
-			if err := os.Rename("./data.db", "/data_old.db"); err != nil {
-				fmt.Println("Could not rename old database:", err)
-			}
-
-			_ = db.Sync()
-
-			fmt.Println("Migration done!")
 		}
 	}
 

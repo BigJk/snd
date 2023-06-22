@@ -8,7 +8,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/patrickmn/go-cache"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"time"
@@ -17,26 +16,30 @@ import (
 var rpcCache = cache.New(time.Second*30, time.Minute)
 
 type hijackedResponseWriter struct {
-	io.Writer
-	http.ResponseWriter
+	writer     io.Writer
+	resp       http.ResponseWriter
 	statusCode int
+}
+
+func (resp *hijackedResponseWriter) Header() http.Header {
+	return resp.resp.Header()
 }
 
 func (resp *hijackedResponseWriter) WriteHeader(code int) {
 	resp.statusCode = code
-	resp.ResponseWriter.WriteHeader(code)
+	resp.resp.WriteHeader(code)
 }
 
 func (resp *hijackedResponseWriter) Write(b []byte) (int, error) {
-	return resp.Writer.Write(b)
+	return resp.writer.Write(b)
 }
 
 func (resp *hijackedResponseWriter) Flush() {
-	resp.ResponseWriter.(http.Flusher).Flush()
+	resp.resp.(http.Flusher).Flush()
 }
 
 func (resp *hijackedResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
-	return resp.ResponseWriter.(http.Hijacker).Hijack()
+	return resp.resp.(http.Hijacker).Hijack()
 }
 
 func cacheRpcFunction(expirationTime time.Duration) echo.MiddlewareFunc {
@@ -46,10 +49,11 @@ func cacheRpcFunction(expirationTime time.Duration) echo.MiddlewareFunc {
 				return next(c)
 			}
 
-			req, err := ioutil.ReadAll(c.Request().Body)
+			req, err := io.ReadAll(c.Request().Body)
 			if err != nil {
 				return c.NoContent(http.StatusBadRequest)
 			}
+			c.Request().Body = io.NopCloser(bytes.NewBuffer(req))
 
 			reqHash := fmt.Sprintf("%X", sha256.Sum256(req))
 
@@ -64,9 +68,9 @@ func cacheRpcFunction(expirationTime time.Duration) echo.MiddlewareFunc {
 			buf := &bytes.Buffer{}
 			oldWriter := c.Response().Writer
 			hijacked := &hijackedResponseWriter{
-				Writer:         io.MultiWriter(oldWriter, buf),
-				ResponseWriter: oldWriter,
-				statusCode:     0,
+				writer:     io.MultiWriter(oldWriter, buf),
+				resp:       oldWriter,
+				statusCode: 0,
 			}
 			c.Response().Writer = hijacked
 

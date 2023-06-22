@@ -37,6 +37,7 @@ type Database interface {
 	GetEntry(id string, eid string) (snd.Entry, error)
 	CountEntries(id string) (int, error)
 	SaveEntry(id string, entry snd.Entry) error
+	SaveEntries(id string, entry []snd.Entry) error
 	DeleteEntry(id string, eid string) error
 	DeleteEntries(id string) error
 

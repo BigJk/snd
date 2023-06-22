@@ -140,6 +140,15 @@ func (b *Badger) SaveEntry(id string, entry snd.Entry) error {
 	return setSingle[snd.Entry](b.db, id+EntryConnector+entry.ID, entry)
 }
 
+func (b *Badger) SaveEntries(id string, entries []snd.Entry) error {
+	for i := range entries {
+		if err := setSingle[snd.Entry](b.db, id+EntryConnector+entries[i].ID, entries[i]); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (b *Badger) DeleteEntry(id string, eid string) error {
 	return dropSingle(b.db, id+EntryConnector+eid)
 }

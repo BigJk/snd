@@ -9,8 +9,6 @@ import * as monacoCompletion from 'js/core/monaco/completion';
 // @ts-ignore
 import theme from 'js/core/monaco/theme.json';
 
-console.log(theme);
-
 monaco.editor.defineTheme('main', theme);
 
 emmetHTML(monaco);
@@ -64,8 +62,8 @@ export default (): m.Component<MonacoProps> => {
 				monacoCompletion.unregisterCompletionItemProvider(state.id);
 			}
 		},
-		view({ attrs }) {
-			return m(`div.h-100${attrs.className ?? ''}`, m('div.monaco-container'));
+		view({ attrs, key }) {
+			return m(`div.h-100${attrs.className ?? ''}`, { key }, m('div.monaco-container', { key }));
 		},
 	};
 };

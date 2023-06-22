@@ -21,7 +21,7 @@ type Settings = {
 	enableSync: boolean;
 };
 
-export function createEmpty() {
+export function createEmptySettings() {
 	return {
 		printerType: 'unknown',
 		printerEndpoint: '',

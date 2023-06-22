@@ -1,5 +1,7 @@
 import m from 'mithril';
 
+import { filterChildren } from 'js/ui/util';
+
 type FlexProps = {
 	className?: string;
 	style?: Record<any, any>;
@@ -16,7 +18,7 @@ type FlexProps = {
  */
 export default (): m.Component<FlexProps> => {
 	return {
-		view({ attrs, children }) {
+		view({ attrs, children, key }) {
 			let flexClasses: string = '.flex';
 
 			if (attrs.inline !== undefined && attrs.inline) {
@@ -46,7 +48,11 @@ export default (): m.Component<FlexProps> => {
 				};
 			}
 
-			return m(`div.relative${flexClasses}${attrs.className ?? ''}`, { style: { ...additionalStyles, ...attrs.style } }, children);
+			return m(
+				`div.relative${flexClasses}${attrs.className ?? ''}`,
+				{ key: key, style: { ...additionalStyles, ...attrs.style } },
+				filterChildren(children)
+			);
 		},
 	};
 };

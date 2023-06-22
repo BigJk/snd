@@ -3,11 +3,12 @@ import { flatten } from 'lodash-es';
 import Fuse from 'fuse.js';
 import { create } from 'xoid';
 
+import BasicInfo, { buildId } from 'js/types/basic-info';
 import DataSource from 'js/types/data-source';
 import Generator from 'js/types/generator';
 import Printer from 'js/types/printer';
 import PublicList from 'js/types/public-list';
-import Settings, { createEmpty } from 'js/types/settings';
+import Settings, { createEmptySettings } from 'js/types/settings';
 import Template from 'js/types/template';
 import * as Version from 'js/types/version';
 
@@ -16,6 +17,7 @@ import { Operations, SpotlightOperation } from 'js/core/spotlight-operations';
 
 export type FuseSearch = {
 	type: 'template' | 'generator' | 'source' | 'operation';
+	id?: string;
 	template?: Template;
 	generator?: Generator;
 	source?: DataSource;
@@ -32,8 +34,17 @@ const toFuseSearch = (
 	type: 'template' | 'generator' | 'source' | 'operation',
 	item: Template | Generator | DataSource | SpotlightOperation
 ): FuseSearch => {
+	let id = '';
+	switch (type) {
+		case 'template':
+		case 'generator':
+		case 'source':
+			id = buildId(type, item as BasicInfo);
+	}
+
 	return {
 		type,
+		id,
 		[type]: item,
 	};
 };
@@ -53,7 +64,7 @@ type Store = {
 };
 
 const initialState: Store = {
-	settings: createEmpty(),
+	settings: createEmptySettings(),
 	templates: [],
 	generators: [],
 	sources: [],

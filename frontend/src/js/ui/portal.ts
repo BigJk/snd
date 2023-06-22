@@ -8,12 +8,22 @@ if (target === null) {
 	throw new Error('Could not find portal target');
 }
 
-type Component = m.Component | (() => m.Component);
-
 type SetPortalOptions<T> = {
+	/**
+	 * Additional class name to apply to the portal container.
+	 */
 	className?: string;
+	/**
+	 * Flex items justification.
+	 */
 	justify?: 'start' | 'center' | 'end';
+	/**
+	 * Flex items alignment.
+	 */
 	items?: 'start' | 'center' | 'end';
+	/**
+	 * Attributes to pass to the portal component.
+	 */
 	attributes?: T;
 };
 
@@ -57,6 +67,7 @@ export const setPortal = <T>(portal: (() => m.Component<T>) | null, options?: Se
  */
 export const clearPortal = () => {
 	currentPortal = null;
+	currentPortalOptions = {};
 	m.redraw();
 };
 

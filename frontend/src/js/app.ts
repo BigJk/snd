@@ -43,10 +43,10 @@ store.actions.loadAll().then(() => {
 		'/': Home,
 		'/devices': Devices,
 		'/settings': Settings,
-		'/templates': TemplateAll,
-		'/templates/create': TemplateCreate,
-		'/templates/:id': TemplateSingle,
-		'/templates/:id/edit': TemplateEdit,
+		'/template': TemplateAll,
+		'/template/create': TemplateCreate,
+		'/template/:id': TemplateSingle,
+		'/template/:id/edit': TemplateEdit,
 	});
 
 	document.addEventListener('keydown', (e) => {

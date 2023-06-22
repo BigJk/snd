@@ -42,7 +42,7 @@ export default <T extends Object>(): m.Component<BasicInfoProps<T>> => {
 					m(PropertyEdit<BasicInfo & T>, {
 						properties: attrs.info,
 						onChange: onChange,
-						hide: ['version'],
+						show: ['name', 'description', 'author', 'slug'],
 						annotations: {
 							'name': {
 								label: 'Name',

@@ -1,21 +1,32 @@
 import m from 'mithril';
 
-import Button from 'js/ui/spectre/button';
+import Template from 'js/types/template';
+
+import IconButton from 'js/ui/spectre/icon-button';
 
 import Title from 'js/ui/components/atomic/title';
 import Base from 'js/ui/components/view-layout/base';
 
-export default (): m.Component => {
+type SingleTemplateProps = {
+	id: string;
+};
+
+export default (): m.Component<SingleTemplateProps> => {
+	let state: Template | null = null;
+
 	return {
-		view(vnode) {
+		view({ attrs }) {
 			return m(
 				Base,
 				{
 					title: m(Title, 'Template'),
 					active: 'templates',
 					classNameContainer: '.pa3',
+					rightElement: [
+						m(IconButton, { icon: 'create', size: 'sm', intend: 'primary', onClick: () => m.route.set(`/template/${attrs.id}/edit`) }, 'Edit'),
+					],
 				},
-				m('div', [])
+				null
 			);
 		},
 	};

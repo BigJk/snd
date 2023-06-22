@@ -20,3 +20,19 @@ type Template = BasicInfo & {
 
 export default Template;
 export { TemplateConfig };
+
+export function createEmptyTemplate(): Template {
+	return {
+		name: '',
+		description: '',
+		author: '',
+		slug: '',
+		version: '',
+		printTemplate: '',
+		listTemplate: '',
+		skeletonData: {},
+		images: {},
+		config: [],
+		dataSources: [],
+	};
+}

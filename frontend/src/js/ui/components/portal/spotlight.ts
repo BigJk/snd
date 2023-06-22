@@ -54,7 +54,7 @@ export default (): m.Component => {
 		if (item.item.type === 'operation') {
 			item.item.operation?.onExecute();
 		} else {
-			m.route.set('/' + item.item.type + '/' + item.item[item.item.type]?.slug);
+			m.route.set('/' + item.item.type + '/' + item.item.id);
 		}
 
 		// TODO: This component should not be responsible for this.

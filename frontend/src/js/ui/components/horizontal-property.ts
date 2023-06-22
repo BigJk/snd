@@ -26,10 +26,10 @@ export default (): m.Component<HorizontalPropertyProps> => {
 				{},
 				m(Flex, { className: `.w-100`, justify: 'between', items: attrs.centered ? 'center' : 'start' }, [
 					m('div.lh-copy', [
-						m('div', { className: 'f6 fw6' }, attrs.label), //
-						m('div.text-muted', { className: 'f7 fw4' }, attrs.description),
+						m('div.f6.fw6', attrs.label), //
+						m('div.text-muted.f7.fw4', attrs.description),
 					]), //
-					m(`div.${rightClass}${attrs.rightClassName ?? ''}`, children),
+					m(`div.ml4.flex-shrink-0.${rightClass}${attrs.rightClassName ?? ''}`, children),
 				])
 			);
 		},

@@ -25,6 +25,7 @@ type MonacoProps = {
 
 type MonacoState = {
 	id: string;
+	completion?: CompletionFunction;
 };
 
 export default (): m.Component<MonacoProps> => {
@@ -47,12 +48,15 @@ export default (): m.Component<MonacoProps> => {
 
 			if (attrs.completion) {
 				monacoCompletion.registerCompletionItemProvider(state.id, attrs.completion);
+				state.completion = attrs.completion;
 			}
 		},
 		onupdate({ attrs }) {
-			if (attrs.completion) {
+			// In case the completion function changes, we need to unregister the old one and register the new one.
+			if (attrs.completion && attrs.completion !== state.completion) {
 				monacoCompletion.unregisterCompletionItemProvider(state.id);
 				monacoCompletion.registerCompletionItemProvider(state.id, attrs.completion);
+				state.completion = attrs.completion;
 			}
 		},
 		onremove({ attrs }) {

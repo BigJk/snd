@@ -10,14 +10,15 @@ if (target === null) {
 
 type Component = m.Component | (() => m.Component);
 
-type SetPortalOptions = {
+type SetPortalOptions<T> = {
 	className?: string;
 	justify?: 'start' | 'center' | 'end';
 	items?: 'start' | 'center' | 'end';
+	attributes?: T;
 };
 
-let currentPortalOptions: SetPortalOptions = {};
-let currentPortal: Component | null = null;
+let currentPortalOptions: any = {};
+let currentPortal: any | null = null;
 
 m.mount(target, {
 	view(vnode) {
@@ -34,7 +35,7 @@ m.mount(target, {
 					justify: currentPortalOptions.justify ?? 'center',
 					className: `.h-100${currentPortalOptions.className ?? ''}`,
 				},
-				m(currentPortal)
+				m(currentPortal, currentPortalOptions.attributes ?? {})
 			)
 		);
 	},
@@ -45,7 +46,7 @@ m.mount(target, {
  * @param portal The portal content.
  * @param options Portal options.
  */
-export const setPortal = (portal: Component | null, options?: SetPortalOptions) => {
+export const setPortal = <T>(portal: (() => m.Component<T>) | null, options?: SetPortalOptions<T>) => {
 	currentPortalOptions = options ?? {};
 	currentPortal = portal;
 	m.redraw();

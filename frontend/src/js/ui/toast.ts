@@ -4,13 +4,29 @@ import m from 'mithril';
 
 import Toastify from 'toastify-js';
 
+const dialogBackgrounds = {
+	NEUTRAL: 'linear-gradient(to right, #48AFF0, #137CBD)',
+	RED: 'linear-gradient(to right, red, darkred)',
+	SUCCESS: 'linear-gradient(to right, #00b09b, #96c93d)',
+};
+
 export function success(message: string) {
 	Toastify({
 		text: message,
 		duration: 3000,
 		gravity: 'top',
 		position: 'center',
-		backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+		backgroundColor: dialogBackgrounds.SUCCESS,
+	}).showToast();
+}
+
+export function neutral(message: string) {
+	Toastify({
+		text: message,
+		duration: 3000,
+		gravity: 'top',
+		position: 'center',
+		backgroundColor: dialogBackgrounds.NEUTRAL,
 	}).showToast();
 }
 
@@ -21,15 +37,9 @@ export function error(message: string) {
 		duration: 3000,
 		gravity: 'top',
 		position: 'center',
-		backgroundColor: 'linear-gradient(to right, red, darkred)',
+		backgroundColor: dialogBackgrounds.RED,
 	}).showToast();
 }
-
-const dialogBackgrounds = {
-	NEUTRAL: 'linear-gradient(to right, #48AFF0, #137CBD)',
-	RED: 'linear-gradient(to right, red, darkred)',
-	SUCCESS: 'linear-gradient(to right, #00b09b, #96c93d)',
-};
 
 type DialogToastState = {
 	toast: any;

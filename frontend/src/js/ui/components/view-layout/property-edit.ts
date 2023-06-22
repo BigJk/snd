@@ -5,15 +5,18 @@ import { map } from 'lodash-es';
 import { css } from 'goober';
 
 import Checkbox from 'js/ui/spectre/checkbox';
+import IconButton from 'js/ui/spectre/icon-button';
 import Input from 'js/ui/spectre/input';
 import TextArea from 'js/ui/spectre/text-area';
 
+import Icon from 'js/ui/components/atomic/icon';
 import HorizontalProperty from 'js/ui/components/horizontal-property';
 import Flex from 'js/ui/components/layout/flex';
 
 export type PropertyAnnotation = {
 	label?: string;
 	description?: string;
+	arrayType?: 'string' | 'number';
 	validator?: (value: any) => any;
 	largeInput?: boolean;
 	customComponent?: m.Children;
@@ -43,7 +46,10 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => {
 				{ className: '.w-100', direction: 'column', items: 'center' },
 				m(`div.w-100.lh-copy`, [
 					...map(attrs.properties, (value, key) => {
+						// Only show properties that are in the show array
 						if (attrs.show && !attrs.show.includes(key)) return null;
+
+						// Skip hidden properties
 						if (attrs.hide && attrs.hide.includes(key)) return null;
 
 						let label = key;
@@ -51,6 +57,7 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => {
 						let largeInput = false;
 						let validator = (value: any) => value;
 
+						// Check if the property has an annotation
 						if (attrs.annotations) {
 							let annotation = attrs.annotations[key];
 
@@ -100,6 +107,67 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => {
 									HorizontalProperty,
 									{ label: label, description: description, bottomBorder: true, centered: true },
 									m(Checkbox, { checked: value, onChange: (checked) => onChange({ ...attrs.properties, [key]: checked }) })
+								);
+							case 'object':
+								let addButton = m(
+									Flex,
+									{ justify: 'end' },
+									m(
+										IconButton,
+										{
+											icon: 'add',
+											intend: 'link',
+											size: 'sm',
+											onClick: () => {
+												// @ts-ignore
+												let newArray = value ? [...value] : []; // TODO: Investigate why typescript is complaining about this
+												switch (attrs.annotations?.[key]?.arrayType) {
+													case 'string':
+														newArray.push('');
+														break;
+													case 'number':
+														newArray.push(0);
+														break;
+												}
+
+												onChange({ ...attrs.properties, [key]: newArray });
+											},
+										},
+										'Add'
+									)
+								);
+
+								if (value != null && !Array.isArray(value)) return addButton;
+
+								return m(
+									HorizontalProperty,
+									{ label: label, description: description, bottomBorder: true, centered: false },
+									m('div', [
+										(value ?? []).map((item, index) => {
+											return m(Flex, { items: 'center', className: '.mb2' }, [
+												m(Input, {
+													value: item.toString(),
+													onChange: (text) => {
+														// @ts-ignore
+														let newArray = [...value];
+														newArray[index] = validator(text);
+														onChange({ ...attrs.properties, [key]: newArray });
+													},
+												}),
+												m(Icon, {
+													className: '.ml2.col-error',
+													icon: 'trash',
+													onClick: () => {
+														// @ts-ignore
+														let newArray = [...value];
+														newArray.splice(index, 1);
+														onChange({ ...attrs.properties, [key]: newArray });
+													},
+												}),
+											]);
+										}),
+										addButton,
+									])
 								);
 						}
 					}),

@@ -8,7 +8,7 @@ type LoaderProps = {
 export default (): m.Component<LoaderProps> => {
 	return {
 		view({ attrs }) {
-			return m(`div.loading${attrs.big ? '' : '.loading-lg'}${attrs.className ?? ''}`, {}, []);
+			return m(`div.loading${attrs.big ? '.loading-lg' : ''}${attrs.className ?? ''}`, {}, []);
 		},
 	};
 };

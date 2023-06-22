@@ -6,9 +6,9 @@ import * as API from 'js/core/api';
 
 import Loader from 'js/ui/spectre/loader';
 
-import Title from 'js/ui/components/atomic/title';
 import TemplateEditor from 'js/ui/components/editor/template';
 import Base from 'js/ui/components/view-layout/base';
+import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
 
 import { error } from 'js/ui/toast';
 
@@ -30,7 +30,14 @@ export default (): m.Component<EditTemplateProps> => {
 		view(vnode) {
 			return m(
 				Base,
-				{ title: m(Title, 'Edit Template'), active: 'templates' },
+				{
+					title: m(Breadcrumbs, {
+						confirm: true,
+						confirmText: 'Are you sure you want to leave this page? Changes are not saved.',
+						items: [{ link: '/templates', label: 'Templates' }, { label: 'Edit: ' + state?.name }],
+					}),
+					active: 'templates',
+				},
 				state
 					? m(TemplateEditor, {
 							template: state,

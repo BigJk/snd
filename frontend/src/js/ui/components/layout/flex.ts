@@ -11,7 +11,7 @@ type FlexProps = {
 	wrap?: 'wrap' | 'nowrap';
 	inline?: boolean;
 	gap?: number;
-};
+} & m.Attributes;
 
 /**
  * Flex component: renders a flex container.
@@ -50,7 +50,7 @@ export default (): m.Component<FlexProps> => {
 
 			return m(
 				`div.relative${flexClasses}${attrs.className ?? ''}`,
-				{ key: key, style: { ...additionalStyles, ...attrs.style } },
+				{ ...attrs, key: key, style: { ...additionalStyles, ...attrs.style } },
 				filterChildren(children)
 			);
 		},

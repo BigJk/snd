@@ -7,6 +7,7 @@ import SideMenu from 'js/ui/components/view-layout/side-menu';
 import { filterChildren } from 'js/ui/util';
 
 type SideMenuPagerItem = {
+	id?: string;
 	title: string;
 	icon: string;
 	render: () => m.Children;
@@ -14,6 +15,7 @@ type SideMenuPagerItem = {
 
 type SideMenuPagerProps = {
 	items: SideMenuPagerItem[];
+	onChange?: (id: string) => void;
 };
 
 type SideMenuPagerState = {
@@ -26,7 +28,7 @@ export default (): m.Component<SideMenuPagerProps> => {
 	};
 
 	const getRender = (attrs: SideMenuPagerProps) => {
-		let index = attrs.items.findIndex((item) => item.title === state.active);
+		let index = attrs.items.findIndex((item) => item.title === state.active || item.id === state.active);
 		if (index === -1) return null;
 		return attrs.items[index].render();
 	};
@@ -49,12 +51,18 @@ export default (): m.Component<SideMenuPagerProps> => {
 							className: '.w-100',
 							items: attrs.items.map((item): SideMenuItem => {
 								return {
-									id: item.title,
+									id: item.id ?? item.title,
 									title: item.title,
 									icon: item.icon,
 									active: item.title === state.active,
 									onClick: (id?: string) => {
-										if (id) state.active = id;
+										if (id) {
+											state.active = id;
+
+											if (attrs.onChange) {
+												attrs.onChange(id);
+											}
+										}
 									},
 								};
 							}),

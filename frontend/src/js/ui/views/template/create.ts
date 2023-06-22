@@ -18,6 +18,7 @@ export default (): m.Component => {
 				{
 					title: m(Breadcrumbs, {
 						confirm: true,
+						confirmText: 'Are you sure you want to leave this page? Changes are not saved.',
 						items: [{ link: '/templates', label: 'Templates' }, { label: 'Create Template' }],
 					}),
 					rightElement: [

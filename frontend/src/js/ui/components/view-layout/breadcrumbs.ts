@@ -14,6 +14,7 @@ type BreadcrumbItem = {
 
 export type BreadcrumbProps = {
 	confirm?: boolean;
+	confirmText?: string;
 	items: BreadcrumbItem[];
 };
 
@@ -22,12 +23,12 @@ export default (): m.Component<BreadcrumbProps> => {
 		return flatMap(arr, (item, index) => (index === arr.length - 1 ? [item] : [item, obj]));
 	};
 
-	const onClick = (item: BreadcrumbItem, confirm?: boolean) => {
+	const onClick = (item: BreadcrumbItem, confirm?: boolean, confirmText?: string) => {
 		if (!item.link) return;
 
 		let link = item.link;
 		if (confirm) {
-			dialogWarning('Are you sure you want to navigate?').then((result) => {
+			dialogWarning(confirmText ?? 'Are you sure you want to navigate?').then((result) => {
 				m.route.set(link);
 			});
 		} else {
@@ -48,7 +49,11 @@ export default (): m.Component<BreadcrumbProps> => {
 								return m('span.b', item.label);
 							}
 
-							return m('span.pointer.underline-hover.col-primary.fw5', { onclick: () => onClick(item, attrs.confirm) }, item.label);
+							return m(
+								'span.pointer.underline-hover.col-primary.fw5',
+								{ onclick: () => onClick(item, attrs.confirm, attrs.confirmText) },
+								item.label
+							);
 						}),
 						m(Icon, { icon: 'arrow-dropright', className: '.mh2.o-50' })
 					)

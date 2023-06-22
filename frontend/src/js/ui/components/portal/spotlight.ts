@@ -153,7 +153,9 @@ export default (): m.Component => {
 			// Register key up and down events to navigate the results and enter, also scroll down to the element if it's not visible.
 			window.addEventListener('keydown', (e) => {
 				if (e.key == 'ArrowDown') {
-					state.selected = Math.min(state.selected + 1, state.result!.length - 1);
+					if (!state.result) return;
+
+					state.selected = Math.min(state.selected + 1, state.result.length - 1);
 
 					// Scroll down only if the element is not visible.
 					let container = vnode.dom.querySelector('div:nth-child(2)') as HTMLElement;

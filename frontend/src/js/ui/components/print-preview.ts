@@ -2,10 +2,12 @@ import m from 'mithril';
 
 import { startsWith } from 'lodash-es';
 
-import * as API from 'js/core/api';
 // @ts-ignore
-import { inElectron } from 'js/core/electron';
+import { inElectron } from 'js/electron';
+
+import * as API from 'js/core/api';
 import guid from 'js/core/guid';
+import { settings } from 'js/core/store';
 
 const pre = `
 <!DOCTYPE html>
@@ -42,11 +44,12 @@ const post = `
 </html>
 `;
 
-type PrintPreviewProps = {
+export type PrintPreviewProps = {
+	className?: string;
 	content: string;
-	width?: number;
-	scale?: number;
+	width: number;
 	overflow?: string;
+	devTools?: boolean;
 };
 
 type PrintPreviewState = {
@@ -164,6 +167,10 @@ export default (): m.Component<PrintPreviewProps> => {
 		}
 	};
 
+	const calcScale = (width: number) => {
+		return width / settings.value.printerWidth;
+	};
+
 	return {
 		oncreate({ attrs, dom }) {
 			let frame = dom.querySelector(targetElement);
@@ -171,7 +178,7 @@ export default (): m.Component<PrintPreviewProps> => {
 				return;
 			}
 
-			let scale = attrs.scale ?? 1.0;
+			let scale = calcScale(attrs.width);
 			let overflow = attrs.overflow ?? 'overlay';
 			if (inElectron) {
 				frame.addEventListener('dom-ready', () => updateContent(frame as HTMLElement, attrs.content, scale, overflow), {
@@ -188,7 +195,7 @@ export default (): m.Component<PrintPreviewProps> => {
 				return;
 			}
 
-			updateContent(frame as HTMLElement, attrs.content, attrs.scale ?? 1.0, attrs.overflow ?? 'overlay');
+			updateContent(frame as HTMLElement, attrs.content, calcScale(attrs.width), attrs.overflow ?? 'overlay');
 		},
 		onremove(vnode) {
 			if (inElectron) {
@@ -198,8 +205,30 @@ export default (): m.Component<PrintPreviewProps> => {
 				window.removeEventListener('message', onIFrameMessage);
 			}
 		},
-		view(vnode) {
-			return m('div', {}, []);
+		view({ attrs }) {
+			let width = attrs.width + 'px';
+
+			let frame: m.Children;
+			if (inElectron) {
+				frame = m('webview.h-100', {
+					src: 'data:text/html,',
+					disablewebsecurity: true,
+					webpreferences: 'allowRunningInsecureContent, javascript=yes',
+					style: { width: width },
+				});
+			} else {
+				frame = m('iframe.h-100', {
+					style: { width: width },
+					name: 'result',
+					sandbox: 'allow-scripts allow-same-origin',
+					allowFullScreen: 'false',
+					allowpaymentrequest: 'false',
+					frameBorder: '0',
+					src: '',
+				});
+			}
+
+			return m(`div.relative${attrs.className ?? ''}`, [frame]);
 		},
 	};
 };

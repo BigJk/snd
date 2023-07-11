@@ -15,19 +15,31 @@ $colours: ( "primary": #5755d9,
   background: linear-gradient($direction, $color-stops);
 }
 
+:root {
+	@each $i in $colours {
+		--col-#{nth($i, 1)}: #{nth($i, 2)};
+		--col-#{nth($i, 1)}-lighten: #{lighten(nth($i, 2), 10%)};
+		--col-#{nth($i, 1)}-darken: #{darken(nth($i, 2), 10%)};
+		--col-#{nth($i, 1)}-muted: #{transparentize(nth($i, 2), 0.9)};
+	}
+}
+
 @each $i in $colours {
 	.bg-#{nth($i, 1)} {
 		background: nth($i, 2);
 	}
 	.bg-#{nth($i, 1)}-lighten {
-		background: lighten(nth($i, 2), 10%) !important;
+		background: lighten(nth($i, 2), 10%);
+	}
+	.bg-#{nth($i, 1)}-darken {
+		background: darken(nth($i, 2), 10%);
 	}
 	.bg-#{nth($i, 1)}-muted {
-		background: transparentize(nth($i, 2), 0.9) !important;
+		background: transparentize(nth($i, 2), 0.9);
 	}
 	.hover-bg-#{nth($i, 1)}-lighten:hover {
         transition: 200ms ease-in-out;
-		background: lighten(nth($i, 2), 10%) !important;
+		background: lighten(nth($i, 2), 10%);
 	}
 	.hover-bg-#{nth($i, 1)}:hover {
         transition: 200ms ease-in-out;
@@ -41,6 +53,9 @@ $colours: ( "primary": #5755d9,
 	}
 	.b--col-#{nth($i, 1)}-muted {
 		border-color: transparentize(nth($i, 2), 0.9);
+	}
+	.b--col-#{nth($i, 1)}-darken {
+		border-color: darken(nth($i, 2), 10%);
 	}
 }
 

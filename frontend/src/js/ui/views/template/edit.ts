@@ -43,6 +43,7 @@ export default (): m.Component<EditTemplateProps> => {
 							template: state,
 							onChange: (template) => {
 								state = template;
+								m.redraw();
 							},
 					  })
 					: m(Loader)

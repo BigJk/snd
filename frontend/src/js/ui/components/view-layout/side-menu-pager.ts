@@ -14,6 +14,7 @@ type SideMenuPagerItem = {
 };
 
 type SideMenuPagerProps = {
+	className?: string;
 	items: SideMenuPagerItem[];
 	onChange?: (id: string) => void;
 };
@@ -41,7 +42,7 @@ export default (): m.Component<SideMenuPagerProps> => {
 		view({ attrs, key }) {
 			return m(
 				Flex,
-				{ className: '.overflow-auto.h-100', key: key },
+				{ className: `.overflow-auto.h-100${attrs.className ?? ''}`, key: key },
 				filterChildren([
 					m(
 						'div.br.b--black-10.flex-shrink-0.pa2.bg-white',
@@ -54,7 +55,7 @@ export default (): m.Component<SideMenuPagerProps> => {
 									id: item.id ?? item.title,
 									title: item.title,
 									icon: item.icon,
-									active: item.title === state.active,
+									active: item.title === state.active || item.id === state.active,
 									onClick: (id?: string) => {
 										if (id) {
 											state.active = id;

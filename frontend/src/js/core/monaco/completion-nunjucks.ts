@@ -10,7 +10,11 @@ const buildLabel = (context: any, path: string) => {
 	let label = `${path}`;
 	switch (typeof value) {
 		case 'string':
-			label += ` (${value})`;
+			if (value.length > 10) {
+				label += ` (${value.substring(0, 10)}...)`;
+			} else {
+				label += ` (${value})`;
+			}
 			break;
 		case 'number':
 			label += ` (${value})`;

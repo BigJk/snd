@@ -9,6 +9,8 @@ import * as API from 'js/core/api';
 import guid from 'js/core/guid';
 import { settings } from 'js/core/store';
 
+import Loader from 'js/ui/spectre/loader';
+
 const pre = `
 <!DOCTYPE html>
 <html lang="en">
@@ -48,6 +50,7 @@ export type PrintPreviewProps = {
 	className?: string;
 	content: string;
 	width: number;
+	loading?: boolean;
 	overflow?: string;
 	devTools?: boolean;
 };
@@ -228,7 +231,10 @@ export default (): m.Component<PrintPreviewProps> => {
 				});
 			}
 
-			return m(`div.relative${attrs.className ?? ''}`, [frame]);
+			return m(`div.dib.relative${attrs.className ?? ''}`, [
+				frame,
+				state.loading || attrs.loading === true ? m(Loader, { className: '.absolute.left-0.top-0.ma3' }) : null,
+			]);
 		},
 	};
 };

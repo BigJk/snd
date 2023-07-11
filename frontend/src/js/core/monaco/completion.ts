@@ -1,4 +1,4 @@
-import { flatten, map } from 'lodash-es';
+import { flatten, map, uniqBy } from 'lodash-es';
 
 import * as monaco from 'monaco-editor';
 
@@ -20,7 +20,13 @@ const completionItemProvider = (language: string) => {
 			context: monaco.languages.CompletionContext,
 			token: monaco.CancellationToken
 		): monaco.languages.ProviderResult<monaco.languages.CompletionList> {
-			let result = flatten(map(registeredCompletionItemProviders, (provider) => provider(language, model, position, context, token)));
+			// TODO: using uniqBy here is a hack to prevent duplicate suggestions. We should fix this properly.
+			// There is probably still something wrong with the way we register the completion item providers.
+
+			let result = uniqBy(
+				flatten(map(registeredCompletionItemProviders, (provider) => provider(language, model, position, context, token))),
+				'label'
+			);
 
 			return {
 				suggestions: result,

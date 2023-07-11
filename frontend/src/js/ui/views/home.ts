@@ -33,7 +33,7 @@ export default (): m.Component => {
 					m(Flex, { className: '.mt3.mb3', items: 'start' }, [
 						m(BoxVersion, {
 							className: '.mr3',
-							newVersion: false,
+							newVersion: !store.value.version.latest?.newest ?? false,
 							newVersionTag: store.value.version.latest?.tag.name ?? '',
 						}),
 						m('div', m(DiscordWidget, { className: 'w-100', height: 400 })),

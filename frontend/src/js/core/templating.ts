@@ -1,10 +1,11 @@
 import hash from 'object-hash';
 
+import Settings from 'js/types/settings';
+
 // @ts-ignore
 import TemplatingWorker from 'js/workers/templating-worker?worker';
 
 import dither from 'js/core/dither';
-import store from 'js/core/store';
 
 type WorkerJob = {
 	hashed: string;
@@ -73,13 +74,29 @@ export const parseError = (e: any): TemplateError | null => {
 };
 
 /**
+ * State object for template rendering.
+ */
+export type TemplateState = {
+	it: any;
+	config: any;
+	settings: Settings;
+	images: Record<string, string>;
+};
+
+/**
+ * State object for generator rendering.
+ */
+export type GeneratorState = {
+	settings: Settings;
+	images: Record<string, string>;
+};
+
+/**
  * Render template with given state.
  * @param template Template string.
  * @param state State object.
  */
-export const render = (template: string, state: any): Promise<string> => {
-	state.settings = store.value.settings;
-
+export const render = (template: string, state: TemplateState | GeneratorState): Promise<string> => {
 	return new Promise((resolve, reject) => {
 		// check if data is present in cache
 		let hashed = hash(template) + hash(state);

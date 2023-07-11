@@ -23,10 +23,10 @@ export { TemplateConfig };
 
 export function createEmptyTemplate(): Template {
 	return {
-		name: '',
+		name: 'Your Template Name',
 		description: '',
-		author: '',
-		slug: '',
+		author: 'username',
+		slug: 'your-template-name',
 		version: '',
 		printTemplate: '',
 		listTemplate: '',

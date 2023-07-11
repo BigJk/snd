@@ -4,6 +4,7 @@ $control-size: 1.55rem;
 $font-size: 0.7rem;
 
 @import "node_modules/spectre.css/src/spectre";
+@import "./spectre.scss";
 
 /*
     Toastify
@@ -11,77 +12,6 @@ $font-size: 0.7rem;
 
 .toastify {
     position: absolute;
-}
-
-/*
-    Spectre
-*/
-
-.btn {
-    border-radius: 0.25rem;
-    border: none;
-    padding-left: 0.7rem;
-    padding-right: 0.7rem;
-    padding-top: 0.17rem;
-}
-
-.btn-sm {
-    border-radius: 0.25rem;
-    border: none;
-    padding-left: 0.7rem !important;
-    padding-right: 0.7rem !important;
-}
-
-.modal-body {
-    padding-top: 0 !important;
-}
-
-.form-no-margin .form-group {
-    margin-bottom: 0;
-}
-
-/*
-    Code Mirror
-*/
-
-.CodeMirror {
-    font-size: 13px;
-    line-height: 1.0;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-}
-
-.syntax-error {
-    position: relative;
-    border-bottom: 2px dashed red;
-    background-color: rgba(255, 0, 0, 0.2);
-    z-index: 999 !important;
-}
-
-.syntax-error:hover {
-    cursor: help;
-    position: relative;
-}
-
-.syntax-error[error]:hover:after {
-    content: attr(error);
-    position: absolute;
-    left: 0;
-    top: calc(-100% - 6px);
-    width: max-content;
-    padding: 3px;
-    border: 1px solid rgba(0,0,0,0.1);
-    background-color: #fff;
-}
-
-.cm-nunjucks-variable, .cm-nunjucks-tag {
-    padding: 0 !important;
-    border-radius: 0 !important;
-    font-weight: 800;
 }
 
 /*
@@ -132,6 +62,10 @@ body {
             user-select: none;
 }
 
+.no-mouse-events {
+    pointer-events: none;
+}
+
 .tab-m0 {
     margin-top: 0;
     margin-bottom: 0;
@@ -145,7 +79,12 @@ body {
     min-height: 450px;
 }
 
+.bg-paper {
+  background-color: #fcfcff;
+}
+
 .bg-black-05 { background-color: rgba( 0, 0, 0, .05 ); }
+.bg-black-01 { background-color: rgba( 0, 0, 0, .01 ); }
 .hover-bg-black-05:hover { background-color: rgba( 0, 0, 0, .05 ); }
 .hover-bg-black-05:focus { background-color: rgba( 0, 0, 0, .05 ); }
 

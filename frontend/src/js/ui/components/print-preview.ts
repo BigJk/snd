@@ -208,7 +208,7 @@ export default (): m.Component<PrintPreviewProps> => {
 				window.removeEventListener('message', onIFrameMessage);
 			}
 		},
-		view({ attrs }) {
+		view({ attrs, key }) {
 			let width = attrs.width + 'px';
 
 			let frame: m.Children;
@@ -231,7 +231,7 @@ export default (): m.Component<PrintPreviewProps> => {
 				});
 			}
 
-			return m(`div.dib.relative${attrs.className ?? ''}`, [
+			return m(`div.dib.relative${attrs.className ?? ''}`, { key }, [
 				frame,
 				state.loading || attrs.loading === true ? m(Loader, { className: '.absolute.left-0.top-0.ma3' }) : null,
 			]);

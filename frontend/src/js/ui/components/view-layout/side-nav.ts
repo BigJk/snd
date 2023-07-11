@@ -14,17 +14,17 @@ const pages = {
 	templates: {
 		name: 'Templates',
 		icon: 'list-box',
-		url: 'templates',
+		url: 'template',
 	},
 	generators: {
 		name: 'Generators',
 		icon: 'switch',
-		url: 'generators',
+		url: 'generator',
 	},
 	dataSources: {
 		name: 'Data Sources',
 		icon: 'analytics',
-		url: 'data-sources',
+		url: 'data-source',
 	},
 	workshop: {
 		name: 'Workshop',

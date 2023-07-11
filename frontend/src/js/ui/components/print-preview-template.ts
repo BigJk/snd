@@ -47,8 +47,9 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 		onupdate({ attrs }) {
 			updateLastRendered(attrs);
 		},
-		view({ attrs }) {
+		view({ attrs, key }) {
 			return m(PrintPreview, {
+				key,
 				className: attrs.className,
 				content: lastRendered,
 				width: attrs.width,

@@ -28,7 +28,7 @@ export default (): m.Component<SingleTemplateProps> => {
 				Base,
 				{
 					title: m(Breadcrumbs, {
-						items: [{ link: '/templates', label: 'Templates' }, { label: state ? state.name : m(Loader, { className: '.mh2' }) }],
+						items: [{ link: '/template', label: 'Templates' }, { label: state ? state.name : m(Loader, { className: '.mh2' }) }],
 					}),
 					active: 'templates',
 					classNameContainer: '.pa3',

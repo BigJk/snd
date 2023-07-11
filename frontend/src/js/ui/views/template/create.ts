@@ -19,7 +19,7 @@ export default (): m.Component => {
 					title: m(Breadcrumbs, {
 						confirm: true,
 						confirmText: 'Are you sure you want to leave this page? Changes are not saved.',
-						items: [{ link: '/templates', label: 'Templates' }, { label: 'Create Template' }],
+						items: [{ link: '/template', label: 'Templates' }, { label: 'Create Template' }],
 					}),
 					rightElement: [
 						m(IconButton, { icon: 'add', size: 'sm', intend: 'success' }, 'Save'), //

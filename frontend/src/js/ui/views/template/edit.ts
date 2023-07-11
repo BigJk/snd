@@ -34,7 +34,7 @@ export default (): m.Component<EditTemplateProps> => {
 					title: m(Breadcrumbs, {
 						confirm: true,
 						confirmText: 'Are you sure you want to leave this page? Changes are not saved.',
-						items: [{ link: '/templates', label: 'Templates' }, { label: 'Edit: ' + state?.name }],
+						items: [{ link: '/template', label: 'Templates' }, { label: 'Edit: ' + state?.name }],
 					}),
 					active: 'templates',
 				},

@@ -13,7 +13,7 @@ export const Operations: SpotlightOperation[] = [
 		description: 'Create a new template',
 		icon: 'add',
 		onExecute: () => {
-			m.route.set('/templates/create');
+			m.route.set('/template/create');
 		},
 	},
 	{
@@ -38,6 +38,14 @@ export const Operations: SpotlightOperation[] = [
 		icon: 'home',
 		onExecute: () => {
 			m.route.set('/');
+		},
+	},
+	{
+		name: 'Open Templates',
+		description: 'Open the templates page',
+		icon: 'list-box',
+		onExecute: () => {
+			m.route.set('/template');
 		},
 	},
 	{

@@ -4,6 +4,8 @@ import { groupBy, map } from 'lodash-es';
 
 import { css } from 'goober';
 
+import { buildId } from 'js/types/basic-info';
+
 import { templates } from 'js/core/store';
 
 import Button from 'js/ui/spectre/button';
@@ -49,7 +51,7 @@ export default (): m.Component => {
 				m(
 					'div',
 					map(groupBy(templates.value, 'author'), (templates, author) => {
-						return m('div.bg-white.ph3.mb3.ba.b--black-10', [
+						return m('div.bg-white.br2.ph3.mb3.ba.b--black-10', [
 							m('div.mv3.bb.b--black-10.pb3', [
 								m('div.text-muted.f8.fw5.ttu.mb1', 'Templates by'), //
 								m(Title, { className: '' }, author), //
@@ -58,21 +60,29 @@ export default (): m.Component => {
 								Grid,
 								{ className: '.mb3', minWidth: '350px', maxWidth: '1fr' },
 								templates.map((template) =>
-									m(Flex, { className: `.pointer.${templateElementStyle}` }, [
-										m(PrintPreviewTemplate, {
-											className: '.template.pointer.no-mouse-events.bg-black-05.ph1.ba.b--black-10',
-											template: template,
-											width: 150,
-										}),
-										m(
-											'div.info.bg-black-01.w-100.bt.br.bb.b--black-05.lh-copy',
-											m('div.ph2.pv1', [
-												m('div.f6.fw5', template.name), //
-												m('div.f8.ttu.fw5.text-muted.mb2.pb2.bb.b--black-05', `By ${template.author}`), //
-												m('div.f8.fw5', template.description), //
-											])
-										),
-									])
+									m(
+										'div',
+										{
+											onclick: () => {
+												m.route.set(`/templates/${buildId('template', template)}`);
+											},
+										},
+										m(Flex, { className: `.pointer.${templateElementStyle}` }, [
+											m(PrintPreviewTemplate, {
+												className: '.template.pointer.no-mouse-events.bg-black-05.ph1.ba.b--black-10',
+												template: template,
+												width: 150,
+											}),
+											m(
+												'div.info.bg-black-01.w-100.bt.br.bb.b--black-05.lh-copy',
+												m('div.ph2.pv1', [
+													m('div.f6.fw5', template.name), //
+													m('div.f8.ttu.fw5.text-muted.mb2.pb2.bb.b--black-05', `By ${template.author}`), //
+													m('div.f8.fw5.overflow-ellipsis', template.description), //
+												])
+											),
+										])
+									)
 								)
 							),
 						]);

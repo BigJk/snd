@@ -129,6 +129,12 @@ If you want to see what printers were already tested, which settings they need, 
   <img src="https://contrib.rocks/image?repo=BigJk/snd" />
 </a>
 
+## Thanks to JetBrains
+
+This Project is supported with a JetBrains License through the [Open Source Support Program](https://www.jetbrains.com/community/opensource).
+
+<img width="140" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" alt="JetBrains Logo (Main) logo.">
+
 ## Credits
 
 Icons used in the Sales & Dungeons Logo were made by [Smashicons](https://www.flaticon.com/authors/smashicons), [Good Ware](https://www.flaticon.com/authors/good-ware) from [www.flaticon.com](http://www.flaticon.com)

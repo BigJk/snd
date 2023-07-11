@@ -13,7 +13,7 @@ With Sales & Dungeons you can create highly customizable handouts, quick referen
 Most Thermal Printer are small in size and can be taken with you and kept right at the gaming table. Use-cases range from printing out magic items, spells
 or a letter that the group found to little character sheets of your players to use as DM note. The possibilities are nearly endless!
 
-[Printer Setup](https://github.com/BigJk/snd/wiki/Printer-Setup) • [Tested Printer](https://github.com/BigJk/snd/wiki/Printer-Settings) • [Wiki](https://github.com/BigJk/snd/wiki)
+[Printer Setup](https://sales-and-dungeons.app/docs/printer/setup/) • [Tested Printer](https://sales-and-dungeons.app/docs/printer/models) • [Wiki](https://sales-and-dungeons.app/docs/intro)
 
 **Important:** If you have trouble getting this to work it's best to drop by our [Discord](https://discord.gg/5MUZEjc).
 
@@ -37,7 +37,7 @@ or a letter that the group found to little character sheets of your players to u
   - CUPS (Linux, Mac)
   - Serial
 - Import & Export templates and data sources
-- Fast access to external [data sources](https://github.com/BigJk/snd/wiki/Data-Sources) like Open5e (instant access to SRD monsters, spells and more)
+- Fast access to external [data sources](https://sales-and-dungeons.app/docs/data-source/) like Open5e (instant access to SRD monsters, spells and more)
 - Import data from other sources:
    - CSV
    - [FoundryVTT](https://foundryvtt.com/) Modules
@@ -95,7 +95,7 @@ In general the rule of thumb is:
 - Most epson thermal printer obviously support it
 - A lot of older Serial printer (like Metapace T-1) also support it
 
-More specific information about tested printers can be found in the wiki: [Printer-Settings](https://github.com/BigJk/snd/wiki/Printer-Settings)
+More specific information about tested printers can be found in the wiki: [Printer-Settings](https://sales-and-dungeons.app/docs/printer/models)
 
 ## How It Works
 
@@ -121,7 +121,7 @@ to the "draw image" command of the printer.
 
 ## Printers, Templating & Building
 
-If you want to see what printers were already tested, which settings they need, how the templates work or how you can build Sales & Dungeons yourself please visit the [**wiki**](https://github.com/BigJk/snd/wiki).
+If you want to see what printers were already tested, which settings they need, how the templates work or how you can build Sales & Dungeons yourself please visit the [**wiki**](https://sales-and-dungeons.app/docs/intro).
 
 ## Thanks to all contributors ❤
 

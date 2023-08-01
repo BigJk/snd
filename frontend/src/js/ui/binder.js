@@ -15,4 +15,9 @@ export default {
 		set(base, path, e.target.checked);
 		callback?.(e.target.checked);
 	},
+	dropdown: (base, path, callback) => (e) => {
+		let val = e.target.value;
+		set(base, path, val);
+		callback?.(val);
+	}
 };

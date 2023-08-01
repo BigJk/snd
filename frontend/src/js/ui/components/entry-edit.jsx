@@ -6,6 +6,8 @@ import { render } from '/js/core/templating';
 import ImageDataURI from '/js/ui/components/image-data-uri';
 import Input from '/js/ui/components/input';
 import SplitView from '/js/ui/components/split-view';
+import Types from '/js/ui/components/config/types';
+import MultipleOptions from '/js/ui/components/config/multiple-options';
 
 import binder from '/js/ui/binder';
 
@@ -98,21 +100,39 @@ export default () => {
 							)}
 						</div>
 					);
-				}
+				} else if (!isNum && get(state.template.skeletonData, curPath).indexOf('!DROPDOWN') === 0) {
 
+					return (
+						<div>
+							<label className='form-label'>{startCase(camelCase(name))}</label>
+							<select className='form-input' onchange={binder.dropdown(state.parsedData, curPath, updateRender)}>
+								{map(obj.slice(10).split('=')[0].split(','), (e) => (
+									<option value={e}>{e}</option>
+								))}
+							</select>
+						</div>
+					);
+				}
 				return (
 					<div className='form-group mw-50 mr3'>
 						<label className='form-label'>{startCase(camelCase(name))}</label>
-						{isNum ? (
-							<input type='text' className='form-input' value={obj} oninput={binder.inputNumber(state.parsedData, curPath, updateRender)} />
+						{isNum || obj.toString().startsWith('!NUMBER=') ? (
+							<input type='text' className='form-input' value={obj.toString().startsWith('!NUMBER=') ? parseInt(obj.split("=")[1]): obj} oninput={binder.inputNumber(state.parsedData, curPath, updateRender)} />
 						) : (
+							obj.toString().startsWith('!TEXTAREA') ? (
 							<textarea
 								className='form-input'
 								placeholder={startCase(camelCase(name))}
-								value={obj}
+								value={obj.toString().startsWith('!TEXTAREA=') ? obj.split("=")[1]: obj}
 								rows='3'
 								oninput={binder.inputString(state.parsedData, curPath, updateRender)}
-							/>
+							/>) : (
+								<Input
+								className='form-input'
+								placeholder={startCase(camelCase(name))}
+								value={obj.toString().startsWith('!TEXT=') ? obj.split("=")[1]: obj}
+								oninput={binder.inputString(state.parsedData, curPath, updateRender)}
+							/>)
 						)}
 					</div>
 				);

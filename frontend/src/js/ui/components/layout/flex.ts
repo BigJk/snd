@@ -41,18 +41,11 @@ export default (): m.Component<FlexProps> => {
 				flexClasses += `.flex-${attrs.wrap}`;
 			}
 
-			let additionalStyles = {};
 			if (attrs.gap !== undefined) {
-				additionalStyles = {
-					gap: `${attrs.gap}px`,
-				};
+				flexClasses += `.flex-gap-${attrs.gap}`;
 			}
 
-			return m(
-				`div.relative${flexClasses}${attrs.className ?? ''}`,
-				{ ...attrs, key: key, style: { ...additionalStyles, ...attrs.style } },
-				filterChildren(children)
-			);
+			return m(`div.relative${flexClasses}${attrs.className ?? ''}`, { ...attrs, key: key, style: { ...attrs.style } }, filterChildren(children));
 		},
 	};
 };

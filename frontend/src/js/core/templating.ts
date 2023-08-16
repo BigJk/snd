@@ -95,8 +95,9 @@ export type GeneratorState = {
  * Render template with given state.
  * @param template Template string.
  * @param state State object.
+ * @param enableDither Enable dithering.
  */
-export const render = (template: string, state: TemplateState | GeneratorState): Promise<string> => {
+export const render = (template: string, state: TemplateState | GeneratorState, enableDither = true): Promise<string> => {
 	return new Promise((resolve, reject) => {
 		// check if data is present in cache
 		let hashed = hash(template) + hash(state);
@@ -116,6 +117,6 @@ export const render = (template: string, state: TemplateState | GeneratorState):
 		};
 
 		// post message (round-robin style) to some worker
-		workers[workerSelect++ % workers.length].postMessage({ id, template: template + dither, state });
+		workers[workerSelect++ % workers.length].postMessage({ id, template: template + (enableDither ? dither : ''), state });
 	});
 };

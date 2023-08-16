@@ -37,6 +37,10 @@ $colours: ( "primary": #5755d9,
 	.bg-#{nth($i, 1)}-muted {
 		background: transparentize(nth($i, 2), 0.9);
 	}
+	.hover-bg-#{nth($i, 1)}-muted:hover {
+		transition: 200ms ease-in-out;
+		background: transparentize(nth($i, 2), 0.9);
+	}
 	.hover-bg-#{nth($i, 1)}-lighten:hover {
         transition: 200ms ease-in-out;
 		background: lighten(nth($i, 2), 10%);

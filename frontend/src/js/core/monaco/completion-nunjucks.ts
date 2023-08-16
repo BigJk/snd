@@ -38,7 +38,11 @@ export const createNunjucksCompletionProvider = (context: any): CompletionFuncti
 	let contextFieldPaths = (context: any, path: string) => {
 		if (typeof context === 'object') {
 			for (let key in context) {
-				contextFieldPaths(context[key], path === '' ? key : path + '.' + key);
+				if (key.includes('.')) {
+					contextFieldPaths(context[key], path === '' ? key : path + '["' + key + '"]');
+				} else {
+					contextFieldPaths(context[key], path === '' ? key : path + '.' + key);
+				}
 			}
 		} else {
 			contextFields.push(path);

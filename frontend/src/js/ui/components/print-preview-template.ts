@@ -22,10 +22,11 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 	let lastRendered = '';
 
 	const updateLastRendered = debounce((attrs: PrintPreviewTemplateProps) => {
-		if (lastProps !== null && isEqual(lastProps.template, attrs.template)) return;
+		if (lastProps !== null && isEqual(lastProps.template, attrs.template) && isEqual(lastProps.it, attrs.it)) return;
 
 		lastProps = attrs;
 		loading = true;
+		m.redraw();
 
 		render(attrs.template.printTemplate, {
 			it: attrs.it ?? attrs.template.skeletonData,

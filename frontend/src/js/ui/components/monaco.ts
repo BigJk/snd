@@ -19,6 +19,7 @@ type MonacoProps = {
 	value: string;
 	onChange?: (value: string) => void;
 	completion?: CompletionFunction;
+	wordWrap?: 'on' | 'off' | 'wordWrapColumn' | 'bounded';
 };
 
 type MonacoState = {
@@ -37,6 +38,7 @@ export default (): m.Component<MonacoProps> => {
 				value: attrs.value,
 				language: attrs.language,
 				automaticLayout: true,
+				wordWrap: attrs.wordWrap ?? 'off',
 				theme: 'main',
 			});
 
@@ -50,12 +52,15 @@ export default (): m.Component<MonacoProps> => {
 			}
 		},
 		onupdate({ attrs }) {
+			// Only relevant if the completion function changes. Might not be needed atm.
+			/*
 			// In case the completion function changes, we need to unregister the old one and register the new one.
 			if (attrs.completion && attrs.completion !== state.completion) {
 				monacoCompletion.unregisterCompletionItemProvider(state.id);
 				monacoCompletion.registerCompletionItemProvider(state.id, attrs.completion);
 				state.completion = attrs.completion;
 			}
+			*/
 		},
 		onremove({ attrs }) {
 			if (attrs.completion) {

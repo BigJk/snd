@@ -91,6 +91,7 @@ export default (): m.Component<TemplateEditorProps> => {
 										language: 'json',
 										value: JSON.stringify(attrs.template.skeletonData, null, 2),
 										className: '.flex-grow-1',
+										wordWrap: 'on',
 										onChange: (value) => {
 											try {
 												attrs.onChange({ ...attrs.template, skeletonData: JSON.parse(value) });

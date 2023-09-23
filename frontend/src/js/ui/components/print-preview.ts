@@ -8,8 +8,11 @@ import { inElectron } from 'js/electron';
 import * as API from 'js/core/api';
 import guid from 'js/core/guid';
 import { settings } from 'js/core/store';
+import { containsAi } from 'js/core/templating';
 
 import Loader from 'js/ui/spectre/loader';
+
+const PADDING = 15;
 
 const pre = `
 <!DOCTYPE html>
@@ -17,27 +20,37 @@ const pre = `
   <title> </title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
-        margin: 0;
-    }
+		html, body {
+			margin: 0;
+			padding: 0;
+			border: 0;
+			vertical-align: baseline;
+		}
+		article, aside, details, figcaption, figure, 
+		footer, header, hgroup, menu, nav, section {
+			display: block;
+		}
+		body {
+			line-height: 1;
+		}
   
   	::-webkit-scrollbar {
-    	width: 0;
-	}
-	
-	::-webkit-scrollbar-track {
-		background: #f1f1f1;
-	}
-	
-	::-webkit-scrollbar-thumb {
-		background: #c2c2c2;
-	}
-	
-	::-webkit-scrollbar-thumb:hover {
-		background: #d1d1d1;
-	}
+				width: 0;
+		}
+		
+		::-webkit-scrollbar-track {
+			background: #f1f1f1;
+		}
+		
+		::-webkit-scrollbar-thumb {
+			background: #c2c2c2;
+		}
+		
+		::-webkit-scrollbar-thumb:hover {
+			background: #d1d1d1;
+		}
   </style>
-  <body style="padding: 15px; overflow-y: {{OVERFLOW}}; zoom: {{ZOOM}};">
+  <body style="padding: ${PADDING}px; overflow-y: {{OVERFLOW}}; zoom: {{ZOOM}};">
     <div id="content">`;
 
 const post = `
@@ -59,6 +72,7 @@ type PrintPreviewState = {
 	id: string;
 	loading: boolean;
 	lastContent: string;
+	enableAi: boolean;
 };
 
 export default (): m.Component<PrintPreviewProps> => {
@@ -66,6 +80,7 @@ export default (): m.Component<PrintPreviewProps> => {
 		id: guid(),
 		loading: false,
 		lastContent: '',
+		enableAi: false,
 	};
 
 	let updateContent = (frame: HTMLElement, content: string, scale: number, overflow: string) => {
@@ -208,8 +223,8 @@ export default (): m.Component<PrintPreviewProps> => {
 				window.removeEventListener('message', onIFrameMessage);
 			}
 		},
-		view({ attrs, key }) {
-			let width = attrs.width + 'px';
+		view({ attrs, key, children }) {
+			let width = attrs.width + PADDING * 2 + 'px';
 
 			let frame: m.Children;
 			if (inElectron) {
@@ -234,6 +249,7 @@ export default (): m.Component<PrintPreviewProps> => {
 			return m(`div.dib.relative${attrs.className ?? ''}`, { key }, [
 				frame,
 				state.loading || attrs.loading === true ? m(Loader, { className: '.absolute.left-0.top-0.ma3' }) : null,
+				children,
 			]);
 		},
 	};

@@ -60,18 +60,43 @@ type TemplateError = {
 /**
  * Parse error message from template engine.
  * @param e Error object.
+ * @param isGenerator Is the error coming from a generator.
  */
-export const parseError = (e: any): TemplateError | null => {
+export const parseError = (e: any, isGenerator?: boolean): TemplateError | null => {
 	let match = /.*\[Line (\d+), Column (\d+)\].*\n[ \t]*(.*)$/gm.exec(e.message);
 	if (match) {
 		return {
-			line: parseInt(match[1]),
+			line: parseInt(match[1]) - (isGenerator ? rngScriptLines : 0),
 			column: parseInt(match[2]) + 1,
 			error: match[3],
 		};
 	}
 	return null;
 };
+
+// Add a seedable rng + dice roller to the template
+// PRNG: https://github.com/davidbau/seedrandom
+// Dice Roller: https://dice-roller.github.io/documentation/
+//
+// TODO: include it locally
+const rngScript = (seed: any) => `
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+		<script src="https://unpkg.com/mathjs@9.3.2/lib/browser/math.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/random-js@2.1.0/dist/random-js.umd.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@dice-roller/rpg-dice-roller@5.2.1/lib/umd/bundle.min.js"></script>
+		<script>
+			window.random = new Math.seedrandom('${seed}');
+			
+			rpgDiceRoller.NumberGenerator.generator.engine = {
+			  next () {
+				return Math.abs(window.random.int32());
+			  },
+			};
+			
+			window.dice = new rpgDiceRoller.DiceRoller();
+		</script>
+`;
+const rngScriptLines = rngScript(0).split('\n').length - 1;
 
 /**
  * State object for template rendering.
@@ -88,7 +113,12 @@ export type TemplateState = {
  */
 export type GeneratorState = {
 	settings: Settings;
+	config: any;
 	images: Record<string, string>;
+};
+
+export type GlobalState = {
+	enableAi?: boolean;
 };
 
 /**
@@ -97,11 +127,15 @@ export type GeneratorState = {
  * @param state State object.
  * @param enableDither Enable dithering.
  */
-export const render = (template: string, state: TemplateState | GeneratorState, enableDither = true): Promise<string> => {
+export const render = (
+	template: string,
+	state: (TemplateState & GlobalState) | (GeneratorState & GlobalState),
+	enableDither = true
+): Promise<string> => {
 	return new Promise((resolve, reject) => {
 		// check if data is present in cache
 		let hashed = hash(template) + hash(state);
-		if (cache[hashed]) {
+		if ((!containsAi(template) || (containsAi(template) && !state.enableAi)) && cache[hashed]) {
 			console.log('templating: cache hit');
 			resolve(cache[hashed]);
 			return;
@@ -113,10 +147,23 @@ export const render = (template: string, state: TemplateState | GeneratorState, 
 			hashed,
 			resolve,
 			reject,
-			timeout: setTimeout(() => reject('timeout'), 2000),
+			timeout: setTimeout(() => reject('timeout'), state.enableAi ? 120000 : 2000),
 		};
 
+		let additional = '';
+		if (state.config?.seed) {
+			additional = rngScript(state.config.seed ?? 'test-seed');
+		}
+
 		// post message (round-robin style) to some worker
-		workers[workerSelect++ % workers.length].postMessage({ id, template: template + (enableDither ? dither : ''), state });
+		workers[workerSelect++ % workers.length].postMessage({ id, template: additional + template + (enableDither ? dither : ''), state });
 	});
+};
+
+/**
+ * Check if template contains AI commands.
+ * @param template Template string.
+ */
+export const containsAi = (template: string) => {
+	return template.includes('ai') && template.includes('endai') && template.includes('user');
 };

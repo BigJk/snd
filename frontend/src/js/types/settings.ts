@@ -19,6 +19,10 @@ type Settings = {
 	packageRepos: string[];
 	syncKey: string;
 	enableSync: boolean;
+	enableAi: boolean;
+	aiApiKey: string;
+	aiProvider: string;
+	aiModel: string;
 };
 
 export function createEmptySettings() {

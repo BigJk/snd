@@ -1,9 +1,11 @@
 import m from 'mithril';
 
+import { buildId } from 'js/types/basic-info';
 import Template from 'js/types/template';
 
 import * as API from 'js/core/api';
 
+import IconButton from 'js/ui/spectre/icon-button';
 import Loader from 'js/ui/spectre/loader';
 
 import TemplateEditor from 'js/ui/components/editor/template';
@@ -34,8 +36,32 @@ export default (): m.Component<EditTemplateProps> => {
 					title: m(Breadcrumbs, {
 						confirm: true,
 						confirmText: 'Are you sure you want to leave this page? Changes are not saved.',
-						items: [{ link: '/template', label: 'Templates' }, { label: 'Edit: ' + state?.name }],
+						items: [
+							{ link: '/template', label: 'Templates' },
+							{ link: `/template/${state ? buildId('template', state) : ''}`, label: state ? state.name : m(Loader, { className: '.mh2' }) },
+							{ label: 'Edit' },
+						],
 					}),
+					rightElement: [
+						m(
+							IconButton,
+							{
+								icon: 'add',
+								size: 'sm',
+								intend: 'success',
+								onClick: () => {
+									if (!state) return;
+									API.exec<void>(API.SAVE_TEMPLATE, state)
+										.then(() => {
+											if (!state) return;
+											m.route.set(`/template/${buildId('template', state)}`);
+										})
+										.catch(error);
+								},
+							},
+							'Save'
+						), //
+					],
 					active: 'templates',
 				},
 				state

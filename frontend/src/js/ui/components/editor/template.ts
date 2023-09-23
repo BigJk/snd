@@ -13,6 +13,7 @@ import Images from 'js/ui/components/editor/images';
 import Flex from 'js/ui/components/layout/flex';
 import Monaco from 'js/ui/components/monaco';
 import PrintPreview from 'js/ui/components/print-preview';
+import PrintPreviewTemplate from 'js/ui/components/print-preview-template';
 import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
 
 type TemplateEditorProps = {
@@ -24,6 +25,7 @@ type TemplateEditorState = {
 	loading: boolean;
 	lastRendered: string;
 	selectedMenu: string;
+	config: Record<string, any>;
 };
 
 export default (): m.Component<TemplateEditorProps> => {
@@ -31,31 +33,10 @@ export default (): m.Component<TemplateEditorProps> => {
 		loading: false,
 		lastRendered: '',
 		selectedMenu: 'basic-info',
+		config: {}, // TODO: add config page
 	};
 
-	const updateLastRendered = debounce((attrs: TemplateEditorProps) => {
-		state.loading = true;
-		render(attrs.template.printTemplate, {
-			it: attrs.template.skeletonData,
-			settings: settings.value,
-			images: attrs.template.images,
-		})
-			.then((html) => {
-				if (html === state.lastRendered) return;
-
-				state.lastRendered = html;
-				m.redraw();
-			})
-			.finally(() => (state.loading = false));
-	}, 1000);
-
 	return {
-		oninit({ attrs }) {
-			updateLastRendered(attrs);
-		},
-		onupdate({ attrs }) {
-			updateLastRendered(attrs);
-		},
 		view({ attrs }) {
 			return [
 				m(Flex, { className: '.h-100.w-100' }, [
@@ -139,11 +120,11 @@ export default (): m.Component<TemplateEditorProps> => {
 							},
 						],
 					}),
-					m(PrintPreview, {
-						className: '.flex-shrink-0.bl.b--black-10.ph2.pt2.bg-paper',
+					m(PrintPreviewTemplate, {
+						className: '.flex-shrink-0.bl.b--black-10.bg-paper',
 						width: 350,
-						content: state.lastRendered,
-						loading: state.loading,
+						template: attrs.template,
+						it: attrs.template.skeletonData,
 					}),
 				]),
 			];

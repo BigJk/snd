@@ -29,6 +29,9 @@ const containerClass = css`
 
 export default (): m.Component => {
   let settingsCopy: Settings = { ...settings.value };
+  let aiModels: string[] = []
+
+  console.log(settingsCopy)
 
   const onChangeSettings = (updated: Settings) => {
     settingsCopy = { ...settingsCopy, ...updated };
@@ -45,6 +48,13 @@ export default (): m.Component => {
     settings.set(settingsCopy);
   };
 
+  const fetchAiModels = () => {
+    API.exec<string[]>(API.AI_OPEN_ROUTER_MODELS).then((models) => {
+      aiModels = models
+      m.redraw()
+    }).catch(error)
+  }
+
   const syncToCloud = () => {
     setPortal(FullscreenLoader, {
       attributes: {
@@ -54,8 +64,8 @@ export default (): m.Component => {
     API.exec(API.SYNC_LOCAL_TO_CLOUD).then(() => {
       success("Synced to cloud! Reloading data...");
       store.actions.loadAll().then(() => {
-        success("Reloaded data!")
-      })
+        success("Reloaded data!");
+      });
     }).catch(error).finally(clearPortal);
   };
 
@@ -71,6 +81,9 @@ export default (): m.Component => {
   };
 
   return {
+    oninit() {
+      fetchAiModels()
+    },
     view() {
       return m(
         Base,
@@ -229,7 +242,50 @@ export default (): m.Component => {
             description: "Force a sync of cloud data to the local data. If you stop wanting to sync this will download all your data from the cloud.",
             bottomBorder: true,
             centered: true
-          }, m(Button, { intend: "error", onClick: syncFromCloud }, "Start Sync"))
+          }, m(Button, { intend: "error", onClick: syncFromCloud }, "Start Sync")),
+          //
+          // AI
+          m(PropertyHeader, {
+            className: ".mt3",
+            title: "AI Tools",
+            description: "Enhance generators with AI (experimental)",
+            icon: "planet"
+          }), //
+          m(PropertyEdit<Settings>, {
+            properties: settingsCopy,
+            annotations: {
+              enableAi: {
+                label: "Enable",
+                description: "Enable or disable AI"
+              },
+              aiApiKey: {
+                label: "API Key",
+                description: "The API key for the AI service"
+              }
+            },
+            show: ["enableAi", "aiApiKey"],
+            onChange: onChangeSettings
+          } as PropertyEditProps<Settings>),
+          m(HorizontalProperty, {
+            label: "Provider",
+            description: "The AI provider to use",
+            centered: true,
+            bottomBorder: true
+          }, m(Select, {
+            selected: settingsCopy.aiProvider, keys: ["OpenRouter.ai"], onInput: (e) => {
+              settingsCopy = { ...settingsCopy, aiProvider: e.value };
+            }
+          })),
+          aiModels.length === 0 ? null : m(HorizontalProperty, {
+            label: "Model",
+            description: "The AI model to use",
+            centered: true,
+            bottomBorder: true
+          }, m(Select, {
+            selected: settingsCopy.aiModel, keys: aiModels, onInput: (e) => {
+              settingsCopy = { ...settingsCopy, aiModel: e.value };
+            }
+          })),
         ])))
       );
     }

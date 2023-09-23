@@ -68,6 +68,10 @@ export const GET_PRINTER = 'getPrinter';
 export const SYNC_CLOUD_TO_LOCAL = 'syncCloudToLocal';
 export const SYNC_LOCAL_TO_CLOUD = 'syncLocalToCloud';
 
+// AI
+export const AI_GENERATE = 'aiPrompt';
+export const AI_OPEN_ROUTER_MODELS = 'aiOpenRouterModels';
+
 // Misc function
 export const FETCH_IMAGE = 'fetchImage';
 export const PREVIEW_CACHE = 'previewCache';

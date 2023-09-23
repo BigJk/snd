@@ -89,6 +89,11 @@
   background-color: #0D1B2A;
 }
 
+.break-word {
+  word-break: break-word;
+  word-wrap: break-word;
+}
+
 @-webkit-keyframes rotating /* Safari and Chrome */ {
   from {
     -webkit-transform: rotate(0deg);

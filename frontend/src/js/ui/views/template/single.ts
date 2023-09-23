@@ -11,14 +11,15 @@ import { render } from 'js/core/templating';
 
 import Button from 'js/ui/spectre/button';
 import IconButton from 'js/ui/spectre/icon-button';
+import Input from 'js/ui/spectre/input';
 import Loader from 'js/ui/spectre/loader';
 
 import Icon from 'js/ui/components/atomic/icon';
 import Tooltip from 'js/ui/components/atomic/tooltip';
 import Flex from 'js/ui/components/layout/flex';
-import PrintPreviewTemplate from 'js/ui/components/print-preview-template';
 import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
+import SidebarPrintPage from 'js/ui/components/view-layout/sidebar-print-page';
 
 const PER_PAGE = 10;
 
@@ -30,7 +31,6 @@ type SingleTemplateState = {
 	template: Template | null;
 	entries: Entry[];
 	selectedEntry: Entry | null;
-	tab: 'entries' | 'config' | 'advanced-filter';
 	renderCache: Record<string, string>;
 	page: number;
 };
@@ -40,7 +40,6 @@ export default (): m.Component<SingleTemplateProps> => {
 		template: null,
 		entries: [],
 		selectedEntry: null,
-		tab: 'entries',
 		renderCache: {},
 		page: 0,
 	};
@@ -80,8 +79,20 @@ export default (): m.Component<SingleTemplateProps> => {
 		return state.entries.slice(page * PER_PAGE, (page + 1) * PER_PAGE);
 	};
 
-	const leftElement = (icon: string, label: string, active: boolean, onClick: () => void) => {
-		return m(Tooltip, { content: label, placement: 'right' }, [m(Icon, { icon, size: 5, onClick, className: active ? '.text-primary' : '' })]);
+	const maxPage = () => {
+		return Math.floor(state.entries.length / PER_PAGE);
+	};
+
+	const nextPage = () => {
+		if (state.page === Math.floor(state.entries.length / PER_PAGE)) return;
+		state.page++;
+		ensureRenderCache(getPage(state.page));
+	};
+
+	const prevPage = () => {
+		if (state.page === 0) return;
+		state.page--;
+		ensureRenderCache(getPage(state.page));
 	};
 
 	const entryElement = (entry: Entry) => {
@@ -99,7 +110,10 @@ export default (): m.Component<SingleTemplateProps> => {
 					m(`div`, {}, [
 						m('div.f8.text-muted', entry.id), //
 						m('div.f6.fw5', entry.name),
-						m(`div${state.renderCache[entry.id] ? '.mt2' : ''}`, m.trust(state.renderCache[entry.id] ?? '')),
+						m(
+							`div${state.renderCache[entry.id] ? '.mt2' : ''}`,
+							state.renderCache[entry.id] !== undefined ? m.trust(state.renderCache[entry.id]) : m('div.dib.pl2.mt2', m(Loader))
+						),
 					]),
 					selected
 						? m('div', [
@@ -110,17 +124,6 @@ export default (): m.Component<SingleTemplateProps> => {
 				]
 			)
 		);
-	};
-
-	const tabContent = () => {
-		switch (state.tab) {
-			case 'entries':
-				return getPage(state.page).map(entryElement);
-			case 'config':
-				return m('div', 'config');
-			case 'advanced-filter':
-				return m('div', 'advanced-filter');
-		}
 	};
 
 	return {
@@ -147,29 +150,43 @@ export default (): m.Component<SingleTemplateProps> => {
 					}),
 					active: 'templates',
 					classNameContainer: '.pa3',
-					rightElement: [
+					rightElement: m('div.flex', [
+						m(
+							IconButton,
+							{ icon: 'add', size: 'sm', intend: 'success', className: '.mr2', onClick: () => m.route.set(`/template/${attrs.id}/create`) },
+							'New Entry'
+						),
 						m(IconButton, { icon: 'create', size: 'sm', intend: 'primary', onClick: () => m.route.set(`/template/${attrs.id}/edit`) }, 'Edit'),
-					],
+					]),
 				},
-				m(Flex, { className: '.flex-gap-3.h-100' }, [
-					m(
-						'div.flex-shrink-0',
-						m(Flex, { direction: 'column', className: '.pa2.bg-white.ba.b--black-10.br2.flex-gap-3' }, [
-							leftElement('filing', 'Entries', state.tab === 'entries', () => (state.tab = 'entries')),
-							leftElement('options', 'Config', state.tab === 'config', () => (state.tab = 'config')),
-							leftElement('search', 'Advanced Filter', state.tab === 'advanced-filter', () => (state.tab = 'advanced-filter')),
-						])
-					), //
-					m(Flex, { className: '.bg-white.ba.b--black-10.br2.flex-grow-1.overflow-auto', direction: 'column' }, tabContent()),
-					state.template
-						? m(PrintPreviewTemplate, {
-								template: state.template,
-								it: state.selectedEntry ? state.selectedEntry.data : null,
-								width: 380,
-								className: '.bg-black-05.ph1.ba.b--black-10',
-						  })
-						: m('div'),
-				])
+				m(SidebarPrintPage, {
+					template: state.template,
+					it: state.selectedEntry?.data,
+					tabs: [
+						{ icon: 'filing', label: 'Entries' },
+						{ icon: 'options', label: 'Config' },
+						{ icon: 'search', label: 'Advanced Filter' },
+					],
+					content: {
+						Entries: () =>
+							m(Flex, { direction: 'column', className: '.overflow-auto.h-100' }, [
+								m(Flex, { direction: 'column', className: '.flex-grow-1.overflow-auto.h-100' }, getPage(state.page).map(entryElement)), //
+								m(
+									'div.flex-shrink-0.pa3.bt.b--black-10',
+									m(Flex, { justify: 'between' }, [
+										m('div.w5', m(Input, { placeholder: 'Search...' })), //
+										m(Flex, { items: 'center' }, [
+											m(Button, { onClick: prevPage }, m(Icon, { icon: 'arrow-round-back' })), //
+											m('div.w3.tc', `${state.page + 1} / ${maxPage() + 1}`),
+											m(Button, { onClick: nextPage }, m(Icon, { icon: 'arrow-round-forward' })),
+										]),
+									])
+								),
+							]),
+						Config: () => m('div', 'config'),
+						'Advanced Filter': () => m('div', 'advanced-filter'),
+					},
+				})
 			);
 		},
 	};

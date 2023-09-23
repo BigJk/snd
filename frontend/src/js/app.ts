@@ -11,6 +11,8 @@ import store, { settings } from 'js/core/store';
 import Spotlight from 'js/ui/components/portal/spotlight';
 
 import Devices from 'js/ui/views/devices';
+import GeneratorAll from 'js/ui/views/generator/all';
+import GeneratorSingle from 'js/ui/views/generator/single';
 import Home from 'js/ui/views/home';
 import Settings from 'js/ui/views/settings';
 import TemplateAll from 'js/ui/views/template/all';
@@ -46,6 +48,8 @@ store.actions.loadAll().then(() => {
 		'/template/create': TemplateCreate,
 		'/template/:id': TemplateSingle,
 		'/template/:id/edit': TemplateEdit,
+		'/generator': GeneratorAll,
+		'/generator/:id': GeneratorSingle,
 	});
 
 	document.addEventListener('keydown', (e) => {

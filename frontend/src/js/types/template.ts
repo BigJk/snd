@@ -18,10 +18,7 @@ type Template = BasicInfo & {
 	count?: number;
 };
 
-export default Template;
-export { TemplateConfig };
-
-export function createEmptyTemplate(): Template {
+function createEmptyTemplate(): Template {
 	return {
 		name: 'Your Template Name',
 		description: '',
@@ -36,3 +33,6 @@ export function createEmptyTemplate(): Template {
 		dataSources: [],
 	};
 }
+
+export default Template;
+export { TemplateConfig, createEmptyTemplate };

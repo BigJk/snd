@@ -2,18 +2,31 @@ package rpc
 
 import (
 	"bytes"
+	"crypto/sha1"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd/database"
 	"github.com/labstack/echo/v4"
+	"github.com/patrickmn/go-cache"
 	"github.com/samber/lo"
 	"io/ioutil"
 	"net/http"
 	"time"
 )
 
+func shortHash(text string) string {
+	hasher := sha1.New()
+	hasher.Write([]byte(text))
+	sha := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+	return sha[:8]
+}
+
 func RegisterAI(route *echo.Group, db database.Database) {
+	var aiCache = cache.New(time.Minute*30, time.Minute)
+
 	client := &http.Client{
 		Timeout: time.Second * 60,
 	}
@@ -39,18 +52,31 @@ func RegisterAI(route *echo.Group, db database.Database) {
 		} `json:"choices"`
 	}
 
-	route.POST("/aiPrompt", echo.WrapHandler(nra.MustBind(func(system string, user string) (string, error) {
+	route.POST("/aiCached", echo.WrapHandler(nra.MustBind(func(system string, user string, token string) (string, error) {
+		cacheKey := fmt.Sprintf("%s-%s", shortHash(system+user), token)
+		if val, ok := aiCache.Get(cacheKey); ok {
+			return val.(string), nil
+		}
+		return "", errors.New("not cached")
+	})))
+
+	route.POST("/aiPrompt", echo.WrapHandler(nra.MustBind(func(system string, user string, token string) (string, error) {
 		settings, err := db.GetSettings()
 		if err != nil {
 			return "", err
 		}
 
-		if !settings.EnableAI {
+		if !settings.AIEnabled {
 			return "", errors.New("AI is not enabled")
 		}
 
 		if settings.AIProvider != "OpenRouter.ai" {
 			return "", errors.New("AI provider is not supported")
+		}
+
+		cacheKey := fmt.Sprintf("%s-%s", shortHash(system+user), token)
+		if val, ok := aiCache.Get(cacheKey); ok {
+			return val.(string), nil
 		}
 
 		prompt := AIRequest{
@@ -99,6 +125,8 @@ func RegisterAI(route *echo.Group, db database.Database) {
 		if len(aiResp.Choices) == 0 {
 			return "", errors.New("no response from AI")
 		}
+
+		aiCache.Set(cacheKey, aiResp.Choices[0].Message.Content, cache.DefaultExpiration)
 
 		return aiResp.Choices[0].Message.Content, nil
 	})))

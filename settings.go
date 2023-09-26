@@ -19,8 +19,8 @@ type Settings struct {
 	SpellcheckerLanguages []string `json:"spellcheckerLanguages"`
 	PackageRepos          []string `json:"packageRepos"`
 	SyncKey               string   `json:"syncKey"`
-	EnableSync            bool     `json:"enableSync"`
-	EnableAI              bool     `json:"enableAi"`
+	SyncEnabled           bool     `json:"syncEnabled"`
+	AIEnabled             bool     `json:"aiEnabled"`
 	AIApiKey              string   `json:"aiApiKey"`
 	AIModel               string   `json:"aiModel"`
 	AIProvider            string   `json:"aiProvider"`

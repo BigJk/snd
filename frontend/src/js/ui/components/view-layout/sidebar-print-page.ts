@@ -43,6 +43,7 @@ export default (): m.Component<SidebarPrintProps> => {
 						}),
 					])
 				), //
+				// @ts-ignore
 				m(Flex, { className: '.bg-white.ba.b--black-10.br2.flex-grow-1.overflow-auto', direction: 'column' }, vnode.attrs.content[selectedTab]()),
 				vnode.attrs.template || vnode.attrs.generator
 					? m(PrintPreviewTemplate, {

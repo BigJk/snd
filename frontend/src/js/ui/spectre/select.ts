@@ -2,7 +2,7 @@ import m from 'mithril';
 
 import easydropdown from 'easydropdown';
 
-type OnInputEvent = {
+export type OnInputEvent = {
 	target: {
 		value: string;
 	};

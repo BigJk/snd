@@ -52,6 +52,7 @@ export default <T extends Object>(): m.Component<BasicInfoProps<T>> => {
 								label: 'Description',
 								description: 'This will be the displayed description',
 								largeInput: true,
+								fullSize: true,
 							},
 							'author': {
 								label: 'Author',

@@ -159,6 +159,7 @@ export default (): m.Component<SingleTemplateProps> => {
 						m(IconButton, { icon: 'create', size: 'sm', intend: 'primary', onClick: () => m.route.set(`/template/${attrs.id}/edit`) }, 'Edit'),
 					]),
 				},
+				// @ts-ignore
 				m(SidebarPrintPage, {
 					template: state.template,
 					it: state.selectedEntry?.data,

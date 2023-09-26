@@ -1,19 +1,12 @@
 import { pickBy } from 'lodash-es';
 
 import BasicInfo, { buildId } from 'js/types/basic-info';
-
-type GeneratorConfig = {
-	key: string;
-	name: string;
-	description: string;
-	type: string;
-	default: any;
-};
+import { ConfigValue } from 'js/types/config';
 
 type Generator = BasicInfo & {
 	printTemplate: string;
 	passEntriesToJS: boolean;
-	config: GeneratorConfig[];
+	config: ConfigValue[];
 	images: Record<string, string>;
 	dataSources: string[];
 	count?: number;
@@ -45,5 +38,20 @@ const sanitizeConfig = (g: Generator, configs: any) => {
 	return pickBy(configs, (val, key) => key === 'seed' || g.config.some((conf) => conf.key === key));
 };
 
+function createEmptyGenerator(): Generator {
+	return {
+		name: 'Your Generator Name',
+		description: '',
+		author: 'username',
+		slug: 'your-generator-name',
+		version: '',
+		printTemplate: '',
+		passEntriesToJS: false,
+		config: [],
+		images: {},
+		dataSources: [],
+	};
+}
+
 export default Generator;
-export { GeneratorConfig, sanitizeConfig };
+export { sanitizeConfig, createEmptyGenerator };

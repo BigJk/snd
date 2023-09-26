@@ -1,18 +1,14 @@
 import m from 'mithril';
 
-import { debounce } from 'lodash-es';
-
 import Template from 'js/types/template';
 
 import { createNunjucksCompletionProvider } from 'js/core/monaco/completion-nunjucks';
 import { settings } from 'js/core/store';
-import { render } from 'js/core/templating';
 
 import BasicInfo from 'js/ui/components/editor/basic-info';
 import Images from 'js/ui/components/editor/images';
 import Flex from 'js/ui/components/layout/flex';
 import Monaco from 'js/ui/components/monaco';
-import PrintPreview from 'js/ui/components/print-preview';
 import PrintPreviewTemplate from 'js/ui/components/print-preview-template';
 import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
 
@@ -23,7 +19,6 @@ type TemplateEditorProps = {
 
 type TemplateEditorState = {
 	loading: boolean;
-	lastRendered: string;
 	selectedMenu: string;
 	config: Record<string, any>;
 };
@@ -31,7 +26,6 @@ type TemplateEditorState = {
 export default (): m.Component<TemplateEditorProps> => {
 	let state: TemplateEditorState = {
 		loading: false,
-		lastRendered: '',
 		selectedMenu: 'basic-info',
 		config: {}, // TODO: add config page
 	};

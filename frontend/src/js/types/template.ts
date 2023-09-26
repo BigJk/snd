@@ -1,19 +1,12 @@
 import BasicInfo from 'js/types/basic-info';
-
-type TemplateConfig = {
-	key: string;
-	name: string;
-	description: string;
-	type: string;
-	default: any;
-};
+import { ConfigValue } from 'js/types/config';
 
 type Template = BasicInfo & {
 	printTemplate: string;
 	listTemplate: string;
 	skeletonData: Record<string, any>;
 	images: Record<string, string>;
-	config: TemplateConfig[];
+	config: ConfigValue[];
 	dataSources: string[];
 	count?: number;
 };
@@ -35,4 +28,4 @@ function createEmptyTemplate(): Template {
 }
 
 export default Template;
-export { TemplateConfig, createEmptyTemplate };
+export { createEmptyTemplate };

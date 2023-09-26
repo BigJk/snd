@@ -2,13 +2,13 @@ import m from 'mithril';
 
 import { startsWith } from 'lodash-es';
 
+import { css, keyframes } from 'goober';
 // @ts-ignore
 import { inElectron } from 'js/electron';
 
 import * as API from 'js/core/api';
 import guid from 'js/core/guid';
 import { settings } from 'js/core/store';
-import { containsAi } from 'js/core/templating';
 
 import Loader from 'js/ui/spectre/loader';
 
@@ -59,6 +59,25 @@ const post = `
 </html>
 `;
 
+const loadingFrames = keyframes`
+	0% {
+		opacity: 1.0;
+	}
+	50% {
+		opacity: 0.5;
+	}
+	100% {
+		opacity: 1.0;
+	}
+`;
+
+const loadingClass = css`
+	& > iframe,
+	webview {
+		animation: ${loadingFrames} 5s infinite;
+	}
+`;
+
 export type PrintPreviewProps = {
 	className?: string;
 	content: string;
@@ -74,6 +93,14 @@ type PrintPreviewState = {
 	lastContent: string;
 	enableAi: boolean;
 };
+
+export function openDevTools(dom: HTMLElement) {
+	const elem = dom.querySelector('webview');
+	if (elem) {
+		// @ts-ignore
+		elem.openDevTools();
+	}
+}
 
 export default (): m.Component<PrintPreviewProps> => {
 	let state: PrintPreviewState = {
@@ -131,15 +158,15 @@ export default (): m.Component<PrintPreviewProps> => {
 					});
 			});
 
-			// create a 5-second timeout. If this timeout is triggered we most likely have an infinite loop
+			// create a 120-second timeout. If this timeout is triggered we most likely have an infinite loop
 			// in the template. We stop the webview and show a warning message.
 			let timeout = setTimeout(() => {
 				// @ts-ignore
 				frame.stop();
 
 				// @ts-ignore
-				frame.loadURL('data:text/html,Template stopped after not responding for 5 seconds! Please check your code for infinite loops.');
-			}, 5000);
+				frame.loadURL('data:text/html,Template stopped after not responding for 120 seconds! Please check your code for infinite loops.');
+			}, 120000); // TODO: handle AI...
 
 			// Wait for the finish load event to stop the loading indicator and clear the infinite loop timeout.
 			frame.addEventListener(
@@ -246,9 +273,11 @@ export default (): m.Component<PrintPreviewProps> => {
 				});
 			}
 
-			return m(`div.dib.relative${attrs.className ?? ''}`, { key }, [
+			return m(`div.dib.relative${attrs.className ?? ''}${state.loading ? `.${loadingClass}` : ''}`, { key }, [
 				frame,
-				state.loading || attrs.loading === true ? m(Loader, { className: '.absolute.left-0.top-0.ma3' }) : null,
+				state.loading || attrs.loading === true
+					? m('div.absolute.left-0.top-0.bg-white.ba.br2.b--black-20.ma3.ph3.pv2.light-shadow', m(Loader))
+					: null,
 				children,
 			]);
 		},

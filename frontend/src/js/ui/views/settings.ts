@@ -31,8 +31,6 @@ export default (): m.Component => {
   let settingsCopy: Settings = { ...settings.value };
   let aiModels: string[] = []
 
-  console.log(settingsCopy)
-
   const onChangeSettings = (updated: Settings) => {
     settingsCopy = { ...settingsCopy, ...updated };
   };

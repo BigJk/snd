@@ -66,7 +66,7 @@ export const parseError = (e: any, isGenerator?: boolean): TemplateError | null 
 	let match = /.*\[Line (\d+), Column (\d+)\].*\n[ \t]*(.*)$/gm.exec(e.message);
 	if (match) {
 		return {
-			line: parseInt(match[1]) - (isGenerator ? rngScriptLines : 0),
+			line: parseInt(match[1]) - aiScriptLines - (isGenerator ? rngScriptLines : 0),
 			column: parseInt(match[2]) + 1,
 			error: match[3],
 		};
@@ -97,6 +97,34 @@ const rngScript = (seed: any) => `
 		</script>
 `;
 const rngScriptLines = rngScript(0).split('\n').length - 1;
+
+// Add AI script to the template so that it can be used
+// from javascript.
+//
+// TODO: better handling
+const aiScript = `
+<script>
+	const enableAi = {{ enableAi }};
+	
+	const aiPrompt = (system, user) => {
+		if(!enableAi) {
+			return "AI content disabled.";
+		}
+		
+		const request = new XMLHttpRequest();
+		request.open("POST", "http://127.0.0.1:7123/api/aiPrompt", false); // Synchronous request
+		request.send(JSON.stringify([system, user]));
+		
+		if(request.status === 200) {
+			return JSON.parse(request.responseText);
+		} else {
+			// TODO: handle error
+			return JSON.parse(request.responseText);
+		}
+	}
+</script>
+`;
+const aiScriptLines = aiScript.split('\n').length - 1;
 
 /**
  * State object for template rendering.
@@ -154,6 +182,7 @@ export const render = (
 		if (state.config?.seed) {
 			additional = rngScript(state.config.seed ?? 'test-seed');
 		}
+		additional += aiScript;
 
 		// post message (round-robin style) to some worker
 		workers[workerSelect++ % workers.length].postMessage({ id, template: additional + template + (enableDither ? dither : ''), state });
@@ -165,5 +194,5 @@ export const render = (
  * @param template Template string.
  */
 export const containsAi = (template: string) => {
-	return template.includes('ai') && template.includes('endai') && template.includes('user');
+	return (template.includes('ai') && template.includes('endai') && template.includes('user')) || template.includes('aiPrompt(');
 };

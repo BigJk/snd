@@ -144,7 +144,6 @@ env.addFilter(
 );
 
 onmessage = (e) => {
-	console.log(e.data.state);
 	env.renderString(e.data.template, e.data.state, (err, res) => {
 		postMessage({
 			id: e.data.id,

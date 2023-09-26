@@ -19,6 +19,7 @@ export type PropertyAnnotation = {
 	arrayType?: 'string' | 'number';
 	validator?: (value: any) => any;
 	largeInput?: boolean;
+	fullSize?: boolean;
 	customComponent?: m.Children;
 };
 
@@ -55,6 +56,7 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => {
 						let label = key;
 						let description = '';
 						let largeInput = false;
+						let fullSize = false;
 						let validator = (value: any) => value;
 
 						// Check if the property has an annotation
@@ -65,12 +67,13 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => {
 								label = attrs.annotations[key].label ?? key;
 								description = attrs.annotations[key].description ?? '';
 								largeInput = attrs.annotations[key].largeInput ?? false;
+								fullSize = attrs.annotations[key].fullSize ?? false;
 								validator = attrs.annotations[key].validator ?? validator;
 
 								if (annotation.customComponent) {
 									return m(
 										HorizontalProperty,
-										{ label: label, description: description, bottomBorder: true, centered: true },
+										{ label: label, description: description, bottomBorder: true, centered: true, fullSize: fullSize },
 										attrs.annotations[key].customComponent
 									);
 								}
@@ -89,8 +92,12 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => {
 
 								return m(
 									HorizontalProperty,
-									{ label: label, description: description, bottomBorder: true, centered: false },
-									m(TextArea, { value: value.toString(), onChange: (value) => onChange({ ...attrs.properties, [key]: validator(value) }) })
+									{ label: label, description: description, bottomBorder: true, centered: false, fullSize: fullSize },
+									m(TextArea, {
+										rows: fullSize ? 10 : 3,
+										value: value.toString(),
+										onChange: (value) => onChange({ ...attrs.properties, [key]: validator(value) }),
+									})
 								);
 							case 'number':
 								return m(

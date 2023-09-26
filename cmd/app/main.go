@@ -42,10 +42,10 @@ func openDatabase() database.Database {
 	}
 
 	if settings, err := db.GetSettings(); err == nil {
-		if settings.EnableSync {
+		if settings.SyncEnabled {
 			if err := cloud.CheckKey(syncBaseUrl(), settings.SyncKey); err != nil {
 				fmt.Println("ERROR: could not validate sync key!", err, "=> disabling sync")
-				settings.EnableSync = false
+				settings.SyncEnabled = false
 				_ = db.SaveSettings(settings)
 			} else {
 				fmt.Println("INFO: enabling sync")

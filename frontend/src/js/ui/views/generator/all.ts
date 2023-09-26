@@ -84,7 +84,7 @@ export default (): m.Component => {
 			return m(
 				Base,
 				{
-					title: m(Title, 'Templates'),
+					title: m(Title, 'Generators'),
 					active: 'generators',
 					classNameContainer: '.pa3',
 					rightElement: m('div', [

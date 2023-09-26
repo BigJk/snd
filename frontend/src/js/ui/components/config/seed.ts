@@ -20,11 +20,13 @@ export default {
 					}),
 					m(
 						Button,
-						m(Icon, {
-							icon: 'refresh',
+						{
 							onClick: () => {
 								attrs.onChange(Math.ceil(Math.random() * 999999999).toString());
 							},
+						},
+						m(Icon, {
+							icon: 'refresh',
 						})
 					),
 				]);

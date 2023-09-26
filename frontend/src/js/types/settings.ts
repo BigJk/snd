@@ -18,14 +18,14 @@ type Settings = {
 	spellcheckerLanguages: string[];
 	packageRepos: string[];
 	syncKey: string;
-	enableSync: boolean;
-	enableAi: boolean;
+	syncEnabled: boolean;
+	aiEnabled: boolean;
 	aiApiKey: string;
 	aiProvider: string;
 	aiModel: string;
 };
 
-export function createEmptySettings() {
+export function createEmptySettings(): Settings {
 	return {
 		printerType: 'unknown',
 		printerEndpoint: '',
@@ -44,7 +44,11 @@ export function createEmptySettings() {
 		spellcheckerLanguages: [],
 		packageRepos: [],
 		syncKey: '',
-		enableSync: false,
+		syncEnabled: false,
+		aiEnabled: false,
+		aiApiKey: '',
+		aiProvider: '',
+		aiModel: '',
 	};
 }
 

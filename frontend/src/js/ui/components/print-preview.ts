@@ -91,7 +91,7 @@ type PrintPreviewState = {
 	id: string;
 	loading: boolean;
 	lastContent: string;
-	enableAi: boolean;
+	aiEnabled: boolean;
 };
 
 export function openDevTools(dom: HTMLElement) {
@@ -107,7 +107,7 @@ export default (): m.Component<PrintPreviewProps> => {
 		id: guid(),
 		loading: false,
 		lastContent: '',
-		enableAi: false,
+		aiEnabled: false,
 	};
 
 	let updateContent = (frame: HTMLElement, content: string, scale: number, overflow: string) => {

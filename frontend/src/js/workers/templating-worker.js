@@ -90,9 +90,24 @@ function AIExtension() {
 	};
 
 	this.run = function (state, name, system, user, callback) {
-		if (state.ctx['enableAi'] !== true) {
-			state.ctx[name] = 'ai content disabled';
-			callback(null, ' ');
+		if (state.ctx['aiEnabled'] !== true) {
+			fetch('/api/aiCached', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify([system(), user(), state.ctx['aiToken']]),
+			})
+				.then((resp) => resp.json())
+				.then((data) => {
+					state.ctx[name] = data;
+					callback(null, ' ');
+				})
+				.catch(() => {
+					state.ctx[name] = 'AI content disabled.';
+					callback(null, ' ');
+				});
+
 			return;
 		}
 
@@ -101,7 +116,7 @@ function AIExtension() {
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify([system(), user()]),
+			body: JSON.stringify([system(), user(), state.ctx['aiToken']]),
 		})
 			.then((resp) => resp.json())
 			.then((data) => {

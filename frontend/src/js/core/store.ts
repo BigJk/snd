@@ -61,6 +61,9 @@ type Store = {
 		latest: Version.NewVersion | null;
 	};
 	fuzzySearch: Fuse<FuseSearch> | null;
+	ai: {
+		token: string;
+	};
 };
 
 const initialState: Store = {
@@ -75,6 +78,9 @@ const initialState: Store = {
 		latest: null,
 	},
 	fuzzySearch: null,
+	ai: {
+		token: '',
+	},
 };
 
 const store = create(initialState, (atom) => ({
@@ -227,6 +233,30 @@ const store = create(initialState, (atom) => ({
 			};
 		});
 	},
+
+	setRandomAIToken() {
+		atom.update((state) => {
+			return {
+				...state,
+				ai: {
+					...state.ai,
+					token: Math.ceil(Math.random() * 1000000000).toString(),
+				},
+			};
+		});
+	},
+
+	setAIToken(token: string) {
+		atom.update((state) => {
+			return {
+				...state,
+				ai: {
+					...state.ai,
+					token,
+				},
+			};
+		});
+	},
 }));
 
 // Export the global store.
@@ -239,3 +269,4 @@ export const generators = store.focus('generators');
 export const sources = store.focus('sources');
 export const printer = store.focus('printer');
 export const packages = store.focus('publicLists');
+export const ai = store.focus('ai');

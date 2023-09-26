@@ -40,7 +40,7 @@ export default (): m.Component => {
   };
 
   const applySettings = () => {
-    if (settingsCopy.enableSync && !settings.value.enableSync) {
+    if (settingsCopy.syncEnabled && !settings.value.syncEnabled) {
       neutral("Syncing is enabled. Please restart the application to apply the changes!");
     }
     settings.set(settingsCopy);
@@ -221,12 +221,12 @@ export default (): m.Component => {
                 label: "Sync Key",
                 description: "The key to identify your data"
               },
-              enableSync: {
+              syncEnabled: {
                 label: "Enable Sync",
                 description: "Enable or disable sync"
               }
             },
-            show: ["syncKey", "enableSync"],
+            show: ["syncKey", "syncEnabled"],
             onChange: onChangeSettings
           } as PropertyEditProps<Settings>),
           m(HorizontalProperty, {
@@ -252,7 +252,7 @@ export default (): m.Component => {
           m(PropertyEdit<Settings>, {
             properties: settingsCopy,
             annotations: {
-              enableAi: {
+              aiEnabled: {
                 label: "Enable",
                 description: "Enable or disable AI"
               },
@@ -261,7 +261,7 @@ export default (): m.Component => {
                 description: "The API key for the AI service"
               }
             },
-            show: ["enableAi", "aiApiKey"],
+            show: ["aiEnabled", "aiApiKey"],
             onChange: onChangeSettings
           } as PropertyEditProps<Settings>),
           m(HorizontalProperty, {

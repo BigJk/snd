@@ -5,7 +5,7 @@ import { debounce, isEqual } from 'lodash-es';
 import Generator from 'js/types/generator';
 import Template from 'js/types/template';
 
-import { settings } from 'js/core/store';
+import store, { settings } from 'js/core/store';
 import { containsAi, render } from 'js/core/templating';
 
 import Button from 'js/ui/spectre/button';
@@ -28,11 +28,11 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 	let lastProps: PrintPreviewTemplateProps | null = null;
 	let loading = false;
 	let lastRendered = '';
-	let enableAi = false;
+	let aiEnabled = false;
 
 	const updateLastRendered = debounce((attrs: PrintPreviewTemplateProps) => {
 		if (
-			!enableAi &&
+			!aiEnabled &&
 			lastProps !== null &&
 			isEqual(lastProps.template, attrs.template) &&
 			isEqual(lastProps.it, attrs.it) &&
@@ -53,7 +53,7 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 			config: attrs.config ?? {},
 			settings: settings.value,
 			images: attrs.template?.images ?? attrs.generator?.images ?? {},
-			enableAi: enableAi,
+			aiEnabled: aiEnabled,
 		})
 			.then((html) => {
 				lastRendered = html;
@@ -64,7 +64,7 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 				m.redraw();
 			});
 
-		enableAi = false;
+		aiEnabled = false;
 	}, 500);
 
 	return {
@@ -86,7 +86,7 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 					width: attrs.width ?? 320,
 					loading,
 				},
-				aiPresent && !attrs.hideAiNotice && settings.value.enableAi
+				aiPresent && !attrs.hideAiNotice && settings.value.aiEnabled
 					? m(
 							'div.absolute.bottom-0.left-0.w-100.pa2',
 							m(
@@ -105,10 +105,11 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 											size: 'sm',
 											intend: 'primary',
 											onClick: () => {
-												enableAi = true;
+												store.actions.setRandomAIToken();
+												aiEnabled = true;
 											},
 										},
-										'Allow Once'
+										'Allow or Re-Roll'
 									),
 								])
 							)

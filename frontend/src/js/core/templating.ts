@@ -6,6 +6,7 @@ import Settings from 'js/types/settings';
 import TemplatingWorker from 'js/workers/templating-worker?worker';
 
 import dither from 'js/core/dither';
+import { ai } from 'js/core/store';
 
 type WorkerJob = {
 	hashed: string;
@@ -104,16 +105,27 @@ const rngScriptLines = rngScript(0).split('\n').length - 1;
 // TODO: better handling
 const aiScript = `
 <script>
-	const enableAi = {{ enableAi }};
+	const aiEnabled = {{ aiEnabled }};
+	const aiToken = '{{ aiToken }}';
 	
 	const aiPrompt = (system, user) => {
-		if(!enableAi) {
+		if(!aiEnabled) {
+      // Try and see if the response was cached
+      const request = new XMLHttpRequest();
+			request.open("POST", "http://127.0.0.1:7123/api/aiCached", false); // Synchronous request
+			request.send(JSON.stringify([system, user, aiToken]));
+			
+			if(request.status === 200) {
+				return JSON.parse(request.responseText);
+			}
+      
+      // Don't execute AI
 			return "AI content disabled.";
 		}
 		
 		const request = new XMLHttpRequest();
 		request.open("POST", "http://127.0.0.1:7123/api/aiPrompt", false); // Synchronous request
-		request.send(JSON.stringify([system, user]));
+		request.send(JSON.stringify([system, user, aiToken]));
 		
 		if(request.status === 200) {
 			return JSON.parse(request.responseText);
@@ -146,7 +158,8 @@ export type GeneratorState = {
 };
 
 export type GlobalState = {
-	enableAi?: boolean;
+	aiEnabled?: boolean;
+	aiToken?: string;
 };
 
 /**
@@ -163,10 +176,14 @@ export const render = (
 	return new Promise((resolve, reject) => {
 		// check if data is present in cache
 		let hashed = hash(template) + hash(state);
-		if ((!containsAi(template) || (containsAi(template) && !state.enableAi)) && cache[hashed]) {
+		if ((!containsAi(template) || (containsAi(template) && !state.aiEnabled)) && cache[hashed]) {
 			console.log('templating: cache hit');
 			resolve(cache[hashed]);
 			return;
+		}
+
+		if (!state.aiToken) {
+			state.aiToken = ai.value.token;
 		}
 
 		// setup promises for response
@@ -175,13 +192,11 @@ export const render = (
 			hashed,
 			resolve,
 			reject,
-			timeout: setTimeout(() => reject('timeout'), state.enableAi ? 120000 : 2000),
+			timeout: setTimeout(() => reject('timeout'), state.aiEnabled ? 120000 : 2000),
 		};
 
 		let additional = '';
-		if (state.config?.seed) {
-			additional = rngScript(state.config.seed ?? 'test-seed');
-		}
+		additional += rngScript(state.config.seed ?? 'test-seed');
 		additional += aiScript;
 
 		// post message (round-robin style) to some worker

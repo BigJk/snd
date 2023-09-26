@@ -27,6 +27,7 @@ import * as Toast from 'js/ui/toast';
 
 // Load all the data from the backend and then start the router.
 store.actions.loadAll().then(() => {
+	store.actions.setRandomAIToken();
 	console.log('Store initialized:', store.value);
 
 	// Save settings when they change.

@@ -165,6 +165,7 @@ export default (): m.Component<SingleTemplateProps> => {
 					it: state.selectedEntry?.data,
 					tabs: [
 						{ icon: 'filing', label: 'Entries' },
+						{ icon: 'clipboard', label: 'Information' },
 						{ icon: 'options', label: 'Config' },
 						{ icon: 'search', label: 'Advanced Filter' },
 					],
@@ -184,6 +185,7 @@ export default (): m.Component<SingleTemplateProps> => {
 									])
 								),
 							]),
+						Information: () => m('div.ph3.pv2.lh-copy', [m('div.f5.mb2.b', 'Description'), state.template?.description ?? '']),
 						Config: () => m('div', 'config'),
 						'Advanced Filter': () => m('div', 'advanced-filter'),
 					},

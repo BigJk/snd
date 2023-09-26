@@ -1,10 +1,12 @@
 import m from 'mithril';
 
+import { fillConfigValues } from 'js/types/config';
 import Generator, { sanitizeConfig } from 'js/types/generator';
 
 import { createNunjucksCompletionProvider } from 'js/core/monaco/completion-nunjucks';
 import { settings } from 'js/core/store';
 
+import Editor from 'js/ui/components/config/editor';
 import BasicInfo from 'js/ui/components/editor/basic-info';
 import Images from 'js/ui/components/editor/images';
 import Flex from 'js/ui/components/layout/flex';
@@ -12,25 +14,28 @@ import Monaco from 'js/ui/components/monaco';
 import PrintPreviewTemplate from 'js/ui/components/print-preview-template';
 import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
 
-type TemplateEditorProps = {
+type GeneratorEditorProps = {
 	generator: Generator;
 	onChange: (updated: Generator) => void;
 };
 
-type TemplateEditorState = {
+type GeneratorEditorState = {
 	loading: boolean;
 	selectedMenu: string;
 	config: Record<string, any>;
 };
 
-export default (): m.Component<TemplateEditorProps> => {
-	let state: TemplateEditorState = {
+export default (): m.Component<GeneratorEditorProps> => {
+	let state: GeneratorEditorState = {
 		loading: false,
 		selectedMenu: 'basic-info',
 		config: {}, // TODO: add config page
 	};
 
 	return {
+		oninit({ attrs }) {
+			state.config = fillConfigValues({}, attrs.generator.config);
+		},
 		view({ attrs }) {
 			return [
 				m(Flex, { className: '.h-100.w-100' }, [
@@ -56,7 +61,30 @@ export default (): m.Component<TemplateEditorProps> => {
 							},
 							{ id: 'data-sources', title: 'Data Sources', icon: 'analytics', render: () => null },
 							{ id: 'config', title: 'Config', icon: 'cog', render: () => null },
-							{ id: 'test-config', title: 'Test Config', icon: 'cog', render: () => null },
+							{
+								id: 'test-config',
+								title: 'Test Config',
+								icon: 'cog',
+								render: () =>
+									m(Editor, {
+										current: state.config,
+										definition: [
+											{
+												key: 'seed',
+												name: 'Seed',
+												description: 'The seed used to generate the template',
+												type: 'Seed',
+												default: 'TEST_SEED',
+											},
+											...(attrs.generator ? attrs.generator.config : []),
+										],
+										onChange: (updated) => {
+											console.log(updated);
+											state.config = updated;
+											m.redraw();
+										},
+									}),
+							},
 							{
 								id: 'print-template',
 								title: 'Print Template',
@@ -68,7 +96,7 @@ export default (): m.Component<TemplateEditorProps> => {
 										value: attrs.generator.printTemplate,
 										className: '.flex-grow-1',
 										completion: createNunjucksCompletionProvider({
-											config: {}, // TODO: config
+											config: state.config,
 											images: attrs.generator.images,
 											settings: settings.value,
 										}),
@@ -84,7 +112,7 @@ export default (): m.Component<TemplateEditorProps> => {
 						className: '.flex-shrink-0.bl.b--black-10.bg-paper',
 						width: 350,
 						generator: attrs.generator,
-						config: sanitizeConfig(attrs.generator, {}), // TODO: config
+						config: sanitizeConfig(attrs.generator, state.config),
 					}),
 				]),
 			];

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd/database"
+	"github.com/BigJk/snd/log"
 	"github.com/labstack/echo/v4"
 	"github.com/patrickmn/go-cache"
 	"github.com/samber/lo"
@@ -119,7 +120,7 @@ func RegisterAI(route *echo.Group, db database.Database) {
 		}
 
 		if resp.StatusCode != http.StatusOK {
-			return "", errors.New("no response from AI")
+			return "", errors.New(string(respBody))
 		}
 
 		if len(aiResp.Choices) == 0 {
@@ -148,18 +149,31 @@ func RegisterAI(route *echo.Group, db database.Database) {
 		Data []OpenRouterModel `json:"data"`
 	}
 
+	// Fetch models from OpenRouter.ai
+	var models OpenRouterModels
+	go func() {
+		for i := 0; i < 5 && models.Data == nil; i++ {
+			resp, err := http.Get("https://openrouter.ai/api/v1/models")
+			if err != nil {
+				continue
+			}
+
+			err = json.NewDecoder(resp.Body).Decode(&models)
+			if err != nil {
+				continue
+			}
+
+			if models.Data != nil {
+				log.Info("Fetched models from OpenRouter.ai")
+				break
+			}
+
+			_ = log.ErrorString("Failed to fetch models from OpenRouter.ai, retrying in 1s")
+			time.Sleep(time.Second * 1)
+		}
+	}()
+
 	route.POST("/aiOpenRouterModels", echo.WrapHandler(nra.MustBind(func() ([]string, error) {
-		resp, err := http.Get("https://openrouter.ai/api/v1/models")
-		if err != nil {
-			return nil, err
-		}
-
-		var models OpenRouterModels
-		err = json.NewDecoder(resp.Body).Decode(&models)
-		if err != nil {
-			return nil, err
-		}
-
 		return lo.Map(models.Data, func(model OpenRouterModel, i int) string {
 			return model.ID
 		}), nil

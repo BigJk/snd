@@ -23,6 +23,7 @@ type Settings = {
 	aiApiKey: string;
 	aiProvider: string;
 	aiModel: string;
+	aiContextWindow: number;
 };
 
 export function createEmptySettings(): Settings {
@@ -49,6 +50,7 @@ export function createEmptySettings(): Settings {
 		aiApiKey: '',
 		aiProvider: '',
 		aiModel: '',
+		aiContextWindow: 0,
 	};
 }
 

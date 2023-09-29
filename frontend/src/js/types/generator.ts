@@ -1,6 +1,6 @@
 import { pickBy } from 'lodash-es';
 
-import BasicInfo, { buildId } from 'js/types/basic-info';
+import BasicInfo from 'js/types/basic-info';
 import { ConfigValue } from 'js/types/config';
 
 type Generator = BasicInfo & {
@@ -13,8 +13,6 @@ type Generator = BasicInfo & {
 };
 
 const sanitizeConfig = (g: Generator, configs: any) => {
-	let id = buildId('generator', g);
-
 	// create base config
 	if (configs === undefined) {
 		configs = {

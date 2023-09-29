@@ -24,4 +24,5 @@ type Settings struct {
 	AIApiKey              string   `json:"aiApiKey"`
 	AIModel               string   `json:"aiModel"`
 	AIProvider            string   `json:"aiProvider"`
+	AIContextWindow       int      `json:"aiContextWindow"`
 }

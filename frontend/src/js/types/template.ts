@@ -1,4 +1,6 @@
-import BasicInfo from 'js/types/basic-info';
+import { pickBy } from 'lodash-es';
+
+import BasicInfo, { buildId } from 'js/types/basic-info';
 import { ConfigValue } from 'js/types/config';
 
 type Template = BasicInfo & {
@@ -9,6 +11,23 @@ type Template = BasicInfo & {
 	config: ConfigValue[];
 	dataSources: string[];
 	count?: number;
+};
+
+const sanitizeConfig = (t: Template, configs: any) => {
+	// create base config
+	if (configs === undefined) {
+		configs = {};
+	}
+
+	// set default values for initialized fields
+	t.config.forEach((conf) => {
+		if (configs[conf.key] === undefined) {
+			configs[conf.key] = conf.default;
+		}
+	});
+
+	// remove old fields that are not present in the config anymore.
+	return pickBy(configs, (val, key) => key === 'seed' || t.config.some((conf) => conf.key === key));
 };
 
 function createEmptyTemplate(): Template {
@@ -28,4 +47,4 @@ function createEmptyTemplate(): Template {
 }
 
 export default Template;
-export { createEmptyTemplate };
+export { createEmptyTemplate, sanitizeConfig };

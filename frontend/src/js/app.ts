@@ -19,6 +19,7 @@ import Home from 'js/ui/views/home';
 import Settings from 'js/ui/views/settings';
 import TemplateAll from 'js/ui/views/template/all';
 import TemplateCreate from 'js/ui/views/template/create';
+import TemplateCreateEntity from 'js/ui/views/template/create-entity';
 import TemplateEdit from 'js/ui/views/template/edit';
 import TemplateSingle from 'js/ui/views/template/single';
 
@@ -51,6 +52,7 @@ store.actions.loadAll().then(() => {
 		'/template/create': TemplateCreate,
 		'/template/:id': TemplateSingle,
 		'/template/:id/edit': TemplateEdit,
+		'/template/:id/create': TemplateCreateEntity,
 		'/generator': GeneratorAll,
 		'/generator/:id': GeneratorSingle,
 		'/generator/:id/edit': GeneratorEdit,

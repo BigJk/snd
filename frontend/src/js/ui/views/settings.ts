@@ -259,9 +259,13 @@ export default (): m.Component => {
               aiApiKey: {
                 label: "API Key",
                 description: "The API key for the AI service"
+              },
+              aiContextWindow: {
+                label: "Context Window",
+                description: "The context window for the AI service"
               }
             },
-            show: ["aiEnabled", "aiApiKey"],
+            show: ["aiEnabled", "aiApiKey", "aiContextWindow"],
             onChange: onChangeSettings
           } as PropertyEditProps<Settings>),
           m(HorizontalProperty, {

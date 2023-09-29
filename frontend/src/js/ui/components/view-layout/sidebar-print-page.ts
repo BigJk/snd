@@ -39,6 +39,9 @@ export default (): m.Component<SidebarPrintProps> => {
 					'div.flex-shrink-0',
 					m(Flex, { direction: 'column', className: '.pa2.bg-white.ba.b--black-10.br2.flex-gap-3' }, [
 						...vnode.attrs.tabs.map((tab) => {
+							if (!tab) {
+								return null;
+							}
 							return leftElement(tab.icon, tab.label, selectedTab === tab.label, () => (selectedTab = tab.label));
 						}),
 					])

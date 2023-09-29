@@ -47,7 +47,11 @@ export default (): m.Component<ButtonProps> => {
 				finalChildren = m(Flex, { items: 'center', gap: 2 }, children);
 			}
 
-			return m('button' + classes + (attrs.className ?? ''), { onclick: attrs.link ? () => openLink(attrs.link) : attrs.onClick }, finalChildren);
+			return m(
+				'button' + classes + (attrs.className ?? ''),
+				{ onclick: attrs.link ? () => openLink(attrs.link) : !attrs.loading ? attrs.onClick : null },
+				finalChildren
+			);
 		},
 	};
 };

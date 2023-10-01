@@ -53,6 +53,8 @@ export const GET_SOURCES = 'getSources';
 export const GET_SOURCE = 'getSource';
 export const SAVE_SOURCE = 'saveSource';
 export const DELETE_SOURCE = 'deleteSource';
+export const GET_SOURCE_IMPORTS = 'importsSource';
+export const IMPORT_SOURCE = 'importsSource';
 
 // Packages
 export const GET_PUBLIC_LIST = 'getPublicPackages';

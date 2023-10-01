@@ -50,7 +50,7 @@ export default (): m.Component<EditorProps> => {
 								centered: true,
 								bottomBorder: true,
 							},
-							m(type.view(), {
+							m(type.view, {
 								value,
 								onChange: (value: any) => {
 									attrs.onChange({

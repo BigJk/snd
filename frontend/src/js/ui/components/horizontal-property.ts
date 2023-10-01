@@ -23,7 +23,7 @@ export default (): m.Component<HorizontalPropertyProps> => {
 	return {
 		view({ attrs, children }) {
 			return m(
-				`div.pv2.w-100${attrs.bottomBorder ? '.bb.b--black-05.mb2' : ''}${attrs.className ?? ''}`,
+				`div.pv2.w-100${attrs.bottomBorder ? '.bb.b--black-05' : ''}${attrs.className ?? ''}`,
 				{},
 				m(
 					Flex,

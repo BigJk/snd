@@ -6,13 +6,13 @@ import { sources } from 'js/core/store';
 
 import Button from 'js/ui/spectre/button';
 import Input from 'js/ui/spectre/input';
-import Modal, { ModalProps } from 'js/ui/spectre/modal';
 
 import Icon from 'js/ui/components/atomic/icon';
 import Title from 'js/ui/components/atomic/title';
 import Flex from 'js/ui/components/layout/flex';
 import Grid from 'js/ui/components/layout/grid';
 import ImportDataSource from 'js/ui/components/modals/imexport/import-data-source';
+import SourceBox from 'js/ui/components/source-box';
 import Base from 'js/ui/components/view-layout/base';
 
 import { setPortal } from 'js/ui/portal';
@@ -47,7 +47,7 @@ export default (): m.Component => {
 						Grid,
 						{ className: '.mb3', minWidth: '350px', maxWidth: '1fr' },
 						sources.map((source) => {
-							return m('div', source.name, source.count);
+							return m(SourceBox, { source: source });
 						})
 					),
 				]);

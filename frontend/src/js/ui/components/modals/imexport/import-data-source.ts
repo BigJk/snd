@@ -89,7 +89,7 @@ export default (): m.Component => {
 			return null;
 		}
 
-		return m(Flex, { direction: 'column', className: '.mt3.lh-copy.relative' }, [
+		return m(Flex, { direction: 'column', className: '.mt3.lh-copy.relative.overflow-auto' }, [
 			m('div.ttu.f8.b.bb.b--black-05.pb2.mb2', 'Method'),
 			m('div.pv2.ph3.br2.bg-black-05', [m('div.f5.mb1', state.selected.name), m('div.f7.text-muted', state.selected.description)]),
 			m('div.ttu.f8.b.bb.b--black-05.pb2.mt3', 'Arguments'),

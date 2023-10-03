@@ -37,7 +37,7 @@ m.mount(target, {
 		}
 
 		return m(
-			'div.absolute.w-100.h-100.bg-white-60.z-999.overflow-hidden',
+			'div.absolute.w-100.h-100.bg-white-60.z-999.overflow-hidden.pa4',
 			m(
 				Flex,
 				{

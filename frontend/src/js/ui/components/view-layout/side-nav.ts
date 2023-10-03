@@ -82,11 +82,14 @@ export default (): m.Component<SideNavProps> => {
 
 	return {
 		view(vnode) {
-			return m(
-				'div.grid-bg' + vnode.attrs.className,
-				{ style: { width: '70px' } },
-				m('div.flex.flex-column.items-center.pt3', [m(Logo, { scale: 0.75 }), m('div.mb3'), ...menu(vnode.attrs.active)])
-			);
+			return m('div.pl2.pv2.pr0.relative', [
+				m('div.absolute.bg-white.bb.b--black-10.w-100.top-0.left-0', { style: { height: '70px', zIndex: -100 } }),
+				m(
+					'div.grid-bg.br2.h-100' + vnode.attrs.className,
+					{ style: { width: '70px' } },
+					m('div.flex.flex-column.items-center.pt3', [m(Logo, { scale: 0.75 }), m('div.mb3'), ...menu(vnode.attrs.active)])
+				),
+			]);
 		},
 	};
 };

@@ -34,7 +34,7 @@ export default (): m.Component<SelectProps> => {
 
 	const getSelect = (vnode: m.Vnode<SelectProps, {}>) => {
 		return m(
-			'div',
+			'div.overflow-none',
 			{ style: { width: `${vnode.attrs.width ? vnode.attrs.width + 'px' : 'auto'}` } },
 			m(
 				'select.form-select',

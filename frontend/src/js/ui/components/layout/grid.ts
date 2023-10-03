@@ -4,7 +4,7 @@ type GridProps = {
 	className?: string;
 	minWidth?: string;
 	maxWidth?: string;
-	gap?: string;
+	gap?: number;
 };
 
 /**
@@ -15,16 +15,14 @@ export default (): m.Component<GridProps> => {
 		view({ attrs, children }) {
 			let min = attrs.minWidth ?? '400px';
 			let max = attrs.maxWidth ?? '1fr';
-			let gap = attrs.gap ?? '1rem';
 
 			let style = {
 				display: 'grid',
 				gridTemplateColumns: `repeat(auto-fit, minmax(${min}, ${max}))`,
-				gridGap: gap,
 			};
 
 			return m(
-				`div${attrs.className ?? ''}`,
+				`div${attrs.className ?? ''}${attrs.gap ? `.gap-${attrs.gap}` : '.gap-3'}`,
 				{
 					style,
 				},

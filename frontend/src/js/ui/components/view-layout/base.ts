@@ -23,10 +23,19 @@ export default (): m.Component<BaseProps> => {
 			return null;
 		}
 
-		return m(Flex, { justify: 'between', items: 'center', className: `.bb.b--black-10.pa${attrs.headerPadding ?? 3}.bg-white-80.flex-shrink-0` }, [
-			attrs.title, //
-			attrs.rightElement,
-		]);
+		return m(
+			Flex,
+			{
+				justify: 'between',
+				items: 'center',
+				className: `.bb.b--black-10.ph${attrs.headerPadding ?? 3}.bg-white-80.flex-shrink-0`,
+				style: { height: '70px' },
+			},
+			[
+				attrs.title, //
+				attrs.rightElement,
+			]
+		);
 	};
 
 	return {

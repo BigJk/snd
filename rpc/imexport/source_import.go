@@ -16,35 +16,23 @@ import (
 	"strings"
 )
 
-type Argument struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Type        string `json:"type"`
-	Default     any    `json:"default"`
-}
-
+// DataSourceImportFunc is a function that imports a data source from a given set of arguments.
 type DataSourceImportFunc func(args []any) ([]snd.DataSource, [][]snd.Entry, error)
 
+// DataSourceImport is a data source import.
 type DataSourceImport struct {
-	Name        string               `json:"name"`
-	RPCName     string               `json:"rpcName"`
-	Description string               `json:"description"`
-	Arguments   []Argument           `json:"arguments"`
-	Func        DataSourceImportFunc `json:"-"`
+	ImExport
+	Func DataSourceImportFunc `json:"-"`
 }
 
-var imports = []DataSourceImport{
+var sourceImports = []DataSourceImport{
+	//
+	// Folder
+	//
 	{
-		Name:        "Folder",
-		RPCName:     "Folder",
-		Description: "Import a folder.",
-		Arguments: []Argument{
-			{
-				Name:        "Folder",
-				Description: "The path to the folder.",
-				Type:        "FolderPath",
-			},
-		},
+		ImExport: NewImExport("Folder", "Folder", "Import a folder.",
+			Arg("Folder", "The folder to import.", "FolderPath", nil),
+		),
 		Func: func(args []any) ([]snd.DataSource, [][]snd.Entry, error) {
 			if len(args) != 1 {
 				return nil, nil, errors.New("invalid number of arguments")
@@ -63,17 +51,13 @@ var imports = []DataSourceImport{
 			return []snd.DataSource{ds}, [][]snd.Entry{entries}, nil
 		},
 	},
+	//
+	// ZIP
+	//
 	{
-		Name:        "ZIP",
-		RPCName:     "ZIP",
-		Description: "Import a ZIP file.",
-		Arguments: []Argument{
-			{
-				Name:        "File",
-				Description: "The path to the ZIP file.",
-				Type:        "FilePath",
-			},
-		},
+		ImExport: NewImExport("ZIP", "ZIP", "Import a ZIP file.",
+			Arg("File", "The path to the ZIP file.", "FilePath", nil),
+		),
 		Func: func(args []any) ([]snd.DataSource, [][]snd.Entry, error) {
 			if len(args) != 1 {
 				return nil, nil, errors.New("invalid number of arguments")
@@ -116,17 +100,13 @@ var imports = []DataSourceImport{
 			return []snd.DataSource{ds}, [][]snd.Entry{entries}, nil
 		},
 	},
+	//
+	// JSON
+	//
 	{
-		Name:        "JSON",
-		RPCName:     "JSON",
-		Description: "Import a JSON string.",
-		Arguments: []Argument{
-			{
-				Name:        "JSON",
-				Description: "The JSON string.",
-				Type:        "Text",
-			},
-		},
+		ImExport: NewImExport("JSON", "JSON", "Import a JSON string.",
+			Arg("JSON", "The JSON string.", "Text", nil),
+		),
 		Func: func(args []any) ([]snd.DataSource, [][]snd.Entry, error) {
 			if len(args) != 1 {
 				return nil, nil, errors.New("invalid number of arguments")
@@ -145,17 +125,13 @@ var imports = []DataSourceImport{
 			return []snd.DataSource{ds}, [][]snd.Entry{entries}, nil
 		},
 	},
+	//
+	// CSV
+	//
 	{
-		Name:        "CSV",
-		RPCName:     "CSV",
-		Description: "You can import data from simple CSV files that you exported from Google Sheets or Excel. Visit the Sales & Dungeons Wiki for more information on the layout.",
-		Arguments: []Argument{
-			{
-				Name:        "File",
-				Description: "The path to the CSV file.",
-				Type:        "FilePath",
-			},
-		},
+		ImExport: NewImExport("CSV", "CSV", "You can import data from simple CSV files that you exported from Google Sheets or Excel. Visit the Sales & Dungeons Wiki for more information on the layout.",
+			Arg("File", "The path to the CSV file.", "FilePath", nil),
+		),
 		Func: func(args []any) ([]snd.DataSource, [][]snd.Entry, error) {
 			if len(args) != 1 {
 				return nil, nil, errors.New("invalid number of arguments")
@@ -179,41 +155,17 @@ var imports = []DataSourceImport{
 			return []snd.DataSource{source}, [][]snd.Entry{entries}, nil
 		},
 	},
+	//
+	// Fight Club 5e
+	//
 	{
-		Name:        "Fight Club 5e",
-		RPCName:     "FightClub5e",
-		Description: "You can import data from Fight Club 5e Compediums. This will convert all the included data (Items, Monsters, Races, Background, ...) and add them as Data Sources. As the compediums don't contain the basic information like name, author, etc. Please insert them manually.",
-		Arguments: []Argument{
-			{
-				Name:        "File",
-				Description: "The path to the .xml compendium file.",
-				Type:        "FilePath",
-			},
-			{
-				Name:        "Name",
-				Description: "The name of the source.",
-				Type:        "Text",
-				Default:     "Source Name Prefix",
-			},
-			{
-				Name:        "Author",
-				Description: "The author of the source.",
-				Type:        "Text",
-				Default:     "Source Author",
-			},
-			{
-				Name:        "Description",
-				Description: "The description of the source.",
-				Type:        "Text",
-				Default:     "Some cool description...",
-			},
-			{
-				Name:        "Slug",
-				Description: "The slug of the source.",
-				Type:        "Text",
-				Default:     "source-slug-prefix",
-			},
-		},
+		ImExport: NewImExport("Fight Club 5e", "FightClub5e", "You can import data from Fight Club 5e Compediums. This will convert all the included data (Items, Monsters, Races, Background, ...) and add them as Data Sources. As the compediums don't contain the basic information like name, author, etc. Please insert them manually.",
+			Arg("File", "The path to the .xml compendium file.", "FilePath", nil),
+			Arg("Name", "The name of the source.", "Text", "Source Name Prefix"),
+			Arg("Author", "The author of the source.", "Text", "Source Author"),
+			Arg("Description", "The description of the source.", "Text", "Some cool description..."),
+			Arg("Slug", "The slug of the source.", "Text", "source-slug-prefix"),
+		),
 		Func: func(args []any) ([]snd.DataSource, [][]snd.Entry, error) {
 			if len(args) != 5 {
 				return nil, nil, errors.New("invalid number of arguments")
@@ -247,17 +199,13 @@ var imports = []DataSourceImport{
 			return fightclub5e.ImportCompedium(filePath, name, author, slug, description)
 		},
 	},
+	//
+	// FoundryVTT
+	//
 	{
-		Name:        "FoundryVTT",
-		RPCName:     "FoundryVTT",
-		Description: "You can import data from FoundryVTT Modules and Systems. This will convert all the included packs and add them as Data Sources. To import a Module or System open the module.json or system.json file in it's folder.",
-		Arguments: []Argument{
-			{
-				Name:        "File",
-				Description: "The path to the system.json or module.json file.",
-				Type:        "FilePath",
-			},
-		},
+		ImExport: NewImExport("FoundryVTT", "FoundryVTT", "You can import data from FoundryVTT Modules and Systems. This will convert all the included packs and add them as Data Sources. To import a Module or System open the module.json or system.json file in it's folder.",
+			Arg("File", "The path to the system.json or module.json file.", "FilePath", nil),
+		),
 		Func: func(args []any) ([]snd.DataSource, [][]snd.Entry, error) {
 			if len(args) != 1 {
 				return nil, nil, errors.New("invalid number of arguments")
@@ -271,17 +219,13 @@ var imports = []DataSourceImport{
 			return vtt.ConvertDataSources(filePath)
 		},
 	},
+	//
+	// 5e.tools Single File
+	//
 	{
-		Name:        "5e.tools Single File",
-		RPCName:     "5eToolsSingleFile",
-		Description: "Import a single 5e Tools JSON file.",
-		Arguments: []Argument{
-			{
-				Name:        "File",
-				Description: "The path to the 5e Tools JSON file.",
-				Type:        "FilePath",
-			},
-		},
+		ImExport: NewImExport("5e.tools Single File", "5eToolsSingleFile", "Import a single 5e Tools JSON file.",
+			Arg("File", "The path to the 5e Tools JSON file.", "FilePath", nil),
+		),
 		Func: func(args []any) ([]snd.DataSource, [][]snd.Entry, error) {
 			if len(args) != 1 {
 				return nil, nil, errors.New("invalid number of arguments")
@@ -295,17 +239,13 @@ var imports = []DataSourceImport{
 			return tools5e.ImportFile(filePath)
 		},
 	},
+	//
+	// 5e.tools Folder
+	//
 	{
-		Name:        "5e.tools Folder",
-		RPCName:     "5eToolsFolder",
-		Description: "Import a folder of 5e.tools JSON files.",
-		Arguments: []Argument{
-			{
-				Name:        "Folder",
-				Description: "The path to the 5e.tools folder.",
-				Type:        "FolderPath",
-			},
-		},
+		ImExport: NewImExport("5e.tools Folder", "5eToolsFolder", "Import a folder of 5e.tools JSON files.",
+			Arg("Folder", "The path to the 5e.tools folder.", "FolderPath", nil),
+		),
 		Func: func(args []any) ([]snd.DataSource, [][]snd.Entry, error) {
 			if len(args) != 1 {
 				return nil, nil, errors.New("invalid number of arguments")
@@ -321,14 +261,15 @@ var imports = []DataSourceImport{
 	},
 }
 
+// RegisterDataSourceImports registers all data source imports.
 func RegisterDataSourceImports(route *echo.Group, db database.Database) {
 	route.POST("/importsSource", echo.WrapHandler(nra.MustBind(func() ([]DataSourceImport, error) {
-		return imports, nil
+		return sourceImports, nil
 	})))
 
-	for i := range imports {
-		importFunc := imports[i].Func
-		route.POST("/importsSource"+imports[i].RPCName, echo.WrapHandler(nra.MustBind(func(args []any) error {
+	for i := range sourceImports {
+		importFunc := sourceImports[i].Func
+		route.POST("/importsSource"+sourceImports[i].RPCName, echo.WrapHandler(nra.MustBind(func(args []any) error {
 			sources, entries, err := importFunc(args)
 			if err != nil {
 				return err

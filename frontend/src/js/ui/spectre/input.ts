@@ -10,6 +10,7 @@ type InputProps = {
 	onChange?: (value: string) => void;
 	useBlur?: boolean;
 	minimal?: boolean;
+	disabled?: boolean;
 };
 
 const minimalStyle = css`
@@ -45,6 +46,7 @@ export default (): m.Component<InputProps> => {
 					value: attrs.value ?? '',
 					placeholder: attrs.placeholder,
 					type: attrs.type ?? 'text',
+					disabled: attrs.disabled,
 					...handler,
 				},
 				[],

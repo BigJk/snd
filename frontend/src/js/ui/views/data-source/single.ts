@@ -85,6 +85,10 @@ export default (): m.Component<SingleSourceProps> => {
 	};
 
 	const clickEntry = (entry: Entry) => {
+		if (entry.id === state.selectedEntry?.id) {
+			return;
+		}
+
 		if (selectedChanged()) {
 			dialogWarning('Are you sure you want to discard your changes?').then(() => {
 				state.selectedEntry = entry;
@@ -113,7 +117,7 @@ export default (): m.Component<SingleSourceProps> => {
 		}
 
 		try {
-			let entry = { ...state.selectedEntry, data: JSON.parse(state.editValue) };
+			let entry = { ...state.selectedEntry, data: state.editValue ? JSON.parse(state.editValue) : state.selectedEntry.data };
 			API.exec<void>(API.SAVE_ENTRY, id, entry)
 				.then(() => {
 					success(`Saved '${entry.name}' entry`);
@@ -164,7 +168,7 @@ export default (): m.Component<SingleSourceProps> => {
 					}),
 					active: 'data-sources',
 					classNameContainer: '.pa3',
-					rightElement: m(Flex, { gap: 1 }, [
+					rightElement: m(Flex, { gap: 2 }, [
 						m(
 							Button,
 							{
@@ -217,11 +221,31 @@ export default (): m.Component<SingleSourceProps> => {
 												onClick: () => clickEntry(item),
 												right:
 													item.id === state.selectedEntry?.id
-														? m(
-																Tooltip,
-																{ content: 'Delete Entry' },
-																m(Button, { intend: 'error', size: 'sm', onClick: () => deleteEntry(attrs.id, item) }, m(Icon, { icon: 'trash' })),
-														  )
+														? m(Flex, { gap: 2 }, [
+																m(
+																	Tooltip,
+																	{ content: 'Edit Entry' },
+																	m(
+																		Button,
+																		{
+																			intend: 'primary',
+																			size: 'sm',
+																			onClick: () => {
+																				CreateSourceEntry(item.id, item.name).then((res) => {
+																					state.selectedEntry = { ...state.selectedEntry!, name: res.name };
+																					saveSelected(attrs.id);
+																				});
+																			},
+																		},
+																		m(Icon, { icon: 'create' }),
+																	),
+																),
+																m(
+																	Tooltip,
+																	{ content: 'Delete Entry' },
+																	m(Button, { intend: 'error', size: 'sm', onClick: () => deleteEntry(attrs.id, item) }, m(Icon, { icon: 'trash' })),
+																),
+														  ])
 														: null,
 											}),
 									},

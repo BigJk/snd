@@ -4,10 +4,11 @@ import { clearPortal, setPortal } from 'js/ui/portal';
 import Flex from 'js/ui/components/layout/flex';
 import Input from 'js/ui/spectre/input';
 import Button from 'js/ui/spectre/button';
-import FormGroup from 'js/ui/spectre/form-group';
 import HorizontalProperty from 'js/ui/components/horizontal-property';
 
 type CreateSourceEntryProps = {
+	id?: string;
+	name?: string;
 	onCreate: (id: string, name: string) => void;
 	onClose: () => void;
 };
@@ -22,12 +23,16 @@ const CreateSourceEntry = (): m.Component<CreateSourceEntryProps> => {
 	let name = '';
 
 	return {
+		oninit: ({ attrs }) => {
+			id = attrs.id ?? '';
+			name = attrs.name ?? '';
+		},
 		view({ attrs }) {
 			return m(
 				Modal,
 				{
-					title: 'Create Data Source Entry',
-					icon: 'add',
+					title: attrs.id ? 'Edit Data Source Entry' : 'Create Data Source Entry',
+					icon: attrs.id ? 'create' : 'add',
 					onClose: () => {
 						clearPortal();
 						attrs.onClose();
@@ -42,7 +47,7 @@ const CreateSourceEntry = (): m.Component<CreateSourceEntryProps> => {
 							bottomBorder: true,
 							centered: true,
 						},
-						m(Input, { value: id, placeholder: 'test/some-name', onChange: (val: string) => (id = val) }),
+						m(Input, { value: attrs.id ? attrs.id : id, placeholder: 'test/some-name', disabled: !!attrs.id, onChange: (val: string) => (id = val) }),
 					),
 					m(
 						HorizontalProperty,
@@ -56,7 +61,11 @@ const CreateSourceEntry = (): m.Component<CreateSourceEntryProps> => {
 					),
 					m(
 						'div',
-						m(Button, { intend: 'success', onClick: () => attrs.onCreate(id, name), disabled: name.length === 0 || id.length === 0 }, 'Create'),
+						m(
+							Button,
+							{ intend: 'success', onClick: () => attrs.onCreate(id, name), disabled: name.length === 0 || id.length === 0 },
+							attrs.id ? 'Save' : 'Create',
+						),
 					),
 				]),
 			);
@@ -64,10 +73,12 @@ const CreateSourceEntry = (): m.Component<CreateSourceEntryProps> => {
 	};
 };
 
-export default (): Promise<CreateSourceEntryResponse> => {
+export default (id?: string, name?: string): Promise<CreateSourceEntryResponse> => {
 	return new Promise((resolve, reject) => {
 		setPortal<CreateSourceEntryProps>(CreateSourceEntry, {
 			attributes: {
+				id,
+				name,
 				onCreate: (id, name) => {
 					clearPortal();
 					resolve({ id, name });

@@ -18,13 +18,6 @@ export default (): m.Component => {
 	let state: Generator | null = createEmptyGenerator();
 
 	return {
-		oninit({ attrs }) {
-			API.exec<Generator>(API.GET_GENERATOR, attrs.id)
-				.then((generator) => {
-					state = generator;
-				})
-				.catch(error);
-		},
 		view(vnode) {
 			return m(
 				Base,

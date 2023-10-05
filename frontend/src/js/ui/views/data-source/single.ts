@@ -11,11 +11,16 @@ import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
 import SidebarPage from 'js/ui/components/view-layout/sidebar-page';
 
-import { error } from 'js/ui/toast';
+import { dialogWarning, error, success } from 'js/ui/toast';
 import PaginatedContent from 'js/ui/components/view-layout/paginated-content';
 import Input from 'js/ui/spectre/input';
 import EntryListItem from 'js/ui/components/entry-list-item';
 import Monaco from 'js/ui/components/monaco';
+import Icon from 'js/ui/components/atomic/icon';
+import Tooltip from 'js/ui/components/atomic/tooltip';
+import store from 'js/core/store';
+import Flex from 'js/ui/components/layout/flex';
+import CreateSourceEntry from 'js/ui/components/modals/create-source-entry';
 
 type SingleSourceProps = {
 	id: string;
@@ -40,6 +45,35 @@ export default (): m.Component<SingleSourceProps> => {
 		editValue: '',
 	};
 
+	const fetchData = (id: string) => {
+		return new Promise<void>((resolve, reject) => {
+			API.exec<DataSource>(API.GET_SOURCE, id)
+				.then((source) => {
+					state.source = source;
+
+					API.exec<Entry[] | null>(API.GET_ENTRIES, id)
+						.then((entries) => {
+							state.entries = entries ?? [];
+							resolve();
+						})
+						.catch(reject);
+				})
+				.catch(reject);
+		});
+	};
+
+	const deleteSource = (id: string) => {
+		dialogWarning('Are you sure you want to delete this data source?').then(() => {
+			API.exec<void>(API.DELETE_SOURCE, id)
+				.then(() => {
+					success(`Deleted '${state.source?.name}' data source`);
+					m.route.set('/data-source');
+					store.actions.loadSources();
+				})
+				.catch(error);
+		});
+	};
+
 	const filteredEntries = () => {
 		if (!state.source) {
 			return [];
@@ -50,21 +84,72 @@ export default (): m.Component<SingleSourceProps> => {
 		});
 	};
 
-	return {
-		oninit({ attrs }) {
-			API.exec<DataSource>(API.GET_SOURCE, attrs.id)
-				.then((source) => {
-					state.source = source;
+	const clickEntry = (entry: Entry) => {
+		if (selectedChanged()) {
+			dialogWarning('Are you sure you want to discard your changes?').then(() => {
+				state.selectedEntry = entry;
+				state.editValue = '';
+			});
+		} else {
+			state.selectedEntry = entry;
+			state.editValue = '';
+		}
+	};
 
-					API.exec<Entry[]>(API.GET_ENTRIES, attrs.id)
-						.then((entries) => {
-							state.entries = entries;
-						})
-						.catch(error);
+	const deleteEntry = (id: string, entry: Entry) => {
+		API.exec<void>(API.DELETE_ENTRY, id, entry.id)
+			.then(() => {
+				state.selectedEntry = null;
+				state.editValue = '';
+				success(`Deleted '${entry.name}' entry`);
+				fetchData(id).catch(error);
+			})
+			.catch(error);
+	};
+
+	const saveSelected = (id: string) => {
+		if (!state.selectedEntry) {
+			return;
+		}
+
+		try {
+			let entry = { ...state.selectedEntry, data: JSON.parse(state.editValue) };
+			API.exec<void>(API.SAVE_ENTRY, id, entry)
+				.then(() => {
+					success(`Saved '${entry.name}' entry`);
+					state.selectedEntry = entry;
+					fetchData(id).catch(error);
 				})
 				.catch(error);
+		} catch (e) {
+			error(e as string);
+		}
+	};
+
+	const selectedJson = () => {
+		if (!state.selectedEntry) {
+			return '';
+		}
+
+		if (state.editValue) {
+			return state.editValue;
+		}
+
+		return JSON.stringify(state.selectedEntry.data, null, 2);
+	};
+
+	const selectedChanged = () => {
+		if (!state.selectedEntry) {
+			return false;
+		}
+		return state.editValue !== JSON.stringify(state.selectedEntry?.data, null, 2);
+	};
+
+	return {
+		oninit({ attrs }) {
+			fetchData(attrs.id);
 		},
-		view() {
+		view({ attrs }) {
 			return m(
 				Base,
 				{
@@ -79,14 +164,37 @@ export default (): m.Component<SingleSourceProps> => {
 					}),
 					active: 'data-sources',
 					classNameContainer: '.pa3',
-					rightElement: m('div', [
+					rightElement: m(Flex, { gap: 1 }, [
+						m(
+							Button,
+							{
+								intend: 'success',
+								onClick: () =>
+									CreateSourceEntry().then((res) => {
+										const newEntry = { id: res.id, name: res.name, data: {} };
+										API.exec<void>(API.SAVE_ENTRY, attrs.id, newEntry)
+											.then(() => {
+												success(`Created '${res.name}' entry`);
+												fetchData(attrs.id)
+													.then(() => {
+														state.selectedEntry = newEntry;
+														state.editValue = '';
+													})
+													.catch(error);
+											})
+											.catch(error);
+									}),
+							},
+							[m(Icon, { icon: 'add' }), 'Create Entry'],
+						), //
 						m(
 							Button,
 							{
 								intend: 'error',
+								onClick: () => deleteSource(attrs.id),
 							},
-							'Delete',
-						), //
+							m(Icon, { icon: 'trash' }),
+						),
 					]),
 				},
 				m(
@@ -101,15 +209,20 @@ export default (): m.Component<SingleSourceProps> => {
 									{
 										items: filteredEntries(),
 										perPage: PER_PAGE,
-										// @ts-ignore
 										renderItem: (item) =>
+											// @ts-ignore
 											m(EntryListItem, {
 												entry: item,
 												selected: item.id === state.selectedEntry?.id,
-												onClick: () => {
-													state.selectedEntry = item;
-													state.editValue = '';
-												},
+												onClick: () => clickEntry(item),
+												right:
+													item.id === state.selectedEntry?.id
+														? m(
+																Tooltip,
+																{ content: 'Delete Entry' },
+																m(Button, { intend: 'error', size: 'sm', onClick: () => deleteEntry(attrs.id, item) }, m(Icon, { icon: 'trash' })),
+														  )
+														: null,
 											}),
 									},
 									m(
@@ -123,14 +236,28 @@ export default (): m.Component<SingleSourceProps> => {
 								),
 						},
 					},
-					m(
-						'div.bg-white.ba.b--black-10',
-						{ style: { width: '500px' } },
+					m('div.bg-white.ba.b--black-10.relative', { style: { width: '500px' } }, [
+						selectedChanged()
+							? m(
+									Button,
+									{
+										className: '.absolute.ma3.left-0.bottom-0.z-1',
+										intend: 'success',
+										onClick: () => saveSelected(attrs.id),
+									},
+									'Save Change',
+							  )
+							: null,
 						m(Monaco, {
+							className: '.z-0',
 							language: 'json',
-							value: state.selectedEntry ? JSON.stringify(state.selectedEntry.data, null, 2) : '',
+							value: selectedJson(),
+							onChange: (value) => {
+								state.editValue = value;
+								m.redraw();
+							},
 						}),
-					),
+					]),
 				),
 			);
 		},

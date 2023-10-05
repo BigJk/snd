@@ -223,7 +223,7 @@ var sourceImports = []DataSourceImport{
 	// 5e.tools Single File
 	//
 	{
-		ImExport: NewImExport("5e.tools Single File", "5eToolsSingleFile", "Import a single 5e Tools JSON file.",
+		ImExport: NewImExport("5e.tools Single File", "5eToolsSingleFile", "Import a single 5e Tools JSON file. Credits to Nth for the importer.",
 			Arg("File", "The path to the 5e Tools JSON file.", "FilePath", nil),
 		),
 		Func: func(args []any) ([]snd.DataSource, [][]snd.Entry, error) {
@@ -243,7 +243,7 @@ var sourceImports = []DataSourceImport{
 	// 5e.tools Folder
 	//
 	{
-		ImExport: NewImExport("5e.tools Folder", "5eToolsFolder", "Import a folder of 5e.tools JSON files.",
+		ImExport: NewImExport("5e.tools Folder", "5eToolsFolder", "Import a folder of 5e.tools JSON files. Credits to Nth for the importer.",
 			Arg("Folder", "The path to the 5e.tools folder.", "FolderPath", nil),
 		),
 		Func: func(args []any) ([]snd.DataSource, [][]snd.Entry, error) {

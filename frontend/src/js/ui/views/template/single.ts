@@ -23,9 +23,11 @@ import Editor from 'js/ui/components/config/editor';
 import Flex from 'js/ui/components/layout/flex';
 import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
+import PaginatedContent from 'js/ui/components/view-layout/paginated-content';
 import SidebarPrintPage from 'js/ui/components/view-layout/sidebar-print-page';
 
 import { error, success } from 'js/ui/toast';
+import EntryListItem from 'js/ui/components/entry-list-item';
 
 const PER_PAGE = 10;
 
@@ -79,9 +81,9 @@ export default (): m.Component<SingleTemplateProps> => {
 						settings: settings.value,
 						images: {}, // don't need images for list template
 					},
-					false
-				)
-			)
+					false,
+				),
+			),
 		).then((rendered) => {
 			let needsUpdate = false;
 			rendered.forEach((r, i) => {
@@ -152,58 +154,23 @@ export default (): m.Component<SingleTemplateProps> => {
 			.finally(() => (state.aiLoading = false));
 	};
 
-	/**^
-	 * Gets the entries for the current page.
-	 */
-	const getPage = (page: number) => {
-		return filteredEntries().slice(page * PER_PAGE, (page + 1) * PER_PAGE);
-	};
-
-	const maxPage = () => {
-		return Math.floor(filteredEntries().length / PER_PAGE);
-	};
-
-	const nextPage = () => {
-		if (state.page === Math.floor(filteredEntries().length / PER_PAGE)) return;
-		state.page++;
-		ensureRenderCache(getPage(state.page));
-	};
-
-	const prevPage = () => {
-		if (state.page === 0) return;
-		state.page--;
-		ensureRenderCache(getPage(state.page));
-	};
-
 	const entryElement = (entry: Entry) => {
 		const selected = state.selectedEntry && entry.id === state.selectedEntry.id;
-		return m(
-			`div${selected ? '.bl.bw2.b--col-primary.bg-primary-muted' : ''}`,
-			m(
-				Flex,
-				{
-					justify: 'between',
-					className: `.pa2.bb.b--black-10.pointer${!selected ? '.hover-bg-primary-muted' : ''}`,
-					onclick: () => (state.selectedEntry = entry),
-				},
-				[
-					m(`div`, {}, [
-						m('div.f8.text-muted', entry.id), //
-						m('div.f6.fw5', entry.name),
-						m(
-							`div${state.renderCache[entry.id] ? '.mt2' : ''}`,
-							state.renderCache[entry.id] !== undefined ? m.trust(state.renderCache[entry.id]) : m('div.dib.pl2.mt2', m(Loader))
-						),
-					]),
-					selected
-						? m('div', [
-								m(Tooltip, { content: 'Screenshot' }, m(Button, { intend: 'primary', size: 'sm', className: '.mr2' }, m(Icon, { icon: 'camera' }))), //
-								m(Tooltip, { content: 'Print' }, m(Button, { intend: 'primary', size: 'sm' }, m(Icon, { icon: 'print' }))),
-						  ])
-						: null,
-				]
-			)
-		);
+		return m(EntryListItem, {
+			entry,
+			selected,
+			onClick: () => (state.selectedEntry = entry),
+			bottom: m(
+				`div${state.renderCache[entry.id] ? '.mt2' : ''}`,
+				state.renderCache[entry.id] !== undefined ? m.trust(state.renderCache[entry.id]) : m('div.dib.pl2.mt2', m(Loader)),
+			),
+			right: selected
+				? m('div', [
+						m(Tooltip, { content: 'Screenshot' }, m(Button, { intend: 'primary', size: 'sm', className: '.mr2' }, m(Icon, { icon: 'camera' }))), //
+						m(Tooltip, { content: 'Print' }, m(Button, { intend: 'primary', size: 'sm' }, m(Icon, { icon: 'print' }))),
+				  ])
+				: null,
+		});
 	};
 
 	return {
@@ -214,11 +181,6 @@ export default (): m.Component<SingleTemplateProps> => {
 
 				fetchEntries();
 			});
-
-			ensureRenderCache(getPage(state.page));
-		},
-		onupdate({ attrs }) {
-			ensureRenderCache(getPage(state.page));
 		},
 		view({ attrs }) {
 			return m(
@@ -233,7 +195,7 @@ export default (): m.Component<SingleTemplateProps> => {
 						m(
 							IconButton,
 							{ icon: 'add', size: 'sm', intend: 'success', className: '.mr2', onClick: () => m.route.set(`/template/${attrs.id}/create`) },
-							'New Entry'
+							'New Entry',
 						),
 						m(IconButton, { icon: 'create', size: 'sm', intend: 'primary', onClick: () => m.route.set(`/template/${attrs.id}/edit`) }, 'Edit'),
 					]),
@@ -251,21 +213,18 @@ export default (): m.Component<SingleTemplateProps> => {
 								{ icon: 'search', label: 'Advanced Filter' },
 							],
 							content: {
-								Entries: () =>
-									m(Flex, { direction: 'column', className: '.overflow-auto.h-100' }, [
-										m(Flex, { direction: 'column', className: '.flex-grow-1.overflow-auto.h-100' }, getPage(state.page).map(entryElement)), //
-										m(
-											'div.flex-shrink-0.pa3.bt.b--black-10',
-											m(Flex, { justify: 'between' }, [
-												m('div.w5', m(Input, { placeholder: 'Search...', value: state.search, onChange: (val) => (state.search = val) })), //
-												m(Flex, { items: 'center' }, [
-													m(Button, { onClick: prevPage }, m(Icon, { icon: 'arrow-round-back' })), //
-													m('div.w3.tc', `${state.page + 1} / ${maxPage() + 1}`),
-													m(Button, { onClick: nextPage }, m(Icon, { icon: 'arrow-round-forward' })),
-												]),
-											])
-										),
-									]),
+								Entries: () => {
+									m(
+										PaginatedContent<Entry>,
+										{
+											items: filteredEntries(),
+											perPage: PER_PAGE,
+											renderItem: entryElement,
+											pageOpened: (page, items) => ensureRenderCache(items),
+										},
+										m('div.w5', m(Input, { placeholder: 'Search...', value: state.search, onChange: (val) => (state.search = val) })),
+									);
+								},
 								'AI Entry': () =>
 									m(
 										'div.ph3.pv2',
@@ -273,7 +232,7 @@ export default (): m.Component<SingleTemplateProps> => {
 											m('div.f5.b', 'AI Entry'),
 											m(
 												'div.f7.text-muted.mb2.lh-copy',
-												'Enter a prompt for the AI to generate a entry. Sometimes it needs a few tries to generate valid data and in some cases it is not possible to generate data as the AI might flag the input as inappropriate.'
+												'Enter a prompt for the AI to generate a entry. Sometimes it needs a few tries to generate valid data and in some cases it is not possible to generate data as the AI might flag the input as inappropriate.',
 											),
 											m(TextArea, {
 												rows: 10,
@@ -310,13 +269,13 @@ export default (): m.Component<SingleTemplateProps> => {
 																		intend: 'success',
 																		className: '.ml2',
 																	},
-																	'Save'
+																	'Save',
 																),
 														  ]
-														: null
+														: null,
 												),
 											]),
-										])
+										]),
 									),
 								Information: () => m('div.ph3.pv2.lh-copy', [m('div.f5.mb2.b', 'Description'), state.template?.description ?? '']),
 								Config: () =>
@@ -331,7 +290,7 @@ export default (): m.Component<SingleTemplateProps> => {
 								'Advanced Filter': () => m('div', 'advanced-filter'),
 							},
 					  })
-					: null
+					: null,
 			);
 		},
 	};

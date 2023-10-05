@@ -65,9 +65,9 @@ export default (): m.Component<DataSourceBoxProps> => {
 								m('div.text-muted', attrs.source.count),
 							]), //
 							m('div.f8.fw5.break-word', cutDescription(attrs.source.description)),
-						])
+						]),
 					),
-				])
+				]),
 			);
 		},
 	};

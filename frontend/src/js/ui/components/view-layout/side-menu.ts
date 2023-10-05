@@ -31,7 +31,7 @@ export default (): m.Component<SideMenuProps> => {
 			[
 				m('div.w1.mr1', { key: item.id }, m(`i.ion.ion-md-${item.icon}.f7.col-primary`, { key: item.id })), //
 				m(`.f8`, { key: item.id }, item.title),
-			]
+			],
 		);
 	};
 
@@ -42,7 +42,7 @@ export default (): m.Component<SideMenuProps> => {
 				{ key: key },
 				attrs.items.map((item) => {
 					return menuItem(item);
-				})
+				}),
 			);
 		},
 	};

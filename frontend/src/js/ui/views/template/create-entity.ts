@@ -63,7 +63,7 @@ export default (): m.Component<CreateTemplateEntityProps> => {
 								intend: 'success',
 								onClick: () => {},
 							},
-							'Save'
+							'Save',
 						), //
 					],
 					active: 'templates',
@@ -78,7 +78,7 @@ export default (): m.Component<CreateTemplateEntityProps> => {
 							return m('div', 'Entry');
 						},
 					},
-				})
+				}),
 			);
 		},
 	};

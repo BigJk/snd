@@ -78,9 +78,9 @@ export default (): m.Component<TemplateBoxProps> => {
 							m('div.f6.fw5.mb2.pb2.bb.b--black-05', templateOrGenerator.name), //
 							//m('div.f8.ttu.fw5.text-muted.mb2.pb2.bb.b--black-05', `By ${templateOrGenerator.author}`), //
 							m('div.f8.fw5.break-word', cutDescription(templateOrGenerator.description)), //
-						])
+						]),
 					),
-				])
+				]),
 			);
 		},
 	};

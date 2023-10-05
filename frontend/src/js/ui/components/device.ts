@@ -38,8 +38,8 @@ export default (): m.Component<DeviceProps> => {
 							m('div.f8.code.o-50', 'endpoint=' + attrs.endpoint),
 						]),
 						m('div', button(attrs)),
-					])
-				)
+					]),
+				),
 			);
 		},
 	};

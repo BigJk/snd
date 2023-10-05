@@ -41,7 +41,7 @@ export default (): m.Component => {
 				onInput: (e) => {
 					state.typeFilter = e.value;
 				},
-			})
+			}),
 		);
 	};
 
@@ -73,7 +73,7 @@ export default (): m.Component => {
 						},
 					});
 				});
-			})
+			}),
 		);
 	};
 
@@ -87,7 +87,7 @@ export default (): m.Component => {
 					active: 'devices',
 					classNameContainer: '.pa3',
 				},
-				m('div.overflow-auto', [devices()])
+				m('div.overflow-auto', [devices()]),
 			);
 		},
 	};

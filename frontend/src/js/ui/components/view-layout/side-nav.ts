@@ -75,8 +75,8 @@ export default (): m.Component<SideNavProps> => {
 							height: '38px',
 						},
 					},
-					m('i.f5.ion.ion-md-' + v.icon)
-				)
+					m('i.f5.ion.ion-md-' + v.icon),
+				),
 			);
 		});
 
@@ -87,7 +87,7 @@ export default (): m.Component<SideNavProps> => {
 				m(
 					'div.grid-bg.br2.h-100' + vnode.attrs.className,
 					{ style: { width: '70px' } },
-					m('div.flex.flex-column.items-center.pt3', [m(Logo, { scale: 0.75 }), m('div.mb3'), ...menu(vnode.attrs.active)])
+					m('div.flex.flex-column.items-center.pt3', [m(Logo, { scale: 0.75 }), m('div.mb3'), ...menu(vnode.attrs.active)]),
 				),
 			]);
 		},

@@ -3,10 +3,10 @@ import m from 'mithril';
 import { css } from 'goober';
 
 import BasicInfo from 'js/types/basic-info';
-import EditorHeader from 'js/ui/components/view-layout/property-header'
+import EditorHeader from 'js/ui/components/view-layout/property-header';
 
-import type {PropertyAnnotation} from "js/ui/components/view-layout/property-edit";
-import PropertyEdit from "js/ui/components/view-layout/property-edit";
+import type { PropertyAnnotation } from 'js/ui/components/view-layout/property-edit';
+import PropertyEdit from 'js/ui/components/view-layout/property-edit';
 import Icon from 'js/ui/components/atomic/icon';
 import Flex from 'js/ui/components/layout/flex';
 
@@ -44,28 +44,28 @@ export default <T extends Object>(): m.Component<BasicInfoProps<T>> => {
 						onChange: onChange,
 						show: ['name', 'description', 'author', 'slug'],
 						annotations: {
-							'name': {
+							name: {
 								label: 'Name',
 								description: 'This will be the display name',
 							},
-							'description': {
+							description: {
 								label: 'Description',
 								description: 'This will be the displayed description',
 								largeInput: true,
 								fullSize: true,
 							},
-							'author': {
+							author: {
 								label: 'Author',
 								validator: author,
 								description: 'The username of the author',
 							},
-							'slug': {
+							slug: {
 								label: 'Slug',
 								description: "A identifier only containing alphanumerical characters and '-'",
 								validator: slug,
 							},
 							...attrs.extendedAnnotations,
-						}
+						},
 					}),
 					//
 					// Name and slug preview
@@ -76,7 +76,7 @@ export default <T extends Object>(): m.Component<BasicInfoProps<T>> => {
 							m('div.f8.text-muted', `${attrs.info.author}/${attrs.info.slug}`),
 						]),
 					]),
-				])
+				]),
 			);
 		},
 	};

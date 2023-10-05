@@ -55,7 +55,7 @@ export const createNunjucksCompletionProvider = (context: any): CompletionFuncti
 		model: monaco.editor.ITextModel,
 		position: monaco.Position,
 		_context: monaco.languages.CompletionContext,
-		_token: monaco.CancellationToken
+		_token: monaco.CancellationToken,
 	): monaco.languages.CompletionItem[] => {
 		let textUntilPosition = model.getValueInRange({
 			startLineNumber: position.lineNumber,
@@ -92,7 +92,7 @@ export const createNunjucksCompletionProvider = (context: any): CompletionFuncti
 							detail: typeof get(context, field),
 						};
 					});
-			})
+			}),
 		);
 	};
 };

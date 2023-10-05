@@ -30,12 +30,12 @@ export default (): m.Component<ModalProps> => {
 							? m(
 									Flex,
 									{ className: '.bg-white-80.absolute.left-0.top-0.w-100.h-100.z-5', justify: 'center', items: 'center', direction: 'column' },
-									[m(Loader), attrs.loadingMessage ? m('div.f8.text-muted.mt2', attrs.loadingMessage) : null]
+									[m(Loader), attrs.loadingMessage ? m('div.f8.text-muted.mt2', attrs.loadingMessage) : null],
 							  )
 							: null,
 						children,
 					]),
-				]
+				],
 			);
 		},
 	};

@@ -42,7 +42,7 @@ export default (): m.Component => {
 										.catch(error);
 								},
 							},
-							'Save'
+							'Save',
 						), //
 					],
 					active: 'templates',
@@ -53,7 +53,7 @@ export default (): m.Component => {
 					onChange: (template) => {
 						state = template;
 					},
-				})
+				}),
 			);
 		},
 	};

@@ -81,7 +81,7 @@ export default (): m.Component => {
 					items: 'center',
 					justify: 'center',
 				},
-				'Nothing found'
+				'Nothing found',
 			);
 		}
 
@@ -105,16 +105,16 @@ export default (): m.Component => {
 							m(
 								Flex,
 								{ className: `.w2.h2.br2.white.mr2${itemBackground(item.item.type)}`, items: 'center', justify: 'center' },
-								m(Icon, { icon: item.item.type != 'operation' ? icons[item.item.type] : item.item.operation?.icon ?? '', size: 5 })
+								m(Icon, { icon: item.item.type != 'operation' ? icons[item.item.type] : item.item.operation?.icon ?? '', size: 5 }),
 							), //
 							m('div', [
 								m('div.b', name), //
 								m('div.text-muted', capitalize(item.item.type)),
 							]),
-						]
-					)
+						],
+					),
 				);
-			})
+			}),
 		);
 	};
 
@@ -139,7 +139,7 @@ export default (): m.Component => {
 					],
 					className: '.mr2',
 				},
-				'Navigate'
+				'Navigate',
 			), //
 			m(Key, { key: 'enter', className: '.mr2' }, 'Open'),
 			m(Key, { key: 'esc' }, 'Exit'),
@@ -194,7 +194,7 @@ export default (): m.Component => {
 				m(
 					'div.overflow-auto.' + state.id,
 					{ style: { minHeight: '200px', maxHeight: '70vh', height: state.result ? state.result.length * ItemHeight + 'px' : '200px' } },
-					results()
+					results(),
 				),
 				footer(),
 			]);

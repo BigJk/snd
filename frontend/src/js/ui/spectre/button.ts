@@ -50,7 +50,7 @@ export default (): m.Component<ButtonProps> => {
 			return m(
 				'button' + classes + (attrs.className ?? ''),
 				{ onclick: attrs.link ? () => openLink(attrs.link) : !attrs.loading ? attrs.onClick : null },
-				finalChildren
+				finalChildren,
 			);
 		},
 	};

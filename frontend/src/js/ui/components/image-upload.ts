@@ -34,7 +34,7 @@ export default (): m.Component<ImageUploadProps> => {
 								m(Icon, { icon: 'document', size: 2, className: '.mb3' }),
 								m('div.fw5', 'Select image from your computer'),
 							]), //
-						]
+						],
 					), //
 					m(`input.dn#${id}`, {
 						type: 'file',
@@ -80,11 +80,11 @@ export default (): m.Component<ImageUploadProps> => {
 										});
 									},
 								},
-								'Download'
+								'Download',
 							),
 						]),
 					]), //
-				])
+				]),
 			);
 		},
 	};

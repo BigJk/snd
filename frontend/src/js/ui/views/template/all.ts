@@ -34,7 +34,7 @@ export default (): m.Component => {
 				templates.value.filter((template) => {
 					return template.name.toLowerCase().includes(searchValue.toLowerCase()) || template.author.toLowerCase().includes(searchValue.toLowerCase());
 				}),
-				'author'
+				'author',
 			),
 			(templates, author) => {
 				return m('div.bg-white.br2.ph3.mb3.ba.b--black-10', [
@@ -47,10 +47,10 @@ export default (): m.Component => {
 						{ className: '.mb3', minWidth: '350px', maxWidth: '1fr' },
 						templates.map((template) => {
 							return m(TemplateBox, { template: template, onClick: () => m.route.set(`/template/${buildId('template', template)}`) });
-						})
+						}),
 					),
 				]);
-			}
+			},
 		);
 	};
 
@@ -84,7 +84,7 @@ export default (): m.Component => {
 						m(Button, { link: '/template/create' }, 'Create'), //
 					]),
 				},
-				m('div', [search(), templatesByAuthor()])
+				m('div', [search(), templatesByAuthor()]),
 			);
 		},
 	};

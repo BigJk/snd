@@ -27,12 +27,12 @@ export type FuseSearch = {
 const FuseKeys = flatten<string[]>(
 	['template', 'generator', 'source', 'operation'].map((key) => {
 		return [`${key}.name`, `${key}.description`, `${key}.author`, `${key}.slug`];
-	})
+	}),
 );
 
 const toFuseSearch = (
 	type: 'template' | 'generator' | 'source' | 'operation',
-	item: Template | Generator | DataSource | SpotlightOperation
+	item: Template | Generator | DataSource | SpotlightOperation,
 ): FuseSearch => {
 	let id = '';
 	switch (type) {
@@ -228,7 +228,7 @@ const store = create(initialState, (atom) => ({
 						keys: FuseKeys,
 						minMatchCharLength: 2,
 						threshold: 0.4,
-					}
+					},
 				),
 			};
 		});

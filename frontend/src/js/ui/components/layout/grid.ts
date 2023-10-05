@@ -26,7 +26,7 @@ export default (): m.Component<GridProps> => {
 				{
 					style,
 				},
-				children
+				children,
 			);
 		},
 	};

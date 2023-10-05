@@ -37,7 +37,7 @@ export default (): m.Component => {
 						generator.name.toLowerCase().includes(searchValue.toLowerCase()) || generator.author.toLowerCase().includes(searchValue.toLowerCase())
 					);
 				}),
-				'author'
+				'author',
 			),
 			(generators, author) => {
 				return m('div.bg-white.br2.ph3.mb3.ba.b--black-10', [
@@ -54,10 +54,10 @@ export default (): m.Component => {
 								generator: generator,
 								config: sanitizeConfig(generator, {}),
 							});
-						})
+						}),
 					),
 				]);
-			}
+			},
 		);
 	};
 
@@ -91,7 +91,7 @@ export default (): m.Component => {
 						m(Button, { link: '/generator/create' }, 'Create'), //
 					]),
 				},
-				m('div', [search(), generatorsByAuthor()])
+				m('div', [search(), generatorsByAuthor()]),
 			);
 		},
 	};

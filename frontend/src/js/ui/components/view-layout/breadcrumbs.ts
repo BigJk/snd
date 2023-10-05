@@ -52,12 +52,12 @@ export default (): m.Component<BreadcrumbProps> => {
 							return m(
 								'span.pointer.underline-hover.col-primary.fw5',
 								{ onclick: () => onClick(item, attrs.confirm, attrs.confirmText) },
-								item.label
+								item.label,
 							);
 						}),
-						m(Icon, { icon: 'arrow-dropright', className: '.mh2.o-50' })
-					)
-				)
+						m(Icon, { icon: 'arrow-dropright', className: '.mh2.o-50' }),
+					),
+				),
 			);
 		},
 	};

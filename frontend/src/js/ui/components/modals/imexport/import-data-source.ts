@@ -78,9 +78,9 @@ export default (): m.Component => {
 						onChange: (value: any) => {
 							state.args[i] = value;
 						},
-					})
+					}),
 				);
-			})
+			}),
 		);
 	};
 
@@ -134,10 +134,10 @@ export default (): m.Component => {
 									state.args = state.selected.arguments.map((a) => a.default);
 								}
 							},
-						})
+						}),
 					),
 					selected(),
-				]
+				],
 			);
 		},
 	};

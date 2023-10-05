@@ -67,12 +67,12 @@ export default (): m.Component<ImagesProps> => {
 											attrs.onChange(images);
 										},
 									},
-									'Remove'
+									'Remove',
 								),
 							]),
 						]);
 					}),
-				])
+				]),
 			);
 		},
 	};

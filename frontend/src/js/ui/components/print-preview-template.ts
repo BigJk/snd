@@ -109,12 +109,12 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 												aiEnabled = true;
 											},
 										},
-										'Allow or Re-Roll'
+										'Allow or Re-Roll',
 									),
-								])
-							)
+								]),
+							),
 					  )
-					: null
+					: null,
 			);
 		},
 	};

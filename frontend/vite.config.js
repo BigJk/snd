@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import monacoEditorPlugin from 'vite-plugin-monaco-editor';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import path from 'path';
 
 export default defineConfig({
 	plugins: [tsconfigPaths(), monacoEditorPlugin({})],
@@ -12,9 +13,8 @@ export default defineConfig({
 	},
 	resolve: {
 		alias: {
-			core: './js/core',
-			components: './js/ui/components',
-			ui: './js/ui',
+			js: path.resolve(__dirname, 'src/js'),
+			src: path.resolve(__dirname, 'src'),
 		},
 	},
 	build: {

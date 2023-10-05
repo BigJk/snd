@@ -59,7 +59,7 @@ export default (): m.Component<EditTemplateProps> => {
 										.catch(error);
 								},
 							},
-							'Save'
+							'Save',
 						), //
 					],
 					active: 'templates',
@@ -72,7 +72,7 @@ export default (): m.Component<EditTemplateProps> => {
 								m.redraw();
 							},
 					  })
-					: m(Loader)
+					: m(Loader),
 			);
 		},
 	};

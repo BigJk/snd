@@ -2,6 +2,8 @@ import m from 'mithril';
 
 import { groupBy, map } from 'lodash-es';
 
+import { buildId } from 'js/types/basic-info';
+
 import { sources } from 'js/core/store';
 
 import Button from 'js/ui/spectre/button';
@@ -35,7 +37,7 @@ export default (): m.Component => {
 				sources.value.filter((source) => {
 					return source.name.toLowerCase().includes(searchValue.toLowerCase()) || source.author.toLowerCase().includes(searchValue.toLowerCase());
 				}),
-				'author'
+				'author',
 			),
 			(sources, author) => {
 				return m('div.bg-white.br2.ph3.mb3.ba.b--black-10', [
@@ -47,11 +49,16 @@ export default (): m.Component => {
 						Grid,
 						{ className: '.mb3', minWidth: '350px', maxWidth: '1fr' },
 						sources.map((source) => {
-							return m(SourceBox, { source: source });
-						})
+							return m(SourceBox, {
+								source: source,
+								onClick: () => {
+									m.route.set(`/data-source/${buildId('source', source)}`);
+								},
+							});
+						}),
 					),
 				]);
-			}
+			},
 		);
 	};
 
@@ -89,11 +96,11 @@ export default (): m.Component => {
 									setPortal(ImportDataSource, {});
 								},
 							},
-							'Import'
+							'Import',
 						), //
 					]),
 				},
-				m('div', [search(), dataSourcesByAuthor()])
+				m('div', [search(), dataSourcesByAuthor()]),
 			);
 		},
 	};

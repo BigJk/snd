@@ -11,6 +11,7 @@ import store, { settings } from 'js/core/store';
 import Spotlight from 'js/ui/components/portal/spotlight';
 
 import DataSourceAll from 'js/ui/views/data-source/all';
+import DataSourceSingle from 'js/ui/views/data-source/single';
 import Devices from 'js/ui/views/devices';
 import GeneratorAll from 'js/ui/views/generator/all';
 import GeneratorCreate from 'js/ui/views/generator/create';
@@ -59,6 +60,7 @@ store.actions.loadAll().then(() => {
 		'/generator/:id/edit': GeneratorEdit,
 		'/generator/create': GeneratorCreate,
 		'/data-source': DataSourceAll,
+		'/data-source/:id': DataSourceSingle,
 	});
 
 	document.addEventListener('keydown', (e) => {

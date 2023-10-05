@@ -24,6 +24,7 @@ type MonacoProps = {
 
 type MonacoState = {
 	id: string;
+	editor?: monaco.editor.IStandaloneCodeEditor;
 	completion?: CompletionFunction;
 };
 
@@ -34,7 +35,7 @@ export default (): m.Component<MonacoProps> => {
 
 	return {
 		oncreate({ dom, attrs }) {
-			let editor = monaco.editor.create(dom.querySelector('.monaco-container') as HTMLElement, {
+			state.editor = monaco.editor.create(dom.querySelector('.monaco-container') as HTMLElement, {
 				value: attrs.value,
 				language: attrs.language,
 				automaticLayout: true,
@@ -42,8 +43,8 @@ export default (): m.Component<MonacoProps> => {
 				theme: 'main',
 			});
 
-			editor.onDidChangeModelContent((event) => {
-				if (attrs.onChange) attrs.onChange(editor.getValue());
+			state.editor.onDidChangeModelContent((event) => {
+				if (attrs.onChange) attrs.onChange(state.editor!.getValue());
 			});
 
 			if (attrs.completion) {
@@ -61,6 +62,10 @@ export default (): m.Component<MonacoProps> => {
 				state.completion = attrs.completion;
 			}
 			*/
+
+			if (attrs.value !== state.editor?.getValue()) {
+				state.editor?.setValue(attrs.value);
+			}
 		},
 		onremove({ attrs }) {
 			if (attrs.completion) {

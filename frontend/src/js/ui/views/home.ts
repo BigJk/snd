@@ -31,7 +31,7 @@ export default (): m.Component => {
 								m(Button, { className: '.mr3', intend: 'primary', link: 'https://discord.gg/W95s9kcUk4' }, 'Join Discord'),
 								m(Button, { intend: 'error', link: 'https://ko-fi.com/bigjk' }, 'Support the Project'),
 							],
-						})
+						}),
 					),
 					m(Flex, { className: '.flex-gap-3', direction: 'column' }, [
 						m(BoxVersion, {
@@ -40,7 +40,7 @@ export default (): m.Component => {
 						}),
 						m('div', m(DiscordWidget, { className: 'w-100', height: 400 })),
 					]),
-				])
+				]),
 			);
 		},
 	};

@@ -47,7 +47,7 @@ export default (): m.Component<InputProps> => {
 					type: attrs.type ?? 'text',
 					...handler,
 				},
-				[]
+				[],
 			);
 		},
 	};

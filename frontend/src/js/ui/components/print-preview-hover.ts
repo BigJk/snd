@@ -145,10 +145,10 @@ export default (): m.Component<PrintPreviewHoverProps> => {
 						[
 							m(Flex, { className: '.w-100.f8.fw5', items: 'center' }, [m(Icon, { icon: 'print', className: '.mr1', size: 7 }), 'Print Preview']), //
 							m(Flex, { items: 'end' }, [m(Icon, { icon: 'remove', onClick: minimizeWindow })]),
-						]
+						],
 					), //
 					state.hide ? null : m('div', { style: { height: state.height + 'px' } }, m(PrintPreview, { ...attrs, className: '.h-100' })),
-				]
+				],
 			);
 		},
 	};

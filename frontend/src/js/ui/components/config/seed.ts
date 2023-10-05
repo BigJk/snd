@@ -27,7 +27,7 @@ export default {
 						},
 						m(Icon, {
 							icon: 'refresh',
-						})
+						}),
 					),
 				]);
 			},

@@ -59,7 +59,7 @@ export default (): m.Component<EditGeneratorProps> => {
 										.catch(error);
 								},
 							},
-							'Save'
+							'Save',
 						), //
 					],
 					active: 'generators',
@@ -72,7 +72,7 @@ export default (): m.Component<EditGeneratorProps> => {
 								m.redraw();
 							},
 					  })
-					: m(Loader)
+					: m(Loader),
 			);
 		},
 	};

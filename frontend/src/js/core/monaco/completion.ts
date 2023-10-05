@@ -7,7 +7,7 @@ export type CompletionFunction = (
 	model: monaco.editor.ITextModel,
 	position: monaco.Position,
 	context: monaco.languages.CompletionContext,
-	token: monaco.CancellationToken
+	token: monaco.CancellationToken,
 ) => monaco.languages.CompletionItem[];
 
 const registeredCompletionItemProviders: Record<string, CompletionFunction> = {};
@@ -18,14 +18,14 @@ const completionItemProvider = (language: string) => {
 			model: monaco.editor.ITextModel,
 			position: monaco.Position,
 			context: monaco.languages.CompletionContext,
-			token: monaco.CancellationToken
+			token: monaco.CancellationToken,
 		): monaco.languages.ProviderResult<monaco.languages.CompletionList> {
 			// TODO: using uniqBy here is a hack to prevent duplicate suggestions. We should fix this properly.
 			// There is probably still something wrong with the way we register the completion item providers.
 
 			let result = uniqBy(
 				flatten(map(registeredCompletionItemProviders, (provider) => provider(language, model, position, context, token))),
-				'label'
+				'label',
 			);
 
 			return {

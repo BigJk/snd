@@ -45,8 +45,8 @@ m.mount(target, {
 					justify: currentPortalOptions.justify ?? 'center',
 					className: `.h-100${currentPortalOptions.className ?? ''}`,
 				},
-				m(currentPortal, currentPortalOptions.attributes ?? {})
-			)
+				m(currentPortal, currentPortalOptions.attributes ?? {}),
+			),
 		);
 	},
 });

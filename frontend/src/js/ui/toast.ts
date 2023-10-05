@@ -100,7 +100,7 @@ function dialogInternal(question: string, bg: string) {
 									m.redraw();
 								},
 							},
-							'Yes'
+							'Yes',
 						),
 						m(
 							'div',
@@ -114,11 +114,11 @@ function dialogInternal(question: string, bg: string) {
 									m.redraw();
 								},
 							},
-							'No'
+							'No',
 						),
 					]),
-				]
-			)
+				],
+			),
 		);
 
 		dialogToast.toast = Toastify({

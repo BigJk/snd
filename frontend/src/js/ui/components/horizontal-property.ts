@@ -35,10 +35,10 @@ export default (): m.Component<HorizontalPropertyProps> => {
 						]), //
 						m(
 							`div${attrs.fullSize ? '.mt3.mb2.w-100' : '.ml4'}.flex-shrink-0${attrs.fullSize ? '' : '.' + rightClass}${attrs.rightClassName ?? ''}`,
-							children
+							children,
 						),
-					]
-				)
+					],
+				),
 			);
 		},
 	};

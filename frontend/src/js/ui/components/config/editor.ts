@@ -58,10 +58,10 @@ export default (): m.Component<EditorProps> => {
 										[config.key]: value,
 									});
 								},
-							})
+							}),
 						);
-					})
-				)
+					}),
+				),
 			);
 		},
 	};

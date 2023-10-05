@@ -55,7 +55,7 @@ export default (): m.Component => {
 										.catch(error);
 								},
 							},
-							'Save'
+							'Save',
 						), //
 					],
 					active: 'generators',
@@ -68,7 +68,7 @@ export default (): m.Component => {
 								m.redraw();
 							},
 					  })
-					: m(Loader)
+					: m(Loader),
 			);
 		},
 	};

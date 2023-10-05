@@ -33,7 +33,7 @@ export default {
 							}
 						},
 					},
-					!attrs.value || attrs.value.length === 0 ? 'Select File' : showEndOfPath(attrs.value)
+					!attrs.value || attrs.value.length === 0 ? 'Select File' : showEndOfPath(attrs.value),
 				);
 			},
 		};

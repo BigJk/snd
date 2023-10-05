@@ -82,7 +82,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 						Information: () => m('div.ph3.pv2.lh-copy', [m('div.f5.mb2.b', 'Description'), state.generator?.description ?? '']),
 						Saved: () => m('div.ph3.pv2', 'coming soon...'),
 					},
-				})
+				}),
 			);
 		},
 	};

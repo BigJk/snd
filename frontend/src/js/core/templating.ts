@@ -171,7 +171,7 @@ export type GlobalState = {
 export const render = (
 	template: string,
 	state: (TemplateState & GlobalState) | (GeneratorState & GlobalState),
-	enableDither = true
+	enableDither = true,
 ): Promise<string> => {
 	return new Promise((resolve, reject) => {
 		// check if data is present in cache

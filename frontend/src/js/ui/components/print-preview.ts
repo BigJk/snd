@@ -176,7 +176,7 @@ export default (): m.Component<PrintPreviewProps> => {
 					state.loading = false;
 					m.redraw();
 				},
-				{ once: true }
+				{ once: true },
 			);
 		} else {
 			// For headless mode we fall back to iframe and we need to reset the iframe to clear old javascript declarations.

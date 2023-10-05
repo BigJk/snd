@@ -34,7 +34,7 @@ export default (): m.Component<BaseProps> => {
 			[
 				attrs.title, //
 				attrs.rightElement,
-			]
+			],
 		);
 	};
 

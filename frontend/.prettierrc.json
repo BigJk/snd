@@ -21,5 +21,6 @@
     "js/ui/[^\/]+$"
   ],
   "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true
+  "importOrderSortSpecifiers": true,
+  "parser": "babel-ts"
 }

@@ -52,7 +52,7 @@ export default (): m.Component<SelectProps> => {
 									value: '',
 									selected: !vnode.attrs.selected || vnode.attrs.selected.length === 0,
 								},
-								vnode.attrs.default ?? 'Choose an option...'
+								vnode.attrs.default ?? 'Choose an option...',
 						  ),
 					// render all the options.
 					vnode.attrs.keys.map((k, i) => {
@@ -66,11 +66,11 @@ export default (): m.Component<SelectProps> => {
 								value: k,
 								selected: vnode.attrs.selected === k,
 							},
-							text
+							text,
 						);
 					}),
-				]
-			)
+				],
+			),
 		);
 	};
 

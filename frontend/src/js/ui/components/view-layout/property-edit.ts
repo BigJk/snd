@@ -74,7 +74,7 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => {
 									return m(
 										HorizontalProperty,
 										{ label: label, description: description, bottomBorder: true, centered: true, fullSize: fullSize },
-										attrs.annotations[key].customComponent
+										attrs.annotations[key].customComponent,
 									);
 								}
 							}
@@ -86,7 +86,7 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => {
 									return m(
 										HorizontalProperty,
 										{ label: label, description: description, bottomBorder: true, centered: true },
-										m(Input, { value: value.toString(), onChange: (value) => onChange({ ...attrs.properties, [key]: validator(value) }) })
+										m(Input, { value: value.toString(), onChange: (value) => onChange({ ...attrs.properties, [key]: validator(value) }) }),
 									);
 								}
 
@@ -97,7 +97,7 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => {
 										rows: fullSize ? 10 : 3,
 										value: value.toString(),
 										onChange: (value) => onChange({ ...attrs.properties, [key]: validator(value) }),
-									})
+									}),
 								);
 							case 'number':
 								return m(
@@ -107,13 +107,13 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => {
 										value: value.toString(),
 										useBlur: true,
 										onChange: (value) => onChange({ ...attrs.properties, [key]: parseInt(validator(value)) }),
-									})
+									}),
 								);
 							case 'boolean':
 								return m(
 									HorizontalProperty,
 									{ label: label, description: description, bottomBorder: true, centered: true },
-									m(Checkbox, { checked: value, onChange: (checked) => onChange({ ...attrs.properties, [key]: checked }) })
+									m(Checkbox, { checked: value, onChange: (checked) => onChange({ ...attrs.properties, [key]: checked }) }),
 								);
 							case 'object':
 								let addButton = m(
@@ -140,8 +140,8 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => {
 												onChange({ ...attrs.properties, [key]: newArray });
 											},
 										},
-										'Add'
-									)
+										'Add',
+									),
 								);
 
 								if (value != null && !Array.isArray(value)) return addButton;
@@ -174,11 +174,11 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => {
 											]);
 										}),
 										addButton,
-									])
+									]),
 								);
 						}
 					}),
-				])
+				]),
 			);
 		},
 	};

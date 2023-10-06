@@ -5,6 +5,8 @@ import * as monaco from 'monaco-editor';
 
 import type { CompletionFunction } from 'js/core/monaco/completion';
 
+const keyRegex = new RegExp(`([\\[\\]a-zA-Z0-9_\.\\-]+)`);
+
 const buildLabel = (context: any, path: string) => {
 	let value = get(context, path);
 	let label = `${path}`;
@@ -64,11 +66,17 @@ export const createNunjucksCompletionProvider = (context: any): CompletionFuncti
 			endColumn: position.column + 1,
 		});
 
+		console.log('textUntilPosition', textUntilPosition);
+
+		// If the text until the position doesn't match the key, then we don't want to show the completion.
+		let match = keyRegex.exec(textUntilPosition);
+		if (!match) {
+			return [];
+		}
+
 		return flatten(
 			Object.keys(context).map((key) => {
-				// If the text until the position doesn't match the key, then we don't want to show the completion.
-				let match = textUntilPosition.match(new RegExp(`.*([a-zA-Z0-9_\.-]+)$`));
-				if (!match || !key.includes(match[1])) {
+				if (!key.includes(match![1])) {
 					return [];
 				}
 

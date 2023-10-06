@@ -7,6 +7,7 @@ import TemplatingWorker from 'js/workers/templating-worker?worker';
 
 import dither from 'js/core/dither';
 import { ai } from 'js/core/store';
+import { cloneDeep } from 'lodash-es';
 
 type WorkerJob = {
 	hashed: string;
@@ -174,16 +175,23 @@ export const render = (
 	enableDither = true,
 ): Promise<string> => {
 	return new Promise((resolve, reject) => {
+		// we need to clone the state, so we can remove sensitive data from it.
+		const clonedState = cloneDeep(state) as (TemplateState & GlobalState) | (GeneratorState & GlobalState);
+
 		// check if data is present in cache
-		let hashed = hash(template) + hash(state);
-		if ((!containsAi(template) || (containsAi(template) && !state.aiEnabled)) && cache[hashed]) {
+		let hashed = hash(template) + hash(clonedState);
+		if ((!containsAi(template) || (containsAi(template) && !clonedState.aiEnabled)) && cache[hashed]) {
 			console.log('templating: cache hit');
 			resolve(cache[hashed]);
 			return;
 		}
 
-		if (!state.aiToken) {
-			state.aiToken = ai.value.token;
+		// clear sensitive data from state
+		clonedState.settings.aiApiKey = '';
+		clonedState.settings.syncKey = '';
+
+		if (!clonedState.aiToken) {
+			clonedState.aiToken = ai.value.token;
 		}
 
 		// setup promises for response
@@ -192,15 +200,15 @@ export const render = (
 			hashed,
 			resolve,
 			reject,
-			timeout: setTimeout(() => reject('timeout'), state.aiEnabled ? 120000 : 2000),
+			timeout: setTimeout(() => reject('timeout'), clonedState.aiEnabled ? 120000 : 2000),
 		};
 
 		let additional = '';
-		additional += rngScript(state.config.seed ?? 'test-seed');
+		additional += rngScript(clonedState.config.seed ?? 'test-seed');
 		additional += aiScript;
 
 		// post message (round-robin style) to some worker
-		workers[workerSelect++ % workers.length].postMessage({ id, template: additional + template + (enableDither ? dither : ''), state });
+		workers[workerSelect++ % workers.length].postMessage({ id, template: additional + template + (enableDither ? dither : ''), state: clonedState });
 	});
 };
 

@@ -20,7 +20,7 @@ import Icon from 'js/ui/components/atomic/icon';
 import Tooltip from 'js/ui/components/atomic/tooltip';
 import store from 'js/core/store';
 import Flex from 'js/ui/components/layout/flex';
-import CreateSourceEntry from 'js/ui/components/modals/create-source-entry';
+import CreateSourceEntry from 'js/ui/components/modals/source/create-edit-entry';
 
 type SingleSourceProps = {
 	id: string;
@@ -60,6 +60,10 @@ export default (): m.Component<SingleSourceProps> => {
 				})
 				.catch(reject);
 		});
+	};
+
+	const editSource = (id: string) => {
+		// TODO: ...
 	};
 
 	const deleteSource = (id: string) => {
@@ -191,6 +195,14 @@ export default (): m.Component<SingleSourceProps> => {
 							},
 							[m(Icon, { icon: 'add' }), 'Create Entry'],
 						), //
+						m(
+							Button,
+							{
+								intend: 'primary',
+								onClick: () => editSource(attrs.id),
+							},
+							m(Icon, { icon: 'create' }),
+						),
 						m(
 							Button,
 							{

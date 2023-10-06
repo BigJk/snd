@@ -23,6 +23,8 @@ const completionItemProvider = (language: string) => {
 			// TODO: using uniqBy here is a hack to prevent duplicate suggestions. We should fix this properly.
 			// There is probably still something wrong with the way we register the completion item providers.
 
+			console.log('provideCompletionItems', language, position, context, token);
+
 			let result = uniqBy(
 				flatten(map(registeredCompletionItemProviders, (provider) => provider(language, model, position, context, token))),
 				'label',

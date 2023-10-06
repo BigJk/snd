@@ -1,0 +1,11 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [],
+  "rules": {
+    "capitalized-comments": ["error", "always", { "ignoreConsecutiveComments": true }]
+  }
+}

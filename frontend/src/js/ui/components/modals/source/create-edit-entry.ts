@@ -6,19 +6,19 @@ import Input from 'js/ui/spectre/input';
 import Button from 'js/ui/spectre/button';
 import HorizontalProperty from 'js/ui/components/horizontal-property';
 
-type CreateSourceEntryProps = {
+type CreateEditEntrySourceEntryProps = {
 	id?: string;
 	name?: string;
 	onCreate: (id: string, name: string) => void;
 	onClose: () => void;
 };
 
-type CreateSourceEntryResponse = {
+type CreateEditEntrySourceEntryResponse = {
 	id: string;
 	name: string;
 };
 
-const CreateSourceEntry = (): m.Component<CreateSourceEntryProps> => {
+const CreateEditEntry = (): m.Component<CreateEditEntrySourceEntryProps> => {
 	let id = '';
 	let name = '';
 
@@ -73,9 +73,9 @@ const CreateSourceEntry = (): m.Component<CreateSourceEntryProps> => {
 	};
 };
 
-export default (id?: string, name?: string): Promise<CreateSourceEntryResponse> => {
+export default (id?: string, name?: string): Promise<CreateEditEntrySourceEntryResponse> => {
 	return new Promise((resolve, reject) => {
-		setPortal<CreateSourceEntryProps>(CreateSourceEntry, {
+		setPortal<CreateEditEntrySourceEntryProps>(CreateEditEntry, {
 			attributes: {
 				id,
 				name,

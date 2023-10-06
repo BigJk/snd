@@ -95,12 +95,11 @@ export default (): m.Component<SingleTemplateProps> => {
 		});
 	}, 500);
 
-	const filteredEntries = () => {
-		return state.entries.filter((e) => {
+	const filteredEntries = () =>
+		state.entries.filter((e) => {
 			if (state.search === '') return true;
 			return e.name.toLowerCase().includes(state.search.toLowerCase());
 		});
-	};
 
 	/**
 	 * Generates a new AI entry.

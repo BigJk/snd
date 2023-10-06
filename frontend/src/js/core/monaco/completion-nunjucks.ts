@@ -91,15 +91,13 @@ export const createNunjucksCompletionProvider = (context: any): CompletionFuncti
 				// Check if any of the context fields start with the word.
 				return contextFields
 					.filter((field) => field.startsWith(word.word))
-					.map((field) => {
-						return {
-							label: buildLabel(context, field),
-							kind: monaco.languages.CompletionItemKind.Field,
-							insertText: field,
-							range: range,
-							detail: typeof get(context, field),
-						};
-					});
+					.map((field) => ({
+						label: buildLabel(context, field),
+						kind: monaco.languages.CompletionItemKind.Field,
+						insertText: field,
+						range: range,
+						detail: typeof get(context, field),
+					}));
 			}),
 		);
 	};

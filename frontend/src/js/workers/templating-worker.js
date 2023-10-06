@@ -155,7 +155,7 @@ env.addFilter(
 			.then((data) => cb(null, data))
 			.catch((err) => cb(err, null));
 	},
-	true
+	true,
 );
 
 onmessage = (e) => {

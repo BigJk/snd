@@ -22,35 +22,33 @@ const minimalStyle = css`
 	}
 `;
 
-export default (): m.Component<InputProps> => {
-	return {
-		view({ attrs }) {
-			const onChange = (event: Event) => {
-				if (attrs.onChange) attrs.onChange((event.target as HTMLInputElement).value);
+export default (): m.Component<InputProps> => ({
+	view({ attrs }) {
+		const onChange = (event: Event) => {
+			if (attrs.onChange) attrs.onChange((event.target as HTMLInputElement).value);
+		};
+
+		let handler = {};
+		if (attrs.useBlur) {
+			handler = {
+				onblur: onChange,
 			};
+		} else {
+			handler = {
+				oninput: onChange,
+			};
+		}
 
-			let handler = {};
-			if (attrs.useBlur) {
-				handler = {
-					onblur: onChange,
-				};
-			} else {
-				handler = {
-					oninput: onChange,
-				};
-			}
-
-			return m(
-				`input.form-input${attrs.className ?? ''}${attrs.minimal ? `.${minimalStyle}` : ''}`,
-				{
-					value: attrs.value ?? '',
-					placeholder: attrs.placeholder,
-					type: attrs.type ?? 'text',
-					disabled: attrs.disabled,
-					...handler,
-				},
-				[],
-			);
-		},
-	};
-};
+		return m(
+			`input.form-input${attrs.className ?? ''}${attrs.minimal ? `.${minimalStyle}` : ''}`,
+			{
+				value: attrs.value ?? '',
+				placeholder: attrs.placeholder,
+				type: attrs.type ?? 'text',
+				disabled: attrs.disabled,
+				...handler,
+			},
+			[],
+		);
+	},
+});

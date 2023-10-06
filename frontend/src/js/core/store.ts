@@ -25,9 +25,7 @@ export type FuseSearch = {
 };
 
 const FuseKeys = flatten<string[]>(
-	['template', 'generator', 'source', 'operation'].map((key) => {
-		return [`${key}.name`, `${key}.description`, `${key}.author`, `${key}.slug`];
-	}),
+	['template', 'generator', 'source', 'operation'].map((key) => [`${key}.name`, `${key}.description`, `${key}.author`, `${key}.slug`]),
 );
 
 const toFuseSearch = (
@@ -104,12 +102,10 @@ const store = create(initialState, (atom) => ({
 	 */
 	loadSettings() {
 		return API.exec<Settings>(API.GET_SETTINGS).then((res) => {
-			atom.update((state) => {
-				return {
-					...state,
-					settings: res,
-				};
-			});
+			atom.update((state) => ({
+				...state,
+				settings: res,
+			}));
 		});
 	},
 
@@ -125,12 +121,10 @@ const store = create(initialState, (atom) => ({
 	 */
 	loadGenerators() {
 		return API.exec<Generator[]>(API.GET_GENERATORS).then((res) => {
-			atom.update((state) => {
-				return {
-					...state,
-					generators: res,
-				};
-			});
+			atom.update((state) => ({
+				...state,
+				generators: res,
+			}));
 
 			this.updateFuzzySearch();
 		});
@@ -141,12 +135,10 @@ const store = create(initialState, (atom) => ({
 	 */
 	loadSources() {
 		return API.exec<DataSource[]>(API.GET_SOURCES).then((res) => {
-			atom.update((state) => {
-				return {
-					...state,
-					sources: res,
-				};
-			});
+			atom.update((state) => ({
+				...state,
+				sources: res,
+			}));
 
 			this.updateFuzzySearch();
 		});
@@ -157,12 +149,10 @@ const store = create(initialState, (atom) => ({
 	 */
 	loadPrinter() {
 		return API.exec<Record<string, Printer>>(API.GET_AVAILABLE_PRINTER).then((res) => {
-			atom.update((state) => {
-				return {
-					...state,
-					printer: res,
-				};
-			});
+			atom.update((state) => ({
+				...state,
+				printer: res,
+			}));
 		});
 	},
 
@@ -171,12 +161,10 @@ const store = create(initialState, (atom) => ({
 	 */
 	loadPublicList() {
 		return API.exec<PublicList[]>(API.GET_PUBLIC_LIST).then((res) => {
-			atom.update((state) => {
-				return {
-					...state,
-					packages: res,
-				};
-			});
+			atom.update((state) => ({
+				...state,
+				packages: res,
+			}));
 		});
 	},
 
@@ -185,12 +173,10 @@ const store = create(initialState, (atom) => ({
 	 */
 	loadTemplates() {
 		return API.exec<Template[]>(API.GET_TEMPLATES).then((res) => {
-			atom.update((state) => {
-				return {
-					...state,
-					templates: res,
-				};
-			});
+			atom.update((state) => ({
+				...state,
+				templates: res,
+			}));
 
 			this.updateFuzzySearch();
 		});
@@ -201,61 +187,53 @@ const store = create(initialState, (atom) => ({
 	 */
 	loadVersion() {
 		return Promise.allSettled([API.exec<Version.LocalVersion>(API.GET_VERSION), API.exec<Version.NewVersion>(API.NEW_VERSION)]).then((res) => {
-			atom.update((state) => {
-				return {
-					...state,
-					version: {
-						current: res[0].status === 'fulfilled' ? res[0].value : null,
-						latest: res[1].status === 'fulfilled' ? res[1].value : null,
-					},
-				};
-			});
+			atom.update((state) => ({
+				...state,
+				version: {
+					current: res[0].status === 'fulfilled' ? res[0].value : null,
+					latest: res[1].status === 'fulfilled' ? res[1].value : null,
+				},
+			}));
 		});
 	},
 
 	updateFuzzySearch() {
-		atom.update((state) => {
-			return {
-				...state,
-				fuzzySearch: new Fuse<FuseSearch>(
-					[
-						...(state.templates ?? []).map((template) => toFuseSearch('template', template)),
-						...(state.generators ?? []).map((generator) => toFuseSearch('generator', generator)),
-						...(state.sources ?? []).map((source) => toFuseSearch('source', source)),
-						...Operations.map((operation) => toFuseSearch('operation', operation)),
-					],
-					{
-						keys: FuseKeys,
-						minMatchCharLength: 2,
-						threshold: 0.4,
-					},
-				),
-			};
-		});
+		atom.update((state) => ({
+			...state,
+			fuzzySearch: new Fuse<FuseSearch>(
+				[
+					...(state.templates ?? []).map((template) => toFuseSearch('template', template)),
+					...(state.generators ?? []).map((generator) => toFuseSearch('generator', generator)),
+					...(state.sources ?? []).map((source) => toFuseSearch('source', source)),
+					...Operations.map((operation) => toFuseSearch('operation', operation)),
+				],
+				{
+					keys: FuseKeys,
+					minMatchCharLength: 2,
+					threshold: 0.4,
+				},
+			),
+		}));
 	},
 
 	setRandomAIToken() {
-		atom.update((state) => {
-			return {
-				...state,
-				ai: {
-					...state.ai,
-					token: Math.ceil(Math.random() * 1000000000).toString(),
-				},
-			};
-		});
+		atom.update((state) => ({
+			...state,
+			ai: {
+				...state.ai,
+				token: Math.ceil(Math.random() * 1000000000).toString(),
+			},
+		}));
 	},
 
 	setAIToken(token: string) {
-		atom.update((state) => {
-			return {
-				...state,
-				ai: {
-					...state.ai,
-					token,
-				},
-			};
-		});
+		atom.update((state) => ({
+			...state,
+			ai: {
+				...state.ai,
+				token,
+			},
+		}));
 	},
 }));
 

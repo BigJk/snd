@@ -10,27 +10,24 @@ import Flex from 'js/ui/components/layout/flex';
 export default {
 	name: 'Seed',
 	default: () => false,
-	view: (): m.Component<ConfigProps> => {
-		return {
-			view: ({ attrs }) => {
-				return m(Flex, { className: '.flex-gap-2' }, [
-					m(Input, {
-						value: attrs.value as string,
-						onChange: (value: string) => attrs.onChange(value),
-					}),
-					m(
-						Button,
-						{
-							onClick: () => {
-								attrs.onChange(Math.ceil(Math.random() * 999999999).toString());
-							},
+	view: (): m.Component<ConfigProps> => ({
+		view: ({ attrs }) =>
+			m(Flex, { className: '.flex-gap-2' }, [
+				m(Input, {
+					value: attrs.value as string,
+					onChange: (value: string) => attrs.onChange(value),
+				}),
+				m(
+					Button,
+					{
+						onClick: () => {
+							attrs.onChange(Math.ceil(Math.random() * 999999999).toString());
 						},
-						m(Icon, {
-							icon: 'refresh',
-						}),
-					),
-				]);
-			},
-		};
-	},
+					},
+					m(Icon, {
+						icon: 'refresh',
+					}),
+				),
+			]),
+	}),
 } as Config;

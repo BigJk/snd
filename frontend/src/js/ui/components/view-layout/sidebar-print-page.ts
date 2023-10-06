@@ -25,16 +25,15 @@ type SidebarPrintProps = {
 export default (): m.Component<SidebarPrintProps> => {
 	let selectedTab: string = '';
 
-	const leftElement = (icon: string, label: string, active: boolean, onClick: () => void) => {
-		return m(Tooltip, { content: label, placement: 'right' }, [m(Icon, { icon, size: 5, onClick, className: active ? '.text-primary' : '' })]);
-	};
+	const leftElement = (icon: string, label: string, active: boolean, onClick: () => void) =>
+		m(Tooltip, { content: label, placement: 'right' }, [m(Icon, { icon, size: 5, onClick, className: active ? '.text-primary' : '' })]);
 
 	return {
 		oninit: (vnode) => {
 			selectedTab = vnode.attrs.tabs[0].label;
 		},
-		view: (vnode) => {
-			return m(Flex, { className: '.flex-gap-3.h-100' }, [
+		view: (vnode) =>
+			m(Flex, { className: '.flex-gap-3.h-100' }, [
 				m(
 					'div.flex-shrink-0',
 					m(Flex, { direction: 'column', className: '.pa2.bg-white.ba.b--black-10.br2.flex-gap-3' }, [
@@ -58,7 +57,6 @@ export default (): m.Component<SidebarPrintProps> => {
 							className: '.bg-black-05.ph1.ba.b--black-10',
 					  })
 					: m('div'),
-			]);
-		},
+			]),
 	};
 };

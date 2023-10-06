@@ -19,9 +19,7 @@ export type BreadcrumbProps = {
 };
 
 export default (): m.Component<BreadcrumbProps> => {
-	const putBetween = (arr: Array<any>, obj: any) => {
-		return flatMap(arr, (item, index) => (index === arr.length - 1 ? [item] : [item, obj]));
-	};
+	const putBetween = (arr: Array<any>, obj: any) => flatMap(arr, (item, index) => (index === arr.length - 1 ? [item] : [item, obj]));
 
 	const onClick = (item: BreadcrumbItem, confirm?: boolean, confirmText?: string) => {
 		if (!item.link) return;

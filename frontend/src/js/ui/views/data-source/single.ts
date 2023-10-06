@@ -45,8 +45,8 @@ export default (): m.Component<SingleSourceProps> => {
 		editValue: '',
 	};
 
-	const fetchData = (id: string) => {
-		return new Promise<void>((resolve, reject) => {
+	const fetchData = (id: string) =>
+		new Promise<void>((resolve, reject) => {
 			API.exec<DataSource>(API.GET_SOURCE, id)
 				.then((source) => {
 					state.source = source;
@@ -60,7 +60,6 @@ export default (): m.Component<SingleSourceProps> => {
 				})
 				.catch(reject);
 		});
-	};
 
 	const editSource = (id: string) => {
 		// TODO: ...
@@ -83,9 +82,7 @@ export default (): m.Component<SingleSourceProps> => {
 			return [];
 		}
 
-		return state.entries.filter((entry) => {
-			return entry.name.toLowerCase().includes(state.search.toLowerCase());
-		});
+		return state.entries.filter((entry) => entry.name.toLowerCase().includes(state.search.toLowerCase()));
 	};
 
 	const clickEntry = (entry: Entry) => {

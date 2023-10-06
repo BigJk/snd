@@ -74,6 +74,4 @@ export const clearPortal = () => {
 /**
  * Returns true if a portal is currently set.
  */
-export const hasPortal = () => {
-	return currentPortal !== null;
-};
+export const hasPortal = () => currentPortal !== null;

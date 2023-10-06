@@ -17,8 +17,8 @@ export type SideMenuProps = {
  * SideMenu component: renders a side menu with clickable items.
  */
 export default (): m.Component<SideMenuProps> => {
-	const menuItem = (item: SideMenuItem) => {
-		return m(
+	const menuItem = (item: SideMenuItem) =>
+		m(
 			`div.ph2.pv1.br2.mb1.flex.items-center.pointer.bg-animate${item.active ? '.bg-black-05.hover-bg-black-10' : '.hover-bg-black-05'}`,
 			{
 				onclick: () => {
@@ -33,16 +33,13 @@ export default (): m.Component<SideMenuProps> => {
 				m(`.f8`, { key: item.id }, item.title),
 			],
 		);
-	};
 
 	return {
 		view({ attrs, key }) {
 			return m(
 				`div${attrs.className ?? ''}`,
 				{ key: key },
-				attrs.items.map((item) => {
-					return menuItem(item);
-				}),
+				attrs.items.map((item) => menuItem(item)),
 			);
 		},
 	};

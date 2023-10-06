@@ -17,16 +17,15 @@ type SidebarProps = {
 export default (): m.Component<SidebarProps> => {
 	let selectedTab: string = '';
 
-	const leftElement = (icon: string, label: string, active: boolean, onClick: () => void) => {
-		return m(Tooltip, { content: label, placement: 'right' }, [m(Icon, { icon, size: 5, onClick, className: active ? '.text-primary' : '' })]);
-	};
+	const leftElement = (icon: string, label: string, active: boolean, onClick: () => void) =>
+		m(Tooltip, { content: label, placement: 'right' }, [m(Icon, { icon, size: 5, onClick, className: active ? '.text-primary' : '' })]);
 
 	return {
 		oninit: ({ attrs }) => {
 			selectedTab = attrs.tabs[0].label;
 		},
-		view: ({ attrs, children }) => {
-			return m(Flex, { className: '.flex-gap-3.h-100' }, [
+		view: ({ attrs, children }) =>
+			m(Flex, { className: '.flex-gap-3.h-100' }, [
 				attrs.tabs.length > 1
 					? m(
 							'div.flex-shrink-0',
@@ -44,7 +43,6 @@ export default (): m.Component<SidebarProps> => {
 				m(Flex, { className: '.bg-white.ba.b--black-10.br2.flex-grow-1.overflow-auto', direction: 'column' }, attrs.content[selectedTab]()),
 				// Content
 				children,
-			]);
-		},
+			]),
 	};
 };

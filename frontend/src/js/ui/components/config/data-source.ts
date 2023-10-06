@@ -13,21 +13,19 @@ export default {
 	default: () => ({
 		selected: '',
 	}),
-	view: () => {
-		return {
-			view: ({ attrs }) => {
-				const value = attrs.value as {
-					selected: string;
-				};
+	view: () => ({
+		view: ({ attrs }) => {
+			const value = attrs.value as {
+				selected: string;
+			};
 
-				// @ts-ignore
-				return m(Select, {
-					selected: value.selected,
-					keys: sources.value.map((s) => buildId('source', s)),
-					name: sources.value.map((s) => `${s.name} (${s.author})`),
-					onInput: (e: any) => attrs.onChange({ ...value, selected: e.target.value }),
-				});
-			},
-		};
-	},
+			// @ts-ignore
+			return m(Select, {
+				selected: value.selected,
+				keys: sources.value.map((s) => buildId('source', s)),
+				name: sources.value.map((s) => `${s.name} (${s.author})`),
+				onInput: (e: any) => attrs.onChange({ ...value, selected: e.target.value }),
+			});
+		},
+	}),
 } as Config;

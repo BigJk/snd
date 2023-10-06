@@ -7,14 +7,11 @@ import Config, { ConfigProps } from 'js/ui/components/config/config';
 export default {
 	name: 'Text',
 	default: () => false,
-	view: (): m.Component<ConfigProps> => {
-		return {
-			view: ({ attrs }) => {
-				return m(Input, {
-					value: attrs.value as string,
-					onChange: (value: string) => attrs.onChange(value),
-				});
-			},
-		};
-	},
+	view: (): m.Component<ConfigProps> => ({
+		view: ({ attrs }) =>
+			m(Input, {
+				value: attrs.value as string,
+				onChange: (value: string) => attrs.onChange(value),
+			}),
+	}),
 } as Config;

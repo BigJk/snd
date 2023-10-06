@@ -19,8 +19,8 @@ export default {
 		};
 
 		return {
-			view: ({ attrs }) => {
-				return m(
+			view: ({ attrs }) =>
+				m(
 					Button,
 					{
 						className: '.fr',
@@ -34,8 +34,7 @@ export default {
 						},
 					},
 					!attrs.value || attrs.value.length === 0 ? 'Select File' : showEndOfPath(attrs.value),
-				);
-			},
+				),
 		};
 	},
 } as Config;

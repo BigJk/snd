@@ -50,8 +50,8 @@ export default (): m.Component<SideMenuPagerProps> => {
 						m(SideMenu, {
 							key: key,
 							className: '.w-100',
-							items: attrs.items.map((item): SideMenuItem => {
-								return {
+							items: attrs.items.map(
+								(item): SideMenuItem => ({
 									id: item.id ?? item.title,
 									title: item.title,
 									icon: item.icon,
@@ -65,8 +65,8 @@ export default (): m.Component<SideMenuPagerProps> => {
 											}
 										}
 									},
-								};
-							}),
+								}),
+							),
 						}),
 					),
 					//

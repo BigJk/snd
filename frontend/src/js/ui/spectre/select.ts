@@ -32,8 +32,8 @@ export default (): m.Component<SelectProps> => {
 		open: false,
 	};
 
-	const getSelect = (vnode: m.Vnode<SelectProps, {}>) => {
-		return m(
+	const getSelect = (vnode: m.Vnode<SelectProps, {}>) =>
+		m(
 			'div.overflow-none',
 			{ style: { width: `${vnode.attrs.width ? vnode.attrs.width + 'px' : 'auto'}` } },
 			m(
@@ -72,7 +72,6 @@ export default (): m.Component<SelectProps> => {
 				],
 			),
 		);
-	};
 
 	// We need to update the oninput value on create and update of component,
 	// otherwise we miss updates to this callback.

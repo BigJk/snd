@@ -23,13 +23,9 @@ export default <T>(): m.Component<PaginatedContentProps<T>> => {
 		lastItemCount: 0,
 	};
 
-	const getPage = (attrs: PaginatedContentProps<T>) => {
-		return attrs.items.slice(state.page * attrs.perPage, (state.page + 1) * attrs.perPage);
-	};
+	const getPage = (attrs: PaginatedContentProps<T>) => attrs.items.slice(state.page * attrs.perPage, (state.page + 1) * attrs.perPage);
 
-	const maxPage = (attrs: PaginatedContentProps<T>) => {
-		return Math.floor(attrs.items.length / attrs.perPage);
-	};
+	const maxPage = (attrs: PaginatedContentProps<T>) => Math.floor(attrs.items.length / attrs.perPage);
 
 	const nextPage = (attrs: PaginatedContentProps<T>) => {
 		console.log('nextPage');
@@ -69,8 +65,8 @@ export default <T>(): m.Component<PaginatedContentProps<T>> => {
 				m.redraw();
 			}
 		},
-		view: ({ attrs, children }) => {
-			return m(Flex, { direction: 'column', className: '.overflow-auto.h-100' }, [
+		view: ({ attrs, children }) =>
+			m(Flex, { direction: 'column', className: '.overflow-auto.h-100' }, [
 				m(Flex, { direction: 'column', className: '.flex-grow-1.overflow-auto.h-100' }, getPage(attrs).map(attrs.renderItem)), //
 				m(
 					'div.flex-shrink-0.pa3.bt.b--black-10',
@@ -83,7 +79,6 @@ export default <T>(): m.Component<PaginatedContentProps<T>> => {
 						]),
 					]),
 				),
-			]);
-		},
+			]),
 	};
 };

@@ -21,48 +21,46 @@ type EditorProps = {
 	onChange: (config: any) => void;
 };
 
-export default (): m.Component<EditorProps> => {
-	return {
-		oninit({ attrs }) {
-			const config = fillConfigValues(attrs.current, attrs.definition);
-			if (!isEqual(config, attrs.current)) {
-				attrs.onChange(config);
-			}
-		},
-		view({ attrs }) {
-			return m(
-				Flex,
-				{ justify: 'center', className: '.w-100.ph3' },
-				m(
-					`div.w-100.${containerClass}`,
-					attrs.definition.map((config) => {
-						const value = attrs.current[config.key];
-						const type = (Types as any)[config.type];
-						if (!type) {
-							return null;
-						}
+export default (): m.Component<EditorProps> => ({
+	oninit({ attrs }) {
+		const config = fillConfigValues(attrs.current, attrs.definition);
+		if (!isEqual(config, attrs.current)) {
+			attrs.onChange(config);
+		}
+	},
+	view({ attrs }) {
+		return m(
+			Flex,
+			{ justify: 'center', className: '.w-100.ph3' },
+			m(
+				`div.w-100.${containerClass}`,
+				attrs.definition.map((config) => {
+					const value = attrs.current[config.key];
+					const type = (Types as any)[config.type];
+					if (!type) {
+						return null;
+					}
 
-						return m(
-							HorizontalProperty,
-							{
-								label: config.name,
-								description: config.description,
-								centered: true,
-								bottomBorder: true,
+					return m(
+						HorizontalProperty,
+						{
+							label: config.name,
+							description: config.description,
+							centered: true,
+							bottomBorder: true,
+						},
+						m(type.view, {
+							value,
+							onChange: (value: any) => {
+								attrs.onChange({
+									...attrs.current,
+									[config.key]: value,
+								});
 							},
-							m(type.view, {
-								value,
-								onChange: (value: any) => {
-									attrs.onChange({
-										...attrs.current,
-										[config.key]: value,
-									});
-								},
-							}),
-						);
-					}),
-				),
-			);
-		},
-	};
-};
+						}),
+					);
+				}),
+			),
+		);
+	},
+});

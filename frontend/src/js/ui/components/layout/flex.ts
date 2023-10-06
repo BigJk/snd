@@ -16,36 +16,34 @@ type FlexProps = {
 /**
  * Flex component: renders a flex container.
  */
-export default (): m.Component<FlexProps> => {
-	return {
-		view({ attrs, children, key }) {
-			let flexClasses: string = '.flex';
+export default (): m.Component<FlexProps> => ({
+	view({ attrs, children, key }) {
+		let flexClasses: string = '.flex';
 
-			if (attrs.inline !== undefined && attrs.inline) {
-				flexClasses = '.inline-flex';
-			}
+		if (attrs.inline !== undefined && attrs.inline) {
+			flexClasses = '.inline-flex';
+		}
 
-			if (attrs.direction !== undefined) {
-				flexClasses += `.flex-${attrs.direction}`;
-			}
+		if (attrs.direction !== undefined) {
+			flexClasses += `.flex-${attrs.direction}`;
+		}
 
-			if (attrs.items !== undefined) {
-				flexClasses += `.items-${attrs.items}`;
-			}
+		if (attrs.items !== undefined) {
+			flexClasses += `.items-${attrs.items}`;
+		}
 
-			if (attrs.justify !== undefined) {
-				flexClasses += `.justify-${attrs.justify}`;
-			}
+		if (attrs.justify !== undefined) {
+			flexClasses += `.justify-${attrs.justify}`;
+		}
 
-			if (attrs.wrap !== undefined) {
-				flexClasses += `.flex-${attrs.wrap}`;
-			}
+		if (attrs.wrap !== undefined) {
+			flexClasses += `.flex-${attrs.wrap}`;
+		}
 
-			if (attrs.gap !== undefined) {
-				flexClasses += `.flex-gap-${attrs.gap}`;
-			}
+		if (attrs.gap !== undefined) {
+			flexClasses += `.flex-gap-${attrs.gap}`;
+		}
 
-			return m(`div.relative${flexClasses}${attrs.className ?? ''}`, { ...attrs, key: key, style: { ...attrs.style } }, filterChildren(children));
-		},
-	};
-};
+		return m(`div.relative${flexClasses}${attrs.className ?? ''}`, { ...attrs, key: key, style: { ...attrs.style } }, filterChildren(children));
+	},
+});

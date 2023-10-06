@@ -119,16 +119,15 @@ export default (): m.Component => {
 	};
 
 	// Render the header with the search input.
-	const header = () => {
-		return m(Flex, { className: '.pa2.bb.b--black-10', items: 'center' }, [
+	const header = () =>
+		m(Flex, { className: '.pa2.bb.b--black-10', items: 'center' }, [
 			m(Icon, { icon: 'search', className: '.mr2', size: 5 }), //
 			m('input.bn.outline-0.f5.flex-grow-1', { oninput: onInput }),
 		]);
-	};
 
 	// Render the footer with the key bindings.
-	const footer = () => {
-		return m(Flex, { className: '.pa2.bt.b--black-10', justify: 'end' }, [
+	const footer = () =>
+		m(Flex, { className: '.pa2.bt.b--black-10', justify: 'end' }, [
 			m(
 				// @ts-ignore
 				Key,
@@ -144,7 +143,6 @@ export default (): m.Component => {
 			m(Key, { key: 'enter', className: '.mr2' }, 'Open'),
 			m(Key, { key: 'esc' }, 'Exit'),
 		]);
-	};
 
 	return {
 		oncreate(vnode): any {

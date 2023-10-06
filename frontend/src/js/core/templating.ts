@@ -173,8 +173,8 @@ export const render = (
 	template: string,
 	state: (TemplateState & GlobalState) | (GeneratorState & GlobalState),
 	enableDither = true,
-): Promise<string> => {
-	return new Promise((resolve, reject) => {
+): Promise<string> =>
+	new Promise((resolve, reject) => {
 		// We need to clone the state, so we can remove sensitive data from it.
 		const clonedState = cloneDeep(state) as (TemplateState & GlobalState) | (GeneratorState & GlobalState);
 
@@ -210,12 +210,10 @@ export const render = (
 		// Post message (round-robin style) to some worker
 		workers[workerSelect++ % workers.length].postMessage({ id, template: additional + template + (enableDither ? dither : ''), state: clonedState });
 	});
-};
 
 /**
  * Check if template contains AI commands.
  * @param template Template string.
  */
-export const containsAi = (template: string) => {
-	return (template.includes('ai') && template.includes('endai') && template.includes('user')) || template.includes('aiPrompt(');
-};
+export const containsAi = (template: string) =>
+	(template.includes('ai') && template.includes('endai') && template.includes('user')) || template.includes('aiPrompt(');

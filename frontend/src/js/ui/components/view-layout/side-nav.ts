@@ -61,8 +61,8 @@ export default (): m.Component<SideNavProps> => {
 	};
 
 	const menu = (active: string) =>
-		map(pages, (v: any, k) => {
-			return m(
+		map(pages, (v: any, k) =>
+			m(
 				Tooltip,
 				{ content: v.name, placement: 'right' },
 				m(
@@ -77,8 +77,8 @@ export default (): m.Component<SideNavProps> => {
 					},
 					m('i.f5.ion.ion-md-' + v.icon),
 				),
-			);
-		});
+			),
+		);
 
 	return {
 		view(vnode) {

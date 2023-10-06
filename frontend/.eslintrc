@@ -6,6 +6,11 @@
   ],
   "extends": [],
   "rules": {
-    "capitalized-comments": ["error", "always", { "ignoreConsecutiveComments": true }]
+    "capitalized-comments": ["error", "always", { "ignoreConsecutiveComments": true }],
+    "arrow-body-style": ["error", "as-needed"]
+  },
+  "env": {
+    "browser": true,
+    "es2021": true
   }
 }

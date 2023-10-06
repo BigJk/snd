@@ -73,8 +73,8 @@ const CreateEditEntry = (): m.Component<CreateEditEntrySourceEntryProps> => {
 	};
 };
 
-export default (id?: string, name?: string): Promise<CreateEditEntrySourceEntryResponse> => {
-	return new Promise((resolve, reject) => {
+export default (id?: string, name?: string): Promise<CreateEditEntrySourceEntryResponse> =>
+	new Promise((resolve, reject) => {
 		setPortal<CreateEditEntrySourceEntryProps>(CreateEditEntry, {
 			attributes: {
 				id,
@@ -89,4 +89,3 @@ export default (id?: string, name?: string): Promise<CreateEditEntrySourceEntryR
 			},
 		});
 	});
-};

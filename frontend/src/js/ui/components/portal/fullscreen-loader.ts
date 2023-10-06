@@ -9,13 +9,11 @@ export type FullscreenLoaderProps = {
 	reason?: string;
 };
 
-export default (): m.Component<FullscreenLoaderProps> => {
-	return {
-		view({ attrs }) {
-			return m(Flex, { direction: 'column', justify: 'center', items: 'center' }, [
-				m(Loader, { big: true }), //
-				m('div.mt2.text-muted', attrs.reason ?? 'Loading...'),
-			]);
-		},
-	};
-};
+export default (): m.Component<FullscreenLoaderProps> => ({
+	view({ attrs }) {
+		return m(Flex, { direction: 'column', justify: 'center', items: 'center' }, [
+			m(Loader, { big: true }), //
+			m('div.mt2.text-muted', attrs.reason ?? 'Loading...'),
+		]);
+	},
+});

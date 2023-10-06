@@ -30,8 +30,8 @@ export default (): m.Component => {
 		typeFilter: '',
 	};
 
-	const header = () => {
-		return m(
+	const header = () =>
+		m(
 			'div',
 			m(Select, {
 				width: 250,
@@ -43,10 +43,9 @@ export default (): m.Component => {
 				},
 			}),
 		);
-	};
 
-	const devices = () => {
-		return m(
+	const devices = () =>
+		m(
 			'div.w-100.h-100.overflow-auto',
 			{ style: DevicesGridStyle },
 			map(store.value.printer, (printers, type) => {
@@ -54,8 +53,8 @@ export default (): m.Component => {
 
 				if (state.typeFilter.length > 0 && state.typeFilter !== type) return null;
 
-				return map(printers, (endpoint, name) => {
-					return m(Device, {
+				return map(printers, (endpoint, name) =>
+					m(Device, {
 						endpoint: endpoint,
 						printer: name,
 						type: type,
@@ -71,11 +70,10 @@ export default (): m.Component => {
 								};
 							});
 						},
-					});
-				});
+					}),
+				);
 			}),
 		);
-	};
 
 	return {
 		view(vnode) {

@@ -212,9 +212,7 @@ export default (): m.Component<PrintPreviewProps> => {
 		}
 	};
 
-	const calcScale = (width: number) => {
-		return width / settings.value.printerWidth;
-	};
+	const calcScale = (width: number) => width / settings.value.printerWidth;
 
 	return {
 		oncreate({ attrs, dom }) {

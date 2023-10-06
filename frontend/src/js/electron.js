@@ -32,7 +32,7 @@ if (electron) {
 			menu.append(
 				new MenuItem({
 					label: 'No spelling fix found...',
-				})
+				}),
 			);
 		} else {
 			for (const suggestion of params.dictionarySuggestions) {
@@ -40,7 +40,7 @@ if (electron) {
 					new MenuItem({
 						label: suggestion,
 						click: () => remote.getCurrentWindow().webContents.replaceMisspelling(suggestion),
-					})
+					}),
 				);
 			}
 		}
@@ -48,35 +48,35 @@ if (electron) {
 		menu.append(
 			new MenuItem({
 				type: 'separator',
-			})
+			}),
 		);
 
 		menu.append(
 			new MenuItem({
 				label: 'Copy',
 				role: 'copy',
-			})
+			}),
 		);
 
 		menu.append(
 			new MenuItem({
 				label: 'Cut',
 				role: 'cut',
-			})
+			}),
 		);
 
 		menu.append(
 			new MenuItem({
 				label: 'Paste',
 				role: 'paste',
-			})
+			}),
 		);
 
 		menu.append(
 			new MenuItem({
 				label: 'Select All',
 				role: 'selectAll',
-			})
+			}),
 		);
 
 		menu.popup();

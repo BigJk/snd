@@ -74,9 +74,7 @@ export default (): m.Component<CreateTemplateEntityProps> => {
 					it: state.data,
 					tabs: [{ icon: 'filing', label: 'Entry' }],
 					content: {
-						Entry: () => {
-							return m('div', 'Entry');
-						},
+						Entry: () => m('div', 'Entry'),
 					},
 				}),
 			);

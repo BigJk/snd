@@ -71,7 +71,7 @@ export default (): m.Component<TemplateEditorProps> => {
 											try {
 												attrs.onChange({ ...attrs.template, skeletonData: JSON.parse(value) });
 											} catch (e) {
-												// monaco will show the error
+												// Monaco will show the error
 											}
 										},
 									}),

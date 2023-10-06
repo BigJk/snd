@@ -1,4 +1,4 @@
-// dither script that will be injected into the templates to dynamically dither img tags.
+// Dither script that will be injected into the templates to dynamically dither img tags.
 export default `
 <script>
   /*

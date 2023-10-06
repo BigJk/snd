@@ -43,7 +43,7 @@ export default (): m.Component<SelectProps> => {
 					style: { width: '31px' },
 				},
 				[
-					// if noDefault is set, we don't want to render the default option.
+					// If noDefault is set, we don't want to render the default option.
 					vnode.attrs.noDefault
 						? null
 						: m(
@@ -54,7 +54,7 @@ export default (): m.Component<SelectProps> => {
 								},
 								vnode.attrs.default ?? 'Choose an option...',
 						  ),
-					// render all the options.
+					// Render all the options.
 					vnode.attrs.keys.map((k, i) => {
 						let text = k;
 						if (vnode.attrs.names) {
@@ -74,7 +74,7 @@ export default (): m.Component<SelectProps> => {
 		);
 	};
 
-	// we need to update the oninput value on create and update of component,
+	// We need to update the oninput value on create and update of component,
 	// otherwise we miss updates to this callback.
 	const setOnInput = (vnode: m.Vnode<SelectProps, {}>) => {
 		state.onInput = (value) => {
@@ -104,7 +104,7 @@ export default (): m.Component<SelectProps> => {
 				},
 				callbacks: {
 					onSelect: (value) => {
-						// instead of passing vnode.attrs.oninput to onSelect we need to redirect
+						// Instead of passing vnode.attrs.oninput to onSelect we need to redirect
 						// it to the stored oninput, otherwise this onSelect would be fixed to the
 						// callback that was set in oncreate.
 						state.onInput(value);

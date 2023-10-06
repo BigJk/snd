@@ -79,7 +79,7 @@ export default (): m.Component<SingleTemplateProps> => {
 						it: e.data,
 						config: {},
 						settings: settings.value,
-						images: {}, // don't need images for list template
+						images: {}, // Don't need images for list template
 					},
 					false,
 				),

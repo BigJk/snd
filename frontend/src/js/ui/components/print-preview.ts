@@ -143,7 +143,7 @@ export default (): m.Component<PrintPreviewProps> => {
 			.replace(/src="h/gi, 'src="/proxy/h');
 
 		if (inElectron) {
-			// save the final template to the cache in the backend. The webview won't load scripts if we use
+			// Save the final template to the cache in the backend. The webview won't load scripts if we use
 			// data urls or some local files, so we serve it temporarily and serve it via the backend
 			// webserver.
 			state.loading = true;
@@ -158,7 +158,7 @@ export default (): m.Component<PrintPreviewProps> => {
 					});
 			});
 
-			// create a 120-second timeout. If this timeout is triggered we most likely have an infinite loop
+			// Create a 120-second timeout. If this timeout is triggered we most likely have an infinite loop
 			// in the template. We stop the webview and show a warning message.
 			let timeout = setTimeout(() => {
 				// @ts-ignore

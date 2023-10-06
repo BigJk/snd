@@ -85,7 +85,7 @@ const initialState: Store = {
 
 const store = create(initialState, (atom) => ({
 	/**
-	 * loadAll loads all the data from the backend.
+	 * LoadAll loads all the data from the backend.
 	 */
 	loadAll() {
 		return Promise.all([
@@ -100,7 +100,7 @@ const store = create(initialState, (atom) => ({
 	},
 
 	/**
-	 * loadSettings loads the settings from the backend.
+	 * LoadSettings loads the settings from the backend.
 	 */
 	loadSettings() {
 		return API.exec<Settings>(API.GET_SETTINGS).then((res) => {
@@ -114,14 +114,14 @@ const store = create(initialState, (atom) => ({
 	},
 
 	/**
-	 * saveSettings saves the settings to the backend.
+	 * SaveSettings saves the settings to the backend.
 	 */
 	saveSettings() {
 		return API.exec<Settings>(API.SAVE_SETTINGS, atom.value.settings);
 	},
 
 	/**
-	 * loadGenerators loads the generators from the backend.
+	 * LoadGenerators loads the generators from the backend.
 	 */
 	loadGenerators() {
 		return API.exec<Generator[]>(API.GET_GENERATORS).then((res) => {
@@ -137,7 +137,7 @@ const store = create(initialState, (atom) => ({
 	},
 
 	/**
-	 * loadSources loads the sources from the backend.
+	 * LoadSources loads the sources from the backend.
 	 */
 	loadSources() {
 		return API.exec<DataSource[]>(API.GET_SOURCES).then((res) => {
@@ -153,7 +153,7 @@ const store = create(initialState, (atom) => ({
 	},
 
 	/**
-	 * loadPrinter loads the printer from the backend.
+	 * LoadPrinter loads the printer from the backend.
 	 */
 	loadPrinter() {
 		return API.exec<Record<string, Printer>>(API.GET_AVAILABLE_PRINTER).then((res) => {
@@ -167,7 +167,7 @@ const store = create(initialState, (atom) => ({
 	},
 
 	/**
-	 * loadPublicList loads the packages from the backend.
+	 * LoadPublicList loads the packages from the backend.
 	 */
 	loadPublicList() {
 		return API.exec<PublicList[]>(API.GET_PUBLIC_LIST).then((res) => {
@@ -181,7 +181,7 @@ const store = create(initialState, (atom) => ({
 	},
 
 	/**
-	 * loadTemplates loads the templates from the backend.
+	 * LoadTemplates loads the templates from the backend.
 	 */
 	loadTemplates() {
 		return API.exec<Template[]>(API.GET_TEMPLATES).then((res) => {
@@ -197,7 +197,7 @@ const store = create(initialState, (atom) => ({
 	},
 
 	/**
-	 * loadVersion loads the version from the backend.
+	 * LoadVersion loads the version from the backend.
 	 */
 	loadVersion() {
 		return Promise.allSettled([API.exec<Version.LocalVersion>(API.GET_VERSION), API.exec<Version.NewVersion>(API.NEW_VERSION)]).then((res) => {

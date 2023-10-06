@@ -1,7 +1,7 @@
 import m from 'mithril';
 
 /**
- * exec fetches data from the backend.
+ * Exec fetches data from the backend.
  * @param type The function to call on the backend.
  * @param args The arguments to pass to the backend function.
  */

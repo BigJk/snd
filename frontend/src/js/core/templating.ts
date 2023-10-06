@@ -25,7 +25,7 @@ let workerPromises: Record<string, WorkerJob> = {};
 let workers = new Array(navigator.hardwareConcurrency || 4).fill(null).map((_, i) => {
 	let worker = new TemplatingWorker();
 
-	// when rendered response is received call the related resolve or reject.
+	// When rendered response is received call the related resolve or reject.
 	worker.onmessage = (e: any) => {
 		if (e.data.log) {
 			console.log(`Template Web-Worker ${i + 1}: ${e.data.log}`);
@@ -35,7 +35,7 @@ let workers = new Array(navigator.hardwareConcurrency || 4).fill(null).map((_, i
 		let { resolve, reject, timeout, hashed } = workerPromises[e.data.id];
 		let res = e.data;
 
-		// stop timeout handler
+		// Stop timeout handler
 		clearTimeout(timeout);
 
 		if (res.err) {
@@ -175,10 +175,10 @@ export const render = (
 	enableDither = true,
 ): Promise<string> => {
 	return new Promise((resolve, reject) => {
-		// we need to clone the state, so we can remove sensitive data from it.
+		// We need to clone the state, so we can remove sensitive data from it.
 		const clonedState = cloneDeep(state) as (TemplateState & GlobalState) | (GeneratorState & GlobalState);
 
-		// check if data is present in cache
+		// Check if data is present in cache
 		let hashed = hash(template) + hash(clonedState);
 		if ((!containsAi(template) || (containsAi(template) && !clonedState.aiEnabled)) && cache[hashed]) {
 			console.log('templating: cache hit');
@@ -186,7 +186,7 @@ export const render = (
 			return;
 		}
 
-		// clear sensitive data from state
+		// Clear sensitive data from state
 		clonedState.settings.aiApiKey = '';
 		clonedState.settings.syncKey = '';
 
@@ -194,7 +194,7 @@ export const render = (
 			clonedState.aiToken = ai.value.token;
 		}
 
-		// setup promises for response
+		// Setup promises for response
 		let id = hash + '-' + Math.ceil(Math.random() * 10000000).toString();
 		workerPromises[id] = {
 			hashed,
@@ -207,7 +207,7 @@ export const render = (
 		additional += rngScript(clonedState.config.seed ?? 'test-seed');
 		additional += aiScript;
 
-		// post message (round-robin style) to some worker
+		// Post message (round-robin style) to some worker
 		workers[workerSelect++ % workers.length].postMessage({ id, template: additional + template + (enableDither ? dither : ''), state: clonedState });
 	});
 };

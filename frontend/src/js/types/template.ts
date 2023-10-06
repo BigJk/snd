@@ -14,19 +14,19 @@ type Template = BasicInfo & {
 };
 
 const sanitizeConfig = (t: Template, configs: any) => {
-	// create base config
+	// Create base config
 	if (configs === undefined) {
 		configs = {};
 	}
 
-	// set default values for initialized fields
+	// Set default values for initialized fields
 	t.config.forEach((conf) => {
 		if (configs[conf.key] === undefined) {
 			configs[conf.key] = conf.default;
 		}
 	});
 
-	// remove old fields that are not present in the config anymore.
+	// Remove old fields that are not present in the config anymore.
 	return pickBy(configs, (val, key) => key === 'seed' || t.config.some((conf) => conf.key === key));
 };
 

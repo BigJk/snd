@@ -2,7 +2,6 @@ import m from 'mithril';
 
 import { map } from 'lodash-es';
 
-import { css } from 'goober';
 
 import Checkbox from 'js/ui/spectre/checkbox';
 import IconButton from 'js/ui/spectre/icon-button';

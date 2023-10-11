@@ -1,5 +1,4 @@
-import { flatten } from 'lodash-es';
-import { get } from 'lodash-es';
+import { flatten, get } from 'lodash-es';
 
 import * as monaco from 'monaco-editor';
 

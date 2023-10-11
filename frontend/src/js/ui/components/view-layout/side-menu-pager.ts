@@ -1,8 +1,7 @@
 import m from 'mithril';
 
 import Flex from 'js/ui/components/layout/flex';
-import type { SideMenuItem } from 'js/ui/components/view-layout/side-menu';
-import SideMenu from 'js/ui/components/view-layout/side-menu';
+import SideMenu, { type SideMenuItem } from 'js/ui/components/view-layout/side-menu';
 
 import { filterChildren } from 'js/ui/util';
 

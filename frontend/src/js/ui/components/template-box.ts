@@ -7,8 +7,7 @@ import Generator from 'js/types/generator';
 import Template from 'js/types/template';
 
 import Flex from 'js/ui/components/layout/flex';
-import PrintPreviewTemplate from 'js/ui/components/print-preview-template';
-import { PrintPreviewTemplateProps } from 'js/ui/components/print-preview-template';
+import PrintPreviewTemplate, { PrintPreviewTemplateProps } from 'js/ui/components/print-preview-template';
 
 const style = css`
 	max-width: 500px;

@@ -2,14 +2,10 @@ import m from 'mithril';
 
 import { css } from 'goober';
 
-import BasicInfo, { buildId } from 'js/types/basic-info';
+import { buildId } from 'js/types/basic-info';
 import DataSource from 'js/types/data-source';
-import Generator from 'js/types/generator';
-import Template from 'js/types/template';
 
 import Flex from 'js/ui/components/layout/flex';
-import PrintPreviewTemplate from 'js/ui/components/print-preview-template';
-import { PrintPreviewTemplateProps } from 'js/ui/components/print-preview-template';
 
 const style = css`
 	max-width: 500px;

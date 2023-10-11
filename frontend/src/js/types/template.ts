@@ -1,6 +1,6 @@
 import { pickBy } from 'lodash-es';
 
-import BasicInfo, { buildId } from 'js/types/basic-info';
+import BasicInfo from 'js/types/basic-info';
 import { ConfigValue } from 'js/types/config';
 
 type Template = BasicInfo & {

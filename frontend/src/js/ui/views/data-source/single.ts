@@ -21,6 +21,7 @@ import Tooltip from 'js/ui/components/atomic/tooltip';
 import store from 'js/core/store';
 import Flex from 'js/ui/components/layout/flex';
 import CreateSourceEntry from 'js/ui/components/modals/source/create-edit-entry';
+import IconButton from 'js/ui/spectre/icon-button';
 
 type SingleSourceProps = {
 	id: string;
@@ -252,7 +253,7 @@ export default (): m.Component<SingleSourceProps> => {
 																m(
 																	Tooltip,
 																	{ content: 'Delete Entry' },
-																	m(Button, { intend: 'error', size: 'sm', onClick: () => deleteEntry(attrs.id, item) }, m(Icon, { icon: 'trash' })),
+																	m(IconButton, { intend: 'error', size: 'sm', onClick: () => deleteEntry(attrs.id, item), icon: 'trash' }),
 																),
 														  ])
 														: null,

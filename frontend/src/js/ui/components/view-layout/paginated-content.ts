@@ -1,9 +1,7 @@
 import m from 'mithril';
 
-import Button from 'js/ui/spectre/button';
-
-import Icon from 'js/ui/components/atomic/icon';
 import Flex from 'js/ui/components/layout/flex';
+import IconButton from 'js/ui/spectre/icon-button';
 
 type PaginatedContentProps<T> = {
 	perPage: number;
@@ -73,9 +71,9 @@ export default <T>(): m.Component<PaginatedContentProps<T>> => {
 					m(Flex, { justify: 'between' }, [
 						children, //
 						m(Flex, { items: 'center' }, [
-							m(Button, { onClick: () => prevPage(attrs) }, m(Icon, { icon: 'arrow-round-back' })), //
+							m(IconButton, { onClick: () => prevPage(attrs), icon: 'arrow-round-back' }), //
 							m('div.w3.tc', `${state.page + 1} / ${maxPage(attrs) + 1}`),
-							m(Button, { onClick: () => nextPage(attrs) }, m(Icon, { icon: 'arrow-round-forward' })),
+							m(IconButton, { onClick: () => nextPage(attrs), icon: 'arrow-round-forward' }),
 						]),
 					]),
 				),

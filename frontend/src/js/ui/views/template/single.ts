@@ -17,7 +17,6 @@ import Input from 'js/ui/spectre/input';
 import Loader from 'js/ui/spectre/loader';
 import TextArea from 'js/ui/spectre/text-area';
 
-import Icon from 'js/ui/components/atomic/icon';
 import Tooltip from 'js/ui/components/atomic/tooltip';
 import Editor from 'js/ui/components/config/editor';
 import Flex from 'js/ui/components/layout/flex';
@@ -101,6 +100,12 @@ export default (): m.Component<SingleTemplateProps> => {
 			return e.name.toLowerCase().includes(state.search.toLowerCase());
 		});
 
+	function extractJSON(str: string) {
+		const first = str.indexOf('{');
+		const last = str.lastIndexOf('}');
+		return JSON.parse(str.substring(first, last + 1));
+	}
+
 	/**
 	 * Generates a new AI entry.
 	 */
@@ -136,7 +141,10 @@ export default (): m.Component<SingleTemplateProps> => {
 		API.exec<string>(AI_GENERATE, system, state.aiPrompt, Math.floor(Math.random() * 50000).toString())
 			.then((data) => {
 				try {
-					const resp = JSON.parse(data);
+					let resp = {};
+					if (data[0] === '{') resp = JSON.parse(data);
+					else resp = extractJSON(data);
+
 					state.selectedEntry = {
 						id: `ai#${Math.floor(Math.random() * 50000)}`,
 						name: 'AI Generated',
@@ -165,8 +173,8 @@ export default (): m.Component<SingleTemplateProps> => {
 			),
 			right: selected
 				? m('div', [
-						m(Tooltip, { content: 'Screenshot' }, m(Button, { intend: 'primary', size: 'sm', className: '.mr2' }, m(Icon, { icon: 'camera' }))), //
-						m(Tooltip, { content: 'Print' }, m(Button, { intend: 'primary', size: 'sm' }, m(Icon, { icon: 'print' }))),
+						m(Tooltip, { content: 'Screenshot' }, m(IconButton, { intend: 'primary', size: 'sm', className: '.mr2', icon: 'camera' })), //
+						m(Tooltip, { content: 'Print' }, m(IconButton, { intend: 'primary', size: 'sm', icon: 'print' })),
 				  ])
 				: null,
 		});

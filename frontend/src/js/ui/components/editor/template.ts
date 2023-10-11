@@ -11,6 +11,10 @@ import Flex from 'js/ui/components/layout/flex';
 import Monaco from 'js/ui/components/monaco';
 import PrintPreviewTemplate from 'js/ui/components/print-preview-template';
 import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
+import SourceSelect from 'js/ui/source-select';
+import Label from 'js/ui/spectre/label';
+import Icon from 'js/ui/components/atomic/icon';
+import EditorHeader from 'js/ui/components/view-layout/property-header';
 
 type TemplateEditorProps = {
 	template: Template;
@@ -52,9 +56,44 @@ export default (): m.Component<TemplateEditorProps> => {
 								title: 'Images',
 								icon: 'images',
 								render: () =>
-									m(Images, { images: attrs.template.images, onChange: (updated) => attrs.onChange({ ...attrs.template, images: updated }) }),
+									m(
+										'div.ph3',
+										m(Images, { images: attrs.template.images, onChange: (updated) => attrs.onChange({ ...attrs.template, images: updated }) }),
+									),
 							},
-							{ id: 'data-sources', title: 'Data Sources', icon: 'analytics', render: () => null },
+							{
+								id: 'data-sources',
+								title: 'Data Sources',
+								icon: 'analytics',
+								render: () =>
+									m('div.ph3', [
+										m(EditorHeader, { title: 'Data Sources', description: 'Add and remove data sources' }), //
+										m(
+											'div.mb3',
+											m(SourceSelect, {
+												sources: attrs.template.dataSources,
+												onChange: (updated) => attrs.onChange({ ...attrs.template, dataSources: updated }),
+											}),
+										),
+										m(
+											Flex,
+											{ gap: 2 },
+											attrs.template.dataSources.map((s) =>
+												m(
+													Label,
+													{ intent: 'primary' },
+													m(Flex, { gap: 2 }, [
+														s,
+														m(Icon, {
+															icon: 'close',
+															onClick: () => attrs.onChange({ ...attrs.template, dataSources: attrs.template.dataSources.filter((ds) => ds !== s) }),
+														}),
+													]),
+												),
+											),
+										),
+									]),
+							},
 							{ id: 'global-config', title: 'Global Config', icon: 'cog', render: () => null },
 							{
 								id: 'data-skeleton',

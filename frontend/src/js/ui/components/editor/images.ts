@@ -6,16 +6,10 @@ import { css } from 'goober';
 
 import guid from 'js/core/guid';
 
-import Button from 'js/ui/spectre/button';
-
 import Icon from 'js/ui/components/atomic/icon';
 import ImageUpload from 'js/ui/components/image-upload';
 import Flex from 'js/ui/components/layout/flex';
 import EditorHeader from 'js/ui/components/view-layout/property-header';
-
-const containerClass = css`
-	max-width: 800px;
-`;
 
 const imageClass = css`
 	max-width: 80px;
@@ -37,7 +31,7 @@ export default (): m.Component<ImagesProps> => {
 			return m(
 				Flex,
 				{ className: '.w-100', direction: 'column', items: 'center' },
-				m(`div.w-100.lh-copy.ph3.${containerClass}`, [
+				m(`div.w-100.lh-copy`, [
 					m(EditorHeader, { title: 'Images', description: 'Upload images that will be embedded' }), //
 					m(ImageUpload, {
 						height: 150,

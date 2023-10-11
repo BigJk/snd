@@ -1,7 +1,7 @@
 import m from 'mithril';
 
 // @ts-ignore
-import { inElectron, shell } from 'src/js/electron';
+import { inElectron } from 'src/js/electron';
 
 type DiscordWidgetProps = {
 	className?: string;

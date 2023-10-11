@@ -127,7 +127,7 @@ export default (): m.Component => {
 						'div.w5',
 						m(Select, {
 							keys: state.imports.map((i) => i.name),
-							selected: state.selected?.name ?? null,
+							selected: state.selected?.name ?? '',
 							onInput: (key) => {
 								state.selected = state.imports.find((imp) => imp.name === key.value) ?? null;
 								if (state.selected) {

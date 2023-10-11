@@ -38,8 +38,9 @@ func RegisterAI(route *echo.Group, db database.Database) {
 	}
 
 	type AIRequest struct {
-		Model    string      `json:"model"`
-		Messages []AIMessage `json:"messages"`
+		Model     string      `json:"model"`
+		MaxTokens int         `json:"max_tokens"`
+		Messages  []AIMessage `json:"messages"`
 	}
 
 	type AIResponse struct {
@@ -81,7 +82,8 @@ func RegisterAI(route *echo.Group, db database.Database) {
 		}
 
 		prompt := AIRequest{
-			Model: settings.AIModel,
+			Model:     settings.AIModel,
+			MaxTokens: 5000,
 			Messages: []AIMessage{
 				{Role: "system", Content: system},
 				{Role: "user", Content: user},

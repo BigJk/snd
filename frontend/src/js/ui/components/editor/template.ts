@@ -11,7 +11,7 @@ import Flex from 'js/ui/components/layout/flex';
 import Monaco from 'js/ui/components/monaco';
 import PrintPreviewTemplate from 'js/ui/components/print-preview-template';
 import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
-import SourceSelect from 'js/ui/source-select';
+import SourceSelect from 'js/ui/components/source-select';
 import Label from 'js/ui/spectre/label';
 import Icon from 'js/ui/components/atomic/icon';
 import EditorHeader from 'js/ui/components/view-layout/property-header';
@@ -45,29 +45,44 @@ export default (): m.Component<TemplateEditorProps> => {
 							m.redraw();
 						},
 						items: [
+							//
+							// Basic Info
+							//
 							{
 								id: 'basic-info',
 								title: 'Basic Info',
 								icon: 'clipboard',
+								centerContainer: true,
 								render: () => m(BasicInfo, { info: attrs.template, onChange: (updated) => attrs.onChange({ ...attrs.template, ...updated }) }),
-							}, //
+							},
+							//
+							// Images
+							//
 							{
 								id: 'images',
 								title: 'Images',
 								icon: 'images',
+								centerContainer: true,
 								render: () =>
 									m(
 										'div.ph3',
 										m(Images, { images: attrs.template.images, onChange: (updated) => attrs.onChange({ ...attrs.template, images: updated }) }),
 									),
 							},
+							//
+							// Data Sources
+							//
 							{
 								id: 'data-sources',
 								title: 'Data Sources',
 								icon: 'analytics',
+								centerContainer: true,
 								render: () =>
 									m('div.ph3', [
-										m(EditorHeader, { title: 'Data Sources', description: 'Add and remove data sources' }), //
+										m(EditorHeader, {
+											title: 'Data Sources',
+											description: 'Add and remove data sources. Entries of these data sources will be linked to this template.',
+										}), //
 										m(
 											'div.mb3',
 											m(SourceSelect, {
@@ -94,7 +109,13 @@ export default (): m.Component<TemplateEditorProps> => {
 										),
 									]),
 							},
-							{ id: 'global-config', title: 'Global Config', icon: 'cog', render: () => null },
+							//
+							// Global Config
+							//
+							{ id: 'global-config', title: 'Global Config', icon: 'cog', centerContainer: true, render: () => null },
+							//
+							// Data Skeleton
+							//
 							{
 								id: 'data-skeleton',
 								title: 'Data Skeleton',
@@ -115,6 +136,9 @@ export default (): m.Component<TemplateEditorProps> => {
 										},
 									}),
 							},
+							//
+							// Print Template
+							//
 							{
 								id: 'print-template',
 								title: 'Print Template',
@@ -133,6 +157,9 @@ export default (): m.Component<TemplateEditorProps> => {
 										onChange: (value) => attrs.onChange({ ...attrs.template, printTemplate: value }),
 									}),
 							},
+							//
+							// List Template
+							//
 							{
 								id: 'list-template',
 								title: 'List Template',

@@ -4,11 +4,13 @@ import Flex from 'js/ui/components/layout/flex';
 import SideMenu, { type SideMenuItem } from 'js/ui/components/view-layout/side-menu';
 
 import { filterChildren } from 'js/ui/util';
+import CenterContainer from 'js/ui/components/layout/center-container';
 
 type SideMenuPagerItem = {
 	id?: string;
 	title: string;
 	icon: string;
+	centerContainer?: boolean;
 	render: () => m.Children;
 };
 
@@ -30,7 +32,8 @@ export default (): m.Component<SideMenuPagerProps> => {
 	const getRender = (attrs: SideMenuPagerProps) => {
 		let index = attrs.items.findIndex((item) => item.title === state.active || item.id === state.active);
 		if (index === -1) return null;
-		return attrs.items[index].render();
+		const content = attrs.items[index].render();
+		return attrs.items[index].centerContainer ? m(CenterContainer, content) : content;
 	};
 
 	return {

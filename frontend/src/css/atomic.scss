@@ -61,6 +61,10 @@
   pointer-events: none;
 }
 
+.overscroll-contain {
+  overscroll-behavior: contain;
+}
+
 .bg-paper {
   background-color: #fcfcff;
 }

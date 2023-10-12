@@ -48,7 +48,7 @@ export default (): m.Component<DropdownProps> => {
 		m.render(
 			tooltipContent,
 			m(
-				`div.bg-white.black-80.overflow-auto.${dropdownStyle}`,
+				`div.bg-white.black-80.overflow-auto.overscroll-contain.${dropdownStyle}`,
 				{ style: { width: state.dom ? state.dom.getBoundingClientRect().width + 'px' : '' } },
 				content,
 			),
@@ -66,7 +66,7 @@ export default (): m.Component<DropdownProps> => {
 	};
 
 	return {
-		oninit(vnode) {
+		oncreate(vnode) {
 			state.dom = vnode.dom as HTMLElement;
 		},
 		onremove(vnode) {

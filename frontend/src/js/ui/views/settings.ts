@@ -284,14 +284,19 @@ export default (): m.Component => {
 									},
 									aiApiKey: {
 										label: 'API Key',
-										description: 'The API key for the AI service',
+										description: 'The API key for the AI service. This is used to calculate how much example data the AI can be presented with.',
 									},
 									aiContextWindow: {
 										label: 'Context Window',
 										description: 'The context window for the AI service',
 									},
+									aiMaxTokens: {
+										label: 'Max Tokens',
+										description:
+											'The max tokens for the AI service. Higher values will allow the AI to generate more content. (common range: 300-10000)',
+									},
 								},
-								show: ['aiEnabled', 'aiApiKey', 'aiContextWindow'],
+								show: ['aiEnabled', 'aiApiKey', 'aiContextWindow', 'aiMaxTokens'],
 								onChange: onChangeSettings,
 							} as PropertyEditProps<Settings>),
 							m(

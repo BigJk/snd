@@ -20,7 +20,7 @@ const sanitizeConfig = (t: Template, configs: any) => {
 	}
 
 	// Set default values for initialized fields
-	t.config.forEach((conf) => {
+	(t.config ?? []).forEach((conf) => {
 		if (configs[conf.key] === undefined) {
 			configs[conf.key] = conf.default;
 		}

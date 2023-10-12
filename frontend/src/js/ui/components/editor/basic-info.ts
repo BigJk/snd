@@ -1,7 +1,5 @@
 import m from 'mithril';
 
-import { css } from 'goober';
-
 import BasicInfo from 'js/types/basic-info';
 import EditorHeader from 'js/ui/components/view-layout/property-header';
 
@@ -19,10 +17,6 @@ export type BasicInfoProps<T> = {
 	hide?: string[];
 };
 
-const containerClass = css`
-	max-width: 800px;
-`;
-
 /**
  * Basic info component: Basic information about the template, generator...
  */
@@ -35,7 +29,7 @@ export default <T extends Object>(): m.Component<BasicInfoProps<T>> => ({
 		return m(
 			Flex,
 			{ className: '.w-100.ph3', direction: 'column', items: 'center' },
-			m(`div.w-100.lh-copy.${containerClass}`, [
+			m('div.w-100.lh-copy', [
 				m(EditorHeader, { title: 'Basic Info', description: 'These are the basic information about your new creation' }),
 				m(PropertyEdit<BasicInfo & T>, {
 					properties: attrs.info,

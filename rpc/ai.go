@@ -83,7 +83,7 @@ func RegisterAI(route *echo.Group, db database.Database) {
 
 		prompt := AIRequest{
 			Model:     settings.AIModel,
-			MaxTokens: 5000,
+			MaxTokens: settings.AIMaxTokens,
 			Messages: []AIMessage{
 				{Role: "system", Content: system},
 				{Role: "user", Content: user},

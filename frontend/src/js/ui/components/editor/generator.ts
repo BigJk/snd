@@ -13,6 +13,8 @@ import Flex from 'js/ui/components/layout/flex';
 import Monaco from 'js/ui/components/monaco';
 import PrintPreviewTemplate from 'js/ui/components/print-preview-template';
 import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
+import EditorHeader from 'js/ui/components/view-layout/property-header';
+import ConfigCreator from 'js/ui/components/config/creator';
 
 type GeneratorEditorProps = {
 	generator: Generator;
@@ -46,25 +48,55 @@ export default (): m.Component<GeneratorEditorProps> => {
 							m.redraw();
 						},
 						items: [
+							//
+							// Basic Info
+							//
 							{
 								id: 'basic-info',
 								title: 'Basic Info',
 								icon: 'clipboard',
+								centerContainer: true,
 								render: () => m(BasicInfo, { info: attrs.generator, onChange: (updated) => attrs.onChange({ ...attrs.generator, ...updated }) }),
-							}, //
+							},
+							//
+							// Images
+							//
 							{
 								id: 'images',
 								title: 'Images',
 								icon: 'images',
+								centerContainer: true,
 								render: () =>
 									m(Images, { images: attrs.generator.images, onChange: (updated) => attrs.onChange({ ...attrs.generator, images: updated }) }),
 							},
+							//
+							// Data Sources
+							//
 							{ id: 'data-sources', title: 'Data Sources', icon: 'analytics', render: () => null },
-							{ id: 'config', title: 'Config', icon: 'cog', render: () => null },
+							//
+							// Config
+							//
+							{
+								id: 'config',
+								title: 'Config',
+								icon: 'cog',
+								centerContainer: true,
+								render: () => [
+									m(EditorHeader, { title: 'Config', description: 'Setup config parameters for your generator' }),
+									m(ConfigCreator, {
+										configs: attrs.generator.config,
+										onChange: (updated) => attrs.onChange({ ...attrs.generator, config: updated }),
+									}),
+								],
+							},
+							//
+							// Print Template
+							//
 							{
 								id: 'test-config',
 								title: 'Test Config',
 								icon: 'cog',
+								centerContainer: true,
 								render: () =>
 									m(Editor, {
 										current: state.config,
@@ -85,6 +117,9 @@ export default (): m.Component<GeneratorEditorProps> => {
 										},
 									}),
 							},
+							//
+							// Print Template
+							//
 							{
 								id: 'print-template',
 								title: 'Print Template',

@@ -25,4 +25,5 @@ type Settings struct {
 	AIModel               string   `json:"aiModel"`
 	AIProvider            string   `json:"aiProvider"`
 	AIContextWindow       int      `json:"aiContextWindow"`
+	AIMaxTokens           int      `json:"aiMaxTokens"`
 }

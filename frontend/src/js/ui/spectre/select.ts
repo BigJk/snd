@@ -115,7 +115,7 @@ export default (): m.Component<SelectProps> => {
 						if (state.open) {
 							const content = renderTooltipContent(
 								m(
-									`div.bg-white.black-80.overflow-auto.${dropdownStyle}`,
+									`div.bg-white.black-80.overflow-auto.overscroll-contain.${dropdownStyle}`,
 									{ style: { width: e.target.getBoundingClientRect().width + 'px' } },
 									renderOptions(
 										'div',

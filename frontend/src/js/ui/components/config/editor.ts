@@ -15,13 +15,13 @@ const containerClass = css`
 	max-width: 1000px;
 `;
 
-type EditorProps = {
+type ConfigEditorProps = {
 	definition: ConfigValue[];
 	current: any;
 	onChange: (config: any) => void;
 };
 
-export default (): m.Component<EditorProps> => ({
+export default (): m.Component<ConfigEditorProps> => ({
 	oninit({ attrs }) {
 		const config = fillConfigValues(attrs.current, attrs.definition);
 		if (!isEqual(config, attrs.current)) {

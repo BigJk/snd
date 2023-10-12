@@ -7,7 +7,7 @@ import Entry from 'js/types/entry';
 import Template, { sanitizeConfig } from 'js/types/template';
 
 import * as API from 'js/core/api';
-import { AI_GENERATE } from 'js/core/api';
+import * as AI from 'js/core/ai';
 import { settings } from 'js/core/store';
 import { render } from 'js/core/templating';
 
@@ -100,65 +100,23 @@ export default (): m.Component<SingleTemplateProps> => {
 			return e.name.toLowerCase().includes(state.search.toLowerCase());
 		});
 
-	function extractJSON(str: string) {
-		const first = str.indexOf('{');
-		const last = str.lastIndexOf('}');
-		return JSON.parse(str.substring(first, last + 1));
-	}
-
 	/**
 	 * Generates a new AI entry.
 	 */
 	const generateAIEntry = () => {
+		if (!state.template) return;
 		state.aiLoading = true;
 
-		let system = `
-	You output JSON.
-	You are a helper to generate data in a Software.
-	You are in a software for Pen & Paper / TTRPGs.
-	You should generate JSON for a template called "${state.template?.name}".
-	
-	A few example JSON for this template is:
-	
-	${JSON.stringify(state.template?.skeletonData, null, 2)}`;
+		AI.generateEntry(state.aiPrompt, state.template, state.entries).then((entry) => {
+			state.aiLoading = false;
 
-		// Add a few random examples.
-		const otherExamples = new Array(3)
-			.fill(0)
-			.map(() => {
-				if (state.entries.length === 0) return '';
-				return JSON.stringify(state.entries[Math.floor(Math.random() * state.entries.length)].data, null, 2);
-			})
-			.filter((e) => e !== '');
+			if (entry.hasError) {
+				error('AI generation failed. Please try again or test another model.');
+				return;
+			}
 
-		otherExamples.forEach((e) => {
-			if (settings.value.aiContextWindow > 0 && system.length + e.length + 2 > settings.value.aiContextWindow) return;
-			system += `
-			
-			${e}`;
+			state.selectedEntry = entry.value;
 		});
-
-		API.exec<string>(AI_GENERATE, system, state.aiPrompt, Math.floor(Math.random() * 50000).toString())
-			.then((data) => {
-				try {
-					let resp = {};
-					if (data[0] === '{') resp = JSON.parse(data);
-					else resp = extractJSON(data);
-
-					state.selectedEntry = {
-						id: `ai#${Math.floor(Math.random() * 50000)}`,
-						name: 'AI Generated',
-						data: resp,
-					};
-				} catch (e) {
-					error("AI response wasn't valid template. Please try again or try another model.");
-					console.error(e);
-				} finally {
-					state.aiLoading = false;
-				}
-			})
-			.catch(error)
-			.finally(() => (state.aiLoading = false));
 	};
 
 	const entryElement = (entry: Entry) => {
@@ -220,7 +178,7 @@ export default (): m.Component<SingleTemplateProps> => {
 								{ icon: 'search', label: 'Advanced Filter' },
 							],
 							content: {
-								Entries: () => {
+								Entries: () =>
 									m(
 										PaginatedContent<Entry>,
 										{
@@ -230,8 +188,7 @@ export default (): m.Component<SingleTemplateProps> => {
 											pageOpened: (page, items) => ensureRenderCache(items),
 										},
 										m('div.w5', m(Input, { placeholder: 'Search...', value: state.search, onChange: (val) => (state.search = val) })),
-									);
-								},
+									),
 								'AI Entry': () =>
 									m(
 										'div.ph3.pv2',

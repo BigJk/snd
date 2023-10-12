@@ -114,6 +114,8 @@ func (s *Server) Start(bind string) error {
 			PrinterEndpoint:       "window",
 			Stylesheets:           []string{},
 			SpellcheckerLanguages: []string{"en-US"},
+			AIMaxTokens:           5000,
+			AIContextWindow:       8000,
 		}); err != nil {
 			return err
 		}

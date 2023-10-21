@@ -27,25 +27,31 @@ type SetPortalOptions<T> = {
 	attributes?: T;
 };
 
-let currentPortalOptions: any = {};
-let currentPortal: any | null = null;
+type PortalState = {
+	portal: any | null;
+	portalOptions: any;
+};
+
+let portalStack: PortalState[] = [];
 
 m.mount(target, {
 	view(vnode) {
-		if (currentPortal === null) {
+		if (portalStack.length === 0) {
 			return null;
 		}
 
-		return m(
-			'div.absolute.w-100.h-100.bg-white-60.z-999.overflow-hidden.pa4',
+		return portalStack.map((p, i) =>
 			m(
-				Flex,
-				{
-					items: currentPortalOptions.items ?? 'center',
-					justify: currentPortalOptions.justify ?? 'center',
-					className: `.h-100${currentPortalOptions.className ?? ''}`,
-				},
-				m(currentPortal, currentPortalOptions.attributes ?? {}),
+				`div.absolute.w-100.h-100.bg-white-60.z-999.overflow-hidden.pa4${i !== portalStack.length - 1 ? '.dn' : ''}`,
+				m(
+					Flex,
+					{
+						items: p.portalOptions.items ?? 'center',
+						justify: p.portalOptions.justify ?? 'center',
+						className: `.h-100${p.portalOptions.className ?? ''}`,
+					},
+					m(p.portal, p.portalOptions.attributes ?? {}),
+				),
 			),
 		);
 	},
@@ -56,9 +62,29 @@ m.mount(target, {
  * @param portal The portal content.
  * @param options Portal options.
  */
+export const pushPortal = <T>(portal: (() => m.Component<T>) | null, options?: SetPortalOptions<T>) => {
+	portalStack.push({
+		portal: portal,
+		portalOptions: options ?? {},
+	});
+	m.redraw();
+};
+
+/**
+ * Sets a portal element that overlays the entire screen. Can be used for modals and other overlays.
+ * @param portal The portal content.
+ * @param options Portal options.
+ */
 export const setPortal = <T>(portal: (() => m.Component<T>) | null, options?: SetPortalOptions<T>) => {
-	currentPortalOptions = options ?? {};
-	currentPortal = portal;
+	portalStack = [];
+	pushPortal(portal, options);
+};
+
+/**
+ * Removes the current portal element.
+ */
+export const popPortal = () => {
+	portalStack.pop();
 	m.redraw();
 };
 
@@ -66,12 +92,11 @@ export const setPortal = <T>(portal: (() => m.Component<T>) | null, options?: Se
  * Clears the portal element.
  */
 export const clearPortal = () => {
-	currentPortal = null;
-	currentPortalOptions = {};
+	portalStack = [];
 	m.redraw();
 };
 
 /**
  * Returns true if a portal is currently set.
  */
-export const hasPortal = () => currentPortal !== null;
+export const hasPortal = () => portalStack.length > 0;

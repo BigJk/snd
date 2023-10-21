@@ -7,7 +7,6 @@ import { sanitizeConfig } from 'js/types/generator';
 
 import { generators } from 'js/core/store';
 
-import Button from 'js/ui/spectre/button';
 import Input from 'js/ui/spectre/input';
 
 import Icon from 'js/ui/components/atomic/icon';
@@ -16,6 +15,7 @@ import Flex from 'js/ui/components/layout/flex';
 import Grid from 'js/ui/components/layout/grid';
 import TemplateBox from 'js/ui/components/template-box';
 import Base from 'js/ui/components/view-layout/base';
+import IconButton from 'js/ui/spectre/icon-button';
 
 export default (): m.Component => {
 	let searchValue = '';
@@ -83,7 +83,7 @@ export default (): m.Component => {
 					active: 'generators',
 					classNameContainer: '.pa3',
 					rightElement: m('div', [
-						m(Button, { link: '/generator/create' }, 'Create'), //
+						m(IconButton, { link: '/generator/create', icon: 'add' }, 'Create'), //
 					]),
 				},
 				m('div', [search(), generatorsByAuthor()]),

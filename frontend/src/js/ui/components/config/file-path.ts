@@ -1,11 +1,9 @@
 import m from 'mithril';
 
-// @ts-ignore
-import { inElectron, openFileDialog } from 'js/electron';
-
 import Button from 'js/ui/spectre/button';
 
 import Config, { ConfigProps } from 'js/ui/components/config/config';
+import { openFileModal } from 'js/ui/components/modals/file-browser';
 
 export default {
 	name: 'FilePath',
@@ -26,11 +24,9 @@ export default {
 						className: '.fr',
 						intend: 'primary',
 						onClick: () => {
-							if (inElectron) {
-								openFileDialog().then((path: string) => {
-									attrs.onChange(path);
-								});
-							}
+							openFileModal('Choose a file').then((path: string) => {
+								attrs.onChange(path);
+							});
 						},
 					},
 					!attrs.value || attrs.value.length === 0 ? 'Select File' : showEndOfPath(attrs.value),

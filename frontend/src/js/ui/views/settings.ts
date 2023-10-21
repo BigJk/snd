@@ -20,7 +20,6 @@ import HorizontalProperty from 'js/ui/components/horizontal-property';
 import Button from 'js/ui/spectre/button';
 
 import { error, neutral, success } from 'js/ui/toast';
-
 import { clearPortal, setPortal } from 'js/ui/portal';
 
 const containerClass = css`

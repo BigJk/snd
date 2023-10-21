@@ -21,7 +21,7 @@ const pages = {
 		icon: 'switch',
 		url: 'generator',
 	},
-	dataSources: {
+	'data-sources': {
 		name: 'Data Sources',
 		icon: 'analytics',
 		url: 'data-source',

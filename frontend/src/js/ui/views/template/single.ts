@@ -43,6 +43,7 @@ type SingleTemplateState = {
 	page: number;
 	search: string;
 	aiPrompt: string;
+	aiLanguage: string;
 	aiLoading: boolean;
 };
 
@@ -56,6 +57,7 @@ export default (): m.Component<SingleTemplateProps> => {
 		page: 0,
 		search: '',
 		aiPrompt: '',
+		aiLanguage: '',
 		aiLoading: false,
 	};
 
@@ -105,6 +107,7 @@ export default (): m.Component<SingleTemplateProps> => {
 	 */
 	const generateAIEntry = () => {
 		if (!state.template) return;
+		if (state.aiPrompt === '') return;
 		state.aiLoading = true;
 
 		AI.generateEntry(state.aiPrompt, state.template, state.entries).then((entry) => {
@@ -112,6 +115,27 @@ export default (): m.Component<SingleTemplateProps> => {
 
 			if (entry.hasError) {
 				error('AI generation failed. Please try again or test another model.');
+				return;
+			}
+
+			state.selectedEntry = entry.value;
+		});
+	};
+
+	/**
+	 * Generates a new AI translation.
+	 */
+	const generateAITranslation = () => {
+		if (!state.template) return;
+		if (!state.selectedEntry) return;
+		if (state.aiLanguage === '') return;
+		state.aiLoading = true;
+
+		AI.translateEntry(state.aiLanguage, state.selectedEntry).then((entry) => {
+			state.aiLoading = false;
+
+			if (entry.hasError) {
+				error('AI translation failed. Please try again or test another model.');
 				return;
 			}
 
@@ -172,7 +196,7 @@ export default (): m.Component<SingleTemplateProps> => {
 							it: state.selectedEntry?.data,
 							tabs: [
 								{ icon: 'filing', label: 'Entries' },
-								{ icon: 'planet', label: 'AI Entry' },
+								{ icon: 'planet', label: 'AI Tools' },
 								...(settings.value.aiEnabled ? [{ icon: 'clipboard', label: 'Information' }] : []),
 								...(state.template?.config && state.template?.config.length > 0 ? [{ icon: 'options', label: 'Config' }] : []),
 								{ icon: 'search', label: 'Advanced Filter' },
@@ -189,7 +213,7 @@ export default (): m.Component<SingleTemplateProps> => {
 										},
 										m('div.w5', m(Input, { placeholder: 'Search...', value: state.search, onChange: (val) => (state.search = val) })),
 									),
-								'AI Entry': () =>
+								'AI Tools': () =>
 									m(
 										'div.ph3.pv2',
 										m(Flex, { direction: 'column', gap: 2 }, [
@@ -204,11 +228,55 @@ export default (): m.Component<SingleTemplateProps> => {
 												value: state.aiPrompt,
 												onChange: (val) => (state.aiPrompt = val),
 											}),
-											m(Flex, { justify: 'between' }, [
+											m(Flex, { justify: 'between', className: '.mt2' }, [
 												m(Button, { onClick: generateAIEntry, loading: state.aiLoading, intend: 'primary' }, 'Generate'), //
 												m(
 													Flex,
 													state.selectedEntry?.id.indexOf('ai#') === 0 && !state.aiLoading
+														? [
+																m(Input, {
+																	placeholder: 'Name',
+																	value: state.selectedEntry?.name,
+																	onChange: (val) => {
+																		if (!state.selectedEntry) return;
+																		state.selectedEntry.name = val;
+																	},
+																}),
+																m(
+																	Button,
+																	{
+																		onClick: () => {
+																			if (!state.template || !state.selectedEntry) return;
+																			API.exec<void>(API.SAVE_ENTRY, buildId('template', state.template), state.selectedEntry)
+																				.then(() => {
+																					success('Saved entry');
+																					fetchEntries();
+																				})
+																				.catch(error);
+																		},
+																		intend: 'success',
+																		className: '.ml2',
+																	},
+																	'Save',
+																),
+														  ]
+														: null,
+												),
+											]),
+											m('div.divider'),
+											m('div.f5.b', 'AI Translation'),
+											m('div.f7.text-muted.mb2.lh-copy', 'Enter a language to which the selected entry should be converted to.'),
+											m(TextArea, {
+												rows: 1,
+												placeholder: 'language...',
+												value: state.aiLanguage,
+												onChange: (val) => (state.aiLanguage = val),
+											}),
+											m(Flex, { justify: 'between', className: '.mt2' }, [
+												m(Button, { onClick: generateAITranslation, loading: state.aiLoading, intend: 'primary' }, 'Translate'), //
+												m(
+													Flex,
+													state.selectedEntry?.id.indexOf('ai_translate#') === 0 && !state.aiLoading
 														? [
 																m(Input, {
 																	placeholder: 'Name',

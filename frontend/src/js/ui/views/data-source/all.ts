@@ -6,7 +6,6 @@ import { buildId } from 'js/types/basic-info';
 
 import { sources } from 'js/core/store';
 
-import Button from 'js/ui/spectre/button';
 import Input from 'js/ui/spectre/input';
 
 import Icon from 'js/ui/components/atomic/icon';
@@ -18,6 +17,7 @@ import SourceBox from 'js/ui/components/source-box';
 import Base from 'js/ui/components/view-layout/base';
 
 import { setPortal } from 'js/ui/portal';
+import IconButton from 'js/ui/spectre/icon-button';
 
 export default (): m.Component => {
 	let searchValue = '';
@@ -85,16 +85,28 @@ export default (): m.Component => {
 					title: m(Title, 'Data Sources'),
 					active: 'data-sources',
 					classNameContainer: '.pa3',
-					rightElement: m('div', [
+					rightElement: m(Flex, { items: 'center' }, [
 						m(
-							Button,
+							IconButton,
 							{
+								icon: 'cloud-upload',
 								onClick: () => {
 									setPortal(ImportDataSource, {});
 								},
 							},
 							'Import',
 						), //
+						m('div.divider-vert'),
+						m(
+							IconButton,
+							{
+								icon: 'add',
+								onClick: () => {
+									// TODO
+								},
+							},
+							'Create',
+						),
 					]),
 				},
 				m('div', [search(), dataSourcesByAuthor()]),

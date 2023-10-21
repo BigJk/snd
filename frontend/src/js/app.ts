@@ -76,7 +76,7 @@ store.actions.loadAll().then(() => {
 		// Create ESC shortcut to close spotlight.
 		if (Portal.hasPortal() && e.key === 'Escape') {
 			e.preventDefault();
-			Portal.clearPortal();
+			Portal.popPortal();
 		}
 	});
 });

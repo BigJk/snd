@@ -1,6 +1,6 @@
 import m from 'mithril';
 import Modal from 'js/ui/spectre/modal';
-import { clearPortal, setPortal } from 'js/ui/portal';
+import { popPortal, pushPortal } from 'js/ui/portal';
 import Flex from 'js/ui/components/layout/flex';
 import Input from 'js/ui/spectre/input';
 import Button from 'js/ui/spectre/button';
@@ -34,7 +34,7 @@ const CreateEditEntry = (): m.Component<CreateEditEntrySourceEntryProps> => {
 					title: attrs.id ? 'Edit Data Source Entry' : 'Create Data Source Entry',
 					icon: attrs.id ? 'create' : 'add',
 					onClose: () => {
-						clearPortal();
+						popPortal();
 						attrs.onClose();
 					},
 				},
@@ -75,12 +75,12 @@ const CreateEditEntry = (): m.Component<CreateEditEntrySourceEntryProps> => {
 
 export default (id?: string, name?: string): Promise<CreateEditEntrySourceEntryResponse> =>
 	new Promise((resolve, reject) => {
-		setPortal<CreateEditEntrySourceEntryProps>(CreateEditEntry, {
+		pushPortal<CreateEditEntrySourceEntryProps>(CreateEditEntry, {
 			attributes: {
 				id,
 				name,
 				onCreate: (id, name) => {
-					clearPortal();
+					popPortal();
 					resolve({ id, name });
 				},
 				onClose: () => {

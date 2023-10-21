@@ -103,7 +103,7 @@ export default (): m.Component<SelectProps> => {
 			m(
 				'select.form-select',
 				{
-					value: vnode.attrs.selected,
+					value: vnode.attrs.selected ?? '',
 					onmousedown: (e: any) => {
 						e.preventDefault();
 						e.target.blur();
@@ -180,11 +180,6 @@ export default (): m.Component<SelectProps> => {
 
 	const updateSize = (vnode: m.VnodeDOM<SelectProps>) => {
 		if (!vnode.attrs.width || vnode.attrs.width == 0) return;
-
-		let dropdownElement = vnode.dom.parentElement?.parentElement;
-		if (!dropdownElement) return;
-
-		(dropdownElement as HTMLElement).style.width = `${vnode.attrs.width}px`;
 	};
 
 	return {
@@ -198,7 +193,7 @@ export default (): m.Component<SelectProps> => {
 			destroyTooltip();
 		},
 		view(vnode) {
-			return m(`div.${tippyStyle}`, getSelect(vnode));
+			return m(`div.${tippyStyle}`, { style: { width: `${vnode.attrs.width}px` } }, getSelect(vnode));
 		},
 	};
 };

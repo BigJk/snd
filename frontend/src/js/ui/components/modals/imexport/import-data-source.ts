@@ -15,7 +15,7 @@ import ConfigTypes from 'js/ui/components/config/types';
 import HorizontalProperty from 'js/ui/components/horizontal-property';
 import Flex from 'js/ui/components/layout/flex';
 
-import { clearPortal } from 'js/ui/portal';
+import { popPortal } from 'js/ui/portal';
 import { error, success } from 'js/ui/toast';
 
 type ImportDataState = {
@@ -43,7 +43,7 @@ export default (): m.Component => {
 			.then(() => {
 				success('Import successful');
 				store.actions.loadSources().catch(error);
-				clearPortal();
+				popPortal();
 			})
 			.catch(error)
 			.finally(() => {
@@ -117,7 +117,7 @@ export default (): m.Component => {
 					width: state.selected ? 900 : 400,
 					title: 'Import Data Source',
 					onClose: () => {
-						clearPortal();
+						popPortal();
 					},
 					loading: state.loading,
 					loadingMessage: 'Importing... Please wait',

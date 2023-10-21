@@ -137,6 +137,7 @@ func (s *Server) Start(bind string) error {
 	rpc.RegisterGit(api, s.db)
 	rpc.RegisterCloud(api, s.db)
 	rpc.RegisterAI(api, s.db)
+	rpc.RegisterFileBrowser(api)
 
 	// Register additional routes
 	for k, v := range s.additionalRpc {

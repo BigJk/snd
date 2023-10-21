@@ -63,3 +63,30 @@ export const generateEntry = (prompt: string, template: Template, entries: Entry
 		}),
 	);
 };
+
+export const translateEntry = (language: string, entry: Entry) => {
+	let system = `
+  You output JSON.
+  You are a helper to translate data in a Software.
+  You are in a software for Pen & Paper / TTRPGs.
+  You translate to ${language}
+  Only translate the values in the JSON, not the keys.`;
+
+	return API.exec<string>(
+		AI_GENERATE,
+		system,
+		JSON.stringify(entry.data, null, 2),
+		'AI_TRANSLATE' + Math.floor(Math.random() * 50000).toString(),
+	).then((data) =>
+		safeCall(() => {
+			let resp = {};
+			if (data[0] === '{') resp = JSON.parse(data);
+			else resp = extractJSON(data);
+			return {
+				id: `ai_translate#${entry.id}_${language}`,
+				name: `${entry.name} (${language})`,
+				data: resp,
+			} as Entry;
+		}),
+	);
+};

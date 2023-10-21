@@ -74,6 +74,10 @@ export const SYNC_LOCAL_TO_CLOUD = 'syncLocalToCloud';
 export const AI_GENERATE = 'aiPrompt';
 export const AI_OPEN_ROUTER_MODELS = 'aiOpenRouterModels';
 
+// File Browser
+export const GET_FILES = 'getFiles';
+export const GET_DEFAULT_DIRECTORIES = 'getDefaultDirectories';
+
 // Misc function
 export const FETCH_IMAGE = 'fetchImage';
 export const PREVIEW_CACHE = 'previewCache';

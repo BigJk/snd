@@ -1,9 +1,9 @@
 import m from 'mithril';
 import { ConfigValue } from 'js/types/config';
-import Spoiler from 'js/ui/components/view-layout/spoiler';
-import Flex from 'js/ui/components/layout/flex';
-import Icon from 'js/ui/components/atomic/icon';
 import Input from 'js/ui/spectre/input';
+import Icon from 'js/ui/components/atomic/icon';
+import Flex from 'js/ui/components/layout/flex';
+import Spoiler from 'js/ui/components/view-layout/spoiler';
 
 type ConfigCreatorProps = {
 	configs: ConfigValue[];

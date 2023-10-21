@@ -6,7 +6,6 @@ import { buildId } from 'js/types/basic-info';
 
 import { templates } from 'js/core/store';
 
-import Button from 'js/ui/spectre/button';
 import Input from 'js/ui/spectre/input';
 
 import Icon from 'js/ui/components/atomic/icon';
@@ -15,6 +14,7 @@ import Flex from 'js/ui/components/layout/flex';
 import Grid from 'js/ui/components/layout/grid';
 import TemplateBox from 'js/ui/components/template-box';
 import Base from 'js/ui/components/view-layout/base';
+import IconButton from 'js/ui/spectre/icon-button';
 
 export default (): m.Component => {
 	let searchValue = '';
@@ -78,7 +78,7 @@ export default (): m.Component => {
 					active: 'templates',
 					classNameContainer: '.pa3',
 					rightElement: m('div', [
-						m(Button, { link: '/template/create' }, 'Create'), //
+						m(IconButton, { link: '/template/create', icon: 'add' }, 'Create'), //
 					]),
 				},
 				m('div', [search(), templatesByAuthor()]),

@@ -73,7 +73,7 @@ export default (): m.Component<SideMenuPagerProps> => {
 					),
 					//
 					// We wrap with additional div to prevent problems with keyed components inside the render.
-					m('div.w-100', getRender(attrs)),
+					m('div.w-100.overflow-auto.pb3', getRender(attrs)),
 				]),
 			);
 		},

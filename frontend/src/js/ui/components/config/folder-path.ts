@@ -1,8 +1,6 @@
 import m from 'mithril';
 
-// @ts-ignore
-import { inElectron, openFolderDialog } from 'js/electron';
-
+import { openFileModal } from 'js/ui/components/modals/file-browser';
 import Button from 'js/ui/spectre/button';
 
 import Config, { ConfigProps } from 'js/ui/components/config/config';
@@ -26,14 +24,12 @@ export default {
 						className: '.fr',
 						intend: 'primary',
 						onClick: () => {
-							if (inElectron) {
-								openFolderDialog().then((path: string) => {
-									attrs.onChange(path);
-								});
-							}
+							openFileModal('Select a folder', [], true).then((path: string) => {
+								attrs.onChange(path);
+							});
 						},
 					},
-					!attrs.value || attrs.value.length === 0 ? 'Select File' : showEndOfPath(attrs.value),
+					!attrs.value || attrs.value.length === 0 ? 'Select Folder' : showEndOfPath(attrs.value),
 				),
 		};
 	},

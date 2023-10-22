@@ -6,6 +6,7 @@ import SideMenu from 'js/ui/components/view-layout/side-menu';
 import Flex from 'js/ui/components/layout/flex';
 import Input from 'js/ui/spectre/input';
 import Icon from 'js/ui/components/atomic/icon';
+import Button from 'js/ui/spectre/button';
 
 type FileBrowserProps = {
 	title: string;
@@ -52,16 +53,16 @@ const fileBrowserModal = (): m.Component<FileBrowserProps> => {
 
 	const fetchFiles = (attrs: FileBrowserProps) => {
 		API.exec<FileInfo[]>(API.GET_FILES, state.path, attrs.fileEndings, attrs.onlyDirs).then((res) => {
+			state.currentFiles = res ?? [];
+
 			// Sort files. Folders first, then alphabetically.
-			res.sort((a, b) => {
+			state.currentFiles.sort((a, b) => {
 				if (a.isDir === b.isDir) {
 					return a.name.localeCompare(b.name);
 				}
 
 				return a.isDir ? -1 : 1;
 			});
-
-			state.currentFiles = res;
 		});
 	};
 
@@ -71,6 +72,12 @@ const fileBrowserModal = (): m.Component<FileBrowserProps> => {
 		}
 		const fileEnding = file.name.substring(file.name.lastIndexOf('.'));
 		return fileNameIconMappings[fileEnding] || 'document';
+	};
+
+	const getCurrentFolder = () => {
+		const path = state.path;
+		const folders = path.split('/');
+		return folders[folders.length - 1];
 	};
 
 	return {
@@ -135,11 +142,12 @@ const fileBrowserModal = (): m.Component<FileBrowserProps> => {
 									},
 								}),
 							),
+							m('div.mb2.b.ph2.pt2', getCurrentFolder()),
 							m(
 								'div.overflow-auto',
 								{ style: { height: '400px' } },
-								m(
-									'div.pa1',
+								m('div.ph2.pb2', [
+									state.currentFiles.length === 0 ? m('div.text-muted', 'Nothing found...') : null,
 									state.currentFiles
 										.filter((file) => {
 											if (state.search) {
@@ -167,9 +175,36 @@ const fileBrowserModal = (): m.Component<FileBrowserProps> => {
 												]),
 											),
 										),
-								),
+								]),
 							),
 						]),
+					]),
+					m(Flex, { justify: 'end', gap: 1, className: '.pa2.bt.b--black-10' }, [
+						m(
+							Button,
+							{
+								onClick: () => {
+									{
+										attrs.reject(new Error('User closed file browser'));
+										popPortal();
+									}
+								},
+							},
+							'Cancel',
+						),
+						!attrs.onlyDirs
+							? null
+							: m(
+									Button,
+									{
+										intend: 'success',
+										onClick: () => {
+											attrs.resolve(state.path);
+											popPortal();
+										},
+									},
+									'Select',
+							  ),
 					]),
 				],
 			);

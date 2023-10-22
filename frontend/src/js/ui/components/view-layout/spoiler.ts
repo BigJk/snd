@@ -6,6 +6,7 @@ type SpoilerProps = {
 	title: m.Component;
 	className?: string;
 	initialOpen?: boolean;
+	key?: string;
 };
 
 export default (): m.Component<SpoilerProps> => {
@@ -28,8 +29,8 @@ export default (): m.Component<SpoilerProps> => {
 						},
 					},
 					[
-						m('div', attrs.title), //
-						m(Icon, { icon: open ? 'arrow-dropup' : 'arrow-dropdown', size: 5 }),
+						m('div', { key: attrs.key }, attrs.title), //
+						m(Icon, { key: attrs.key, icon: open ? 'arrow-dropup' : 'arrow-dropdown', size: 5 }),
 					],
 				),
 				open ? m('div.pa2', children) : null,

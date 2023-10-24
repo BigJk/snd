@@ -1,5 +1,6 @@
 import m from 'mithril';
 
+import MiniHeader from 'js/ui/components/atomic/mini-header';
 import Checkbox from 'js/ui/spectre/checkbox';
 import Input from 'js/ui/spectre/input';
 import Label from 'js/ui/spectre/label';
@@ -26,19 +27,25 @@ export default {
 			return m('div', [
 				...(attrs.inEdit
 					? [
+							m(MiniHeader, 'Options'),
 							m(Input, {
+								className: '.mb2',
 								value: value.choices.join(','),
 								onChange: (choices: string) => attrs.onChange({ ...value, choices: choices.split(',') }),
 							}),
+							m(MiniHeader, 'Allow Duplicate'),
 							m(Checkbox, {
+								className: '.mb2',
 								checked: value.allowDuplicate,
 								onChange: (allowDuplicate: boolean) => attrs.onChange({ ...value, allowDuplicate }),
 							}),
 					  ]
 					: []), //
 				// @ts-ignore
+				!attrs.inEdit ? null : m(MiniHeader, 'Default'),
 				m(Select, {
-					selected: value.selected,
+					className: '.mb2',
+					selected: null,
 					keys: value.choices,
 					onInput: (e: OnInputEvent) =>
 						attrs.onChange({
@@ -50,10 +57,11 @@ export default {
 					m(
 						Label,
 						{
+							className: '.mr2',
 							intent: 'primary',
 						},
 						[
-							m('span', v),
+							m('span.mr2', v),
 							m(Icon, {
 								icon: 'close',
 								onClick: () => {

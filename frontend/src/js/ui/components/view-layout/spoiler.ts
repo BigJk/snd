@@ -33,7 +33,7 @@ export default (): m.Component<SpoilerProps> => {
 						m(Icon, { key: attrs.key, icon: open ? 'arrow-dropup' : 'arrow-dropdown', size: 5 }),
 					],
 				),
-				open ? m('div.pa2', children) : null,
+				open ? m('div', children) : null,
 			]);
 		},
 	};

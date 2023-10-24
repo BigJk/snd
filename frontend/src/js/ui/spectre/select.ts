@@ -37,6 +37,7 @@ export type OnInputEvent = {
 };
 
 type SelectProps = {
+	className?: string;
 	keys: string[];
 	names?: string[];
 	selected: string | null;
@@ -193,7 +194,7 @@ export default (): m.Component<SelectProps> => {
 			destroyTooltip();
 		},
 		view(vnode) {
-			return m(`div.${tippyStyle}`, { style: { width: `${vnode.attrs.width}px` } }, getSelect(vnode));
+			return m(`div.${tippyStyle}${vnode.attrs.className ?? ''}`, { style: { width: `${vnode.attrs.width}px` } }, getSelect(vnode));
 		},
 	};
 };

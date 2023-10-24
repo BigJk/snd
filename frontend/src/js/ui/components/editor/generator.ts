@@ -15,6 +15,9 @@ import PrintPreviewTemplate from 'js/ui/components/print-preview-template';
 import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
 import EditorHeader from 'js/ui/components/view-layout/property-header';
 import ConfigCreator from 'js/ui/components/config/creator';
+import SourceSelect from 'js/ui/components/source-select';
+import Label from 'js/ui/spectre/label';
+import Icon from 'js/ui/components/atomic/icon';
 
 type GeneratorEditorProps = {
 	generator: Generator;
@@ -31,7 +34,7 @@ export default (): m.Component<GeneratorEditorProps> => {
 	let state: GeneratorEditorState = {
 		loading: false,
 		selectedMenu: 'basic-info',
-		config: {}, // TODO: add config page
+		config: {},
 	};
 
 	return {
@@ -72,7 +75,44 @@ export default (): m.Component<GeneratorEditorProps> => {
 							//
 							// Data Sources
 							//
-							{ id: 'data-sources', title: 'Data Sources', icon: 'analytics', render: () => null },
+							{
+								id: 'data-sources',
+								title: 'Data Sources',
+								icon: 'analytics',
+								centerContainer: true,
+								render: () =>
+									m('div.ph3', [
+										m(EditorHeader, {
+											title: 'Data Sources',
+											description: 'Add and remove data sources. Entries of these data sources will be linked to this template.',
+										}), //
+										m(
+											'div.mb3',
+											m(SourceSelect, {
+												sources: attrs.generator.dataSources,
+												onChange: (updated) => attrs.onChange({ ...attrs.generator, dataSources: updated }),
+											}),
+										),
+										m(
+											Flex,
+											{ gap: 2 },
+											attrs.generator.dataSources.map((s) =>
+												m(
+													Label,
+													{ intent: 'primary' },
+													m(Flex, { gap: 2 }, [
+														s,
+														m(Icon, {
+															icon: 'close',
+															onClick: () =>
+																attrs.onChange({ ...attrs.generator, dataSources: attrs.generator.dataSources.filter((ds) => ds !== s) }),
+														}),
+													]),
+												),
+											),
+										),
+									]),
+							},
 							//
 							// Config
 							//

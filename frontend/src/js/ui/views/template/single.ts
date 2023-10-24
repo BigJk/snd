@@ -25,7 +25,7 @@ import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
 import PaginatedContent from 'js/ui/components/view-layout/paginated-content';
 import SidebarPrintPage from 'js/ui/components/view-layout/sidebar-print-page';
 
-import { error, success } from 'js/ui/toast';
+import { error, success, dialogWarning } from 'js/ui/toast';
 import EntryListItem from 'js/ui/components/entry-list-item';
 
 const PER_PAGE = 10;
@@ -143,6 +143,36 @@ export default (): m.Component<SingleTemplateProps> => {
 		});
 	};
 
+	const screenshot = (entry: Entry) => {
+		// TODO: implement
+	};
+
+	const print = (entry: Entry) => {
+		// TODO: implement
+	};
+
+	const showExport = () => {
+		// TODO: implement
+	};
+
+	const showAdditionalInfo = () => {
+		// TODO: implement
+	};
+
+	const deleteTemplate = () => {
+		if (!state.template) return;
+
+		dialogWarning('Are you sure you want to delete this template?').then(() => {
+			if (!state.template) return;
+			API.exec<void>(API.DELETE_TEMPLATE, buildId('template', state.template))
+				.then(() => {
+					success('Deleted template');
+					m.route.set('/template');
+				})
+				.catch(error);
+		});
+	};
+
 	const entryElement = (entry: Entry) => {
 		const selected = state.selectedEntry && entry.id === state.selectedEntry.id;
 		return m(EntryListItem, {
@@ -155,8 +185,12 @@ export default (): m.Component<SingleTemplateProps> => {
 			),
 			right: selected
 				? m('div', [
-						m(Tooltip, { content: 'Screenshot' }, m(IconButton, { intend: 'primary', size: 'sm', className: '.mr2', icon: 'camera' })), //
-						m(Tooltip, { content: 'Print' }, m(IconButton, { intend: 'primary', size: 'sm', icon: 'print' })),
+						m(
+							Tooltip,
+							{ content: 'Screenshot' },
+							m(IconButton, { intend: 'primary', size: 'sm', className: '.mr2', icon: 'camera', onClick: () => screenshot(entry) }),
+						), //
+						m(Tooltip, { content: 'Print' }, m(IconButton, { intend: 'primary', size: 'sm', icon: 'print', onClick: () => print(entry) })),
 				  ])
 				: null,
 		});
@@ -180,13 +214,25 @@ export default (): m.Component<SingleTemplateProps> => {
 					}),
 					active: 'templates',
 					classNameContainer: '.pa3',
-					rightElement: m('div.flex', [
+					rightElement: m(Flex, { items: 'center' }, [
 						m(
 							IconButton,
-							{ icon: 'add', size: 'sm', intend: 'success', className: '.mr2', onClick: () => m.route.set(`/template/${attrs.id}/create`) },
+							{ icon: 'add', size: 'sm', className: '.mr2', intend: 'success', onClick: () => m.route.set(`/template/${attrs.id}/create`) },
 							'New Entry',
 						),
 						m(IconButton, { icon: 'create', size: 'sm', intend: 'primary', onClick: () => m.route.set(`/template/${attrs.id}/edit`) }, 'Edit'),
+						m('div.divider-vert'),
+						m(
+							Tooltip,
+							{ content: 'Export' },
+							m(IconButton, { icon: 'download', size: 'sm', intend: 'primary', className: '.mr2', onClick: showExport }),
+						),
+						m(
+							Tooltip,
+							{ content: 'Additional Information' },
+							m(IconButton, { icon: 'information-circle-outline', size: 'sm', intend: 'primary', className: '.mr2', onClick: showAdditionalInfo }),
+						),
+						m(Tooltip, { content: 'Delete' }, m(IconButton, { icon: 'trash', size: 'sm', intend: 'error', onClick: deleteTemplate })),
 					]),
 				},
 				state.template

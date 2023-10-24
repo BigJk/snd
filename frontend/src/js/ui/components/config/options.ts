@@ -1,5 +1,6 @@
 import m from 'mithril';
 
+import MiniHeader from 'js/ui/components/atomic/mini-header';
 import Input from 'js/ui/spectre/input';
 import Select from 'js/ui/spectre/select';
 
@@ -22,10 +23,13 @@ export default {
 
 			if (attrs.inEdit) {
 				return m('div', [
+					!attrs.inEdit ? null : m(MiniHeader, 'Options'),
 					m(Input, {
+						className: '.mb2',
 						value: attrs.value.choices.join(','),
 						onChange: (value: string) => attrs.onChange({ ...attrs.value, choices: value.split(',') }),
 					}),
+					!attrs.inEdit ? null : m(MiniHeader, 'Default'),
 					select,
 				]);
 			}

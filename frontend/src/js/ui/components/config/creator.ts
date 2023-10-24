@@ -8,6 +8,7 @@ import Flex from 'js/ui/components/layout/flex';
 import Spoiler from 'js/ui/components/view-layout/spoiler';
 import types from 'js/ui/components/config/types';
 import Select from 'js/ui/spectre/select';
+import MiniHeader from 'js/ui/components/atomic/mini-header';
 
 type ConfigCreatorProps = {
 	configs: ConfigValue[];
@@ -17,27 +18,6 @@ type ConfigCreatorProps = {
 export default (): m.Component<ConfigCreatorProps> => ({
 	view({ attrs }) {
 		return m('div', [
-			m(
-				Flex,
-				{ justify: 'end', className: '.mb3' },
-				m(
-					IconButton,
-					{
-						intend: 'primary',
-						icon: 'add',
-						onClick: () => {
-							attrs.configs.push({
-								key: `name_${Math.floor(Math.random() * 5000)}`,
-								name: 'Some Name',
-								description: 'Some description',
-								type: 'Text',
-								default: 'Hello World',
-							});
-						},
-					},
-					'Add Config',
-				),
-			),
 			attrs.configs.map((c, i) =>
 				m(
 					Spoiler,
@@ -51,13 +31,18 @@ export default (): m.Component<ConfigCreatorProps> => ({
 					},
 					[
 						m(Flex, { gap: 1 }, [
-							m(Flex, { direction: 'column', gap: 2 }, [
-								m('div.f8.b', 'Type'),
+							m(Flex, { direction: 'column', gap: 2, className: '.pa2' }, [
+								m(MiniHeader, { noMargin: true }, 'Type'),
 								m(Select, {
 									selected: c.type,
 									keys: Object.keys(types).filter((t) => !t.includes('Path')),
+									onInput: (e) => {
+										attrs.configs[i].type = e.value;
+										attrs.configs[i].default = types[e.value].default();
+										attrs.onChange(attrs.configs);
+									},
 								}),
-								m('div.f8.b', 'Key'),
+								m(MiniHeader, { noMargin: true }, 'Key'),
 								m(Input, {
 									value: c.key,
 									onChange: (value) => {
@@ -65,7 +50,7 @@ export default (): m.Component<ConfigCreatorProps> => ({
 										attrs.onChange(attrs.configs);
 									},
 								}),
-								m('div.f8.b', 'Name'),
+								m(MiniHeader, { noMargin: true }, 'Name'),
 								m(Input, {
 									value: c.name,
 									onChange: (value) => {
@@ -73,7 +58,7 @@ export default (): m.Component<ConfigCreatorProps> => ({
 										attrs.onChange(attrs.configs);
 									},
 								}),
-								m('div.f8.b', 'Description'),
+								m(MiniHeader, { noMargin: true }, 'Description'),
 								m(Input, {
 									value: c.description,
 									onChange: (value) => {
@@ -95,7 +80,7 @@ export default (): m.Component<ConfigCreatorProps> => ({
 								}),
 							),
 						]),
-						m(Flex, { gap: 1, justify: 'between', className: '.mt2' }, [
+						m(Flex, { gap: 1, justify: 'between', className: '.mt2.pa2.bt.b--black-10' }, [
 							m(Flex, { gap: 1 }, [
 								m(IconButton, {
 									icon: 'arrow-up',
@@ -125,6 +110,27 @@ export default (): m.Component<ConfigCreatorProps> => ({
 							),
 						]),
 					],
+				),
+			),
+			m(
+				Flex,
+				{ justify: 'end', className: '.mt2' },
+				m(
+					IconButton,
+					{
+						intend: 'primary',
+						icon: 'add',
+						onClick: () => {
+							attrs.configs.push({
+								key: `name_${Math.floor(Math.random() * 5000)}`,
+								name: 'Some Name',
+								description: 'Some description',
+								type: 'Text',
+								default: 'Hello World',
+							});
+						},
+					},
+					'Add Config',
 				),
 			),
 		]);

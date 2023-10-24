@@ -27,6 +27,7 @@ import SidebarPrintPage from 'js/ui/components/view-layout/sidebar-print-page';
 
 import { error, success, dialogWarning } from 'js/ui/toast';
 import EntryListItem from 'js/ui/components/entry-list-item';
+import { openAdditionalInfosModal } from 'js/ui/components/modals/additional-infos';
 
 const PER_PAGE = 10;
 
@@ -156,7 +157,8 @@ export default (): m.Component<SingleTemplateProps> => {
 	};
 
 	const showAdditionalInfo = () => {
-		// TODO: implement
+		if (!state.template) return;
+		openAdditionalInfosModal('template', buildId('template', state.template));
 	};
 
 	const deleteTemplate = () => {

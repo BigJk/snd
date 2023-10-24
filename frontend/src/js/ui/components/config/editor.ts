@@ -16,6 +16,7 @@ const containerClass = css`
 `;
 
 type ConfigEditorProps = {
+	className?: string;
 	definition: ConfigValue[];
 	current: any;
 	onChange: (config: any) => void;
@@ -31,7 +32,7 @@ export default (): m.Component<ConfigEditorProps> => ({
 	view({ attrs }) {
 		return m(
 			Flex,
-			{ justify: 'center', className: '.w-100.ph3' },
+			{ justify: 'center', className: `.w-100.ph3${attrs.className ?? ''}` },
 			m(
 				`div.w-100.${containerClass}`,
 				attrs.definition.map((config) => {

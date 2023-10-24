@@ -13,6 +13,9 @@ import SidebarPrintPage from 'js/ui/components/view-layout/sidebar-print-page';
 import Tooltip from 'js/ui/components/atomic/tooltip';
 import { dialogWarning, success, error } from 'js/ui/toast';
 import { buildId } from 'js/types/basic-info';
+import Flex from 'js/ui/components/layout/flex';
+import Input from 'js/ui/spectre/input';
+import { openAdditionalInfosModal } from 'js/ui/components/modals/additional-infos';
 
 type SingleGeneratorProps = {
 	id: string;
@@ -21,15 +24,21 @@ type SingleGeneratorProps = {
 type SingleGeneratorState = {
 	generator: Generator | null;
 	config: any;
+	printCount: number;
 };
 
 export default (): m.Component<SingleGeneratorProps> => {
 	let state: SingleGeneratorState = {
 		generator: null,
 		config: {},
+		printCount: 1,
 	};
 
 	const print = () => {
+		// TODO: implement
+	};
+
+	const screenshot = () => {
 		// TODO: implement
 	};
 
@@ -38,7 +47,8 @@ export default (): m.Component<SingleGeneratorProps> => {
 	};
 
 	const showAdditionalInfo = () => {
-		// TODO: implement
+		if (!state.generator) return;
+		openAdditionalInfosModal('generator', buildId('generator', state.generator));
 	};
 
 	const deleteGenerator = () => {
@@ -102,23 +112,41 @@ export default (): m.Component<SingleGeneratorProps> => {
 					],
 					content: {
 						Config: () =>
-							m(Editor, {
-								current: state.config,
-								definition: [
-									{
-										key: 'seed',
-										name: 'Seed',
-										description: 'The seed used to generate the template',
-										type: 'Seed',
-										default: 'TEST_SEED',
+							m(Flex, { className: '.h-100', direction: 'column' }, [
+								m(Editor, {
+									className: '.flex-grow-1.overflow-auto.h-100',
+									current: state.config,
+									definition: [
+										{
+											key: 'seed',
+											name: 'Seed',
+											description: 'The seed used to generate the template',
+											type: 'Seed',
+											default: 'TEST_SEED',
+										},
+										...(state.generator ? state.generator.config : []),
+									],
+									onChange: (config) => {
+										state.config = config;
+										m.redraw();
 									},
-									...(state.generator ? state.generator.config : []),
-								],
-								onChange: (config) => {
-									state.config = config;
-									m.redraw();
-								},
-							}),
+								}),
+								m(Flex, { className: '.bt.b--black-10.pv2.ph3', justify: 'end', gap: 2 }, [
+									m(
+										Tooltip,
+										{ content: 'Print Count' },
+										m(Input, {
+											className: '.w2.tc',
+											placeholder: '#',
+											useBlur: true,
+											value: state.printCount,
+											onChange: (value: string) => (state.printCount = parseInt(value) ?? 1),
+										}),
+									),
+									m(IconButton, { icon: 'camera', intend: 'primary', onClick: screenshot }, 'Screenshot'),
+									m(IconButton, { icon: 'print', intend: 'success', onClick: print }, 'Print'),
+								]),
+							]),
 						Information: () => m('div.ph3.pv2.lh-copy', [m('div.f5.mb2.b', 'Description'), state.generator?.description ?? '']),
 						Saved: () => m('div.ph3.pv2', 'coming soon...'),
 					},

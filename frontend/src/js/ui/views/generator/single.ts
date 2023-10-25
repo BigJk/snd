@@ -130,7 +130,6 @@ export default (): m.Component<SingleGeneratorProps> => {
 										state.config = config;
 										m.redraw();
 									},
-									editMode: true,
 								}),
 								m(Flex, { className: '.bt.b--black-10.pv2.ph3', justify: 'end', gap: 2 }, [
 									m(

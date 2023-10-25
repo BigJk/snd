@@ -5,17 +5,30 @@ import Template, { createEmptyTemplate } from 'js/types/template';
 import * as API from 'js/core/api';
 
 import IconButton from 'js/ui/spectre/icon-button';
-
 import TemplateEditor from 'js/ui/components/editor/template';
 import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
-
 import { error } from 'js/ui/toast';
+import { buildId } from 'js/types/basic-info';
+import store from 'js/core/store';
 
-export default (): m.Component => {
+type TemplateCreateProps = {
+	id?: string;
+};
+
+export default (): m.Component<TemplateCreateProps> => {
 	let state: Template = createEmptyTemplate();
 
 	return {
+		oninit({ attrs }) {
+			if (attrs.id) {
+				API.exec<Template>(API.GET_TEMPLATE, attrs.id)
+					.then((template) => {
+						state = template;
+					})
+					.catch(error);
+			}
+		},
 		view({ attrs }) {
 			return m(
 				Base,
@@ -34,10 +47,28 @@ export default (): m.Component => {
 								intend: 'success',
 								onClick: () => {
 									if (!state) return;
+									if (attrs.id && buildId('template', state) === attrs.id) {
+										error('You cannot duplicate a template with the same slug as the original.');
+										return;
+									}
+
 									API.exec<string>(API.SAVE_TEMPLATE, state)
 										.then(() => {
 											if (!state) return;
-											m.route.set(`/template`);
+
+											if (attrs.id) {
+												// If we are duplicating a generator, we need to copy the entries.
+												API.exec<void>(API.COPY_ENTRIES, attrs.id, buildId('template', state))
+													.then(() => {
+														if (!state) return;
+														m.route.set(`/template/${buildId('template', state)}`);
+														store.actions.loadGenerators();
+													})
+													.catch(error);
+											} else {
+												m.route.set(`/template/${buildId('template', state)}`);
+												store.actions.loadGenerators();
+											}
 										})
 										.catch(error);
 								},

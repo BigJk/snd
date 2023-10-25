@@ -234,6 +234,17 @@ export default (): m.Component<SingleTemplateProps> => {
 							{ content: 'Additional Information' },
 							m(IconButton, { icon: 'information-circle-outline', size: 'sm', intend: 'primary', className: '.mr2', onClick: showAdditionalInfo }),
 						),
+						m(
+							Tooltip,
+							{ content: 'Duplicate' },
+							m(IconButton, {
+								icon: 'copy',
+								size: 'sm',
+								intend: 'primary',
+								className: '.mr2',
+								onClick: () => m.route.set(`/template/create/${buildId('template', state.template!)}`),
+							}),
+						),
 						m(Tooltip, { content: 'Delete' }, m(IconButton, { icon: 'trash', size: 'sm', intend: 'error', onClick: deleteTemplate })),
 					]),
 				},

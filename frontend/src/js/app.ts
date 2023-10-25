@@ -52,6 +52,7 @@ store.actions.loadAll().then(() => {
 		'/settings': Settings,
 		'/template': TemplateAll,
 		'/template/create': TemplateCreate,
+		'/template/create/:id': TemplateCreate,
 		'/template/:id': TemplateSingle,
 		'/template/:id/edit': TemplateEdit,
 		'/template/:id/create': TemplateCreateEntity,
@@ -59,6 +60,7 @@ store.actions.loadAll().then(() => {
 		'/generator/:id': GeneratorSingle,
 		'/generator/:id/edit': GeneratorEdit,
 		'/generator/create': GeneratorCreate,
+		'/generator/create/:id': GeneratorCreate,
 		'/data-source': DataSourceAll,
 		'/data-source/:id': DataSourceSingle,
 	});

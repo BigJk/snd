@@ -48,7 +48,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 
 	const showAdditionalInfo = () => {
 		if (!state.generator) return;
-		openAdditionalInfosModal('generator', buildId('generator', state.generator));
+		openAdditionalInfosModal('generator', buildId('generator', state.generator), state.config);
 	};
 
 	const deleteGenerator = () => {

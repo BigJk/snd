@@ -22,6 +22,7 @@ export type PrintPreviewTemplateProps = {
 	config?: any;
 	hideAiNotice?: boolean;
 	width?: number;
+	onRendered?: (html) => void;
 };
 
 export default (): m.Component<PrintPreviewTemplateProps> => {
@@ -57,6 +58,7 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 		})
 			.then((html) => {
 				lastRendered = html;
+				if (attrs.onRendered) attrs.onRendered(html);
 			})
 			.catch(console.error)
 			.finally(() => {

@@ -66,6 +66,10 @@ export const IMPORT_PACKAGE = 'importPackage';
 export const GET_AVAILABLE_PRINTER = 'getAvailablePrinter';
 export const GET_PRINTER = 'getPrinter';
 
+// Printing
+export const PRINT = 'print';
+export const SCREENSHOT = 'screenshot';
+
 // Cloud Sync
 export const SYNC_CLOUD_TO_LOCAL = 'syncCloudToLocal';
 export const SYNC_LOCAL_TO_CLOUD = 'syncLocalToCloud';

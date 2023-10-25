@@ -28,6 +28,7 @@ import SidebarPrintPage from 'js/ui/components/view-layout/sidebar-print-page';
 import { error, success, dialogWarning } from 'js/ui/toast';
 import EntryListItem from 'js/ui/components/entry-list-item';
 import { openAdditionalInfosModal } from 'js/ui/components/modals/additional-infos';
+import { openFileModal } from 'js/ui/components/modals/file-browser';
 
 const PER_PAGE = 10;
 
@@ -46,6 +47,7 @@ type SingleTemplateState = {
 	aiPrompt: string;
 	aiLanguage: string;
 	aiLoading: boolean;
+	lastRendered: string;
 };
 
 export default (): m.Component<SingleTemplateProps> => {
@@ -60,6 +62,7 @@ export default (): m.Component<SingleTemplateProps> => {
 		aiPrompt: '',
 		aiLanguage: '',
 		aiLoading: false,
+		lastRendered: '',
 	};
 
 	const fetchEntries = () => {
@@ -144,12 +147,20 @@ export default (): m.Component<SingleTemplateProps> => {
 		});
 	};
 
-	const screenshot = (entry: Entry) => {
-		// TODO: implement
+	const screenshot = () => {
+		if (!state.template) return;
+		openFileModal('Select a save folder', [], true).then((folder) => {
+			API.exec<void>(API.SCREENSHOT, state.lastRendered, `${folder}/${state.selectedEntry?.name}.png`)
+				.then(() => success('Saved screenshot'))
+				.catch(error);
+		});
 	};
 
-	const print = (entry: Entry) => {
-		// TODO: implement
+	const print = () => {
+		if (!state.template) return;
+		API.exec<void>(API.PRINT, state.lastRendered)
+			.then(() => success('Printed entry'))
+			.catch(error);
 	};
 
 	const showExport = () => {
@@ -190,9 +201,9 @@ export default (): m.Component<SingleTemplateProps> => {
 						m(
 							Tooltip,
 							{ content: 'Screenshot' },
-							m(IconButton, { intend: 'primary', size: 'sm', className: '.mr2', icon: 'camera', onClick: () => screenshot(entry) }),
+							m(IconButton, { intend: 'primary', size: 'sm', className: '.mr2', icon: 'camera', onClick: screenshot }),
 						), //
-						m(Tooltip, { content: 'Print' }, m(IconButton, { intend: 'primary', size: 'sm', icon: 'print', onClick: () => print(entry) })),
+						m(Tooltip, { content: 'Print' }, m(IconButton, { intend: 'primary', size: 'sm', icon: 'print', onClick: print })),
 				  ])
 				: null,
 		});
@@ -253,6 +264,7 @@ export default (): m.Component<SingleTemplateProps> => {
 					  m(SidebarPrintPage, {
 							template: state.template,
 							it: state.selectedEntry?.data,
+							onRendered: (html) => (state.lastRendered = html),
 							tabs: [
 								{ icon: 'filing', label: 'Entries' },
 								{ icon: 'planet', label: 'AI Tools' },

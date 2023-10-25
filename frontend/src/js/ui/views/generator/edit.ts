@@ -71,6 +71,7 @@ export default (): m.Component<EditGeneratorProps> => {
 								state = generator;
 								m.redraw();
 							},
+							editMode: true,
 					  })
 					: m(Loader),
 			);

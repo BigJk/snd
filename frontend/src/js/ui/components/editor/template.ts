@@ -19,6 +19,7 @@ import EditorHeader from 'js/ui/components/view-layout/property-header';
 type TemplateEditorProps = {
 	template: Template;
 	onChange: (updated: Template) => void;
+	editMode?: boolean;
 };
 
 type TemplateEditorState = {
@@ -53,7 +54,12 @@ export default (): m.Component<TemplateEditorProps> => {
 								title: 'Basic Info',
 								icon: 'clipboard',
 								centerContainer: true,
-								render: () => m(BasicInfo, { info: attrs.template, onChange: (updated) => attrs.onChange({ ...attrs.template, ...updated }) }),
+								render: () =>
+									m(BasicInfo, {
+										info: attrs.template,
+										hide: [...(attrs.editMode ? ['author', 'slug'] : [])],
+										onChange: (updated) => attrs.onChange({ ...attrs.template, ...updated }),
+									}),
 							},
 							//
 							// Images

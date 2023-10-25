@@ -22,6 +22,7 @@ import Icon from 'js/ui/components/atomic/icon';
 type GeneratorEditorProps = {
 	generator: Generator;
 	onChange: (updated: Generator) => void;
+	editMode: boolean;
 };
 
 type GeneratorEditorState = {
@@ -59,7 +60,12 @@ export default (): m.Component<GeneratorEditorProps> => {
 								title: 'Basic Info',
 								icon: 'clipboard',
 								centerContainer: true,
-								render: () => m(BasicInfo, { info: attrs.generator, onChange: (updated) => attrs.onChange({ ...attrs.generator, ...updated }) }),
+								render: () =>
+									m(BasicInfo, {
+										info: attrs.generator,
+										hide: [...(attrs.editMode ? ['author', 'slug'] : [])],
+										onChange: (updated) => attrs.onChange({ ...attrs.generator, ...updated }),
+									}),
 							},
 							//
 							// Images

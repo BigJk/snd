@@ -71,6 +71,7 @@ export default (): m.Component<EditTemplateProps> => {
 								state = template;
 								m.redraw();
 							},
+							editMode: true,
 					  })
 					: m(Loader),
 			);

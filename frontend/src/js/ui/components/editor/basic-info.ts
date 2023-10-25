@@ -34,7 +34,7 @@ export default <T extends Object>(): m.Component<BasicInfoProps<T>> => ({
 				m(PropertyEdit<BasicInfo & T>, {
 					properties: attrs.info,
 					onChange: onChange,
-					show: ['name', 'description', 'author', 'slug'],
+					show: ['name', 'description', 'author', 'slug'].filter((p) => !attrs.hide?.includes(p)),
 					annotations: {
 						name: {
 							label: 'Name',

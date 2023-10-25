@@ -10,7 +10,6 @@ import Loader from 'js/ui/spectre/loader';
 import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
 import SidebarPage from 'js/ui/components/view-layout/sidebar-page';
-
 import { dialogWarning, error, success } from 'js/ui/toast';
 import PaginatedContent from 'js/ui/components/view-layout/paginated-content';
 import Input from 'js/ui/spectre/input';
@@ -170,10 +169,12 @@ export default (): m.Component<SingleSourceProps> => {
 					}),
 					active: 'data-sources',
 					classNameContainer: '.pa3',
-					rightElement: m(Flex, { gap: 2 }, [
+					rightElement: m(Flex, [
 						m(
-							Button,
+							IconButton,
 							{
+								className: '.mr2',
+								icon: 'add',
 								intend: 'success',
 								onClick: () =>
 									CreateSourceEntry().then((res) => {
@@ -191,23 +192,26 @@ export default (): m.Component<SingleSourceProps> => {
 											.catch(error);
 									}),
 							},
-							[m(Icon, { icon: 'add' }), 'Create Entry'],
+							'Create Entry',
 						), //
 						m(
-							Button,
+							IconButton,
 							{
+								icon: 'create',
 								intend: 'primary',
 								onClick: () => editSource(attrs.id),
 							},
-							m(Icon, { icon: 'create' }),
+							'Edit',
 						),
+						m('div.divider-vert'),
 						m(
-							Button,
-							{
+							Tooltip,
+							{ content: 'Delete' },
+							m(IconButton, {
+								icon: 'trash',
 								intend: 'error',
 								onClick: () => deleteSource(attrs.id),
-							},
-							m(Icon, { icon: 'trash' }),
+							}),
 						),
 					]),
 				},

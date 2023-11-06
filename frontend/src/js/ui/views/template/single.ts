@@ -203,7 +203,35 @@ export default (): m.Component<SingleTemplateProps> => {
 							{ content: 'Screenshot' },
 							m(IconButton, { intend: 'primary', size: 'sm', className: '.mr2', icon: 'camera', onClick: screenshot }),
 						), //
-						m(Tooltip, { content: 'Print' }, m(IconButton, { intend: 'primary', size: 'sm', icon: 'print', onClick: print })),
+						m(Tooltip, { content: 'Print' }, m(IconButton, { className: '.mr2', intend: 'primary', size: 'sm', icon: 'print', onClick: print })),
+						m(
+							Tooltip,
+							{ content: 'Edit Entry' },
+							m(IconButton, {
+								intend: 'primary',
+								size: 'sm',
+								icon: 'create',
+								className: '.mr2',
+								onClick: () => m.route.set(`/template/${buildId('template', state.template!)}/edit/${entry.id}`),
+							}),
+						),
+						m(
+							Tooltip,
+							{ content: 'Delete' },
+							m(IconButton, {
+								intend: 'error',
+								size: 'sm',
+								icon: 'trash',
+								onClick: () => {
+									API.exec<void>(API.DELETE_ENTRY, buildId('template', state.template!), entry.id)
+										.then(() => {
+											fetchEntries();
+											success('Entry deleted');
+										})
+										.catch(error);
+								},
+							}),
+						),
 				  ])
 				: null,
 		});

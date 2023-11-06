@@ -56,6 +56,7 @@ store.actions.loadAll().then(() => {
 		'/template/:id': TemplateSingle,
 		'/template/:id/edit': TemplateEdit,
 		'/template/:id/create': TemplateCreateEntity,
+		'/template/:id/edit/:eid': TemplateCreateEntity,
 		'/generator': GeneratorAll,
 		'/generator/:id': GeneratorSingle,
 		'/generator/:id/edit': GeneratorEdit,

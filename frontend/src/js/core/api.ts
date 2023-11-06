@@ -35,6 +35,7 @@ export const DELETE_ENTRIES = 'deleteEntries';
 export const COUNT_ENTRIES = 'countEntries';
 export const GET_ENTRIES_WITH_SOURCES = 'getEntriesWithSources';
 export const COPY_ENTRIES = 'copyEntries';
+export const GET_ENTRY = 'getEntry';
 
 // Template
 export const GET_TEMPLATES = 'getTemplates';

@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, toPath } from 'lodash-es';
 
 export type SchemaType = 'string' | 'number' | 'boolean' | 'array' | 'object';
 
@@ -19,6 +19,14 @@ export type SchemaNode = {
 	 * The key of the node.
 	 */
 	key: string;
+	/**
+	 * Optional description of the node.
+	 */
+	description?: string;
+	/**
+	 * Optional readable name of the node.
+	 */
+	readableName?: string;
 	/**
 	 * The default value of the node.
 	 */
@@ -59,8 +67,91 @@ function mergeObjects(objects: any[]): any {
 		}
 	}
 
-	console.log(merged);
 	return merged;
+}
+
+/**
+ * Converts a string to a readable name.
+ * @param inputString The string to convert.
+ */
+export function readableName(inputString: string) {
+	const words = inputString.split(/[_A-Z]/).filter(Boolean);
+	const transformedWords = words.map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
+	const result = transformedWords.join(' ');
+	return result;
+}
+
+/**
+ * Given a path in an object that is based on the schema, it will return the schema node.
+ * @param schema The schema to search in.
+ * @param pathStrOrArray The path to search for. Can be a string or an array of strings.
+ * @returns The schema node or null if not found.
+ */
+export function objectPathToSchema(schema: SchemaRoot, pathStrOrArray: string | string[]) {
+	const path: string[] = typeof pathStrOrArray === 'string' ? toPath(pathStrOrArray) : pathStrOrArray;
+	const node = schema.nodes.find((n) => n.key === path[0]);
+	if (!node) {
+		return null;
+	}
+
+	const loop = (nodes: SchemaNode[], path: string[]): SchemaNode | null => {
+		if (path.length === 0) {
+			return null;
+		}
+
+		// Check if the element is a number and skip it.
+		if (!isNaN(Number(path[0]))) {
+			return loop(nodes, path.slice(1));
+		}
+
+		for (const node of nodes) {
+			if (node.key === path[0]) {
+				if (path.length === 1) {
+					return node;
+				}
+				if (node.type === 'object') {
+					return loop(node.children ?? [], path.slice(1));
+				} else if (node.type === 'array') {
+					if (node.elemType === 'object') {
+						return loop(node.children ?? [], path.slice(1));
+					}
+				}
+			}
+		}
+		return null;
+	};
+
+	return loop(schema.nodes, path);
+}
+
+/**
+ * Creates a default object from the given schema.
+ * @param schema The schema to create the object from.
+ */
+export function initialData(schema: SchemaRoot | SchemaNode[]): any {
+	const data: any = {};
+
+	// We need to loop over all the nodes and recursivly set the default value.
+	const loop = (nodes: SchemaNode[], data: any) => {
+		for (const node of nodes) {
+			if (node.type === 'object') {
+				data[node.key] = {};
+				loop(node.children ?? [], data[node.key]);
+			} else if (node.type === 'array') {
+				data[node.key] = [];
+				if (node.elemType === 'object') {
+					data[node.key].push({});
+					loop(node.children ?? [], data[node.key][0]);
+				}
+			} else {
+				data[node.key] = node.default;
+			}
+		}
+	};
+
+	loop(Array.isArray(schema) ? schema : schema.nodes, data);
+
+	return data;
 }
 
 /**
@@ -153,9 +244,8 @@ export function buildSchema(data: any): SchemaRoot {
 					}
 				}
 
-				console.log('BLEEP');
-				console.log(val);
-				console.log(Object.keys(val).map((key) => buildNode([key], val)));
+				// Console.log(val);
+				// console.log(Object.keys(val).map((key) => buildNode([key], val)));
 
 				return {
 					type: 'object',

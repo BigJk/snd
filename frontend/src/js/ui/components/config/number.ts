@@ -12,7 +12,7 @@ export default {
 		view: ({ attrs }) => [
 			!attrs.inEdit ? null : m(MiniHeader, 'Default'),
 			m(Input, {
-				value: attrs.value.toString(),
+				value: (attrs.value ?? 0).toString(),
 				onChange: (value: string) => attrs.onChange(parseInt(value)),
 				useBlur: true,
 			}),

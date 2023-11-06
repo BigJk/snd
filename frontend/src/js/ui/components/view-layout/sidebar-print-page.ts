@@ -35,17 +35,19 @@ export default (): m.Component<SidebarPrintProps> => {
 		},
 		view: (vnode) =>
 			m(Flex, { className: '.flex-gap-3.h-100' }, [
-				m(
-					'div.flex-shrink-0',
-					m(Flex, { direction: 'column', className: '.pa2.bg-white.ba.b--black-10.br2.flex-gap-3' }, [
-						...vnode.attrs.tabs.map((tab) => {
-							if (!tab) {
-								return null;
-							}
-							return leftElement(tab.icon, tab.label, selectedTab === tab.label, () => (selectedTab = tab.label));
-						}),
-					]),
-				), //
+				vnode.attrs.tabs.length > 1
+					? m(
+							'div.flex-shrink-0',
+							m(Flex, { direction: 'column', className: '.pa2.bg-white.ba.b--black-10.br2.flex-gap-3' }, [
+								...vnode.attrs.tabs.map((tab) => {
+									if (!tab) {
+										return null;
+									}
+									return leftElement(tab.icon, tab.label, selectedTab === tab.label, () => (selectedTab = tab.label));
+								}),
+							]),
+					  )
+					: null, //
 				// @ts-ignore
 				m(Flex, { className: '.bg-white.ba.b--black-10.br2.flex-grow-1.overflow-auto', direction: 'column' }, vnode.attrs.content[selectedTab]()),
 				vnode.attrs.template || vnode.attrs.generator

@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-import { debounce, isEqual } from 'lodash-es';
+import { cloneDeep, debounce, isEqual } from 'lodash-es';
 
 import Generator from 'js/types/generator';
 import Template from 'js/types/template';
@@ -39,9 +39,11 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 			isEqual(lastProps.it, attrs.it) &&
 			isEqual(lastProps.generator, attrs.generator) &&
 			isEqual(lastProps.config, attrs.config)
-		)
+		) {
 			return;
-		lastProps = attrs;
+		}
+
+		lastProps = cloneDeep(attrs);
 		loading = true;
 		m.redraw();
 

@@ -8,13 +8,14 @@ GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 TARGET_DIR=${SND_RELEASE_DIR:='build/release/'}
 APP_NAME=${SND_APP_NAME:='Sales & Dungeons'}
 
-echo "Build Time : ${BUILD_TIME}"
-echo "Branch     : ${GIT_BRANCH}"
-echo "Commit     : ${GIT_COMMIT}"
-echo "Go Version : ${GO_VERSION}"
-echo "Build OS   : ${GOOS:=$(go env GOOS)}"
-echo "Build Arch : ${GOARCH:=$(go env GOARCH)}"
-echo "Build Tags : ${SND_TAGS}"
+echo "Build Time  : ${BUILD_TIME}"
+echo "Branch      : ${GIT_BRANCH}"
+echo "Commit      : ${GIT_COMMIT}"
+echo "Go Version  : ${GO_VERSION}"
+echo "Build OS    : ${GOOS:=$(go env GOOS)}"
+echo "Build Arch  : ${GOARCH:=$(go env GOARCH)}"
+echo "Build Tags  : ${SND_TAGS}"
+echo "CGO Enabled : ${CGO_ENABLED}"
 
 echo "Clearing old data..."
 rm -r ${TARGET_DIR}/frontend || true

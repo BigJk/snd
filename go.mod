@@ -1,6 +1,6 @@
 module github.com/BigJk/snd
 
-go 1.18
+go 1.21
 
 // CGO Problem: https://github.com/go-git/go-git/issues/624
 replace github.com/pjbgf/sha1cd => github.com/pjbgf/sha1cd v0.2.3

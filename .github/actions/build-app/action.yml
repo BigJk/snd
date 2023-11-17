@@ -54,7 +54,6 @@ runs:
         GOOS: ${{ inputs.os }}
         GOARCH: ${{ inputs.arch }}
         SND_TAGS: ${{ inputs.tags }}
-        CGO_ENABLED: '0'
     - name: Copy libusb DLL
       if: inputs.libusb-path != null
       shell: bash

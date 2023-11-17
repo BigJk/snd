@@ -36,7 +36,7 @@ export default (): m.Component => {
 			m(Select, {
 				width: 250,
 				default: 'Filter by type...',
-				keys: Object.keys(store.value.printer).filter((k) => Object.keys(store.value.printer[k]).length > 0),
+				keys: Object.keys(store.value.printer).filter((k) => Object.keys(store.value.printer[k] ?? {}).length > 0),
 				selected: null,
 				onInput: (e) => {
 					state.typeFilter = e.value;
@@ -49,7 +49,7 @@ export default (): m.Component => {
 			'div.w-100.h-100.overflow-auto',
 			{ style: DevicesGridStyle },
 			map(store.value.printer, (printers, type) => {
-				if (Object.keys(printers).length === 0) return null;
+				if (!printers || Object.keys(printers).length === 0) return null;
 
 				if (state.typeFilter.length > 0 && state.typeFilter !== type) return null;
 

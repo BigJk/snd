@@ -114,6 +114,10 @@ func (s *Server) Start(bind string) error {
 			PrinterEndpoint:       "window",
 			Stylesheets:           []string{},
 			SpellcheckerLanguages: []string{"en-US"},
+			AIEnabled:             false,
+			AIProvider:            "OpenRouter.ai",
+			AIMaxTokens:           4000,
+			AIContextWindow:       6000,
 		}); err != nil {
 			return err
 		}
@@ -123,7 +127,9 @@ func (s *Server) Start(bind string) error {
 	api := s.e.Group("/api")
 	extern := api.Group("/extern")
 
-	rpc.RegisterBasic(api, s.db)
+	rpc.RegisterVersion(api)
+	rpc.RegisterImageUtilities(api)
+	rpc.RegisterSettings(api, s.db)
 	rpc.RegisterTemplate(api, extern, s.db)
 	rpc.RegisterGenerator(api, extern, s.db)
 	rpc.RegisterEntry(api, s.db)
@@ -131,6 +137,9 @@ func (s *Server) Start(bind string) error {
 	rpc.RegisterPrint(api, extern, s.db, s.printers)
 	rpc.RegisterSync(api, s.m, s.db)
 	rpc.RegisterGit(api, s.db)
+	rpc.RegisterCloud(api, s.db)
+	rpc.RegisterAI(api, s.db)
+	rpc.RegisterFileBrowser(api)
 
 	// Register additional routes
 	for k, v := range s.additionalRpc {

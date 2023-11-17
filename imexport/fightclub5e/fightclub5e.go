@@ -27,14 +27,6 @@ func ImportCompedium(filePath string, name string, author string, slug string, d
 	var sources []snd.DataSource
 	var allEntries [][]snd.Entry
 	for i := range types {
-		sources = append(sources, snd.DataSource{
-			Name:        name + " - " + names[i],
-			Slug:        slug + "-" + types[i],
-			Author:      author,
-			Description: description,
-			Version:     "",
-		})
-
 		var entries []snd.Entry
 
 		xmlquery.FindEach(n, "//"+types[i], func(j int, node *xmlquery.Node) {
@@ -51,7 +43,20 @@ func ImportCompedium(filePath string, name string, author string, slug string, d
 			}
 		})
 
+		if len(entries) == 0 {
+			continue
+		}
+
 		allEntries = append(allEntries, entries)
+
+		sources = append(sources, snd.DataSource{
+			Name:        name + " - " + names[i],
+			Slug:        slug + "-" + types[i],
+			Author:      author,
+			Description: description,
+			Version:     "",
+		})
+
 	}
 
 	return sources, allEntries, nil

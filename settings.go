@@ -18,4 +18,12 @@ type Settings struct {
 	Stylesheets           []string `json:"stylesheets"`
 	SpellcheckerLanguages []string `json:"spellcheckerLanguages"`
 	PackageRepos          []string `json:"packageRepos"`
+	SyncKey               string   `json:"syncKey"`
+	SyncEnabled           bool     `json:"syncEnabled"`
+	AIEnabled             bool     `json:"aiEnabled"`
+	AIApiKey              string   `json:"aiApiKey"`
+	AIModel               string   `json:"aiModel"`
+	AIProvider            string   `json:"aiProvider"`
+	AIContextWindow       int      `json:"aiContextWindow"`
+	AIMaxTokens           int      `json:"aiMaxTokens"`
 }

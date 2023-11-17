@@ -1,9 +1,19 @@
-@import "./colors.scss";
+/*
+    Spectre Setup
+ */
 
 $control-size: 1.55rem;
 $font-size: 0.7rem;
 
+@import "./colors.scss";
 @import "node_modules/spectre.css/src/spectre";
+@import "./spectre.scss";
+
+/*
+    Other Imports
+ */
+
+@import "./atomic.scss";
 
 /*
     Toastify
@@ -11,77 +21,6 @@ $font-size: 0.7rem;
 
 .toastify {
     position: absolute;
-}
-
-/*
-    Spectre
-*/
-
-.btn {
-    border-radius: 0.25rem;
-    border: none;
-    padding-left: 0.7rem;
-    padding-right: 0.7rem;
-    padding-top: 0.17rem;
-}
-
-.btn-sm {
-    border-radius: 0.25rem;
-    border: none;
-    padding-left: 0.7rem !important;
-    padding-right: 0.7rem !important;
-}
-
-.modal-body {
-    padding-top: 0 !important;
-}
-
-.form-no-margin .form-group {
-    margin-bottom: 0;
-}
-
-/*
-    Code Mirror
-*/
-
-.CodeMirror {
-    font-size: 13px;
-    line-height: 1.0;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-}
-
-.syntax-error {
-    position: relative;
-    border-bottom: 2px dashed red;
-    background-color: rgba(255, 0, 0, 0.2);
-    z-index: 999 !important;
-}
-
-.syntax-error:hover {
-    cursor: help;
-    position: relative;
-}
-
-.syntax-error[error]:hover:after {
-    content: attr(error);
-    position: absolute;
-    left: 0;
-    top: calc(-100% - 6px);
-    width: max-content;
-    padding: 3px;
-    border: 1px solid rgba(0,0,0,0.1);
-    background-color: #fff;
-}
-
-.cm-nunjucks-variable, .cm-nunjucks-tag {
-    padding: 0 !important;
-    border-radius: 0 !important;
-    font-weight: 800;
 }
 
 /*
@@ -113,150 +52,10 @@ body {
     background-color: #f4f8f9;
 }
 
-.overflow-ellipsis {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-
-.f8 {
-    font-size: .6rem;
-}
-
-.no-input {
-  -webkit-touch-callout: none;
-    -webkit-user-select: none;
-     -khtml-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
-}
-
-.tab-m0 {
-    margin-top: 0;
-    margin-bottom: 0;
-}
-
-.w500 {
-    width: 500px;
-}
-
-.mh450 {
-    min-height: 450px;
-}
-
-.bg-black-05 { background-color: rgba( 0, 0, 0, .05 ); }
-.hover-bg-black-05:hover { background-color: rgba( 0, 0, 0, .05 ); }
-.hover-bg-black-05:focus { background-color: rgba( 0, 0, 0, .05 ); }
-
-.light-shadow {
-    -webkit-box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.1);
-    -moz-box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.1);
-    box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.1);
-}
-
 .form-select {
     appearance: none !important;
     -webkit-appearance: none;
     -moz-appearance: none;
-}
-
-.panel-title {
-    top: -15px;
-    left: 13px;
-    background: white;
-    padding: 5px 6px 0 6px;
-}
-
-.cut-text {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-.text-overflow-hide {
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
-.grid-bg {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23545454' fill-opacity='0.2'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    background-position-y: -10px;
-    background-position-x: -10px;
-    background-color: #0D1B2A;
-}
-
-.side-nav--shadow {
-    background: rgb(33,33,33);
-    background: linear-gradient(180deg, rgba(13,27,42,0) -100%, rgba(13,27,42,1) 100%);
-}
-
-.side-nav {
-    width: 200px;
-    overflow: auto;
-    overflow-y: overlay;
-}
-
-.bg-white-05 {
-    background-color: rgba(255, 255, 255, 0.05);
-}
-
-.margin-lh-minus {
-    margin-top: -0.15rem;
-}
-
-.fade-in {
-    animation: fadein 2s;
-}
-
-@keyframes fadein {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
-.mh55 {
-    min-height: 55px;
-}
-
-.h4_5 {
-  height: 9.5rem
-}
-
-@-webkit-keyframes rotating /* Safari and Chrome */ {
-  from {
-    -webkit-transform: rotate(0deg);
-    -o-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  to {
-    -webkit-transform: rotate(360deg);
-    -o-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
-@keyframes rotating {
-  from {
-    -ms-transform: rotate(0deg);
-    -moz-transform: rotate(0deg);
-    -webkit-transform: rotate(0deg);
-    -o-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  to {
-    -ms-transform: rotate(360deg);
-    -moz-transform: rotate(360deg);
-    -webkit-transform: rotate(360deg);
-    -o-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
-
-.rotating {
-  -webkit-animation: rotating 2s linear infinite;
-  -moz-animation: rotating 2s linear infinite;
-  -ms-animation: rotating 2s linear infinite;
-  -o-animation: rotating 2s linear infinite;
-  animation: rotating 2s linear infinite;
 }
 
 .markdown {
@@ -281,4 +80,13 @@ body {
         height: 0.05rem;
         margin: 1rem 0;
     }
+}
+
+.monaco-container {
+  height: 100%;
+}
+
+// https://stackoverflow.com/a/71876526
+.monaco-editor {
+  position: absolute !important;
 }

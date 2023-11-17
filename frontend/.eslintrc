@@ -1,0 +1,20 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "unused-imports"
+  ],
+  "extends": [],
+  "rules": {
+    "capitalized-comments": ["error", "always", { "ignoreConsecutiveComments": true }],
+    "arrow-body-style": ["error", "as-needed"],
+    "no-duplicate-case": "error",
+    "no-duplicate-imports": "error",
+    "unused-imports/no-unused-imports": "warn"
+  },
+  "env": {
+    "browser": true,
+    "es2021": true
+  }
+}

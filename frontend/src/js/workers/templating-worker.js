@@ -71,6 +71,62 @@ function JavascriptExecuteExtension() {
 	};
 }
 
+function AIExtension() {
+	this.tags = ['ai'];
+
+	this.parse = function (parser, nodes) {
+		let tok = parser.nextToken();
+
+		let args = parser.parseSignature(null, true);
+		parser.advanceAfterBlockEnd(tok.value);
+
+		let system = parser.parseUntilBlocks('user');
+		parser.advanceAfterBlockEnd(system.value);
+
+		let user = parser.parseUntilBlocks('endai');
+		parser.advanceAfterBlockEnd();
+
+		return new nodes.CallExtensionAsync(this, 'run', args, [system, user]);
+	};
+
+	this.run = function (state, name, system, user, callback) {
+		if (state.ctx['aiEnabled'] !== true) {
+			fetch('/api/aiCached', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify([system(), user(), state.ctx['aiToken']]),
+			})
+				.then((resp) => resp.json())
+				.then((data) => {
+					state.ctx[name] = data;
+					callback(null, ' ');
+				})
+				.catch(() => {
+					state.ctx[name] = 'AI content disabled.';
+					callback(null, ' ');
+				});
+
+			return;
+		}
+
+		fetch('/api/aiPrompt', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify([system(), user(), state.ctx['aiToken']]),
+		})
+			.then((resp) => resp.json())
+			.then((data) => {
+				state.ctx[name] = data;
+				callback(null, ' ');
+			})
+			.catch((err) => callback(err, null));
+	};
+}
+
 let env = new nunjucks.Environment();
 let markdown = new MarkdownIt({
 	html: true,
@@ -78,6 +134,7 @@ let markdown = new MarkdownIt({
 
 env.addExtension('DataImportExtension', new DataImportExtension());
 env.addExtension('JavascriptExecuteExtension', new JavascriptExecuteExtension());
+env.addExtension('AIExtension', new AIExtension());
 
 env.addFilter('markdown', (md) => new nunjucks.runtime.SafeString(markdown.render(md)));
 env.addFilter('markdowni', (md) => new nunjucks.runtime.SafeString(markdown.renderInline(md)));
@@ -98,7 +155,7 @@ env.addFilter(
 			.then((data) => cb(null, data))
 			.catch((err) => cb(err, null));
 	},
-	true
+	true,
 );
 
 onmessage = (e) => {

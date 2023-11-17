@@ -9,6 +9,9 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// This is the official repository for snd packages.
+const officialRepo = "https://raw.githubusercontent.com/BigJk/snd-package-repo/main/packages.json"
+
 func RegisterGit(route *echo.Group, db database.Database) {
 	route.POST("/getPublicPackages", echo.WrapHandler(nra.MustBind(func() ([]git.PublicList, error) {
 		set, err := db.GetSettings()
@@ -16,7 +19,7 @@ func RegisterGit(route *echo.Group, db database.Database) {
 			return nil, err
 		}
 
-		packageRepos := append([]string{"https://raw.githubusercontent.com/BigJk/snd-package-repo/main/packages.json"}, set.PackageRepos...)
+		packageRepos := append([]string{officialRepo}, set.PackageRepos...)
 
 		var publics []git.PublicList
 		for i := range packageRepos {
@@ -26,9 +29,9 @@ func RegisterGit(route *echo.Group, db database.Database) {
 		}
 
 		return publics, nil
-	})))
+	})), cacheRpcFunction(time.Minute*30))
 
-	route.POST("/getRepo", echo.WrapHandler(nra.MustBind(git.GetRepo)))
+	route.POST("/getRepo", echo.WrapHandler(nra.MustBind(git.GetRepo)), cacheRpcFunction(time.Minute*30))
 
 	route.POST("/getPackages", echo.WrapHandler(nra.MustBind(func(url string, tag map[string]interface{}) ([]git.Package, error) {
 		commitTime, _ := time.Parse(time.RFC3339, tag["date"].(string))
@@ -49,7 +52,7 @@ func RegisterGit(route *echo.Group, db database.Database) {
 		}
 
 		return packages, nil
-	})))
+	})), cacheRpcFunction(time.Minute*30))
 
 	route.POST("/importPackage", echo.WrapHandler(nra.MustBind(func(url string, tag map[string]interface{}, id string) error {
 		commitTime, _ := time.Parse(time.RFC3339, tag["date"].(string))

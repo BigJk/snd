@@ -151,7 +151,7 @@ const store = create(initialState, (atom) => ({
 		return API.exec<Record<string, Printer>>(API.GET_AVAILABLE_PRINTER).then((res) => {
 			atom.update((state) => ({
 				...state,
-				printer: res ?? [],
+				printer: res ?? {},
 			}));
 		});
 	},

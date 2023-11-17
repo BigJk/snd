@@ -1,4 +1,5 @@
 import m from 'mithril';
+import { openDataSourceCreateModal } from 'js/ui/components/modals/create-source';
 
 export type SpotlightOperation = {
 	name: string;
@@ -29,7 +30,8 @@ export const Operations: SpotlightOperation[] = [
 		description: 'Create a new source',
 		icon: 'add',
 		onExecute: () => {
-			m.route.set('/sources/create');
+			m.route.set('/data-source');
+			setTimeout(() => openDataSourceCreateModal(), 300);
 		},
 	},
 	{
@@ -77,7 +79,7 @@ export const Operations: SpotlightOperation[] = [
 		description: 'Open the data sources',
 		icon: 'analytics',
 		onExecute: () => {
-			m.route.set('/sources');
+			m.route.set('/data-source');
 		},
 	},
 	{

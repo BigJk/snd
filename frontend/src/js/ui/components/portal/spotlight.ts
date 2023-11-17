@@ -53,6 +53,8 @@ export default (): m.Component => {
 	const openItem = (item: FuseResult<FuseSearch>) => {
 		if (item.item.type === 'operation') {
 			item.item.operation?.onExecute();
+		} else if (item.item.type === 'source') {
+			m.route.set('/data-source/' + item.item.id);
 		} else {
 			m.route.set('/' + item.item.type + '/' + item.item.id);
 		}

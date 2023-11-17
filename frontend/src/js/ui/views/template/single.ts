@@ -311,8 +311,8 @@ export default (): m.Component<SingleTemplateProps> => {
 							onRendered: (html) => (state.lastRendered = html),
 							tabs: [
 								{ icon: 'filing', label: 'Entries' },
-								{ icon: 'planet', label: 'AI Tools' },
-								...(settings.value.aiEnabled ? [{ icon: 'clipboard', label: 'Information' }] : []),
+								...(settings.value.aiEnabled ? [{ icon: 'planet', label: 'AI Tools' }] : []),
+								{ icon: 'clipboard', label: 'Information' },
 								...(state.template?.config && state.template?.config.length > 0 ? [{ icon: 'options', label: 'Config' }] : []),
 								{ icon: 'search', label: 'Advanced Filter' },
 							],

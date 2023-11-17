@@ -159,7 +159,7 @@ export default (): m.Component => {
 										label: 'Type',
 										description: 'The type of printer you are using',
 										customComponent: m(Select, {
-											keys: Object.keys(printer.value).filter((k) => Object.keys(printer.value[k]).length > 0),
+											keys: Object.keys(printer.value).filter((k) => Object.keys(printer.value[k] ?? {}).length > 0),
 											selected: settingsCopy.printerType,
 											onInput: (e) => {
 												settingsCopy = { ...settingsCopy, printerType: e.value };

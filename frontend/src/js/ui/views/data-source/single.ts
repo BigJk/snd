@@ -193,6 +193,7 @@ export default (): m.Component<SingleSourceProps> => {
 								className: '.mr2',
 								icon: 'add',
 								intend: 'success',
+								size: 'sm',
 								onClick: () =>
 									CreateSourceEntry().then((res) => {
 										const newEntry = { id: res.id, name: res.name, data: {} };
@@ -214,6 +215,7 @@ export default (): m.Component<SingleSourceProps> => {
 						m(
 							IconButton,
 							{
+								size: 'sm',
 								icon: 'create',
 								intend: 'primary',
 								onClick: () => editSource(attrs.id),
@@ -230,6 +232,7 @@ export default (): m.Component<SingleSourceProps> => {
 							Tooltip,
 							{ content: 'Delete' },
 							m(IconButton, {
+								size: 'sm',
 								icon: 'trash',
 								intend: 'error',
 								onClick: () => deleteSource(attrs.id),

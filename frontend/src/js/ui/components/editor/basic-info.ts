@@ -15,6 +15,8 @@ export type BasicInfoProps<T> = {
 	extendedAnnotations?: Record<string, PropertyAnnotation>;
 	onChange?: (info: BasicInfo & T) => void;
 	hide?: string[];
+	hideHeader?: boolean;
+	hidePreview?: boolean;
 };
 
 /**
@@ -28,9 +30,9 @@ export default <T extends Object>(): m.Component<BasicInfoProps<T>> => ({
 
 		return m(
 			Flex,
-			{ className: '.w-100.ph3', direction: 'column', items: 'center' },
+			{ className: `.w-100.ph3${attrs.className}`, direction: 'column', items: 'center' },
 			m('div.w-100.lh-copy', [
-				m(EditorHeader, { title: 'Basic Info', description: 'These are the basic information about your new creation' }),
+				attrs.hideHeader ? null : m(EditorHeader, { title: 'Basic Info', description: 'These are the basic information about your new creation' }),
 				m(PropertyEdit<BasicInfo & T>, {
 					properties: attrs.info,
 					onChange: onChange,
@@ -61,13 +63,15 @@ export default <T extends Object>(): m.Component<BasicInfoProps<T>> => ({
 				}),
 				//
 				// Name and slug preview
-				m(Flex, { className: '.mt3', items: 'center' }, [
-					m(Icon, { icon: 'arrow-forward', size: 3, className: '.o-50.mh3' }),
-					m('div.pa2.w5.bg-white.ba.b--black-10', [
-						m('div.f6', attrs.info.name), //
-						m('div.f8.text-muted', `${attrs.info.author}/${attrs.info.slug}`),
-					]),
-				]),
+				attrs.hidePreview
+					? null
+					: m(Flex, { className: '.mt3', items: 'center' }, [
+							m(Icon, { icon: 'arrow-forward', size: 3, className: '.o-50.mh3' }),
+							m('div.pa2.w5.bg-white.ba.b--black-10', [
+								m('div.f6', attrs.info.name), //
+								m('div.f8.text-muted', `${attrs.info.author}/${attrs.info.slug}`),
+							]),
+					  ]),
 			]),
 		);
 	},

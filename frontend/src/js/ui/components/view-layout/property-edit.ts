@@ -91,7 +91,7 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => ({
 								HorizontalProperty,
 								{ label: label, description: description, bottomBorder: true, centered: false, fullSize: fullSize },
 								m(TextArea, {
-									rows: fullSize ? 10 : 3,
+									rows: fullSize ? 5 : 3,
 									value: value.toString(),
 									onChange: (value) => onChange({ ...attrs.properties, [key]: validator(value) }),
 								}),

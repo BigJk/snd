@@ -18,6 +18,7 @@ import * as API from 'js/core/api';
 
 import { setPortal } from 'js/ui/portal';
 import IconButton from 'js/ui/spectre/icon-button';
+import { openDataSourceCreateModal } from 'js/ui/components/modals/create-source';
 
 export default (): m.Component => {
 	let searchValue = '';
@@ -108,9 +109,7 @@ export default (): m.Component => {
 							IconButton,
 							{
 								icon: 'add',
-								onClick: () => {
-									// TODO
-								},
+								onClick: openDataSourceCreateModal,
 							},
 							'Create',
 						),

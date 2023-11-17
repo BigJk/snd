@@ -42,8 +42,13 @@ or a letter that the group found to little character sheets of your players to u
    - CSV
    - [FoundryVTT](https://foundryvtt.com/) Modules
    - Fight Club 5e XML Format
+   - 5eTools
 - Access Community Templates, Generators & Data Sources from within the App
-- Edit templates in your favorite editor (e.g. Visual Studio Code) and get live preview
+- AI LLM Support (OpenAI, OpenRouter)
+  - Generate entries by prompt using the power of AI
+  - Translate entries by prompt
+  - Execute AI prompts in your templates and generators
+- Cloud sync for templates, generators and data sources
 
 ## Download 📁
 

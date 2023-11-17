@@ -45,7 +45,7 @@ export default (): m.Component => ({
 						subtitle:
 							'With Sales & Dungeons you can create highly customizable handouts, quick reference and much more for your Dungeons and Dragons (or other PnP) Sessions. Most Thermal Printer are small in size and can be taken with you and kept right at the gaming table. Use-cases range from printing out magic items, spells or a letter that the group found to little character sheets of your players to use as DM note. The possibilities are nearly endless!',
 						footer: [
-							m(Button, { className: '.mr3', link: 'https://github.com/BigJk/snd' }, 'Documentation'),
+							m(Button, { className: '.mr3', link: 'https://sales-and-dungeons.app/' }, 'Documentation'),
 							m(Button, { className: '.mr3', intend: 'primary', link: 'https://discord.gg/W95s9kcUk4' }, 'Join Discord'),
 							m(Button, { intend: 'error', link: 'https://ko-fi.com/bigjk' }, 'Support the Project'),
 						],

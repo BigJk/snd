@@ -80,7 +80,7 @@ export default (): m.Component => {
 					title: m(Title, 'Templates'),
 					active: 'templates',
 					classNameContainer: '.pa3',
-					rightElement: m('div', [
+					rightElement: m(Flex, { items: 'center' }, [
 						m(
 							IconButton,
 							{
@@ -98,6 +98,7 @@ export default (): m.Component => {
 							},
 							'Import',
 						), //
+						m('div.divider-vert'),
 						m(IconButton, { link: '/template/create', icon: 'add' }, 'Create'), //
 					]),
 				},

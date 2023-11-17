@@ -13,6 +13,9 @@ import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
 
 import { error } from 'js/ui/toast';
+import Flex from 'js/ui/components/layout/flex';
+import { openDevTools } from 'js/ui/components/print-preview';
+import Tooltip from 'js/ui/components/atomic/tooltip';
 
 type EditTemplateProps = {
 	id: string;
@@ -42,7 +45,7 @@ export default (): m.Component<EditTemplateProps> => {
 							{ label: 'Edit' },
 						],
 					}),
-					rightElement: [
+					rightElement: m(Flex, { items: 'center' }, [
 						m(
 							IconButton,
 							{
@@ -61,7 +64,24 @@ export default (): m.Component<EditTemplateProps> => {
 							},
 							'Save',
 						), //
-					],
+						m('div.divider.divider-vert'),
+						m(
+							Tooltip,
+							{ content: 'Open Dev Tools' },
+							m(
+								IconButton,
+								{
+									intend: 'primary',
+									icon: 'bug',
+									size: 'sm',
+									onClick: () => {
+										openDevTools(document.body);
+									},
+								},
+								'',
+							),
+						),
+					]),
 					active: 'templates',
 				},
 				state

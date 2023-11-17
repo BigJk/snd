@@ -29,6 +29,7 @@ const containerClass = css`
 export default (): m.Component => {
 	let settingsCopy: Settings = { ...settings.value };
 	let aiModels: string[] = [];
+	let aiProviders: string[] = [];
 
 	const onChangeSettings = (updated: Settings) => {
 		settingsCopy = { ...settingsCopy, ...updated };
@@ -45,13 +46,25 @@ export default (): m.Component => {
 		settings.set(settingsCopy);
 	};
 
+	const fetchAiProviders = () => {
+		API.exec<string[]>(API.AI_PROVIDERS)
+			.then((providers) => {
+				aiProviders = providers;
+				m.redraw();
+			})
+			.catch(error);
+	};
+
 	const fetchAiModels = () => {
-		API.exec<string[]>(API.AI_OPEN_ROUTER_MODELS)
+		API.exec<string[]>(API.AI_MODELS, settingsCopy.aiProvider)
 			.then((models) => {
 				aiModels = models;
 				m.redraw();
 			})
-			.catch(error);
+			.catch((err) => {
+				error('Could not fetch AI models... retrying...');
+				setTimeout(fetchAiModels, 1000);
+			});
 	};
 
 	const syncToCloud = () => {
@@ -87,6 +100,7 @@ export default (): m.Component => {
 
 	return {
 		oninit() {
+			fetchAiProviders();
 			fetchAiModels();
 		},
 		view() {
@@ -308,9 +322,10 @@ export default (): m.Component => {
 								},
 								m(Select, {
 									selected: settingsCopy.aiProvider,
-									keys: ['OpenRouter.ai'],
+									keys: aiProviders,
 									onInput: (e) => {
-										settingsCopy = { ...settingsCopy, aiProvider: e.value };
+										settingsCopy = { ...settingsCopy, aiModel: '', aiProvider: e.value };
+										fetchAiModels();
 									},
 								}),
 							),

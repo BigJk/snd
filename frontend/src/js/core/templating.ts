@@ -14,6 +14,7 @@ type WorkerJob = {
 	resolve: (value: any) => void;
 	reject: (reason?: any) => void;
 	timeout: number;
+	lineOffset?: number;
 };
 
 // Worker Pool
@@ -32,14 +33,14 @@ let workers = new Array(navigator.hardwareConcurrency || 4).fill(null).map((_, i
 			return;
 		}
 
-		let { resolve, reject, timeout, hashed } = workerPromises[e.data.id];
+		let { resolve, reject, timeout, hashed, lineOffset } = workerPromises[e.data.id];
 		let res = e.data;
 
 		// Stop timeout handler
 		clearTimeout(timeout);
 
 		if (res.err) {
-			let parsedErr = parseError(res.err);
+			let parsedErr = parseError(res.err, lineOffset ?? 0);
 			cache[hashed] = parsedErr;
 			reject(parsedErr);
 		} else {
@@ -64,11 +65,11 @@ type TemplateError = {
  * @param e Error object.
  * @param isGenerator Is the error coming from a generator.
  */
-export const parseError = (e: any, isGenerator?: boolean): TemplateError | null => {
+export const parseError = (e: any, lineOffset: number): TemplateError | null => {
 	let match = /.*\[Line (\d+), Column (\d+)\].*\n[ \t]*(.*)$/gm.exec(e.message);
 	if (match) {
 		return {
-			line: parseInt(match[1]) - aiScriptLines - (isGenerator ? rngScriptLines : 0),
+			line: parseInt(match[1]) - lineOffset,
 			column: parseInt(match[2]) + 1,
 			error: match[3],
 		};
@@ -98,7 +99,6 @@ const rngScript = (seed: any) => `
 			window.dice = new rpgDiceRoller.DiceRoller();
 		</script>
 `;
-const rngScriptLines = rngScript(0).split('\n').length - 1;
 
 // Add AI script to the template so that it can be used
 // from javascript.
@@ -137,7 +137,6 @@ const aiScript = `
 	}
 </script>
 `;
-const aiScriptLines = aiScript.split('\n').length - 1;
 
 /**
  * State object for template rendering.
@@ -173,6 +172,7 @@ export const render = (
 	template: string,
 	state: (TemplateState & GlobalState) | (GeneratorState & GlobalState),
 	enableDither = true,
+	minimal = false,
 ): Promise<string> =>
 	new Promise((resolve, reject) => {
 		// We need to clone the state, so we can remove sensitive data from it.
@@ -206,6 +206,13 @@ export const render = (
 		let additional = '';
 		additional += rngScript(clonedState.config.seed ?? 'test-seed');
 		additional += aiScript;
+
+		if (minimal) {
+			additional = '';
+		}
+
+		// Count the number of lines in the additional script
+		workerPromises[id].lineOffset = additional.split('\n').length - 1;
 
 		// Post message (round-robin style) to some worker
 		workers[workerSelect++ % workers.length].postMessage({ id, template: additional + template + (enableDither ? dither : ''), state: clonedState });

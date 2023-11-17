@@ -85,9 +85,9 @@ const store = create(initialState, (atom) => ({
 	/**
 	 * LoadAll loads all the data from the backend.
 	 */
-	loadAll() {
+	loadAll(noSettings: boolean = false) {
 		return Promise.all([
-			this.loadSettings(),
+			...(noSettings ? [] : [this.loadSettings()]),
 			this.loadTemplates(),
 			this.loadGenerators(),
 			this.loadSources(),

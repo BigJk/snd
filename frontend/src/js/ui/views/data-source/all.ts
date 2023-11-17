@@ -7,14 +7,14 @@ import { buildId } from 'js/types/basic-info';
 import { sources } from 'js/core/store';
 
 import Input from 'js/ui/spectre/input';
-
 import Icon from 'js/ui/components/atomic/icon';
 import Title from 'js/ui/components/atomic/title';
 import Flex from 'js/ui/components/layout/flex';
 import Grid from 'js/ui/components/layout/grid';
-import ImportDataSource from 'js/ui/components/modals/imexport/import-data-source';
+import ImportExport from 'js/ui/components/modals/imexport/import-export';
 import SourceBox from 'js/ui/components/source-box';
 import Base from 'js/ui/components/view-layout/base';
+import * as API from 'js/core/api';
 
 import { setPortal } from 'js/ui/portal';
 import IconButton from 'js/ui/spectre/icon-button';
@@ -91,7 +91,14 @@ export default (): m.Component => {
 							{
 								icon: 'cloud-upload',
 								onClick: () => {
-									setPortal(ImportDataSource, {});
+									setPortal(ImportExport, {
+										attributes: {
+											endpoint: API.IMPORT_SOURCE,
+											title: 'Import Data Source',
+											loadingMessage: 'Importing... Please wait',
+											verb: 'Import',
+										},
+									});
 								},
 							},
 							'Import',

@@ -2,20 +2,16 @@ package rpc
 
 import (
 	"bytes"
-	"encoding/base64"
-	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"path/filepath"
-	"strings"
-
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/imexport"
+	rpcImexport "github.com/BigJk/snd/rpc/imexport"
 	"github.com/labstack/echo/v4"
 	"github.com/mattetti/filebuffer"
+	"io/ioutil"
+	"net/http"
 )
 
 func RegisterGenerator(route *echo.Group, extern *echo.Group, db database.Database) {
@@ -23,95 +19,6 @@ func RegisterGenerator(route *echo.Group, extern *echo.Group, db database.Databa
 	route.POST("/deleteGenerator", echo.WrapHandler(nra.MustBind(db.DeleteGenerator)))
 	route.POST("/getGenerators", echo.WrapHandler(nra.MustBind(db.GetGenerators)))
 	route.POST("/getGenerator", echo.WrapHandler(nra.MustBind(db.GetGenerator)))
-
-	route.POST("/exportGeneratorZip", echo.WrapHandler(nra.MustBind(func(id string, path string) (string, error) {
-		gen, err := db.GetGenerator(id)
-		if err != nil {
-			return "", err
-		}
-
-		file, err := imexport.ExportGeneratorZIPFile(gen, path)
-		if err != nil {
-			return "", err
-		}
-
-		return file, nil
-	})))
-
-	route.POST("/exportGeneratorFolder", echo.WrapHandler(nra.MustBind(func(id string, path string) (string, error) {
-		gen, err := db.GetGenerator(id)
-		if err != nil {
-			return "", err
-		}
-
-		folderName, err := imexport.ExportGeneratorFolder(gen, path)
-		if err != nil {
-			return "", err
-		}
-		return filepath.Join(path, folderName), nil
-	})))
-
-	route.POST("/exportGeneratorJSON", echo.WrapHandler(nra.MustBind(func(id string) (string, error) {
-		gen, err := db.GetGenerator(id)
-		if err != nil {
-			return "", err
-		}
-
-		json, err := imexport.ExportGeneratorJSON(gen)
-		if err != nil {
-			return "", err
-		}
-		return string(json), nil
-	})))
-
-	route.POST("/importGeneratorZip", echo.WrapHandler(nra.MustBind(func(file string) (string, error) {
-		var gen snd.Generator
-		var err error
-
-		if strings.HasPrefix(file, "data:") {
-			// read from data uri
-			split := strings.Split(file, ",")
-			if len(split) != 2 {
-				return "", errors.New("not a valid data url")
-			}
-
-			data, err := base64.StdEncoding.DecodeString(split[1])
-			if err != nil {
-				return "", err
-			}
-
-			buf := filebuffer.New(data)
-			defer buf.Close()
-
-			gen, err = imexport.ImportGeneratorZIP(buf, int64(len(data)))
-		} else {
-			// read from path
-			gen, err = imexport.ImportGeneratorZIPFile(file)
-		}
-
-		if err != nil {
-			return "", err
-		}
-
-		if err := db.SaveGenerator(gen); err != nil {
-			return "", err
-		}
-
-		return gen.Name, nil
-	})))
-
-	route.POST("/importGeneratorFolder", echo.WrapHandler(nra.MustBind(func(folder string) (string, error) {
-		gen, err := imexport.ImportGeneratorFolder(folder)
-		if err != nil {
-			return "", err
-		}
-
-		if err := db.SaveGenerator(gen); err != nil {
-			return "", err
-		}
-
-		return gen.Name, nil
-	})))
 
 	route.POST("/importGeneratorJSON", echo.WrapHandler(nra.MustBind(func(json string) (string, error) {
 		gen, err := imexport.ImportGeneratorJSON(json)
@@ -164,6 +71,9 @@ func RegisterGenerator(route *echo.Group, extern *echo.Group, db database.Databa
 		c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", file))
 		return c.Blob(http.StatusOK, "application/zip", buf.Bytes())
 	})
+
+	rpcImexport.RegisterGeneratorExports(route, db)
+	rpcImexport.RegisterGeneratorImports(route, db)
 
 	//
 	//	External API Routes

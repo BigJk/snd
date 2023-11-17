@@ -15,6 +15,9 @@ import Grid from 'js/ui/components/layout/grid';
 import TemplateBox from 'js/ui/components/template-box';
 import Base from 'js/ui/components/view-layout/base';
 import IconButton from 'js/ui/spectre/icon-button';
+import { setPortal } from 'js/ui/portal';
+import * as API from 'js/core/api';
+import ImportExport from 'js/ui/components/modals/imexport/import-export';
 
 export default (): m.Component => {
 	let searchValue = '';
@@ -78,6 +81,23 @@ export default (): m.Component => {
 					active: 'templates',
 					classNameContainer: '.pa3',
 					rightElement: m('div', [
+						m(
+							IconButton,
+							{
+								icon: 'cloud-upload',
+								onClick: () => {
+									setPortal(ImportExport, {
+										attributes: {
+											endpoint: API.IMPORT_TEMPLATE,
+											title: 'Import Template',
+											loadingMessage: 'Importing... Please wait',
+											verb: 'Import',
+										},
+									});
+								},
+							},
+							'Import',
+						), //
 						m(IconButton, { link: '/template/create', icon: 'add' }, 'Create'), //
 					]),
 				},

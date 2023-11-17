@@ -7,15 +7,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"net/http"
+	"time"
+
 	"github.com/BigJk/nra"
 	"github.com/BigJk/snd/database"
-	"github.com/BigJk/snd/log"
 	"github.com/labstack/echo/v4"
 	"github.com/patrickmn/go-cache"
 	"github.com/samber/lo"
-	"io/ioutil"
-	"net/http"
-	"time"
 )
 
 func shortHash(text string) string {
@@ -25,8 +25,21 @@ func shortHash(text string) string {
 	return sha[:8]
 }
 
+var supportedProviders = []string{"OpenRouter.ai", "OpenAI"}
+
+func providerToEndpoint(provider string) (string, error) {
+	switch provider {
+	case "OpenRouter.ai":
+		return "https://openrouter.ai/api", nil
+	case "OpenAI":
+		return "https://api.openai.com", nil
+	default:
+		return "", errors.New("unknown provider")
+	}
+}
+
 func RegisterAI(route *echo.Group, db database.Database) {
-	var aiCache = cache.New(time.Minute*30, time.Minute)
+	aiCache := cache.New(time.Minute*30, time.Minute)
 
 	client := &http.Client{
 		Timeout: time.Second * 60,
@@ -72,8 +85,9 @@ func RegisterAI(route *echo.Group, db database.Database) {
 			return "", errors.New("AI is not enabled")
 		}
 
-		if settings.AIProvider != "OpenRouter.ai" {
-			return "", errors.New("AI provider is not supported")
+		endpoint, err := providerToEndpoint(settings.AIProvider)
+		if err != nil {
+			return "", err
 		}
 
 		cacheKey := fmt.Sprintf("%s-%s", shortHash(system+user), token)
@@ -90,12 +104,16 @@ func RegisterAI(route *echo.Group, db database.Database) {
 			},
 		}
 
+		if settings.AIProvider == "OpenAI" {
+			prompt.MaxTokens -= len(system) + len(user)
+		}
+
 		body, err := json.Marshal(prompt)
 		if err != nil {
 			return "", err
 		}
 
-		req, err := http.NewRequest("POST", "https://openrouter.ai/api/v1/chat/completions", bytes.NewBuffer(body))
+		req, err := http.NewRequest("POST", endpoint+"/v1/chat/completions", bytes.NewBuffer(body))
 		if err != nil {
 			return "", err
 		}
@@ -111,7 +129,7 @@ func RegisterAI(route *echo.Group, db database.Database) {
 		}
 
 		var aiResp AIResponse
-		respBody, err := ioutil.ReadAll(resp.Body)
+		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return "", err
 		}
@@ -121,8 +139,24 @@ func RegisterAI(route *echo.Group, db database.Database) {
 			return "", err
 		}
 
+		// TODO: fix this hacky error handling
 		if resp.StatusCode != http.StatusOK {
-			return "", errors.New(string(respBody))
+			var error map[string]map[string]interface{}
+			err = json.Unmarshal(respBody, &error)
+			if err != nil {
+				return "", err
+			}
+
+			errMsg := error["error"]["message"].(string)
+			if len(errMsg) > 0 {
+				if errMsg[0] == '{' {
+					if err := json.Unmarshal([]byte(errMsg), &error); err != nil {
+						return "", err
+					}
+				}
+			}
+
+			return "", errors.New(error["error"]["message"].(string))
 		}
 
 		if len(aiResp.Choices) == 0 {
@@ -134,50 +168,61 @@ func RegisterAI(route *echo.Group, db database.Database) {
 		return aiResp.Choices[0].Message.Content, nil
 	})))
 
-	type OpenRouterModel struct {
+	type Model struct {
 		ID      string `json:"id"`
-		Pricing struct {
-			Prompt     string `json:"prompt"`
-			Completion string `json:"completion"`
+		Name    string `json:"name"`
+		Pricing *struct {
+			Prompt     any `json:"prompt"`
+			Completion any `json:"completion"`
 		} `json:"pricing,omitempty"`
 		ContextLength    int `json:"context_length"`
-		PerRequestLimits struct {
-			PromptTokens     string `json:"prompt_tokens"`
-			CompletionTokens string `json:"completion_tokens"`
+		PerRequestLimits *struct {
+			PromptTokens     any `json:"prompt_tokens"`
+			CompletionTokens any `json:"completion_tokens"`
 		} `json:"per_request_limits"`
 	}
 
-	type OpenRouterModels struct {
-		Data []OpenRouterModel `json:"data"`
+	type ModelsList struct {
+		Data []Model `json:"data"`
 	}
 
-	// Fetch models from OpenRouter.ai
-	var models OpenRouterModels
-	go func() {
-		for i := 0; i < 5 && models.Data == nil; i++ {
-			resp, err := http.Get("https://openrouter.ai/api/v1/models")
-			if err != nil {
-				continue
-			}
+	route.POST("/aiProviders", echo.WrapHandler(nra.MustBind(func() ([]string, error) {
+		return supportedProviders, nil
+	})))
 
-			err = json.NewDecoder(resp.Body).Decode(&models)
-			if err != nil {
-				continue
-			}
-
-			if models.Data != nil {
-				log.Info("Fetched models from OpenRouter.ai")
-				break
-			}
-
-			_ = log.ErrorString("Failed to fetch models from OpenRouter.ai, retrying in 1s")
-			time.Sleep(time.Second * 1)
+	route.POST("/aiModels", echo.WrapHandler(nra.MustBind(func(provider string) ([]string, error) {
+		endpoint, err := providerToEndpoint(provider)
+		if err != nil {
+			return nil, err
 		}
-	}()
 
-	route.POST("/aiOpenRouterModels", echo.WrapHandler(nra.MustBind(func() ([]string, error) {
-		return lo.Map(models.Data, func(model OpenRouterModel, i int) string {
+		// TODO: dynamically fetch models
+		if provider == "OpenAI" {
+			return []string{"gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-3.5-turbo-16k", "gpt-4-1106-preview", "gpt-4", "gpt-4-32k"}, nil
+		}
+
+		resp, err := http.Get(endpoint + "/v1/models")
+		if err != nil {
+			return nil, err
+		}
+
+		res, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		var models ModelsList
+		err = json.Unmarshal(res, &models)
+		if err != nil {
+			return nil, err
+		}
+
+		if models.Data == nil {
+			return nil, errors.New("no models found")
+		}
+
+		return lo.Map(models.Data, func(model Model, i int) string {
 			return model.ID
 		}), nil
-	})))
+	})), cacheRpcFunction(10*time.Minute))
 }

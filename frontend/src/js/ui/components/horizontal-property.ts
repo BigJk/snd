@@ -30,7 +30,7 @@ export default (): m.Component<HorizontalPropertyProps> => ({
 					m('div.text-muted.f7.fw4', attrs.description),
 				]), //
 				m(
-					`div${attrs.fullSize ? '.mt3.mb2.w-100' : '.ml4'}.flex-shrink-0${attrs.fullSize ? '' : '.' + rightClass}${attrs.rightClassName ?? ''}`,
+					`div${attrs.fullSize ? '.mt2.mb2.w-100' : '.ml4'}.flex-shrink-0${attrs.fullSize ? '' : '.' + rightClass}${attrs.rightClassName ?? ''}`,
 					children,
 				),
 			]),

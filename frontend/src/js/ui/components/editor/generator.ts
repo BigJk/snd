@@ -11,7 +11,7 @@ import BasicInfo from 'js/ui/components/editor/basic-info';
 import Images from 'js/ui/components/editor/images';
 import Flex from 'js/ui/components/layout/flex';
 import Monaco from 'js/ui/components/monaco';
-import PrintPreviewTemplate from 'js/ui/components/print-preview-template';
+import PrintPreviewTemplate, { PrintPreviewError } from 'js/ui/components/print-preview-template';
 import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
 import EditorHeader from 'js/ui/components/view-layout/property-header';
 import ConfigCreator from 'js/ui/components/config/creator';
@@ -29,6 +29,7 @@ type GeneratorEditorState = {
 	loading: boolean;
 	selectedMenu: string;
 	config: Record<string, any>;
+	errors: PrintPreviewError[];
 };
 
 export default (): m.Component<GeneratorEditorProps> => {
@@ -36,6 +37,7 @@ export default (): m.Component<GeneratorEditorProps> => {
 		loading: false,
 		selectedMenu: 'basic-info',
 		config: {},
+		errors: [],
 	};
 
 	return {
@@ -136,7 +138,7 @@ export default (): m.Component<GeneratorEditorProps> => {
 								],
 							},
 							//
-							// Print Template
+							// Test Config
 							//
 							{
 								id: 'test-config',
@@ -145,7 +147,7 @@ export default (): m.Component<GeneratorEditorProps> => {
 								centerContainer: true,
 								render: () =>
 									m(Editor, {
-										current: state.config,
+										current: fillConfigValues(state.config, attrs.generator?.config ?? []),
 										definition: [
 											{
 												key: 'seed',
@@ -181,6 +183,7 @@ export default (): m.Component<GeneratorEditorProps> => {
 											images: attrs.generator.images,
 											settings: settings.value,
 										}),
+										errors: state.errors,
 										onChange: (value) => {
 											attrs.onChange({ ...attrs.generator, printTemplate: value });
 											m.redraw();
@@ -194,6 +197,7 @@ export default (): m.Component<GeneratorEditorProps> => {
 						width: 350,
 						generator: attrs.generator,
 						config: sanitizeConfig(attrs.generator, state.config),
+						onError: (errors) => (state.errors = errors),
 					}),
 				]),
 			];

@@ -14,15 +14,23 @@ import Icon from 'js/ui/components/atomic/icon';
 import Flex from 'js/ui/components/layout/flex';
 import PrintPreview from 'js/ui/components/print-preview';
 
+export type PrintPreviewError = {
+	line: number;
+	column: number;
+	error: string;
+};
+
 export type PrintPreviewTemplateProps = {
 	className?: string;
 	template?: Template;
 	generator?: Generator;
+	useListTemplate?: boolean;
 	it?: any;
 	config?: any;
 	hideAiNotice?: boolean;
 	width?: number;
-	onRendered?: (html) => void;
+	onRendered?: (html: string) => void;
+	onError?: (error: PrintPreviewError[]) => void;
 };
 
 export default (): m.Component<PrintPreviewTemplateProps> => {
@@ -30,6 +38,16 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 	let loading = false;
 	let lastRendered = '';
 	let aiEnabled = false;
+
+	const getTemplate = (attrs: PrintPreviewTemplateProps) => {
+		if (attrs.template) {
+			if (attrs.useListTemplate) {
+				return attrs.template.listTemplate;
+			}
+			return attrs.template.printTemplate;
+		}
+		return attrs.generator?.printTemplate;
+	};
 
 	const updateLastRendered = debounce((attrs: PrintPreviewTemplateProps) => {
 		if (
@@ -48,7 +66,7 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 		m.redraw();
 
 		if (attrs.template === null && attrs.generator === null) return;
-		const printTemplate = attrs.template?.printTemplate ?? attrs.generator?.printTemplate;
+		const printTemplate = getTemplate(attrs);
 		const it = attrs.it ?? attrs.template?.skeletonData;
 
 		render(printTemplate ?? '', {
@@ -61,8 +79,12 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 			.then((html) => {
 				lastRendered = html;
 				if (attrs.onRendered) attrs.onRendered(html);
+				if (attrs.onError) attrs.onError([]);
 			})
-			.catch(console.error)
+			.catch((err) => {
+				console.error(err);
+				if (attrs.onError) attrs.onError([err]);
+			})
 			.finally(() => {
 				loading = false;
 				m.redraw();
@@ -79,7 +101,7 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 			updateLastRendered(attrs);
 		},
 		view({ attrs, key }) {
-			const aiPresent = containsAi(attrs.template?.printTemplate ?? attrs.generator?.printTemplate ?? '');
+			const aiPresent = containsAi(getTemplate(attrs) ?? '');
 
 			return m(
 				PrintPreview,

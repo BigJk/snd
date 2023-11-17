@@ -21,6 +21,9 @@ import store from 'js/core/store';
 import Flex from 'js/ui/components/layout/flex';
 import CreateSourceEntry from 'js/ui/components/modals/source/create-edit-entry';
 import IconButton from 'js/ui/spectre/icon-button';
+import { setPortal } from 'js/ui/portal';
+import { buildId } from 'js/types/basic-info';
+import ImportExport from 'js/ui/components/modals/imexport/import-export';
 
 type SingleSourceProps = {
 	id: string;
@@ -99,6 +102,20 @@ export default (): m.Component<SingleSourceProps> => {
 			state.selectedEntry = entry;
 			state.editValue = '';
 		}
+	};
+
+	const showExport = () => {
+		if (!state.source) return;
+
+		setPortal(ImportExport, {
+			attributes: {
+				endpoint: API.EXPORT_SOURCE,
+				title: 'Export Data Source',
+				loadingMessage: 'Exporting... Please wait',
+				verb: 'Export',
+				id: buildId('source', state.source),
+			},
+		});
 	};
 
 	const deleteEntry = (id: string, entry: Entry) => {
@@ -204,6 +221,11 @@ export default (): m.Component<SingleSourceProps> => {
 							'Edit',
 						),
 						m('div.divider-vert'),
+						m(
+							Tooltip,
+							{ content: 'Export' },
+							m(IconButton, { icon: 'download', size: 'sm', intend: 'primary', className: '.mr2', onClick: showExport }),
+						),
 						m(
 							Tooltip,
 							{ content: 'Delete' },

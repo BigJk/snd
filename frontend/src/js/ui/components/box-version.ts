@@ -29,7 +29,7 @@ export default (): m.Component<BoxVersionProps> => ({
 		return m(Box, { className: `.ba.b--black-10${attrs.className ?? ''}`, minWidth: 350 }, [
 			m(Flex, { justify: 'between', items: 'end' }, [
 				m(Icon, { className: '.mr3.col-danger', icon: 'cloud-download', size: 3 }),
-				m(Button, { intend: 'primary' }, 'Download'),
+				m(Button, { intend: 'primary', link: 'https://github.com/BigJk/snd/releases' }, 'Download'),
 			]),
 			m('div.lh-title.mt2.pt2.bt.b--black-10', [
 				m('div.f3.b', attrs.newVersionTag), //

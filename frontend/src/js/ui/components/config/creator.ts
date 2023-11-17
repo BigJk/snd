@@ -10,19 +10,30 @@ import types from 'js/ui/components/config/types';
 import Select from 'js/ui/spectre/select';
 import MiniHeader from 'js/ui/components/atomic/mini-header';
 
+type ConfigValueID = ConfigValue & { _id?: string };
+
 type ConfigCreatorProps = {
-	configs: ConfigValue[];
+	configs: ConfigValueID[];
 	onChange: (value: ConfigValue[]) => void;
 };
 
 export default (): m.Component<ConfigCreatorProps> => ({
 	view({ attrs }) {
+		// If we key the configs by it's key value we get problems when the key changes.
+		// So we generate a random id and use that as the key.
+		attrs.configs.forEach((c) => {
+			if (c._id) {
+				return;
+			}
+			c._id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+		});
+
 		return m('div', [
 			attrs.configs.map((c, i) =>
 				m(
 					Spoiler,
 					{
-						key: c.key,
+						key: c._id,
 						title: m(Flex, { items: 'center' }, [
 							m(Icon, { icon: 'switch', size: 4, className: '.mr2.ml1' }),
 							m('div.lh-copy', [m('div.ttu.b', c.name), m('div.f8.text-muted', `${c.type} - ${c.description}`)]),
@@ -128,6 +139,7 @@ export default (): m.Component<ConfigCreatorProps> => ({
 								type: 'Text',
 								default: 'Hello World',
 							});
+							attrs.onChange(attrs.configs);
 						},
 					},
 					'Add Config',

@@ -11,6 +11,7 @@ type SideMenuPagerItem = {
 	title: string;
 	icon: string;
 	centerContainer?: boolean;
+	className?: string;
 	render: () => m.Children;
 };
 
@@ -27,6 +28,12 @@ type SideMenuPagerState = {
 export default (): m.Component<SideMenuPagerProps> => {
 	let state: SideMenuPagerState = {
 		active: '',
+	};
+
+	const getClassName = (attrs: SideMenuPagerProps) => {
+		let index = attrs.items.findIndex((item) => item.title === state.active || item.id === state.active);
+		if (index === -1) return null;
+		return attrs.items[index].className ?? '';
 	};
 
 	const getRender = (attrs: SideMenuPagerProps) => {
@@ -52,7 +59,7 @@ export default (): m.Component<SideMenuPagerProps> => {
 						m(SideMenu, {
 							key: key,
 							className: '.w-100',
-							items: attrs.items.map(
+							items: attrs.items.filter(Boolean).map(
 								(item): SideMenuItem => ({
 									id: item.id ?? item.title,
 									title: item.title,
@@ -73,7 +80,7 @@ export default (): m.Component<SideMenuPagerProps> => {
 					),
 					//
 					// We wrap with additional div to prevent problems with keyed components inside the render.
-					m('div.w-100.overflow-auto.pb3', getRender(attrs)),
+					m(`div.w-100.overflow-auto${getClassName(attrs)}`, getRender(attrs)),
 				]),
 			);
 		},

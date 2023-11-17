@@ -2,6 +2,7 @@ import m from 'mithril';
 
 import { emmetHTML } from 'emmet-monaco-es';
 import * as monaco from 'monaco-editor';
+import { css } from 'goober';
 
 import guid from 'js/core/guid';
 import type { CompletionFunction } from 'js/core/monaco/completion';
@@ -13,10 +14,16 @@ monaco.editor.defineTheme('main', theme);
 
 emmetHTML(monaco);
 
+const errorStyle = css`
+	background-color: rgba(255, 0, 0, 0.2);
+	border-left: 4px solid red;
+`;
+
 type MonacoProps = {
 	className?: string;
 	language: string;
 	value: string;
+	errors?: { line: number; column: number; error: string }[];
 	onChange?: (value: string) => void;
 	completion?: CompletionFunction;
 	wordWrap?: 'on' | 'off' | 'wordWrapColumn' | 'bounded';
@@ -26,11 +33,43 @@ type MonacoState = {
 	id: string;
 	editor?: monaco.editor.IStandaloneCodeEditor;
 	completion?: CompletionFunction;
+	decorations: any;
 };
 
 export default (): m.Component<MonacoProps> => {
 	let state: MonacoState = {
 		id: guid(),
+		decorations: [],
+	};
+
+	const updateErrors = (attrs: MonacoProps) => {
+		if (!state.editor) return;
+
+		if (!attrs.errors) {
+			state.decorations = state.editor.deltaDecorations(state.decorations, []);
+		} else {
+			state.decorations = state.editor.deltaDecorations(
+				state.decorations,
+				(attrs.errors ?? []).map((error) => {
+					const errorRange = new monaco.Range(error.line, 1, error.line, state.editor!.getModel().getLineMaxColumn(error.line));
+
+					console.log(error);
+
+					const decorationOptions = {
+						range: errorRange,
+						options: {
+							isWholeLine: true,
+							className: errorStyle,
+							hoverMessage: {
+								value: error.error,
+							},
+						},
+					};
+
+					return decorationOptions;
+				}),
+			);
+		}
 	};
 
 	return {
@@ -51,6 +90,8 @@ export default (): m.Component<MonacoProps> => {
 				monacoCompletion.registerCompletionItemProvider(state.id, attrs.completion);
 				state.completion = attrs.completion;
 			}
+
+			updateErrors(attrs);
 		},
 		onupdate({ attrs }) {
 			// Only relevant if the completion function changes. Might not be needed atm.
@@ -66,6 +107,8 @@ export default (): m.Component<MonacoProps> => {
 			if (attrs.value !== state.editor?.getValue()) {
 				state.editor?.setValue(attrs.value);
 			}
+
+			updateErrors(attrs);
 		},
 		onremove({ attrs }) {
 			if (attrs.completion) {

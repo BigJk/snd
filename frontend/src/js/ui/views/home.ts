@@ -27,15 +27,15 @@ export default (): m.Component => ({
 						m(Flex, { justify: 'between' }, [
 							m(Flex, { gap: 2, items: 'center' }, [
 								m(Flex, { className: '.w2.h2.br2.bg-primary', justify: 'center', items: 'center' }, m(Icon, { icon: 'list-box' })),
-								m('div', [m('div.ttu.f7.b.text-muted', 'Templates'), m('div.f4', store.value.templates.length)]),
+								m('div.ml2', [m('div.ttu.f7.b.text-muted', 'Templates'), m('div.f4', store.value.templates.length)]),
 							]),
 							m(Flex, { gap: 2, items: 'center' }, [
 								m(Flex, { className: '.w2.h2.br2.bg-primary', justify: 'center', items: 'center' }, m(Icon, { icon: 'switch' })),
-								m('div', [m('div.ttu.f7.b.text-muted', 'Generators'), m('div.f4', store.value.generators.length)]),
+								m('div.ml2', [m('div.ttu.f7.b.text-muted', 'Generators'), m('div.f4', store.value.generators.length)]),
 							]),
 							m(Flex, { gap: 2, items: 'center' }, [
 								m(Flex, { className: '.w2.h2.br2.bg-primary', justify: 'center', items: 'center' }, m(Icon, { icon: 'list' })),
-								m('div', [m('div.ttu.f7.b.text-muted', 'Data Sources'), m('div.f4', store.value.sources.length)]),
+								m('div.ml2', [m('div.ttu.f7.b.text-muted', 'Data Sources'), m('div.f4', store.value.sources.length)]),
 							]),
 						]),
 					),

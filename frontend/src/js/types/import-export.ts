@@ -5,7 +5,7 @@ export type Argument = {
 	default: any;
 };
 
-export type DataSourceImport = {
+export type ImportExport = {
 	name: string;
 	rpcName: string;
 	description: string;

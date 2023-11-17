@@ -14,8 +14,11 @@ import Tooltip from 'js/ui/components/atomic/tooltip';
 import { dialogWarning, success, error } from 'js/ui/toast';
 import { buildId } from 'js/types/basic-info';
 import Flex from 'js/ui/components/layout/flex';
-import Input from 'js/ui/spectre/input';
 import { openAdditionalInfosModal } from 'js/ui/components/modals/additional-infos';
+import { openFileModal } from 'js/ui/components/modals/file-browser';
+import { setPortal } from 'js/ui/portal';
+import ImportExport from 'js/ui/components/modals/imexport/import-export';
+import store from 'js/core/store';
 
 type SingleGeneratorProps = {
 	id: string;
@@ -25,6 +28,7 @@ type SingleGeneratorState = {
 	generator: Generator | null;
 	config: any;
 	printCount: number;
+	lastRendered: string;
 };
 
 export default (): m.Component<SingleGeneratorProps> => {
@@ -32,18 +36,37 @@ export default (): m.Component<SingleGeneratorProps> => {
 		generator: null,
 		config: {},
 		printCount: 1,
+		lastRendered: '',
 	};
 
 	const print = () => {
-		// TODO: implement
+		if (!state.generator) return;
+		API.exec<void>(API.PRINT, state.lastRendered)
+			.then(() => success('Printed entry'))
+			.catch(error);
 	};
 
 	const screenshot = () => {
-		// TODO: implement
+		if (!state.generator) return;
+		openFileModal('Select a save folder', [], true).then((folder) => {
+			API.exec<void>(API.SCREENSHOT, state.lastRendered, `${folder}/${state.config['seed']}.png`)
+				.then(() => success('Saved screenshot'))
+				.catch(error);
+		});
 	};
 
 	const showExport = () => {
-		// TODO: implement
+		if (!state.generator) return;
+
+		setPortal(ImportExport, {
+			attributes: {
+				endpoint: API.EXPORT_GENERATOR,
+				title: 'Export Generator',
+				loadingMessage: 'Exporting... Please wait',
+				verb: 'Export',
+				id: buildId('generator', state.generator),
+			},
+		});
 	};
 
 	const showAdditionalInfo = () => {
@@ -59,6 +82,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 			API.exec<void>(API.DELETE_TEMPLATE, buildId('generator', state.generator))
 				.then(() => {
 					success('Deleted generator');
+					store.actions.loadGenerators().catch(error);
 					m.route.set('/generator');
 				})
 				.catch(error);
@@ -116,6 +140,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 				m(SidebarPrintPage, {
 					generator: state.generator,
 					config: state.config,
+					onRendered: (html) => (state.lastRendered = html),
 					tabs: [
 						{ icon: 'options', label: 'Config' },
 						{ icon: 'clipboard', label: 'Information' },
@@ -143,6 +168,9 @@ export default (): m.Component<SingleGeneratorProps> => {
 									},
 								}),
 								m(Flex, { className: '.bt.b--black-10.pv2.ph3', justify: 'end', gap: 2 }, [
+									/*
+									Disabled for now!
+									
 									m(
 										Tooltip,
 										{ content: 'Print Count' },
@@ -154,6 +182,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 											onChange: (value: string) => (state.printCount = parseInt(value) ?? 1),
 										}),
 									),
+									*/
 									m(IconButton, { icon: 'camera', intend: 'primary', onClick: screenshot }, 'Screenshot'),
 									m(IconButton, { icon: 'print', intend: 'success', onClick: print }, 'Print'),
 								]),

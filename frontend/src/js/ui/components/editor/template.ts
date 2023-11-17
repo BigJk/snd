@@ -1,5 +1,7 @@
 import m from 'mithril';
 
+import { debounce } from 'lodash-es';
+
 import Template from 'js/types/template';
 import Entry from 'js/types/entry';
 
@@ -7,13 +9,15 @@ import { buildId } from 'src/js/types/basic-info';
 import { createNunjucksCompletionProvider } from 'js/core/monaco/completion-nunjucks';
 import { settings } from 'js/core/store';
 import * as API from 'js/core/api';
-import { error } from 'js/ui/toast';
+import { error, dialogWarning } from 'js/ui/toast';
+import { render } from 'js/core/templating';
 
 import BasicInfo from 'js/ui/components/editor/basic-info';
 import Images from 'js/ui/components/editor/images';
 import Flex from 'js/ui/components/layout/flex';
 import Monaco from 'js/ui/components/monaco';
-import PrintPreviewTemplate from 'js/ui/components/print-preview-template';
+import Editor from 'js/ui/components/config/editor';
+import PrintPreviewTemplate, { PrintPreviewError } from 'js/ui/components/print-preview-template';
 import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
 import SourceSelect from 'js/ui/components/source-select';
 import Label from 'js/ui/spectre/label';
@@ -21,6 +25,8 @@ import Button from 'js/ui/spectre/button';
 import Icon from 'js/ui/components/atomic/icon';
 import EditorHeader from 'js/ui/components/view-layout/property-header';
 import EntrySelect from 'js/ui/components/entry-select';
+import ConfigCreator from 'js/ui/components/config/creator';
+import { fillConfigValues } from 'src/js/types/config';
 
 type TemplateEditorProps = {
 	template: Template;
@@ -34,6 +40,9 @@ type TemplateEditorState = {
 	config: Record<string, any>;
 	entriesKey: string;
 	entries: Entry[];
+	listPreview: string;
+	errorsPrint: PrintPreviewError[];
+	errorsList: PrintPreviewError[];
 };
 
 export default (): m.Component<TemplateEditorProps> => {
@@ -43,6 +52,9 @@ export default (): m.Component<TemplateEditorProps> => {
 		config: {},
 		entriesKey: '',
 		entries: [],
+		listPreview: '',
+		errorsPrint: [],
+		errorsList: [],
 	};
 
 	const fetchEntries = (attrs: TemplateEditorProps) => {
@@ -71,6 +83,27 @@ export default (): m.Component<TemplateEditorProps> => {
 			})
 			.catch(error);
 	};
+
+	const renderListPreview = debounce((val: string, attrs: TemplateEditorProps) => {
+		render(
+			val,
+			{
+				it: attrs.template.skeletonData,
+				config: state.config,
+				settings: settings.value,
+				images: {},
+				aiEnabled: false,
+			},
+			false,
+			true,
+		)
+			.then((html) => (state.listPreview = html))
+			.catch((err) => {
+				console.error(err);
+				state.errorsList = [err];
+			})
+			.finally(m.redraw);
+	}, 1000);
 
 	const autoGenerateSkeleton = (attrs: TemplateEditorProps) => {
 		const val = {};
@@ -136,6 +169,7 @@ export default (): m.Component<TemplateEditorProps> => {
 
 	return {
 		oninit({ attrs }) {
+			renderListPreview(attrs.template.listTemplate, attrs);
 			fetchEntries(attrs);
 		},
 		onupdate({ attrs }) {
@@ -223,7 +257,39 @@ export default (): m.Component<TemplateEditorProps> => {
 							//
 							// Global Config
 							//
-							{ id: 'global-config', title: 'Global Config', icon: 'cog', centerContainer: true, render: () => null },
+							{
+								id: 'global-config',
+								title: 'Global Config',
+								icon: 'cog',
+								centerContainer: true,
+								render: () => [
+									m(EditorHeader, { title: 'Global Config', description: 'Setup global config parameters for your template' }),
+									m(ConfigCreator, {
+										configs: attrs.template.config ?? [],
+										onChange: (updated) => attrs.onChange({ ...attrs.template, config: updated }),
+									}),
+								],
+							},
+							//
+							// Test Config
+							//
+							{
+								id: 'test-config',
+								title: 'Test Config',
+								icon: 'cog',
+								centerContainer: true,
+								render: () => [
+									m(EditorHeader, { title: 'Test Config', description: 'Setup a temporary config for testing the template' }),
+									m(Editor, {
+										current: fillConfigValues(state.config, attrs.template?.config ?? []),
+										definition: [...(attrs.template ? attrs.template.config ?? [] : [])],
+										onChange: (updated) => {
+											state.config = updated;
+											m.redraw();
+										},
+									}),
+								],
+							},
 							//
 							// Data Skeleton
 							//
@@ -239,7 +305,14 @@ export default (): m.Component<TemplateEditorProps> => {
 												entries: state.entries,
 												onChange: (e) => attrs.onChange({ ...attrs.template, skeletonData: e.data }),
 											}),
-											m(Button, { onClick: () => autoGenerateSkeleton(attrs) }, 'Auto Generate'),
+											m(
+												Button,
+												{
+													onClick: () =>
+														dialogWarning('Are you sure? This will override the current skeleton!').then(() => autoGenerateSkeleton(attrs)),
+												},
+												'Auto Generate',
+											),
 										]),
 										m(Monaco, {
 											key: 'data-skeleton-monaco',
@@ -270,6 +343,7 @@ export default (): m.Component<TemplateEditorProps> => {
 										language: 'html',
 										value: attrs.template.printTemplate,
 										className: '.flex-grow-1',
+										errors: state.errorsPrint,
 										completion: createNunjucksCompletionProvider({
 											it: attrs.template.skeletonData,
 											images: attrs.template.images,
@@ -285,19 +359,35 @@ export default (): m.Component<TemplateEditorProps> => {
 								id: 'list-template',
 								title: 'List Template',
 								icon: 'code-working',
+								// TODO: fix this hack. The '-delete' invalidates the class that is used in the component. This only works
+								// because of the concatinated class names.
+								className: '-delete.overflow-hidden',
 								render: () =>
-									m(Monaco, {
-										key: 'list-template',
-										language: 'html',
-										value: attrs.template.listTemplate,
-										className: '.flex-grow-1',
-										completion: createNunjucksCompletionProvider({
-											it: attrs.template.skeletonData,
-											images: attrs.template.images,
-											settings: settings.value,
-										}),
-										onChange: (value) => attrs.onChange({ ...attrs.template, listTemplate: value }),
-									}),
+									m(Flex, { className: '.h-100', direction: 'column' }, [
+										m(
+											'div.flex-grow-1.overflow-hidden',
+											m(Monaco, {
+												key: 'list-template',
+												language: 'html',
+												value: attrs.template.listTemplate,
+												className: '.h-100',
+												errors: state.errorsList,
+												completion: createNunjucksCompletionProvider({
+													it: attrs.template.skeletonData,
+													images: attrs.template.images,
+													settings: settings.value,
+												}),
+												onChange: (value) => {
+													attrs.onChange({ ...attrs.template, listTemplate: value });
+													renderListPreview(value, attrs);
+												},
+											}),
+										),
+										m('div.pa3.flex-shrink-0.bg-white.bt.b--black-10.overflow-hidden', [
+											m('div.mb3.text-muted', 'Preview'),
+											m('div.h3.ph3.pv1.ba.br2.b--black-10.bg-paper.overflow-hidden', m.trust(state.listPreview)),
+										]),
+									]),
 							},
 						],
 					}),
@@ -306,6 +396,8 @@ export default (): m.Component<TemplateEditorProps> => {
 						width: 350,
 						template: attrs.template,
 						it: attrs.template.skeletonData,
+						config: state.config,
+						onError: (errors: PrintPreviewError[]) => (state.errorsPrint = errors),
 					}),
 				]),
 			];

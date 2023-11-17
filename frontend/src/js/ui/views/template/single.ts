@@ -8,7 +8,7 @@ import Template, { sanitizeConfig } from 'js/types/template';
 
 import * as API from 'js/core/api';
 import * as AI from 'js/core/ai';
-import { settings } from 'js/core/store';
+import store, { settings } from 'js/core/store';
 import { render } from 'js/core/templating';
 
 import Button from 'js/ui/spectre/button';
@@ -29,6 +29,8 @@ import { error, success, dialogWarning } from 'js/ui/toast';
 import EntryListItem from 'js/ui/components/entry-list-item';
 import { openAdditionalInfosModal } from 'js/ui/components/modals/additional-infos';
 import { openFileModal } from 'js/ui/components/modals/file-browser';
+import { setPortal } from 'js/ui/portal';
+import ImportExport from 'js/ui/components/modals/imexport/import-export';
 
 const PER_PAGE = 10;
 
@@ -114,16 +116,19 @@ export default (): m.Component<SingleTemplateProps> => {
 		if (state.aiPrompt === '') return;
 		state.aiLoading = true;
 
-		AI.generateEntry(state.aiPrompt, state.template, state.entries).then((entry) => {
-			state.aiLoading = false;
+		AI.generateEntry(state.aiPrompt, state.template, state.entries)
+			.then((entry) => {
+				if (entry.hasError) {
+					error('AI generation failed. Please try again or test another model.');
+					return;
+				}
 
-			if (entry.hasError) {
-				error('AI generation failed. Please try again or test another model.');
-				return;
-			}
-
-			state.selectedEntry = entry.value;
-		});
+				state.selectedEntry = entry.value;
+			})
+			.catch(error)
+			.finally(() => {
+				state.aiLoading = false;
+			});
 	};
 
 	/**
@@ -164,7 +169,17 @@ export default (): m.Component<SingleTemplateProps> => {
 	};
 
 	const showExport = () => {
-		// TODO: implement
+		if (!state.template) return;
+
+		setPortal(ImportExport, {
+			attributes: {
+				endpoint: API.EXPORT_TEMPLATE,
+				title: 'Export Template',
+				loadingMessage: 'Exporting... Please wait',
+				verb: 'Export',
+				id: buildId('template', state.template),
+			},
+		});
 	};
 
 	const showAdditionalInfo = () => {
@@ -180,6 +195,7 @@ export default (): m.Component<SingleTemplateProps> => {
 			API.exec<void>(API.DELETE_TEMPLATE, buildId('template', state.template))
 				.then(() => {
 					success('Deleted template');
+					store.actions.loadTemplates().catch(error);
 					m.route.set('/template');
 				})
 				.catch(error);
@@ -418,7 +434,7 @@ export default (): m.Component<SingleTemplateProps> => {
 											m.redraw();
 										},
 									}),
-								'Advanced Filter': () => m('div', 'advanced-filter'),
+								'Advanced Filter': () => m('div.pa3', 'Coming back soon...'),
 							},
 					  })
 					: null,

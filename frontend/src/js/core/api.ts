@@ -42,12 +42,20 @@ export const GET_TEMPLATES = 'getTemplates';
 export const GET_TEMPLATE = 'getTemplate';
 export const SAVE_TEMPLATE = 'saveTemplate';
 export const DELETE_TEMPLATE = 'deleteTemplate';
+export const GET_TEMPLATE_IMPORTS = 'importsTemplate';
+export const GET_TEMPLATE_EXPORTS = 'exportsTemplate';
+export const IMPORT_TEMPLATE = 'importsTemplate';
+export const EXPORT_TEMPLATE = 'exportsTemplate';
 
 // Generators
 export const GET_GENERATORS = 'getGenerators';
 export const GET_GENERATOR = 'getGenerator';
 export const SAVE_GENERATOR = 'saveGenerator';
 export const DELETE_GENERATOR = 'deleteGenerator';
+export const GET_GENERATOR_IMPORTS = 'importsGenerator';
+export const GET_GENERATOR_EXPORTS = 'exportsGenerator';
+export const IMPORT_GENERATOR = 'importsGenerator';
+export const EXPORT_GENERATOR = 'exportsGenerator';
 
 // Data Sources
 export const GET_SOURCES = 'getSources';
@@ -55,7 +63,9 @@ export const GET_SOURCE = 'getSource';
 export const SAVE_SOURCE = 'saveSource';
 export const DELETE_SOURCE = 'deleteSource';
 export const GET_SOURCE_IMPORTS = 'importsSource';
+export const GET_SOURCE_EXPORTS = 'exportsSource';
 export const IMPORT_SOURCE = 'importsSource';
+export const EXPORT_SOURCE = 'exportsSource';
 
 // Packages
 export const GET_PUBLIC_LIST = 'getPublicPackages';
@@ -77,7 +87,8 @@ export const SYNC_LOCAL_TO_CLOUD = 'syncLocalToCloud';
 
 // AI
 export const AI_GENERATE = 'aiPrompt';
-export const AI_OPEN_ROUTER_MODELS = 'aiOpenRouterModels';
+export const AI_MODELS = 'aiModels';
+export const AI_PROVIDERS = 'aiProviders';
 
 // File Browser
 export const GET_FILES = 'getFiles';

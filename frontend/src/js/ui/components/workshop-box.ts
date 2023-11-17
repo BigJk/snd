@@ -2,9 +2,6 @@ import m from 'mithril';
 
 import { css } from 'goober';
 
-import { buildId } from 'js/types/basic-info';
-import DataSource from 'js/types/data-source';
-
 import Flex from 'js/ui/components/layout/flex';
 
 const style = css`
@@ -20,12 +17,12 @@ const style = css`
 	}
 `;
 
-type DataSourceBoxProps = {
-	source: DataSource;
+type WorkshopBoxProps = {
+	repo: string;
 	onClick?: () => void;
 };
 
-export default (): m.Component<DataSourceBoxProps> => {
+export default (): m.Component<WorkshopBoxProps> => {
 	let key = Math.ceil(Math.random() * 1000000000).toString();
 
 	const cutDescription = (description: string) => {
@@ -36,9 +33,6 @@ export default (): m.Component<DataSourceBoxProps> => {
 	};
 
 	return {
-		oninit({ attrs }) {
-			key = buildId('source', attrs.source);
-		},
 		view({ attrs }) {
 			return m(
 				'div',
@@ -50,11 +44,9 @@ export default (): m.Component<DataSourceBoxProps> => {
 						'div.info.bg-black-01.w-100.ba.b--black-05.lh-copy.overflow-auto',
 						{ key: key + '.info' },
 						m('div.ph2.pv1.overflow-auto', [
-							m(Flex, { className: '.mb2.pb2.bb.b--black-05', justify: 'between' }, [
-								m('div.b', attrs.source.name), //
-								m('div.text-muted', attrs.source.count),
+							m(Flex, { className: '', justify: 'between' }, [
+								m('div.b', attrs.repo), //
 							]), //
-							m('div.f8.fw5.break-word', cutDescription(attrs.source.description)),
 						]),
 					),
 				]),

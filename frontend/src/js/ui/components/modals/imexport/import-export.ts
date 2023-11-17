@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-import { DataSourceImport } from 'js/types/import-data-source';
+import { ImportExport } from 'js/types/import-export';
 
 import * as API from 'js/core/api';
 import store from 'js/core/store';
@@ -18,15 +18,25 @@ import Flex from 'js/ui/components/layout/flex';
 import { popPortal } from 'js/ui/portal';
 import { error, success } from 'js/ui/toast';
 
-type ImportDataState = {
-	imports: DataSourceImport[];
-	selected: DataSourceImport | null;
+type ImportExportProps = {
+	endpoint: string;
+	title: string;
+	loadingMessage: string;
+	verb: string;
+	id?: string;
+};
+
+type ImportExportState = {
+	attrs: ImportExportProps | null;
+	imports: ImportExport[];
+	selected: ImportExport | null;
 	args: any[];
 	loading: boolean;
 };
 
-export default (): m.Component => {
-	const state: ImportDataState = {
+export default (): m.Component<ImportExportProps> => {
+	const state: ImportExportState = {
+		attrs: null,
 		imports: [],
 		selected: null,
 		args: [],
@@ -39,10 +49,10 @@ export default (): m.Component => {
 		}
 
 		state.loading = true;
-		API.exec(API.IMPORT_SOURCE + state.selected.rpcName, state.args)
+		API.exec(state.attrs?.endpoint + state.selected.rpcName, ...(state.attrs?.id ? [state.attrs.id, state.args] : [state.args]))
 			.then(() => {
-				success('Import successful');
-				store.actions.loadSources().catch(error);
+				success(`${state.attrs?.verb ?? ''} successful`);
+				store.actions.loadAll(true).catch(error);
 				popPortal();
 			})
 			.catch(error)
@@ -94,13 +104,15 @@ export default (): m.Component => {
 			m('div.pv2.ph3.br2.bg-black-05', [m('div.f5.mb1', state.selected.name), m('div.f7.text-muted', state.selected.description)]),
 			m('div.ttu.f8.b.bb.b--black-05.pb2.mt3', 'Arguments'),
 			selectedArguments(),
-			m('div.mt2', m(Button, { className: '.fr', intend: 'success', onClick: importData }, `Import "${state.selected.name}"`)),
+			m('div.mt2', m(Button, { className: '.fr', intend: 'success', onClick: importData }, `${state.attrs?.verb ?? 'Do'} "${state.selected.name}"`)),
 		]);
 	};
 
 	return {
-		oninit() {
-			API.exec<DataSourceImport[]>(API.GET_SOURCE_IMPORTS)
+		oninit({ attrs }) {
+			state.attrs = attrs;
+
+			API.exec<ImportExport[]>(attrs.endpoint)
 				.then((imports) => {
 					state.imports = imports;
 				})
@@ -115,12 +127,12 @@ export default (): m.Component => {
 				{
 					icon: 'cloud-upload',
 					width: state.selected ? 900 : 400,
-					title: 'Import Data Source',
+					title: state.attrs?.title ?? 'Import Export',
 					onClose: () => {
 						popPortal();
 					},
 					loading: state.loading,
-					loadingMessage: 'Importing... Please wait',
+					loadingMessage: state.attrs?.loadingMessage ?? 'Loading... Please wait',
 				},
 				[
 					m(

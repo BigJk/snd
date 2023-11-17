@@ -21,6 +21,8 @@ or a letter that the group found to little character sheets of your players to u
 
 ![Screenshot Generator](./data/screenshot_gen.png)
 
+![Screenshot AI](./data/screenshot_ai.png)
+
 ## Features
 
 - Works on

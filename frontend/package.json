@@ -19,7 +19,7 @@
   "devDependencies": {
     "@airjp73/dice-notation": "^2.2.2",
     "@emmetio/codemirror-plugin": "^0.5.4",
-    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/lodash-es": "^4.17.7",
     "@types/markdown-it": "^13.0.6",
     "@types/mithril": "^2.0.12",

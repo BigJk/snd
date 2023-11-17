@@ -56,6 +56,8 @@ export default (): m.Component => {
 	};
 
 	const fetchAiModels = () => {
+		if (settingsCopy.aiProvider === '') return;
+
 		API.exec<string[]>(API.AI_MODELS, settingsCopy.aiProvider)
 			.then((models) => {
 				aiModels = models;
@@ -63,7 +65,7 @@ export default (): m.Component => {
 			})
 			.catch((err) => {
 				error('Could not fetch AI models... retrying...');
-				setTimeout(fetchAiModels, 1000);
+				setTimeout(fetchAiModels, 3000);
 			});
 	};
 

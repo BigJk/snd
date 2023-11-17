@@ -114,8 +114,10 @@ func (s *Server) Start(bind string) error {
 			PrinterEndpoint:       "window",
 			Stylesheets:           []string{},
 			SpellcheckerLanguages: []string{"en-US"},
-			AIMaxTokens:           5000,
-			AIContextWindow:       8000,
+			AIEnabled:             false,
+			AIProvider:            "OpenRouter.ai",
+			AIMaxTokens:           4000,
+			AIContextWindow:       6000,
 		}); err != nil {
 			return err
 		}

@@ -123,7 +123,7 @@ const store = create(initialState, (atom) => ({
 		return API.exec<Generator[]>(API.GET_GENERATORS).then((res) => {
 			atom.update((state) => ({
 				...state,
-				generators: res,
+				generators: res ?? [],
 			}));
 
 			this.updateFuzzySearch();
@@ -137,7 +137,7 @@ const store = create(initialState, (atom) => ({
 		return API.exec<DataSource[]>(API.GET_SOURCES).then((res) => {
 			atom.update((state) => ({
 				...state,
-				sources: res,
+				sources: res ?? [],
 			}));
 
 			this.updateFuzzySearch();
@@ -151,7 +151,7 @@ const store = create(initialState, (atom) => ({
 		return API.exec<Record<string, Printer>>(API.GET_AVAILABLE_PRINTER).then((res) => {
 			atom.update((state) => ({
 				...state,
-				printer: res,
+				printer: res ?? [],
 			}));
 		});
 	},
@@ -163,7 +163,7 @@ const store = create(initialState, (atom) => ({
 		return API.exec<PublicList[]>(API.GET_PUBLIC_LIST).then((res) => {
 			atom.update((state) => ({
 				...state,
-				packages: res,
+				packages: res ?? [],
 			}));
 		});
 	},
@@ -175,7 +175,7 @@ const store = create(initialState, (atom) => ({
 		return API.exec<Template[]>(API.GET_TEMPLATES).then((res) => {
 			atom.update((state) => ({
 				...state,
-				templates: res,
+				templates: res ?? [],
 			}));
 
 			this.updateFuzzySearch();

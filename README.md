@@ -46,10 +46,11 @@ or a letter that the group found to little character sheets of your players to u
    - Fight Club 5e XML Format
    - 5eTools
 - Access Community Templates, Generators & Data Sources from within the App
-- AI LLM Support (OpenAI, OpenRouter)
+- AI LLM Support (OpenAI, OpenRouter, Custom Local)
   - Generate entries by prompt using the power of AI
   - Translate entries by prompt
   - Execute AI prompts in your templates and generators
+  - Support for using Local LLMs (for example via [LM Studio](https://lmstudio.ai/)) or any custom endpoints that are compatible with OpenAI API
 - Cloud sync for templates, generators and data sources
 
 ## Download 📁

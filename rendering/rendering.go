@@ -2,7 +2,7 @@
 // It uses the Chrome Debug Protocol through the rod package. It will download a headless
 // Chrome version if needed that matches the current platform.
 //
-// If the environment variable SND_DEBUG=1 it will start the chrome instances
+// If the environment variable SND_CHROME_DEBUG=1 it will start the chrome instances
 // in non-headless mode.
 package rendering
 

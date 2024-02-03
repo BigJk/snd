@@ -15,27 +15,27 @@ export default `
    * License: MIT
   */
   function floyd_steinberg(image) {
-    var imageData = image.data;
-    var imageDataLength = imageData.length;
-    var w = image.width;
-    var lumR = [],
+    let imageData = image.data;
+    let imageDataLength = imageData.length;
+    let w = image.width;
+    let lumR = [],
         lumG = [],
         lumB = [];
 
-    var newPixel, err;
+    let newPixel, err;
 
-    for (var i = 0; i < 256; i++) {
+    for (let i = 0; i < 256; i++) {
       lumR[i] = i * 0.299;
       lumG[i] = i * 0.587;
       lumB[i] = i * 0.110;
     }
 
     // Greyscale luminance (sets r pixels to luminance of rgb)
-    for (var i = 0; i <= imageDataLength; i += 4) {
+    for (let i = 0; i <= imageDataLength; i += 4) {
       imageData[i] = Math.floor(lumR[imageData[i]] + lumG[imageData[i+1]] + lumB[imageData[i+2]]);
     }
 
-    for (var currentPixel = 0; currentPixel <= imageDataLength; currentPixel += 4) {
+    for (let currentPixel = 0; currentPixel <= imageDataLength; currentPixel += 4) {
       // threshold for determining current pixel's conversion to a black or white pixel
       newPixel = imageData[currentPixel] < 150 ? 0 : 255;
       err = Math.floor((imageData[currentPixel] - newPixel) / 23);
@@ -57,16 +57,20 @@ export default `
       return;
     }
     
+    if (img.getAttribute('src')[0] !== '/' && img.getAttribute('src').indexOf('data') !== 0) {
+      img.setAttribute('src', '/proxy/' + img.getAttribute('src'))
+    }
+  
     img.addEventListener('load', () => {
       	let dither_scale = parseInt(img.getAttribute('dither'));	
-      
-  		let canvas = document.createElement('canvas');
+        
+  		  let canvas = document.createElement('canvas');
         canvas.width = img.width / dither_scale;
         canvas.height = img.height / dither_scale;
 
         let context = canvas.getContext('2d');
         context.drawImage(img, 0, 0, img.width / dither_scale, img.height / dither_scale);
-  		context.imageSmoothingEnabled = false;
+  		  context.imageSmoothingEnabled = false;
 
         context.putImageData(floyd_steinberg(context.getImageData(0, 0, img.width / dither_scale, img.height / dither_scale)), 0, 0);
         img.src = canvas.toDataURL();

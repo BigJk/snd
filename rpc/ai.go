@@ -25,14 +25,23 @@ func shortHash(text string) string {
 	return sha[:8]
 }
 
-var supportedProviders = []string{"OpenRouter.ai", "OpenAI"}
+var supportedProviders = []string{"OpenRouter.ai", "OpenAI", "Custom (e.g. Local)"}
 
-func providerToEndpoint(provider string) (string, error) {
+func providerToEndpoint(db database.Database, provider string) (string, error) {
 	switch provider {
 	case "OpenRouter.ai":
 		return "https://openrouter.ai/api", nil
 	case "OpenAI":
 		return "https://api.openai.com", nil
+	case "Custom (e.g. Local)":
+		settings, err := db.GetSettings()
+		if err != nil {
+			return "", err
+		}
+		if len(settings.AIURL) == 0 {
+			return "", errors.New("custom AI provider URL is not set")
+		}
+		return settings.AIURL, nil
 	default:
 		return "", errors.New("unknown provider")
 	}
@@ -85,7 +94,7 @@ func RegisterAI(route *echo.Group, db database.Database) {
 			return "", errors.New("AI is not enabled")
 		}
 
-		endpoint, err := providerToEndpoint(settings.AIProvider)
+		endpoint, err := providerToEndpoint(db, settings.AIProvider)
 		if err != nil {
 			return "", err
 		}
@@ -191,14 +200,17 @@ func RegisterAI(route *echo.Group, db database.Database) {
 	})))
 
 	route.POST("/aiModels", echo.WrapHandler(nra.MustBind(func(provider string) ([]string, error) {
-		endpoint, err := providerToEndpoint(provider)
-		if err != nil {
-			return nil, err
+		// TODO: dynamically fetch models
+		switch provider {
+		case "OpenAI":
+			return []string{"gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-3.5-turbo-16k", "gpt-4-1106-preview", "gpt-4", "gpt-4-32k"}, nil
+		case "Custom (e.g. Local)":
+			return []string{"Custom"}, nil
 		}
 
-		// TODO: dynamically fetch models
-		if provider == "OpenAI" {
-			return []string{"gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-3.5-turbo-16k", "gpt-4-1106-preview", "gpt-4", "gpt-4-32k"}, nil
+		endpoint, err := providerToEndpoint(db, provider)
+		if err != nil {
+			return nil, err
 		}
 
 		resp, err := http.Get(endpoint + "/v1/models")

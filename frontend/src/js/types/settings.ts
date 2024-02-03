@@ -25,6 +25,7 @@ type Settings = {
 	aiModel: string;
 	aiContextWindow: number;
 	aiMaxTokens: number;
+	aiUrl: string;
 };
 
 export function createEmptySettings(): Settings {
@@ -53,6 +54,7 @@ export function createEmptySettings(): Settings {
 		aiModel: '',
 		aiContextWindow: 0,
 		aiMaxTokens: 0,
+		aiUrl: '',
 	};
 }
 

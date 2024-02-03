@@ -18,6 +18,7 @@ import IconButton from 'js/ui/spectre/icon-button';
 import Select from 'js/ui/spectre/select';
 import HorizontalProperty from 'js/ui/components/horizontal-property';
 import Button from 'js/ui/spectre/button';
+import Input from 'js/ui/spectre/input';
 
 import { error, neutral, success } from 'js/ui/toast';
 import { clearPortal, setPortal } from 'js/ui/portal';
@@ -331,7 +332,7 @@ export default (): m.Component => {
 									},
 								}),
 							),
-							aiModels.length === 0
+							aiModels.length === 0 || settingsCopy.aiProvider.startsWith('Custom')
 								? null
 								: m(
 										HorizontalProperty,
@@ -349,6 +350,41 @@ export default (): m.Component => {
 											},
 										}),
 								  ),
+							!settingsCopy.aiProvider.startsWith('Custom')
+								? null
+								: [
+										m(
+											HorizontalProperty,
+											{
+												label: 'Custom Model',
+												description:
+													'The AI model to use for your custom AI. Depending on the provider this can be a model name, file location or a model ID. Can be left blank if not applicable.',
+												centered: true,
+												bottomBorder: true,
+											},
+											m(Input, {
+												value: settingsCopy.aiModel,
+												onChange: (val) => {
+													settingsCopy = { ...settingsCopy, aiModel: val };
+												},
+											}),
+										),
+										m(
+											HorizontalProperty,
+											{
+												label: 'Custom URL',
+												description: 'The URL of your custom OpenAI compatible API (e.g. http://localhost:1234)',
+												centered: true,
+												bottomBorder: true,
+											},
+											m(Input, {
+												value: settingsCopy.aiUrl,
+												onChange: (val) => {
+													settingsCopy = { ...settingsCopy, aiUrl: val };
+												},
+											}),
+										),
+								  ],
 						]),
 					),
 				),

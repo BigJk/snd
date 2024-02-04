@@ -14,7 +14,9 @@ export default `
    *
    * License: MIT
   */
-  function floyd_steinberg(image) {
+  function floyd_steinberg(image, threshold) {
+    threshold = threshold || 150;
+    
     let imageData = image.data;
     let imageDataLength = imageData.length;
     let w = image.width;
@@ -37,7 +39,7 @@ export default `
 
     for (let currentPixel = 0; currentPixel <= imageDataLength; currentPixel += 4) {
       // threshold for determining current pixel's conversion to a black or white pixel
-      newPixel = imageData[currentPixel] < 150 ? 0 : 255;
+      newPixel = imageData[currentPixel] < threshold ? 0 : 255;
       err = Math.floor((imageData[currentPixel] - newPixel) / 23);
       imageData[currentPixel + 0 * 1 - 0 ] = newPixel;
       imageData[currentPixel + 4 * 1 - 0 ] += err * 7;
@@ -63,6 +65,7 @@ export default `
   
     img.addEventListener('load', () => {
       	let dither_scale = parseInt(img.getAttribute('dither'));	
+        let dither_threshold = img.getAttribute('dither-threshold') ? parseInt(img.getAttribute('dither-threshold')) : undefined;
         
   		  let canvas = document.createElement('canvas');
         canvas.width = img.width / dither_scale;
@@ -72,7 +75,7 @@ export default `
         context.drawImage(img, 0, 0, img.width / dither_scale, img.height / dither_scale);
   		  context.imageSmoothingEnabled = false;
 
-        context.putImageData(floyd_steinberg(context.getImageData(0, 0, img.width / dither_scale, img.height / dither_scale)), 0, 0);
+        context.putImageData(floyd_steinberg(context.getImageData(0, 0, img.width / dither_scale, img.height / dither_scale), dither_threshold), 0, 0);
         img.src = canvas.toDataURL();
     }, { once: true })
   });

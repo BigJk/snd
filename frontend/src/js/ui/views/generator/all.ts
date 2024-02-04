@@ -22,6 +22,12 @@ import ImportExport from 'js/ui/components/modals/imexport/import-export';
 export default (): m.Component => {
 	let searchValue = '';
 
+	const filteredGenerators = () =>
+		generators.value.filter(
+			(generator) =>
+				generator.name.toLowerCase().includes(searchValue.toLowerCase()) || generator.author.toLowerCase().includes(searchValue.toLowerCase()),
+		);
+
 	const authorGroupTitle = (author: string) =>
 		m('div', [
 			m('div.text-muted.f8.fw5.ttu.mb1', 'Generator by'), //
@@ -31,32 +37,24 @@ export default (): m.Component => {
 	const generatorCount = (length: number) => m('div.f8.fw5.ttu.mb1.text-muted', `${length} Generators`);
 
 	const generatorsByAuthor = () =>
-		map(
-			groupBy(
-				generators.value.filter(
-					(generator) =>
-						generator.name.toLowerCase().includes(searchValue.toLowerCase()) || generator.author.toLowerCase().includes(searchValue.toLowerCase()),
-				),
-				'author',
-			),
-			(generators, author) =>
-				m('div.bg-white.br2.ph3.mb3.ba.b--black-10', [
-					m(Flex, { justify: 'between', className: '.mv3.bb.b--black-10.pb3' }, [
-						authorGroupTitle(author), //
-						generatorCount(generators.length), //
-					]), //
-					m(
-						Grid,
-						{ className: '.mb3', minWidth: '350px', maxWidth: '1fr' },
-						generators.map((generator) =>
-							m(TemplateBox, {
-								onClick: () => m.route.set(`/generator/${buildId('generator', generator)}`),
-								generator: generator,
-								config: sanitizeConfig(generator, {}),
-							}),
-						),
+		map(groupBy(filteredGenerators(), 'author'), (generators, author) =>
+			m('div.bg-white.br2.ph3.mb3.ba.b--black-10', [
+				m(Flex, { justify: 'between', className: '.mv3.bb.b--black-10.pb3' }, [
+					authorGroupTitle(author), //
+					generatorCount(generators.length), //
+				]), //
+				m(
+					Grid,
+					{ className: '.mb3', minWidth: '350px', maxWidth: '1fr' },
+					generators.map((generator) =>
+						m(TemplateBox, {
+							onClick: () => m.route.set(`/generator/${buildId('generator', generator)}`),
+							generator: generator,
+							config: sanitizeConfig(generator, {}),
+						}),
 					),
-				]),
+				),
+			]),
 		);
 
 	const search = () =>
@@ -75,6 +73,33 @@ export default (): m.Component => {
 				}),
 			]),
 		]);
+
+	const emptyState = () => {
+		let message: any = 'Try searching for something else...';
+		if (generators.value.length === 0) {
+			message = m(
+				Flex,
+				{ gap: 3, direction: 'column' },
+				m(Icon, { icon: 'sad', size: 1, className: '.o-50' }),
+				'There are no generators yet. Check the workshop if you want to download community generators to get started!',
+				m(
+					'div',
+					m(
+						IconButton,
+						{ intend: 'primary', icon: 'cart', className: '.mh2', link: '/workshop/T2ZmaWNpYWwgUGFja2FnZSBSZXBv', size: 'sm' },
+						'Workshop',
+					),
+				),
+			);
+		} else if (filteredGenerators().length > 0) {
+			return null;
+		}
+
+		return m('div.bg-white.br2.ba.b--black-10.pa3', [
+			m('div.f8.fw5.ttu.mb3.text-muted', 'No generators found'), //
+			m('div.f7.tc', message),
+		]);
+	};
 
 	return {
 		oninit() {
@@ -109,7 +134,7 @@ export default (): m.Component => {
 						m(IconButton, { link: '/generator/create', icon: 'add' }, 'Create'), //
 					]),
 				},
-				m('div', [search(), generatorsByAuthor()]),
+				m('div', [search(), emptyState(), generatorsByAuthor()]),
 			);
 		},
 	};

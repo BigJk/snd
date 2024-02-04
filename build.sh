@@ -65,6 +65,7 @@ if [ "${OSX_APP_BUNDLE_ENABLED}" = "true" ]; then
 
   wget -O ${OSX_APP_BUNDLE_DIR}/macapp.go https://gist.githubusercontent.com/mholt/11008646c95d787c30806d3f24b2c844/raw/53d1d4baeeb7ed8ee7dc89ebfd900e444a298323/macapp.go
   go run ${OSX_APP_BUNDLE_DIR}/macapp.go -assets "${TARGET_DIR}" -bin "snd" -icon "${TARGET_DIR}data/icon.png" -identifier app.sales-and-dungeons -name "Sales & Dungeons" -o ${OSX_APP_BUNDLE_DIR}
+  chmod +x "${OSX_APP_BUNDLE_DIR}/Sales & Dungeons.app/Contents/MacOS/snd"
 
   # check if "Sales & Dungeons.app" exists
   if [ -d "${OSX_APP_BUNDLE_DIR}Sales & Dungeons.app" ]; then

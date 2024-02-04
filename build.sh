@@ -56,6 +56,9 @@ echo "Commit: ${GIT_COMMIT}" > ${TARGET_DIR}/version.txt
 echo "Branch: ${GIT_BRANCH}" >> ${TARGET_DIR}/version.txt
 echo "Build Time: ${BUILD_TIME}" >> ${TARGET_DIR}/version.txt
 
+echo "Setting permissions..."
+chmod +x ${TARGET_DIR}/${APP_NAME}${EXT}
+
 # if OSX_APP_BUNDLE_ENABLED we need to create a .app bundle
 if [ "${OSX_APP_BUNDLE_ENABLED}" = "true" ]; then
   echo "Building OSX App Bundle..."

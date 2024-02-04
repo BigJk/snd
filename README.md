@@ -53,21 +53,25 @@ or a letter that the group found to little character sheets of your players to u
   - Support for using Local LLMs (for example via [LM Studio](https://lmstudio.ai/)) or any custom endpoints that are compatible with OpenAI API
 - Cloud sync for templates, generators and data sources
 
-## Download 📁
+## 📁 Download
 
 You can find the latest version on the release page:
 - https://github.com/BigJk/snd/releases
 
-### Mac & Linux
+### :apple: Mac
 
-- If you are on a unix system you can use the install script to download and install the latest version of Sales & Dungeons automatically
-- The script will create a ``snd`` folder in your home directory
-- To update to the newest version just run the command again. Your user data won't be deleted.
+The mac bundles are not signed at the moment so you might face the following problems when opening the application:
 
-**Open your terminal and copy and paste the following command:**
+#### It's not opening because it's from a unverified developer
+
+If your mac is telling you that this app is from a unverified developer you can allow it via the "Privacy & Security" settings. More info: [Open a Mac app from an unidentified developer](https://support.apple.com/lv-lv/guide/mac-help/mh40616/mac)
+
+#### It's not opening because the app "is damaged"
+
+On M1, M2, etc. it can happen that the app is reported as damaged. Just copy Sales & Dungeons into your Applications folder and execute the following command to allow it to run:
 
 ```
-curl -s https://raw.githubusercontent.com/BigJk/snd/master/install.sh | bash
+xattr -d com.apple.quarantine "/Applications/Sales & Dungeons.app/"
 ```
    
 ### :whale: Docker

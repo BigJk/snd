@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"image"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -88,8 +89,10 @@ func (c *USB) openDevice(vendor int64, product int64, endpoint int) error {
 		return err
 	}
 
-	if err := device.SetAutoDetach(true); err != nil {
-		return err
+	if runtime.GOOS != "darwin" {
+		if err := device.SetAutoDetach(true); err != nil {
+			return err
+		}
 	}
 
 	iface, done, err := device.DefaultInterface()

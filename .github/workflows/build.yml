@@ -120,7 +120,7 @@ jobs:
   # macOS AMD64
   build-darwin-amd64-app:
     name: Build ${{ matrix.artifact-name }}
-    runs-on: macos-latest
+    runs-on: macos-12
     needs: build-frontend
     strategy:
       matrix:

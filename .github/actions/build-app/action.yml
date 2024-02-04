@@ -19,9 +19,6 @@ inputs:
   libusb-path:
     description: 'Optional path to libusb DLL to include'
     required: false
-  mac-app-bundle:
-    description: 'Enable or disable OSX app bundle generation'
-    required: false
 runs:
   using: composite
   steps:
@@ -49,7 +46,7 @@ runs:
         GOARCH: ${{ inputs.arch }}
         GOARM: ${{ inputs.armv }}
         SND_TAGS: ${{ inputs.tags }}
-        SND_OSX_APP_BUNDLE_ENABLED: ${{ inputs.mac-app-bundle }}
+        SND_OSX_APP_BUNDLE_ENABLED: ${{ inputs.os == 'darwin' && 'true' || 'false' }}
     - name: Run Build (MSYS2)
       if: inputs.os == 'windows' && inputs.libusb-path != null
       shell: msys2 {0}

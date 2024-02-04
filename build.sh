@@ -24,6 +24,7 @@ echo "Build OS    : ${GOOS:=$(go env GOOS)}"
 echo "Build Arch  : ${GOARCH:=$(go env GOARCH)}"
 echo "Build Tags  : ${SND_TAGS}"
 echo "CGO Enabled : ${CGO_ENABLED}"
+echo "OSX Bundle  : ${OSX_APP_BUNDLE_ENABLED}"
 
 echo "Clearing old data..."
 rm -r ${TARGET_DIR}frontend || true

@@ -182,7 +182,7 @@ jobs:
 
   create-release:
     runs-on: ubuntu-latest
-    needs: [build-linux-app, build-windows-app, build-darwin-app]
+    needs: [build-linux-app, build-windows-app, build-darwin-amd64-app, build-darwin-arm64-app]
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3

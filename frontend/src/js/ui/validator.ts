@@ -12,4 +12,4 @@ export const slug = (input: string): string =>
  * Authorify a string. An author only contains lowercase letters, numbers and the dash character.
  * @param input The string to nameify
  */
-export const author = slug;
+export const author = (input: string): string => input.replace(/[^a-zA-Z0-9\-]/g, '').replace(/-+/g, '-');

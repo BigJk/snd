@@ -4,7 +4,7 @@ import { groupBy, map } from 'lodash-es';
 
 import { buildId } from 'js/types/basic-info';
 
-import { templates } from 'js/core/store';
+import store, { templates } from 'js/core/store';
 
 import Input from 'js/ui/spectre/input';
 
@@ -73,6 +73,9 @@ export default (): m.Component => {
 		]);
 
 	return {
+		oninit() {
+			store.actions.loadTemplates();
+		},
 		view(vnode) {
 			return m(
 				Base,

@@ -31,6 +31,7 @@ import { openAdditionalInfosModal } from 'js/ui/components/modals/additional-inf
 import { openFileModal } from 'js/ui/components/modals/file-browser';
 import { setPortal } from 'js/ui/portal';
 import ImportExport from 'js/ui/components/modals/imexport/import-export';
+import { openDevTools } from 'js/ui/components/print-preview';
 
 const PER_PAGE = 10;
 
@@ -288,6 +289,23 @@ export default (): m.Component<SingleTemplateProps> => {
 							Tooltip,
 							{ content: 'Additional Information' },
 							m(IconButton, { icon: 'information-circle-outline', size: 'sm', intend: 'primary', className: '.mr2', onClick: showAdditionalInfo }),
+						),
+						m(
+							Tooltip,
+							{ content: 'Open Dev Tools' },
+							m(
+								IconButton,
+								{
+									intend: 'primary',
+									icon: 'bug',
+									size: 'sm',
+									className: '.mr2',
+									onClick: () => {
+										openDevTools(document.body);
+									},
+								},
+								'',
+							),
 						),
 						m(
 							Tooltip,

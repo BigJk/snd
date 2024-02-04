@@ -5,7 +5,7 @@ import { groupBy, map } from 'lodash-es';
 import { buildId } from 'js/types/basic-info';
 import { sanitizeConfig } from 'js/types/generator';
 
-import { generators } from 'js/core/store';
+import store, { generators } from 'js/core/store';
 
 import Input from 'js/ui/spectre/input';
 import Icon from 'js/ui/components/atomic/icon';
@@ -77,6 +77,9 @@ export default (): m.Component => {
 		]);
 
 	return {
+		oninit() {
+			store.actions.loadGenerators();
+		},
 		view(vnode) {
 			return m(
 				Base,

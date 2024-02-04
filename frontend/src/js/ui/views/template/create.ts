@@ -62,12 +62,12 @@ export default (): m.Component<TemplateCreateProps> => {
 													.then(() => {
 														if (!state) return;
 														m.route.set(`/template/${buildId('template', state)}`);
-														store.actions.loadGenerators();
+														store.actions.loadTemplates();
 													})
 													.catch(error);
 											} else {
 												m.route.set(`/template/${buildId('template', state)}`);
-												store.actions.loadGenerators();
+												store.actions.loadTemplates();
 											}
 										})
 										.catch(error);
@@ -83,6 +83,7 @@ export default (): m.Component<TemplateCreateProps> => {
 					template: state,
 					onChange: (template) => {
 						state = template;
+						m.redraw();
 					},
 				}),
 			);

@@ -192,6 +192,11 @@ jobs:
           path: build/release
       - name: Check release files
         run: ls -hal build/release/
+      # Fix for https://github.com/actions/upload-artifact/issues/38
+      - name: Change Permissions
+        run: |
+          find build/release -type f -name 'snd' -exec chmod +x {} \;
+          find build/release -type f -name 'Sales & Dungeons' -exec chmod +x {} \;
       - name: Zip release folders
         run: cd build/release && { for i in */; do zip -r "${i%/}.zip" "$i"; done }
       - name: Create Release

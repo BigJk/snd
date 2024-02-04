@@ -24,7 +24,7 @@ jobs:
       run: npm ci --loglevel verbose
     - name: Lint Frontend
       working-directory: frontend
-      run: npm run lint-check && npm run format-check
+      run: npm run lint && npm run format-check
     - name: Build Frontend
       working-directory: frontend
       run: npm run build

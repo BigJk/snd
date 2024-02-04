@@ -45,7 +45,7 @@ jobs:
           - arch: "amd64"
             libusb: true
             tags: "ELECTRON LIBUSB"
-            artifact-name: "snd-linux-amd64-gui-usb"
+            artifact-name: "snd-linux-amd64-gui-libusb"
           # HEADLESS
           - arch: "amd64"
             artifact-name: "snd-linux-amd64-headless"
@@ -87,11 +87,11 @@ jobs:
           - arch: "amd64"
             libusb: false
             tags: "ELECTRON"
-            artifact-name: "snd-windows-amd64-gui"
+            artifact-name: "snd-windows"
           - arch: "amd64"
             libusb: true
             tags: "ELECTRON LIBUSB"
-            artifact-name: "snd-windows-amd64-gui-usb"
+            artifact-name: "snd-windows-libusb"
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
@@ -116,26 +116,25 @@ jobs:
         tags: ${{ matrix.tags }}
         artifact-name: ${{ matrix.artifact-name }}
         libusb-path: ${{ matrix.libusb && 'D:/a/_temp/msys64/mingw64/bin/libusb-1.0.dll' || null }}
-  
-  build-darwin-app:
+
+  # macOS AMD64
+  build-darwin-amd64-app:
     name: Build ${{ matrix.artifact-name }}
     runs-on: macos-latest
     needs: build-frontend
     strategy:
       matrix:
         include:
-          # ELECTRON
           - arch: "amd64"
             tags: "ELECTRON"
-            artifact-name: "snd-macos-amd64-gui"
-          - arch: "arm64"
-            tags: "ELECTRON"
-            artifact-name: "snd-macos-arm64-gui"
+            artifact-name: "snd-macos-intel"
+            mac-app-bundle: "true"
           - arch: "amd64"
             libusb: true
             tags: "ELECTRON LIBUSB"
-            artifact-name: "snd-macos-amd64-gui-usb"
-          # Note: arm64 + USB not possible until we have an M1 runner
+            artifact-name: "snd-macos-intel-libusb"
+            mac-app-bundle: "true"
+
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
@@ -149,6 +148,37 @@ jobs:
         arch: ${{ matrix.arch }}
         tags: ${{ matrix.tags }}
         artifact-name: ${{ matrix.artifact-name }}
+
+  # macOS ARM64 (m1, m2, m3, mX)
+  build-darwin-arm64-app:
+    name: Build ${{ matrix.artifact-name }}
+    runs-on: macos-14
+    needs: build-frontend
+    strategy:
+      matrix:
+        include:
+          - arch: "arm64"
+            tags: "ELECTRON"
+            artifact-name: "snd-macos-m1"
+            mac-app-bundle: "true"
+          - arch: "arm64"
+            libusb: true
+            tags: "ELECTRON LIBUSB"
+            artifact-name: "snd-macos-m1-libusb"
+            mac-app-bundle: "true"
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Install libusb
+        if: matrix.libusb
+        run: brew install libusb pkg-config && pkg-config --cflags libusb-1.0
+      - name: Build App
+        uses: ./.github/actions/build-app
+        with:
+          os: darwin
+          arch: ${{ matrix.arch }}
+          tags: ${{ matrix.tags }}
+          artifact-name: ${{ matrix.artifact-name }}
 
   create-release:
     runs-on: ubuntu-latest

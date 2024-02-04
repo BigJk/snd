@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/BigJk/snd"
@@ -35,8 +36,32 @@ func syncBaseUrl() string {
 	return ""
 }
 
+func isMacAppBundle() bool {
+	if runtime.GOOS != "darwin" {
+		return false
+	}
+	execDir, err := os.Executable()
+	if err != nil {
+		return false
+	}
+	return strings.Contains(execDir, "Sales & Dungeons.app")
+}
+
 func openDatabase() database.Database {
-	db, err := badger.New("./userdata/")
+	userdata := "./userdata/"
+
+	if isMacAppBundle() {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			panic(err)
+		}
+		userdata = filepath.Join(home, "/Documents/Sales & Dungeons/userdata")
+
+		err = os.MkdirAll(userdata, 0777)
+		fmt.Println("INFO: changed userdata folder because of app bundle", userdata, err)
+	}
+
+	db, err := badger.New(userdata)
 	if err != nil {
 		panic(err)
 	}
@@ -101,6 +126,11 @@ func fixWorkingDir() bool {
 		// Change working dir to executable dir in hopes to resolve the problem
 		execDir, err := os.Executable()
 		if err == nil && pwd != execDir {
+			if isMacAppBundle() {
+				execDir = filepath.Join(filepath.Dir(execDir), "../Resources/Sales & Dungeons")
+				fmt.Println("INFO: using mac app bundle directory", filepath.Dir(execDir))
+			}
+
 			if err := os.Chdir(filepath.Dir(execDir)); err != nil {
 				fmt.Println("ERROR: could not set working dir to", execDir, err)
 				return false

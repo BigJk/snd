@@ -8,7 +8,9 @@ import (
 	"io/ioutil"
 	stdlog "log"
 	"os"
+	"os/exec"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 
@@ -50,12 +52,10 @@ func startElectron(db database.Database, debug bool) {
 		targetWriter = os.Stdout
 	}
 
-	_ = os.Mkdir("./data", 0666)
-
 	time.Sleep(time.Millisecond * 500)
 	log.Info("If no window is opening please wait a few seconds for the dependencies to download...")
 
-	a, err := astilectron.New(stdlog.New(targetWriter, "", 0), astilectron.Options{
+	opts := astilectron.Options{
 		AppName:            "SND",
 		BaseDirectoryPath:  "./data",
 		DataDirectoryPath:  "./data",
@@ -67,7 +67,32 @@ func startElectron(db database.Database, debug bool) {
 		ElectronSwitches: []string{
 			"--disable-http-cache",
 		},
-	})
+	}
+
+	if isMacAppBundle() {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			panic(err)
+		}
+		opts.BaseDirectoryPath = filepath.Join(home, "/Documents/Sales & Dungeons/electron")
+		opts.DataDirectoryPath = filepath.Join(home, "/Documents/Sales & Dungeons/electron")
+
+		err = os.MkdirAll(opts.BaseDirectoryPath, 0777)
+		log.Info("Changed electron provision folder because of app bundle", log.WithValue("path", opts.BaseDirectoryPath), log.WithValue("mkdir error", err))
+
+		// copy icon files to the electron folder
+		_ = exec.Command("cp", "./icon.png", filepath.Join(opts.BaseDirectoryPath, "icon.png")).Run()
+		_ = exec.Command("cp", "./icon.icns", filepath.Join(opts.BaseDirectoryPath, "icon.icns")).Run()
+
+		// check if vendor folder exists
+		if _, err := os.Stat(filepath.Join(opts.BaseDirectoryPath, "vendor")); os.IsNotExist(err) {
+			_ = exec.Command("osascript", "-e", "display dialog \"Thanks for downloading Sales & Dungeons! During the first launch, we're setting things up and downloading dependencies. This may take a few moments. We appreciate your patience!\" buttons {\"OK\"} with title \"Sales & Dungeons First Start\" with icon caution").Run()
+		}
+	} else {
+		_ = os.Mkdir("./data", 0666)
+	}
+
+	a, err := astilectron.New(stdlog.New(targetWriter, "", 0), opts)
 	if err != nil {
 		panic(err)
 	}

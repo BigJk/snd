@@ -21,8 +21,11 @@
     "js/core/(.*)$",
     "",
     "js/ui/spectre(.*)$",
+    "",
     "js/ui/components(.*)$",
+    "",
     "js/ui/views/(.*)$",
+    "",
     "js/ui/[^\/]+$"
   ],
   "parser": "babel-ts"

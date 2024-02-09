@@ -7,13 +7,16 @@ import store, { templates } from 'js/core/store';
 
 import IconButton from 'js/ui/spectre/icon-button';
 import Input from 'js/ui/spectre/input';
+
 import Icon from 'js/ui/components/atomic/icon';
 import Title from 'js/ui/components/atomic/title';
 import Flex from 'js/ui/components/layout/flex';
 import Grid from 'js/ui/components/layout/grid';
 import ImportExport from 'js/ui/components/modals/imexport/import-export';
+import PageEmptyState from 'js/ui/components/page-empty-state';
 import TemplateBox from 'js/ui/components/template-box';
 import Base from 'js/ui/components/view-layout/base';
+
 import { setPortal } from 'js/ui/portal';
 
 export default (): m.Component => {
@@ -68,30 +71,11 @@ export default (): m.Component => {
 		]);
 
 	const emptyState = () => {
-		let message: any = 'Try searching for something else...';
-		if (templates.value.length === 0) {
-			message = m(
-				Flex,
-				{ gap: 3, direction: 'column' },
-				m(Icon, { icon: 'sad', size: 1, className: '.o-50' }),
-				'There are no templates yet. Check the workshop if you want to download community templates to get started!',
-				m(
-					'div',
-					m(
-						IconButton,
-						{ intend: 'primary', icon: 'cart', className: '.mh2', link: '/workshop/T2ZmaWNpYWwgUGFja2FnZSBSZXBv', size: 'sm' },
-						'Workshop',
-					),
-				),
-			);
-		} else if (filteredTemplates().length > 0) {
+		if (filteredTemplates().length > 0) {
 			return null;
 		}
 
-		return m('div.bg-white.br2.ba.b--black-10.pa3', [
-			m('div.f8.fw5.ttu.mb3.text-muted', 'No templates found'), //
-			m('div.f7.tc', message),
-		]);
+		return m(PageEmptyState, { name: 'templates', bigMessage: templates.value.length === 0 });
 	};
 
 	return {

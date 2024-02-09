@@ -3,18 +3,21 @@ import { groupBy, map } from 'lodash-es';
 
 import { buildId } from 'js/types/basic-info';
 import * as API from 'js/core/api';
-import store, { generators, sources } from 'js/core/store';
+import store, { sources } from 'js/core/store';
 
 import IconButton from 'js/ui/spectre/icon-button';
 import Input from 'js/ui/spectre/input';
+
 import Icon from 'js/ui/components/atomic/icon';
 import Title from 'js/ui/components/atomic/title';
 import Flex from 'js/ui/components/layout/flex';
 import Grid from 'js/ui/components/layout/grid';
 import { openDataSourceCreateModal } from 'js/ui/components/modals/create-source';
 import ImportExport from 'js/ui/components/modals/imexport/import-export';
+import PageEmptyState from 'js/ui/components/page-empty-state';
 import SourceBox from 'js/ui/components/source-box';
 import Base from 'js/ui/components/view-layout/base';
+
 import { setPortal } from 'js/ui/portal';
 
 export default (): m.Component => {
@@ -73,30 +76,11 @@ export default (): m.Component => {
 		]);
 
 	const emptyState = () => {
-		let message: any = 'Try searching for something else...';
-		if (generators.value.length === 0) {
-			message = m(
-				Flex,
-				{ gap: 3, direction: 'column' },
-				m(Icon, { icon: 'sad', size: 1, className: '.o-50' }),
-				'There are no data sources yet. Check the workshop if you want to download community data sources to get started!',
-				m(
-					'div',
-					m(
-						IconButton,
-						{ intend: 'primary', icon: 'cart', className: '.mh2', link: '/workshop/T2ZmaWNpYWwgUGFja2FnZSBSZXBv', size: 'sm' },
-						'Workshop',
-					),
-				),
-			);
-		} else if (filteredSources().length > 0) {
+		if (filteredSources().length > 0) {
 			return null;
 		}
 
-		return m('div.bg-white.br2.ba.b--black-10.pa3', [
-			m('div.f8.fw5.ttu.mb3.text-muted', 'No data sources found'), //
-			m('div.f7.tc', message),
-		]);
+		return m(PageEmptyState, { name: 'data sources', bigMessage: sources.value.length === 0 });
 	};
 
 	return {

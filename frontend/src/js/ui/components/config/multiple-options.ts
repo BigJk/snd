@@ -4,6 +4,7 @@ import Checkbox from 'js/ui/spectre/checkbox';
 import Input from 'js/ui/spectre/input';
 import Label from 'js/ui/spectre/label';
 import Select, { OnInputEvent } from 'js/ui/spectre/select';
+
 import Icon from 'js/ui/components/atomic/icon';
 import MiniHeader from 'js/ui/components/atomic/mini-header';
 import Config, { ConfigProps } from 'js/ui/components/config/config';

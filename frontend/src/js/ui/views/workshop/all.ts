@@ -4,12 +4,14 @@ import PublicList from 'src/js/types/public-list';
 import * as API from 'js/core/api';
 
 import IconButton from 'src/js/ui/spectre/icon-button';
+
 import Title from 'js/ui/components/atomic/title';
 import Base from 'js/ui/components/view-layout/base';
 import HorizontalProperty from 'src/js/ui/components/horizontal-property';
 import CenterContainer from 'src/js/ui/components/layout/center-container';
 import Flex from 'src/js/ui/components/layout/flex';
 import PropertyHeader from 'src/js/ui/components/view-layout/property-header';
+
 import { error } from 'js/ui/toast';
 
 type WorkshopState = {

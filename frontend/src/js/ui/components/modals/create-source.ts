@@ -6,7 +6,9 @@ import store from 'js/core/store';
 
 import Button from 'js/ui/spectre/button';
 import Modal from 'js/ui/spectre/modal';
+
 import BasicInfo from 'js/ui/components/editor/basic-info';
+
 import { popPortal, pushPortal } from 'js/ui/portal';
 import { error } from 'js/ui/toast';
 

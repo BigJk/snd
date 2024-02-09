@@ -1,6 +1,7 @@
 import m from 'mithril';
 
 import IconButton from 'js/ui/spectre/icon-button';
+
 import Flex from 'js/ui/components/layout/flex';
 
 type PaginatedContentProps<T> = {

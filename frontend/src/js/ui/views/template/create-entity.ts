@@ -10,6 +10,7 @@ import { buildSchema, initialData, objectPathToSchema, readableName, SchemaNode,
 import IconButton from 'js/ui/spectre/icon-button';
 import Input from 'js/ui/spectre/input';
 import Loader from 'js/ui/spectre/loader';
+
 import Icon from 'js/ui/components/atomic/icon';
 import types from 'js/ui/components/config/types';
 import HorizontalProperty from 'js/ui/components/horizontal-property';
@@ -19,6 +20,7 @@ import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
 import EditorHeader from 'js/ui/components/view-layout/property-header';
 import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
 import SidebarPrintPage from 'js/ui/components/view-layout/sidebar-print-page';
+
 import { error } from 'js/ui/toast';
 
 type CreateTemplateEntityProps = {

@@ -9,6 +9,7 @@ import m from 'mithril';
 import store, { settings } from 'js/core/store';
 
 import Spotlight from 'js/ui/components/portal/spotlight';
+
 import DataSourceAll from 'js/ui/views/data-source/all';
 import DataSourceSingle from 'js/ui/views/data-source/single';
 import Devices from 'js/ui/views/devices';
@@ -28,6 +29,7 @@ import TemplateSingle from 'js/ui/views/template/single';
 import WorkshopAll from 'js/ui/views/workshop/all';
 import WorkshopRepo from 'js/ui/views/workshop/repo';
 import WorkshopSingle from 'js/ui/views/workshop/single';
+
 import * as Portal from 'js/ui/portal';
 import * as Toast from 'js/ui/toast';
 

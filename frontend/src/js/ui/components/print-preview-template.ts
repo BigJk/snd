@@ -7,6 +7,7 @@ import store, { settings } from 'js/core/store';
 import { containsAi, render } from 'js/core/templating';
 
 import Button from 'js/ui/spectre/button';
+
 import Icon from 'js/ui/components/atomic/icon';
 import Flex from 'js/ui/components/layout/flex';
 import PrintPreview from 'js/ui/components/print-preview';

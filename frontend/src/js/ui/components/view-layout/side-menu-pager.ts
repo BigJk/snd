@@ -3,6 +3,7 @@ import m from 'mithril';
 import CenterContainer from 'js/ui/components/layout/center-container';
 import Flex from 'js/ui/components/layout/flex';
 import SideMenu, { type SideMenuItem } from 'js/ui/components/view-layout/side-menu';
+
 import { filterChildren } from 'js/ui/util';
 
 type SideMenuPagerItem = {

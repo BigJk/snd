@@ -9,6 +9,7 @@ import store, { FuseSearch } from 'js/core/store';
 import Icon from 'js/ui/components/atomic/icon';
 import Key from 'js/ui/components/atomic/key';
 import Flex from 'js/ui/components/layout/flex';
+
 import { clearPortal } from 'js/ui/portal';
 
 const ItemHeight = 60;

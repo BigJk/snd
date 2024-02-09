@@ -8,10 +8,12 @@ import Button from 'js/ui/spectre/button';
 import Loader from 'js/ui/spectre/loader';
 import Modal from 'js/ui/spectre/modal';
 import Select from 'js/ui/spectre/select';
+
 import Config from 'js/ui/components/config/config';
 import ConfigTypes from 'js/ui/components/config/types';
 import HorizontalProperty from 'js/ui/components/horizontal-property';
 import Flex from 'js/ui/components/layout/flex';
+
 import { popPortal } from 'js/ui/portal';
 import { error, success } from 'js/ui/toast';
 

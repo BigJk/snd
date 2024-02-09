@@ -6,6 +6,7 @@ import { createNunjucksCompletionProvider } from 'js/core/monaco/completion-nunj
 import { settings } from 'js/core/store';
 
 import Label from 'js/ui/spectre/label';
+
 import Icon from 'js/ui/components/atomic/icon';
 import ConfigCreator from 'js/ui/components/config/creator';
 import Editor from 'js/ui/components/config/editor';

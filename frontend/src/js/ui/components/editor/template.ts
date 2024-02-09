@@ -12,6 +12,7 @@ import { render } from 'js/core/templating';
 
 import Button from 'js/ui/spectre/button';
 import Label from 'js/ui/spectre/label';
+
 import Icon from 'js/ui/components/atomic/icon';
 import ConfigCreator from 'js/ui/components/config/creator';
 import Editor from 'js/ui/components/config/editor';
@@ -24,6 +25,7 @@ import PrintPreviewTemplate, { PrintPreviewError } from 'js/ui/components/print-
 import SourceSelect from 'js/ui/components/source-select';
 import EditorHeader from 'js/ui/components/view-layout/property-header';
 import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
+
 import { dialogWarning, error } from 'js/ui/toast';
 
 type TemplateEditorProps = {

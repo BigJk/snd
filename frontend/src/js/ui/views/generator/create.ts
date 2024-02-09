@@ -7,9 +7,11 @@ import store from 'js/core/store';
 
 import IconButton from 'js/ui/spectre/icon-button';
 import Loader from 'js/ui/spectre/loader';
+
 import GeneratorEditor from 'js/ui/components/editor/generator';
 import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
+
 import { error } from 'js/ui/toast';
 
 type GeneratorCreateProps = {

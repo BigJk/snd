@@ -7,6 +7,7 @@ import store from 'js/core/store';
 
 import IconButton from 'js/ui/spectre/icon-button';
 import Loader from 'js/ui/spectre/loader';
+
 import Tooltip from 'js/ui/components/atomic/tooltip';
 import Editor from 'js/ui/components/config/editor';
 import Flex from 'js/ui/components/layout/flex';
@@ -17,6 +18,7 @@ import { openDevTools } from 'js/ui/components/print-preview';
 import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
 import SidebarPrintPage from 'js/ui/components/view-layout/sidebar-print-page';
+
 import { setPortal } from 'js/ui/portal';
 import { dialogWarning, error, success } from 'js/ui/toast';
 

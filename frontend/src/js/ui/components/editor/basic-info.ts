@@ -6,6 +6,7 @@ import Icon from 'js/ui/components/atomic/icon';
 import Flex from 'js/ui/components/layout/flex';
 import PropertyEdit, { type PropertyAnnotation } from 'js/ui/components/view-layout/property-edit';
 import EditorHeader from 'js/ui/components/view-layout/property-header';
+
 import { author, slug } from 'js/ui/validator';
 
 export type BasicInfoProps<T> = {

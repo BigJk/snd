@@ -6,9 +6,11 @@ import * as API from 'js/core/api';
 import store from 'js/core/store';
 
 import IconButton from 'js/ui/spectre/icon-button';
+
 import TemplateEditor from 'js/ui/components/editor/template';
 import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
+
 import { error } from 'js/ui/toast';
 
 type TemplateCreateProps = {

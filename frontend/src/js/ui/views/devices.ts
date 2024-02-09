@@ -4,6 +4,7 @@ import { map } from 'lodash-es';
 import store, { settings } from 'js/core/store';
 
 import Select from 'js/ui/spectre/select';
+
 import InfoIcon from 'js/ui/components/atomic/info-icon';
 import Title from 'js/ui/components/atomic/title';
 import Device from 'js/ui/components/device';

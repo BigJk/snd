@@ -5,9 +5,11 @@ import * as API from 'js/core/api';
 import Button from 'js/ui/spectre/button';
 import Input from 'js/ui/spectre/input';
 import Modal from 'js/ui/spectre/modal';
+
 import Icon from 'js/ui/components/atomic/icon';
 import Flex from 'js/ui/components/layout/flex';
 import SideMenu from 'js/ui/components/view-layout/side-menu';
+
 import { popPortal, pushPortal } from 'js/ui/portal';
 
 type FileBrowserProps = {

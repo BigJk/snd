@@ -3,6 +3,7 @@ import { flatMap } from 'lodash-es';
 
 import Icon from 'js/ui/components/atomic/icon';
 import Flex from 'js/ui/components/layout/flex';
+
 import { dialogWarning } from 'js/ui/toast';
 
 type BreadcrumbItem = {

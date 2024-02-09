@@ -13,6 +13,7 @@ import { Package, Repo } from 'src/js/types/public-list';
 import * as API from 'js/core/api';
 import store from 'js/core/store';
 
+import Button from 'js/ui/spectre/button';
 import IconButton from 'js/ui/spectre/icon-button';
 import Input from 'js/ui/spectre/input';
 import Loader from 'js/ui/spectre/loader';
@@ -79,6 +80,18 @@ export default (): m.Component<WorkshopRepoProps> => {
 		inDownload: false,
 	};
 
+	const filtered = () =>
+		state.packages.filter((p) => {
+			if (state.selectedType && p.type !== state.selectedType) {
+				return false;
+			}
+			return !(
+				state.search &&
+				!getName(p).toLowerCase().includes(state.search.toLowerCase()) &&
+				!getDescription(p).toLowerCase().includes(state.search.toLowerCase())
+			);
+		});
+
 	const fetchRepo = (url: string) => {
 		API.exec<Repo>(API.GET_REPO, url)
 			.then((repo) => {
@@ -113,7 +126,7 @@ export default (): m.Component<WorkshopRepoProps> => {
 		if (state.inDownload) return;
 		state.inDownload = true;
 
-		API.exec<void>(
+		return API.exec<void>(
 			API.IMPORT_PACKAGE,
 			url,
 			state.repo?.versions[state.selectedVersion],
@@ -135,6 +148,16 @@ export default (): m.Component<WorkshopRepoProps> => {
 				state.inDownload = false;
 				m.redraw();
 			});
+	};
+
+	const downloadAll = async (attrs: WorkshopRepoProps) => {
+		if (state.inDownload) return;
+
+		for (const p of filtered()) {
+			if (!exists(p)) {
+				await download(atob(attrs.repo), p);
+			}
+		}
 	};
 
 	/**
@@ -251,47 +274,34 @@ export default (): m.Component<WorkshopRepoProps> => {
 					selected: state.selectedType,
 					onInput: (e) => (state.selectedType = e.value),
 				}),
+				m('div', m(Button, { intend: 'success', onClick: () => downloadAll(attrs) }, 'Download All')),
 			]),
 			m(
 				'div.br2.ba.b--black-10.overflow-auto.flex-grow-1.h-100.ph3.bg-white',
 				state.loading
 					? m(Flex, { justify: 'center', items: 'center', className: '.h-100' }, m(Loader, { big: true }))
-					: state.packages
-							.filter((p) => {
-								if (state.selectedType && p.type !== state.selectedType) {
-									return false;
-								}
-								if (
-									state.search &&
-									!getName(p).toLowerCase().includes(state.search.toLowerCase()) &&
-									!getDescription(p).toLowerCase().includes(state.search.toLowerCase())
-								) {
-									return false;
-								}
-								return true;
-							})
-							.map((p) =>
+					: filtered().map((p) =>
+							m(
+								HorizontalProperty,
+								{
+									label: `${startCase(p.type)}: ${getName(p)}`,
+									description: getDescription(p) ?? 'No description available...',
+									bottomBorder: true,
+									fullSize: true,
+								},
 								m(
-									HorizontalProperty,
+									IconButton,
 									{
-										label: `${startCase(p.type)}: ${getName(p)}`,
-										description: getDescription(p) ?? 'No description available...',
-										bottomBorder: true,
-										fullSize: true,
+										intend: exists(p) ? 'success' : 'primary',
+										icon: 'download',
+										disabled: state.inDownload,
+										loading: state.inDownload,
+										onClick: () => download(atob(attrs.repo), p),
 									},
-									m(
-										IconButton,
-										{
-											intend: exists(p) ? 'success' : 'primary',
-											icon: 'download',
-											disabled: state.inDownload,
-											loading: state.inDownload,
-											onClick: () => download(atob(attrs.repo), p),
-										},
-										exists(p) ? 'Re-Download' : 'Download',
-									),
+									exists(p) ? 'Re-Download' : 'Download',
 								),
 							),
+					  ),
 			),
 		]);
 

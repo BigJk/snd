@@ -33,19 +33,19 @@ const pre = `
 			line-height: 1;
 		}
   
-  	::-webkit-scrollbar {
+  	#content::-webkit-scrollbar {
 				width: 0;
 		}
 		
-		::-webkit-scrollbar-track {
+		#content::-webkit-scrollbar-track {
 			background: #f1f1f1;
 		}
 		
-		::-webkit-scrollbar-thumb {
+		#content::-webkit-scrollbar-thumb {
 			background: #c2c2c2;
 		}
 		
-		::-webkit-scrollbar-thumb:hover {
+		#content::-webkit-scrollbar-thumb:hover {
 			background: #d1d1d1;
 		}
   </style>

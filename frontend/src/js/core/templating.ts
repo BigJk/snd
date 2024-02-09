@@ -88,6 +88,7 @@ const rngScript = (seed: any) => `
 		<script src="https://cdn.jsdelivr.net/npm/@dice-roller/rpg-dice-roller@5.2.1/lib/umd/bundle.min.js"></script>
 		<script>
 			window.random = new Math.seedrandom('${seed}');
+			Math.random = window.random;
 			
 			rpgDiceRoller.NumberGenerator.generator.engine = {
 			  next () {
@@ -203,7 +204,7 @@ export const render = (
 		};
 
 		let additional = '';
-		additional += rngScript(clonedState.config.seed ?? 'test-seed');
+		additional += rngScript(clonedState.config.seed ?? Math.ceil(Math.random() * 500000000));
 		additional += aiScript;
 
 		if (minimal) {

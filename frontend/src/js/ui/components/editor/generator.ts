@@ -147,7 +147,7 @@ export default (): m.Component<GeneratorEditorProps> => {
 								centerContainer: true,
 								render: () =>
 									m(Editor, {
-										current: fillConfigValues(state.config, attrs.generator?.config ?? []),
+										current: state.config,
 										definition: [
 											{
 												key: 'seed',
@@ -159,7 +159,6 @@ export default (): m.Component<GeneratorEditorProps> => {
 											...(attrs.generator ? attrs.generator.config : []),
 										],
 										onChange: (updated) => {
-											console.log(updated);
 											state.config = updated;
 											m.redraw();
 										},

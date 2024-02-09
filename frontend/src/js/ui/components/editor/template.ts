@@ -1,32 +1,30 @@
 import m from 'mithril';
-
 import { debounce } from 'lodash-es';
 
-import Template from 'js/types/template';
 import Entry from 'js/types/entry';
-
+import Template from 'js/types/template';
 import { buildId } from 'src/js/types/basic-info';
+import { fillConfigValues } from 'src/js/types/config';
+import * as API from 'js/core/api';
 import { createNunjucksCompletionProvider } from 'js/core/monaco/completion-nunjucks';
 import { settings } from 'js/core/store';
-import * as API from 'js/core/api';
-import { error, dialogWarning } from 'js/ui/toast';
 import { render } from 'js/core/templating';
 
+import Button from 'js/ui/spectre/button';
+import Label from 'js/ui/spectre/label';
+import Icon from 'js/ui/components/atomic/icon';
+import ConfigCreator from 'js/ui/components/config/creator';
+import Editor from 'js/ui/components/config/editor';
 import BasicInfo from 'js/ui/components/editor/basic-info';
 import Images from 'js/ui/components/editor/images';
+import EntrySelect from 'js/ui/components/entry-select';
 import Flex from 'js/ui/components/layout/flex';
 import Monaco from 'js/ui/components/monaco';
-import Editor from 'js/ui/components/config/editor';
 import PrintPreviewTemplate, { PrintPreviewError } from 'js/ui/components/print-preview-template';
-import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
 import SourceSelect from 'js/ui/components/source-select';
-import Label from 'js/ui/spectre/label';
-import Button from 'js/ui/spectre/button';
-import Icon from 'js/ui/components/atomic/icon';
 import EditorHeader from 'js/ui/components/view-layout/property-header';
-import EntrySelect from 'js/ui/components/entry-select';
-import ConfigCreator from 'js/ui/components/config/creator';
-import { fillConfigValues } from 'src/js/types/config';
+import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
+import { dialogWarning, error } from 'js/ui/toast';
 
 type TemplateEditorProps = {
 	template: Template;

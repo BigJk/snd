@@ -1,9 +1,8 @@
 import m from 'mithril';
 
-import { openFileModal } from 'js/ui/components/modals/file-browser';
 import Button from 'js/ui/spectre/button';
-
 import Config, { ConfigProps } from 'js/ui/components/config/config';
+import { openFileModal } from 'js/ui/components/modals/file-browser';
 
 export default {
 	name: 'FilePath',

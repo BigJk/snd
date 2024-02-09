@@ -1,17 +1,17 @@
 import m from 'mithril';
 
+import PublicList from 'js/types/public-list';
 import * as API from 'js/core/api';
 
-import Base from 'js/ui/components/view-layout/base';
-import { error } from 'js/ui/toast';
-import PublicList from 'js/types/public-list';
-import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
-import Flex from 'js/ui/components/layout/flex';
 import Input from 'js/ui/spectre/input';
 import Icon from 'js/ui/components/atomic/icon';
 import Title from 'js/ui/components/atomic/title';
+import Flex from 'js/ui/components/layout/flex';
 import Grid from 'js/ui/components/layout/grid';
+import Base from 'js/ui/components/view-layout/base';
+import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
 import WorkshopBox from 'js/ui/components/workshop-box';
+import { error } from 'js/ui/toast';
 
 type WorkshopProps = {
 	id: string;

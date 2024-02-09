@@ -1,10 +1,12 @@
 import m from 'mithril';
-import Dropdown from 'js/ui/components/overlay/dropdown';
-import Input from 'js/ui/spectre/input';
-import { sources } from 'js/core/store';
+
 import { buildId } from 'js/types/basic-info';
-import Flex from 'js/ui/components/layout/flex';
+import { sources } from 'js/core/store';
+
+import Input from 'js/ui/spectre/input';
 import Icon from 'js/ui/components/atomic/icon';
+import Flex from 'js/ui/components/layout/flex';
+import Dropdown from 'js/ui/components/overlay/dropdown';
 
 type SourceSelectProps = {
 	sources: string[];

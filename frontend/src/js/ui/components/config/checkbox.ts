@@ -1,8 +1,7 @@
 import m from 'mithril';
 
-import MiniHeader from 'js/ui/components/atomic/mini-header';
 import Checkbox from 'js/ui/spectre/checkbox';
-
+import MiniHeader from 'js/ui/components/atomic/mini-header';
 import Config, { ConfigProps } from 'js/ui/components/config/config';
 
 export default {

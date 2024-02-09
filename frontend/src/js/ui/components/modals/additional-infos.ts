@@ -1,10 +1,10 @@
 import m from 'mithril';
 
-import { popPortal, pushPortal } from 'js/ui/portal';
-import Modal from 'js/ui/spectre/modal';
 import Input from 'js/ui/spectre/input';
-import Flex from 'js/ui/components/layout/flex';
+import Modal from 'js/ui/spectre/modal';
 import TextArea from 'js/ui/spectre/text-area';
+import Flex from 'js/ui/components/layout/flex';
+import { popPortal, pushPortal } from 'js/ui/portal';
 
 type AdditionalInfosProps = {
 	type: 'generator' | 'template';

@@ -1,5 +1,4 @@
 import m from 'mithril';
-
 import { startsWith } from 'lodash-es';
 
 import { css, keyframes } from 'goober';

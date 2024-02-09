@@ -1,7 +1,6 @@
 import m from 'mithril';
 
 import Loader from 'js/ui/spectre/loader';
-
 import Icon from 'js/ui/components/atomic/icon';
 import Flex from 'js/ui/components/layout/flex';
 

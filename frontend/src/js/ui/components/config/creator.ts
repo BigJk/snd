@@ -1,14 +1,16 @@
 import m from 'mithril';
+
 import { ConfigValue } from 'js/types/config';
-import Input from 'js/ui/spectre/input';
+
 import Button from 'js/ui/spectre/button';
 import IconButton from 'js/ui/spectre/icon-button';
+import Input from 'js/ui/spectre/input';
+import Select from 'js/ui/spectre/select';
 import Icon from 'js/ui/components/atomic/icon';
+import MiniHeader from 'js/ui/components/atomic/mini-header';
+import types from 'js/ui/components/config/types';
 import Flex from 'js/ui/components/layout/flex';
 import Spoiler from 'js/ui/components/view-layout/spoiler';
-import types from 'js/ui/components/config/types';
-import Select from 'js/ui/spectre/select';
-import MiniHeader from 'js/ui/components/atomic/mini-header';
 
 type ConfigValueID = ConfigValue & { _id?: string };
 

@@ -3,25 +3,22 @@ import m from 'mithril';
 import { css } from 'goober';
 
 import Settings, { Commands } from 'js/types/settings';
-
+import * as API from 'js/core/api';
 import store, { printer, settings } from 'js/core/store';
 
-import * as API from 'js/core/api';
-
-import FullscreenLoader from 'js/ui/components/portal/fullscreen-loader';
+import Button from 'js/ui/spectre/button';
+import IconButton from 'js/ui/spectre/icon-button';
+import Input from 'js/ui/spectre/input';
+import Select from 'js/ui/spectre/select';
 import Title from 'js/ui/components/atomic/title';
+import HorizontalProperty from 'js/ui/components/horizontal-property';
 import Flex from 'js/ui/components/layout/flex';
+import FullscreenLoader from 'js/ui/components/portal/fullscreen-loader';
 import Base from 'js/ui/components/view-layout/base';
 import PropertyEdit, { PropertyEditProps } from 'js/ui/components/view-layout/property-edit';
 import PropertyHeader from 'js/ui/components/view-layout/property-header';
-import IconButton from 'js/ui/spectre/icon-button';
-import Select from 'js/ui/spectre/select';
-import HorizontalProperty from 'js/ui/components/horizontal-property';
-import Button from 'js/ui/spectre/button';
-import Input from 'js/ui/spectre/input';
-
-import { error, neutral, success } from 'js/ui/toast';
 import { clearPortal, setPortal } from 'js/ui/portal';
+import { error, neutral, success } from 'js/ui/toast';
 
 const containerClass = css`
 	max-width: 1000px;

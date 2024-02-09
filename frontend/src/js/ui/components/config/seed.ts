@@ -2,7 +2,6 @@ import m from 'mithril';
 
 import Button from 'js/ui/spectre/button';
 import Input from 'js/ui/spectre/input';
-
 import Icon from 'js/ui/components/atomic/icon';
 import Config, { ConfigProps } from 'js/ui/components/config/config';
 import Flex from 'js/ui/components/layout/flex';

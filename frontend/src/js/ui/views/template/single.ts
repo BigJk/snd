@@ -1,13 +1,11 @@
 import m from 'mithril';
-
 import { debounce } from 'lodash-es';
 
 import { buildId } from 'js/types/basic-info';
 import Entry from 'js/types/entry';
 import Template, { sanitizeConfig } from 'js/types/template';
-
-import * as API from 'js/core/api';
 import * as AI from 'js/core/ai';
+import * as API from 'js/core/api';
 import store, { settings } from 'js/core/store';
 import { render } from 'js/core/templating';
 
@@ -16,22 +14,20 @@ import IconButton from 'js/ui/spectre/icon-button';
 import Input from 'js/ui/spectre/input';
 import Loader from 'js/ui/spectre/loader';
 import TextArea from 'js/ui/spectre/text-area';
-
 import Tooltip from 'js/ui/components/atomic/tooltip';
 import Editor from 'js/ui/components/config/editor';
+import EntryListItem from 'js/ui/components/entry-list-item';
 import Flex from 'js/ui/components/layout/flex';
+import { openAdditionalInfosModal } from 'js/ui/components/modals/additional-infos';
+import { openFileModal } from 'js/ui/components/modals/file-browser';
+import ImportExport from 'js/ui/components/modals/imexport/import-export';
+import { openDevTools } from 'js/ui/components/print-preview';
 import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
 import PaginatedContent from 'js/ui/components/view-layout/paginated-content';
 import SidebarPrintPage from 'js/ui/components/view-layout/sidebar-print-page';
-
-import { error, success, dialogWarning } from 'js/ui/toast';
-import EntryListItem from 'js/ui/components/entry-list-item';
-import { openAdditionalInfosModal } from 'js/ui/components/modals/additional-infos';
-import { openFileModal } from 'js/ui/components/modals/file-browser';
 import { setPortal } from 'js/ui/portal';
-import ImportExport from 'js/ui/components/modals/imexport/import-export';
-import { openDevTools } from 'js/ui/components/print-preview';
+import { dialogWarning, error, success } from 'js/ui/toast';
 
 const PER_PAGE = 10;
 

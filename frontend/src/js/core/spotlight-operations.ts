@@ -1,4 +1,5 @@
 import m from 'mithril';
+
 import { openDataSourceCreateModal } from 'js/ui/components/modals/create-source';
 
 export type SpotlightOperation = {

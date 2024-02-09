@@ -1,10 +1,11 @@
 import m from 'mithril';
-import Modal from 'js/ui/spectre/modal';
-import { popPortal, pushPortal } from 'js/ui/portal';
-import Flex from 'js/ui/components/layout/flex';
-import Input from 'js/ui/spectre/input';
+
 import Button from 'js/ui/spectre/button';
+import Input from 'js/ui/spectre/input';
+import Modal from 'js/ui/spectre/modal';
 import HorizontalProperty from 'js/ui/components/horizontal-property';
+import Flex from 'js/ui/components/layout/flex';
+import { popPortal, pushPortal } from 'js/ui/portal';
 
 type CreateEditEntrySourceEntryProps = {
 	id?: string;

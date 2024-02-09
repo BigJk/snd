@@ -1,6 +1,7 @@
 import m from 'mithril';
-import Flex from 'js/ui/components/layout/flex';
+
 import Icon from 'js/ui/components/atomic/icon';
+import Flex from 'js/ui/components/layout/flex';
 
 type SpoilerProps = {
 	title: m.Component;

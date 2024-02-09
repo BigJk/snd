@@ -1,7 +1,9 @@
 import m from 'mithril';
-import Dropdown from 'js/ui/components/overlay/dropdown';
-import Input from 'js/ui/spectre/input';
+
 import Entry from 'js/types/entry';
+
+import Input from 'js/ui/spectre/input';
+import Dropdown from 'js/ui/components/overlay/dropdown';
 
 type EntrySelectProps = {
 	className?: string;

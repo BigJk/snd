@@ -1,25 +1,24 @@
 import m from 'mithril';
 
+import { buildId } from 'js/types/basic-info';
 import Generator, { sanitizeConfig } from 'js/types/generator';
-
 import * as API from 'js/core/api';
+import store from 'js/core/store';
 
 import IconButton from 'js/ui/spectre/icon-button';
 import Loader from 'js/ui/spectre/loader';
-import Editor from 'js/ui/components/config/editor';
-import Base from 'js/ui/components/view-layout/base';
-import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
-import SidebarPrintPage from 'js/ui/components/view-layout/sidebar-print-page';
 import Tooltip from 'js/ui/components/atomic/tooltip';
-import { dialogWarning, success, error } from 'js/ui/toast';
-import { buildId } from 'js/types/basic-info';
+import Editor from 'js/ui/components/config/editor';
 import Flex from 'js/ui/components/layout/flex';
 import { openAdditionalInfosModal } from 'js/ui/components/modals/additional-infos';
 import { openFileModal } from 'js/ui/components/modals/file-browser';
-import { setPortal } from 'js/ui/portal';
 import ImportExport from 'js/ui/components/modals/imexport/import-export';
-import store from 'js/core/store';
 import { openDevTools } from 'js/ui/components/print-preview';
+import Base from 'js/ui/components/view-layout/base';
+import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
+import SidebarPrintPage from 'js/ui/components/view-layout/sidebar-print-page';
+import { setPortal } from 'js/ui/portal';
+import { dialogWarning, error, success } from 'js/ui/toast';
 
 type SingleGeneratorProps = {
 	id: string;

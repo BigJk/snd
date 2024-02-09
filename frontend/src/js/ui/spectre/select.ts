@@ -1,8 +1,7 @@
 import m from 'mithril';
 
-import Tippy from 'tippy.js';
-
 import { css } from 'goober';
+import Tippy from 'tippy.js';
 
 const dropdownStyle = css`
 	border: 0.05rem solid #bcc3ce;

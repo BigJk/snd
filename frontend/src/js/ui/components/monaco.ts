@@ -1,8 +1,8 @@
 import m from 'mithril';
 
 import { emmetHTML } from 'emmet-monaco-es';
-import * as monaco from 'monaco-editor';
 import { css } from 'goober';
+import * as monaco from 'monaco-editor';
 
 import guid from 'js/core/guid';
 import type { CompletionFunction } from 'js/core/monaco/completion';

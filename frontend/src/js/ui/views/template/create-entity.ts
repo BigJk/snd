@@ -1,25 +1,25 @@
 import m from 'mithril';
-
 import { get, set } from 'lodash-es';
 
 import { buildId } from 'js/types/basic-info';
-import Template from 'js/types/template';
 import Entry from 'js/types/entry';
+import Template from 'js/types/template';
 import * as API from 'js/core/api';
-import { SchemaRoot, buildSchema, readableName, initialData, objectPathToSchema, SchemaNode } from 'js/core/schema';
+import { buildSchema, initialData, objectPathToSchema, readableName, SchemaNode, SchemaRoot } from 'js/core/schema';
+
 import IconButton from 'js/ui/spectre/icon-button';
+import Input from 'js/ui/spectre/input';
 import Loader from 'js/ui/spectre/loader';
-import EditorHeader from 'js/ui/components/view-layout/property-header';
-import Base from 'js/ui/components/view-layout/base';
-import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
-import SidebarPrintPage from 'js/ui/components/view-layout/sidebar-print-page';
-import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
+import Icon from 'js/ui/components/atomic/icon';
 import types from 'js/ui/components/config/types';
 import HorizontalProperty from 'js/ui/components/horizontal-property';
 import Flex from 'js/ui/components/layout/flex';
-import Icon from 'js/ui/components/atomic/icon';
+import Base from 'js/ui/components/view-layout/base';
+import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
+import EditorHeader from 'js/ui/components/view-layout/property-header';
+import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
+import SidebarPrintPage from 'js/ui/components/view-layout/sidebar-print-page';
 import { error } from 'js/ui/toast';
-import Input from 'js/ui/spectre/input';
 
 type CreateTemplateEntityProps = {
 	id: string;

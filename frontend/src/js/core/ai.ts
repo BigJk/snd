@@ -1,9 +1,9 @@
-import { settings } from 'js/core/store';
+import Entry from 'js/types/entry';
+import Template from 'js/types/template';
 import * as API from 'js/core/api';
 import { AI_GENERATE } from 'js/core/api';
-import Template from 'js/types/template';
-import Entry from 'js/types/entry';
 import { safeCall } from 'js/core/safe';
+import { settings } from 'js/core/store';
 
 /**
  * Extracts the JSON from the AI response. Sometimes the response is wrapped in a explanation text,

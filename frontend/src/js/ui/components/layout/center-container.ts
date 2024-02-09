@@ -1,5 +1,7 @@
 import m from 'mithril';
+
 import { css } from 'goober';
+
 import Flex from 'js/ui/components/layout/flex';
 
 const containerClass = css`

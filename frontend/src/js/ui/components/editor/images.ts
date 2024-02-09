@@ -1,5 +1,4 @@
 import m from 'mithril';
-
 import { map } from 'lodash-es';
 
 import { css } from 'goober';

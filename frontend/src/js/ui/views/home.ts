@@ -3,16 +3,15 @@ import m from 'mithril';
 import store from 'js/core/store';
 
 import Button from 'js/ui/spectre/button';
-
+import Icon from 'js/ui/components/atomic/icon';
 import Logo from 'js/ui/components/atomic/logo';
 import Title from 'js/ui/components/atomic/title';
+import Box from 'js/ui/components/box';
 import BoxVersion from 'js/ui/components/box-version';
 import DiscordWidget from 'js/ui/components/discord-widget';
 import Hero from 'js/ui/components/hero';
-import Icon from 'js/ui/components/atomic/icon';
 import Flex from 'js/ui/components/layout/flex';
 import Base from 'js/ui/components/view-layout/base';
-import Box from 'js/ui/components/box';
 
 export default (): m.Component => ({
 	view(vnode) {

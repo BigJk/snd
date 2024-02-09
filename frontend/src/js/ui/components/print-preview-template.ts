@@ -1,15 +1,12 @@
 import m from 'mithril';
-
 import { cloneDeep, debounce, isEqual } from 'lodash-es';
 
 import Generator from 'js/types/generator';
 import Template from 'js/types/template';
-
 import store, { settings } from 'js/core/store';
 import { containsAi, render } from 'js/core/templating';
 
 import Button from 'js/ui/spectre/button';
-
 import Icon from 'js/ui/components/atomic/icon';
 import Flex from 'js/ui/components/layout/flex';
 import PrintPreview from 'js/ui/components/print-preview';

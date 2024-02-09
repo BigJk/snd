@@ -2,8 +2,8 @@ import m from 'mithril';
 
 import Template from 'js/types/template';
 import * as API from 'js/core/api';
-import { render } from 'js/core/templating';
 import { settings } from 'js/core/store';
+import { render } from 'js/core/templating';
 
 type ExternPrintProps = {
 	id: string;

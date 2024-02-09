@@ -2,7 +2,6 @@ import m from 'mithril';
 
 import { buildId } from 'js/types/basic-info';
 import Generator, { createEmptyGenerator } from 'js/types/generator';
-
 import * as API from 'js/core/api';
 import store from 'js/core/store';
 
@@ -11,7 +10,6 @@ import Loader from 'js/ui/spectre/loader';
 import GeneratorEditor from 'js/ui/components/editor/generator';
 import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
-
 import { error } from 'js/ui/toast';
 
 type GeneratorCreateProps = {

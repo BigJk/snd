@@ -1,5 +1,4 @@
 import m from 'mithril';
-
 import { isArray } from 'lodash-es';
 
 /**

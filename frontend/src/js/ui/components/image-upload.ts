@@ -5,7 +5,6 @@ import guid from 'js/core/guid';
 
 import Button from 'js/ui/spectre/button';
 import Input from 'js/ui/spectre/input';
-
 import Icon from 'js/ui/components/atomic/icon';
 import Flex from 'js/ui/components/layout/flex';
 

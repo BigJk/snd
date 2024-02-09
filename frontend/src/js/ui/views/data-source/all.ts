@@ -1,24 +1,21 @@
 import m from 'mithril';
-
 import { groupBy, map } from 'lodash-es';
 
 import { buildId } from 'js/types/basic-info';
-
+import * as API from 'js/core/api';
 import store, { generators, sources } from 'js/core/store';
 
+import IconButton from 'js/ui/spectre/icon-button';
 import Input from 'js/ui/spectre/input';
 import Icon from 'js/ui/components/atomic/icon';
 import Title from 'js/ui/components/atomic/title';
 import Flex from 'js/ui/components/layout/flex';
 import Grid from 'js/ui/components/layout/grid';
+import { openDataSourceCreateModal } from 'js/ui/components/modals/create-source';
 import ImportExport from 'js/ui/components/modals/imexport/import-export';
 import SourceBox from 'js/ui/components/source-box';
 import Base from 'js/ui/components/view-layout/base';
-import * as API from 'js/core/api';
-
 import { setPortal } from 'js/ui/portal';
-import IconButton from 'js/ui/spectre/icon-button';
-import { openDataSourceCreateModal } from 'js/ui/components/modals/create-source';
 
 export default (): m.Component => {
 	let searchValue = '';

@@ -9,10 +9,11 @@ import m from 'mithril';
 import store, { settings } from 'js/core/store';
 
 import Spotlight from 'js/ui/components/portal/spotlight';
-
 import DataSourceAll from 'js/ui/views/data-source/all';
 import DataSourceSingle from 'js/ui/views/data-source/single';
 import Devices from 'js/ui/views/devices';
+import ExternPrintGenerator from 'js/ui/views/extern-print/generator';
+import ExternPrintTemplate from 'js/ui/views/extern-print/template';
 import GeneratorAll from 'js/ui/views/generator/all';
 import GeneratorCreate from 'js/ui/views/generator/create';
 import GeneratorEdit from 'js/ui/views/generator/edit';
@@ -25,11 +26,8 @@ import TemplateCreateEntity from 'js/ui/views/template/create-entity';
 import TemplateEdit from 'js/ui/views/template/edit';
 import TemplateSingle from 'js/ui/views/template/single';
 import WorkshopAll from 'js/ui/views/workshop/all';
-import WorkshopSingle from 'js/ui/views/workshop/single';
 import WorkshopRepo from 'js/ui/views/workshop/repo';
-import ExternPrintTemplate from 'js/ui/views/extern-print/template';
-import ExternPrintGenerator from 'js/ui/views/extern-print/generator';
-
+import WorkshopSingle from 'js/ui/views/workshop/single';
 import * as Portal from 'js/ui/portal';
 import * as Toast from 'js/ui/toast';
 

@@ -2,22 +2,21 @@ import m from 'mithril';
 
 import { fillConfigValues } from 'js/types/config';
 import Generator, { sanitizeConfig } from 'js/types/generator';
-
 import { createNunjucksCompletionProvider } from 'js/core/monaco/completion-nunjucks';
 import { settings } from 'js/core/store';
 
+import Label from 'js/ui/spectre/label';
+import Icon from 'js/ui/components/atomic/icon';
+import ConfigCreator from 'js/ui/components/config/creator';
 import Editor from 'js/ui/components/config/editor';
 import BasicInfo from 'js/ui/components/editor/basic-info';
 import Images from 'js/ui/components/editor/images';
 import Flex from 'js/ui/components/layout/flex';
 import Monaco from 'js/ui/components/monaco';
 import PrintPreviewTemplate, { PrintPreviewError } from 'js/ui/components/print-preview-template';
-import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
-import EditorHeader from 'js/ui/components/view-layout/property-header';
-import ConfigCreator from 'js/ui/components/config/creator';
 import SourceSelect from 'js/ui/components/source-select';
-import Label from 'js/ui/spectre/label';
-import Icon from 'js/ui/components/atomic/icon';
+import EditorHeader from 'js/ui/components/view-layout/property-header';
+import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
 
 type GeneratorEditorProps = {
 	generator: Generator;

@@ -1,7 +1,7 @@
 import m from 'mithril';
 
-import Flex from 'js/ui/components/layout/flex';
 import IconButton from 'js/ui/spectre/icon-button';
+import Flex from 'js/ui/components/layout/flex';
 
 type PaginatedContentProps<T> = {
 	perPage: number;

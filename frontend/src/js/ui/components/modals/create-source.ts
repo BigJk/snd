@@ -1,12 +1,14 @@
 import m from 'mithril';
-import Modal from 'js/ui/spectre/modal';
-import { popPortal, pushPortal } from 'js/ui/portal';
-import BasicInfo from 'js/ui/components/editor/basic-info';
-import Button from 'js/ui/spectre/button';
-import * as API from 'js/core/api';
-import { error } from 'js/ui/toast';
-import store from 'js/core/store';
+
 import { buildId } from 'js/types/basic-info';
+import * as API from 'js/core/api';
+import store from 'js/core/store';
+
+import Button from 'js/ui/spectre/button';
+import Modal from 'js/ui/spectre/modal';
+import BasicInfo from 'js/ui/components/editor/basic-info';
+import { popPortal, pushPortal } from 'js/ui/portal';
+import { error } from 'js/ui/toast';
 
 type CreateSourceProps = {
 	name: string;

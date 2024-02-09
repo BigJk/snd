@@ -1,27 +1,27 @@
 import m from 'mithril';
-
-import * as API from 'js/core/api';
-
 import { startCase } from 'lodash-es';
-import Base from 'js/ui/components/view-layout/base';
-import { error, success } from 'js/ui/toast';
-import { Package, Repo } from 'src/js/types/public-list';
-import Flex from 'js/ui/components/layout/flex';
-import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
-import Loader from 'js/ui/spectre/loader';
-import HorizontalProperty from 'js/ui/components/horizontal-property';
-import Select from 'js/ui/spectre/select';
-import store from 'js/core/store';
-import IconButton from 'js/ui/spectre/icon-button';
-import DataSource from 'js/types/data-source';
-import Generator from 'js/types/generator';
-import Template from 'js/types/template';
-import Input from 'js/ui/spectre/input';
 
 import hljs from 'highlight.js';
 import MarkdownIt from 'markdown-it';
 import MarkdownItReplaceLink from 'markdown-it-replace-link';
+
 import { buildId } from 'js/types/basic-info';
+import DataSource from 'js/types/data-source';
+import Generator from 'js/types/generator';
+import Template from 'js/types/template';
+import { Package, Repo } from 'src/js/types/public-list';
+import * as API from 'js/core/api';
+import store from 'js/core/store';
+
+import IconButton from 'js/ui/spectre/icon-button';
+import Input from 'js/ui/spectre/input';
+import Loader from 'js/ui/spectre/loader';
+import Select from 'js/ui/spectre/select';
+import HorizontalProperty from 'js/ui/components/horizontal-property';
+import Flex from 'js/ui/components/layout/flex';
+import Base from 'js/ui/components/view-layout/base';
+import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
+import { error, success } from 'js/ui/toast';
 
 // @ts-ignore
 const markdown = new MarkdownIt({

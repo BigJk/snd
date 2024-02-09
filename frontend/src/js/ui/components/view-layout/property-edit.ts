@@ -1,12 +1,10 @@
 import m from 'mithril';
-
 import { map } from 'lodash-es';
 
 import Checkbox from 'js/ui/spectre/checkbox';
 import IconButton from 'js/ui/spectre/icon-button';
 import Input from 'js/ui/spectre/input';
 import TextArea from 'js/ui/spectre/text-area';
-
 import Icon from 'js/ui/components/atomic/icon';
 import HorizontalProperty from 'js/ui/components/horizontal-property';
 import Flex from 'js/ui/components/layout/flex';

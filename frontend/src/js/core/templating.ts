@@ -1,13 +1,12 @@
+import { cloneDeep } from 'lodash-es';
+
 import hash from 'object-hash';
 
 import Settings from 'js/types/settings';
-
 // @ts-ignore
 import TemplatingWorker from 'js/workers/templating-worker?worker';
-
 import dither from 'js/core/dither';
 import { ai } from 'js/core/store';
-import { cloneDeep } from 'lodash-es';
 
 type WorkerJob = {
 	hashed: string;

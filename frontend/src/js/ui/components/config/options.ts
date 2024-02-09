@@ -1,9 +1,8 @@
 import m from 'mithril';
 
-import MiniHeader from 'js/ui/components/atomic/mini-header';
 import Input from 'js/ui/spectre/input';
 import Select from 'js/ui/spectre/select';
-
+import MiniHeader from 'js/ui/components/atomic/mini-header';
 import Config, { ConfigProps } from 'js/ui/components/config/config';
 
 export default {

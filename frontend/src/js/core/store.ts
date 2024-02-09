@@ -11,7 +11,6 @@ import PublicList from 'js/types/public-list';
 import Settings, { createEmptySettings } from 'js/types/settings';
 import Template from 'js/types/template';
 import * as Version from 'js/types/version';
-
 import * as API from 'js/core/api';
 import { Operations, SpotlightOperation } from 'js/core/spotlight-operations';
 

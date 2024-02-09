@@ -2,20 +2,17 @@ import m from 'mithril';
 
 import { buildId } from 'js/types/basic-info';
 import Template from 'js/types/template';
-
 import * as API from 'js/core/api';
 
 import IconButton from 'js/ui/spectre/icon-button';
 import Loader from 'js/ui/spectre/loader';
-
+import Tooltip from 'js/ui/components/atomic/tooltip';
 import TemplateEditor from 'js/ui/components/editor/template';
-import Base from 'js/ui/components/view-layout/base';
-import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
-
-import { error } from 'js/ui/toast';
 import Flex from 'js/ui/components/layout/flex';
 import { openDevTools } from 'js/ui/components/print-preview';
-import Tooltip from 'js/ui/components/atomic/tooltip';
+import Base from 'js/ui/components/view-layout/base';
+import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
+import { error } from 'js/ui/toast';
 
 type EditTemplateProps = {
 	id: string;

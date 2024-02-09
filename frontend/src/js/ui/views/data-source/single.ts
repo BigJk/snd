@@ -1,29 +1,28 @@
 import m from 'mithril';
 
+import { buildId } from 'js/types/basic-info';
 import DataSource from 'js/types/data-source';
 import Entry from 'js/types/entry';
-
 import * as API from 'js/core/api';
+import store from 'js/core/store';
 
 import Button from 'js/ui/spectre/button';
-import Loader from 'js/ui/spectre/loader';
-import Base from 'js/ui/components/view-layout/base';
-import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
-import SidebarPage from 'js/ui/components/view-layout/sidebar-page';
-import { dialogWarning, error, success } from 'js/ui/toast';
-import PaginatedContent from 'js/ui/components/view-layout/paginated-content';
+import IconButton from 'js/ui/spectre/icon-button';
 import Input from 'js/ui/spectre/input';
-import EntryListItem from 'js/ui/components/entry-list-item';
-import Monaco from 'js/ui/components/monaco';
+import Loader from 'js/ui/spectre/loader';
 import Icon from 'js/ui/components/atomic/icon';
 import Tooltip from 'js/ui/components/atomic/tooltip';
-import store from 'js/core/store';
+import EntryListItem from 'js/ui/components/entry-list-item';
 import Flex from 'js/ui/components/layout/flex';
-import CreateSourceEntry from 'js/ui/components/modals/source/create-edit-entry';
-import IconButton from 'js/ui/spectre/icon-button';
-import { setPortal } from 'js/ui/portal';
-import { buildId } from 'js/types/basic-info';
 import ImportExport from 'js/ui/components/modals/imexport/import-export';
+import CreateSourceEntry from 'js/ui/components/modals/source/create-edit-entry';
+import Monaco from 'js/ui/components/monaco';
+import Base from 'js/ui/components/view-layout/base';
+import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
+import PaginatedContent from 'js/ui/components/view-layout/paginated-content';
+import SidebarPage from 'js/ui/components/view-layout/sidebar-page';
+import { setPortal } from 'js/ui/portal';
+import { dialogWarning, error, success } from 'js/ui/toast';
 
 type SingleSourceProps = {
 	id: string;

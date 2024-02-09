@@ -1,5 +1,4 @@
 import m from 'mithril';
-
 import { isEqual } from 'lodash-es';
 
 import { css } from 'goober';

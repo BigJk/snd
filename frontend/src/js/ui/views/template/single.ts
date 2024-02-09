@@ -83,6 +83,7 @@ export default (): m.Component<SingleTemplateProps> => {
 					state.template?.listTemplate!,
 					{
 						it: e.data,
+						sources: state.template?.dataSources!,
 						config: {},
 						settings: settings.value,
 						images: {}, // Don't need images for list template

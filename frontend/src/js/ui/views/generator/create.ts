@@ -39,7 +39,7 @@ export default (): m.Component<GeneratorCreateProps> => {
 						confirm: true,
 						confirmText: 'Are you sure you want to leave this page? Changes are not saved.',
 						items: [
-							{ link: '/generator', label: 'Templates' },
+							{ link: '/generator', label: 'Generators' },
 							{ link: `/generator/${state ? buildId('generator', state) : ''}`, label: state ? state.name : m(Loader, { className: '.mh2' }) },
 							{ label: 'Edit' },
 						],

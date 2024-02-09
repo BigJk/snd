@@ -33,7 +33,13 @@ export default (): m.Component<ExternPrintProps> => {
 
 			API.exec<Template>(API.GET_TEMPLATE, state.id)
 				.then((tmpl) => {
-					render(tmpl.printTemplate, { it: state.json, images: tmpl.images, config: JSON.parse(atob(attrs.config)), settings: settings.value })
+					render(tmpl.printTemplate, {
+						it: state.json,
+						images: tmpl.images,
+						sources: tmpl.dataSources,
+						config: JSON.parse(atob(attrs.config)),
+						settings: settings.value,
+					})
 						.then((res) => {
 							state.tmpl = res;
 						})

@@ -144,6 +144,7 @@ const aiScript = `
 export type TemplateState = {
 	it: any;
 	config: any;
+	sources: string[];
 	settings: Settings;
 	images: Record<string, string>;
 };
@@ -152,8 +153,9 @@ export type TemplateState = {
  * State object for generator rendering.
  */
 export type GeneratorState = {
-	settings: Settings;
 	config: any;
+	sources: string[];
+	settings: Settings;
 	images: Record<string, string>;
 };
 

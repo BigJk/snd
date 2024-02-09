@@ -92,7 +92,8 @@ export default (): m.Component<GeneratorEditorProps> => {
 									m('div.ph3', [
 										m(EditorHeader, {
 											title: 'Data Sources',
-											description: 'Add and remove data sources. Entries of these data sources will be linked to this template.',
+											description:
+												'Add and remove static data sources that should not be configurable by the user. Available under the "sources" variable in the template.',
 										}), //
 										m(
 											'div.mb3',
@@ -181,6 +182,7 @@ export default (): m.Component<GeneratorEditorProps> => {
 											config: state.config,
 											images: attrs.generator.images,
 											settings: settings.value,
+											sources: attrs.generator.dataSources,
 										}),
 										errors: state.errors,
 										onChange: (value) => {

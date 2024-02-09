@@ -89,6 +89,7 @@ export default (): m.Component<TemplateEditorProps> => {
 			val,
 			{
 				it: attrs.template.skeletonData,
+				sources: attrs.template.dataSources,
 				config: state.config,
 				settings: settings.value,
 				images: {},
@@ -348,6 +349,7 @@ export default (): m.Component<TemplateEditorProps> => {
 											it: attrs.template.skeletonData,
 											images: attrs.template.images,
 											settings: settings.value,
+											sources: attrs.template.dataSources,
 										}),
 										onChange: (value) => attrs.onChange({ ...attrs.template, printTemplate: value }),
 									}),
@@ -376,6 +378,7 @@ export default (): m.Component<TemplateEditorProps> => {
 													it: attrs.template.skeletonData,
 													images: attrs.template.images,
 													settings: settings.value,
+													sources: attrs.template.dataSources,
 												}),
 												onChange: (value) => {
 													attrs.onChange({ ...attrs.template, listTemplate: value });

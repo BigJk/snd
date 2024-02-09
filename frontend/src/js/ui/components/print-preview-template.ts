@@ -70,6 +70,7 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 		render(printTemplate ?? '', {
 			it: it ?? {},
 			config: attrs.config ?? {},
+			sources: attrs.generator?.dataSources ?? attrs.template?.dataSources ?? [],
 			settings: settings.value,
 			images: attrs.template?.images ?? attrs.generator?.images ?? {},
 			aiEnabled: aiEnabled,

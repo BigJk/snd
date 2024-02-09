@@ -25,6 +25,14 @@ const buildLabel = (context: any, path: string) => {
 	return label;
 };
 
+const buildType = (value: any) => {
+	const type = typeof value;
+	if (type === 'object' && Array.isArray(value)) {
+		return 'array';
+	}
+	return type;
+};
+
 /**
  * Create a completion provider for Nunjucks templates.
  * @param context The context object containing the variables that are available in the template.
@@ -33,7 +41,7 @@ export const createNunjucksCompletionProvider = (context: any): CompletionFuncti
 	// Context is an object. We want to recursively create a string array with the paths to all the fields in the context object.
 	// We will use this to easily check if the word at the cursor matches any of the fields.
 	// Example: [a.b.c, a.b.d, a.e, f]
-	let contextFields: string[] = [];
+	let contextFields: string[] = [...Object.keys(context)];
 	let contextFieldPaths = (context: any, path: string) => {
 		if (typeof context === 'object') {
 			for (let key in context) {
@@ -49,7 +57,9 @@ export const createNunjucksCompletionProvider = (context: any): CompletionFuncti
 				}
 			}
 		} else {
-			contextFields.push(path);
+			if (!contextFields.includes(path)) {
+				contextFields.push(path);
+			}
 		}
 	};
 	contextFieldPaths(context, '');
@@ -110,7 +120,7 @@ export const createNunjucksCompletionProvider = (context: any): CompletionFuncti
 						kind: monaco.languages.CompletionItemKind.Field,
 						insertText: field,
 						range: range,
-						detail: typeof get(context, field),
+						detail: buildType(get(context, field)),
 					}));
 			}),
 		);

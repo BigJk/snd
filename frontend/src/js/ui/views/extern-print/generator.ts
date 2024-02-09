@@ -35,7 +35,13 @@ export default (): m.Component<ExternPrintProps> => {
 
 			API.exec<Generator>(API.GET_GENERATOR, state.id)
 				.then((gen) => {
-					render(gen.printTemplate, { it: state.json, images: gen.images, config: JSON.parse(atob(attrs.config)), settings: settings.value })
+					render(gen.printTemplate, {
+						it: state.json,
+						sources: gen.dataSources,
+						images: gen.images,
+						config: JSON.parse(atob(attrs.config)),
+						settings: settings.value,
+					})
 						.then((res) => {
 							state.gen = res;
 						})

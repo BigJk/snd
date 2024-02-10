@@ -3,10 +3,10 @@ package imexport
 import (
 	"errors"
 	"fmt"
-	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/imexport"
+	"github.com/BigJk/snd/rpc/bind"
 	"github.com/labstack/echo/v4"
 )
 
@@ -74,13 +74,13 @@ var sourceExports = []DataSourceExport{
 
 // RegisterDataSourceExports registers all data source exports.
 func RegisterDataSourceExports(route *echo.Group, db database.Database) {
-	route.POST("/exportsSource", echo.WrapHandler(nra.MustBind(func() ([]DataSourceExport, error) {
+	bind.MustBind(route, "/exportsSource", func() ([]DataSourceExport, error) {
 		return sourceExports, nil
-	})))
+	})
 
 	for i := range sourceExports {
 		exportFunc := sourceExports[i].Func
-		route.POST("/exportsSource"+sourceExports[i].RPCName, echo.WrapHandler(nra.MustBind(func(id string, args []any) (string, error) {
+		bind.MustBind(route, "/exportsSource"+sourceExports[i].RPCName, func(id string, args []any) (string, error) {
 			source, err := db.GetSource(id)
 			if err != nil {
 				return "", err
@@ -93,6 +93,6 @@ func RegisterDataSourceExports(route *echo.Group, db database.Database) {
 
 			return exportFunc(source, entries, args)
 
-		})))
+		})
 	}
 }

@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/imexport"
+	"github.com/BigJk/snd/rpc/bind"
 	rpcImexport "github.com/BigJk/snd/rpc/imexport"
 	"net/http"
 
-	"github.com/BigJk/nra"
 	"github.com/labstack/echo/v4"
 )
 
 func RegisterTemplate(route *echo.Group, extern *echo.Group, db database.Database) {
-	route.POST("/saveTemplate", echo.WrapHandler(nra.MustBind(db.SaveTemplate)))
-	route.POST("/deleteTemplate", echo.WrapHandler(nra.MustBind(db.DeleteTemplate)))
-	route.POST("/getTemplates", echo.WrapHandler(nra.MustBind(db.GetTemplates)))
-	route.POST("/getTemplate", echo.WrapHandler(nra.MustBind(db.GetTemplate)))
+	bind.MustBind(route, "/saveTemplate", db.SaveTemplate)
+	bind.MustBind(route, "/deleteTemplate", db.DeleteTemplate)
+	bind.MustBind(route, "/getTemplates", db.GetTemplates)
+	bind.MustBind(route, "/getTemplate", db.GetTemplate)
 
 	// ZIP export route so export is possible in headless mode
 	route.GET("/export/template/zip/:id", func(c echo.Context) error {

@@ -1,30 +1,30 @@
 package rpc
 
 import (
+	"github.com/BigJk/snd/rpc/bind"
 	"strings"
 
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/samber/lo"
 
-	"github.com/BigJk/nra"
 	"github.com/labstack/echo/v4"
 )
 
 func RegisterEntry(route *echo.Group, db database.Database) {
-	route.POST("/getEntries", echo.WrapHandler(nra.MustBind(db.GetEntries)))
-	route.POST("/saveEntry", echo.WrapHandler(nra.MustBind(db.SaveEntry)))
-	route.POST("/deleteEntry", echo.WrapHandler(nra.MustBind(db.DeleteEntry)))
-	route.POST("/deleteEntries", echo.WrapHandler(nra.MustBind(db.DeleteEntries)))
-	route.POST("/countEntries", echo.WrapHandler(nra.MustBind(db.CountEntries)))
-	route.POST("/getEntry", echo.WrapHandler(nra.MustBind(db.GetEntry)))
+	bind.MustBind(route, "/getEntries", db.GetEntries)
+	bind.MustBind(route, "/saveEntry", db.SaveEntry)
+	bind.MustBind(route, "/deleteEntry", db.DeleteEntry)
+	bind.MustBind(route, "/deleteEntries", db.DeleteEntries)
+	bind.MustBind(route, "/countEntries", db.CountEntries)
+	bind.MustBind(route, "/getEntry", db.GetEntry)
 
 	type EntrySource struct {
 		snd.Entry
 		Source string `json:"source"`
 	}
 
-	route.POST("/getEntriesWithSources", echo.WrapHandler(nra.MustBind(func(id string) ([]EntrySource, error) {
+	bind.MustBind(route, "/getEntriesWithSources", func(id string) ([]EntrySource, error) {
 		var dataSources []string
 		var entriesSources []EntrySource
 
@@ -73,9 +73,9 @@ func RegisterEntry(route *echo.Group, db database.Database) {
 		}
 
 		return entriesSources, nil
-	})))
+	})
 
-	route.POST("/copyEntries", echo.WrapHandler(nra.MustBind(func(from string, to string) error {
+	bind.MustBind(route, "/copyEntries", func(from string, to string) error {
 		entries, err := db.GetEntries(from)
 		if err != nil {
 			return err
@@ -88,5 +88,5 @@ func RegisterEntry(route *echo.Group, db database.Database) {
 		}
 
 		return nil
-	})))
+	})
 }

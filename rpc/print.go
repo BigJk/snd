@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/BigJk/snd/rpc/bind"
 	"image"
 	"image/png"
 	"io/ioutil"
@@ -20,7 +21,6 @@ import (
 	"github.com/BigJk/snd/database"
 	"github.com/patrickmn/go-cache"
 
-	"github.com/BigJk/nra"
 	"github.com/BigJk/snd/log"
 	"github.com/BigJk/snd/printing"
 	"github.com/BigJk/snd/rendering"
@@ -234,7 +234,7 @@ func RegisterPrint(route *echo.Group, extern *echo.Group, db database.Database, 
 		return c.HTML(http.StatusOK, val.(string))
 	})
 
-	route.POST("/getPrinter", echo.WrapHandler(nra.MustBind(func() (map[string]string, error) {
+	bind.MustBind(route, "/getPrinter", func() (map[string]string, error) {
 		printerNames := map[string]string{}
 
 		for k, v := range printer {
@@ -242,9 +242,9 @@ func RegisterPrint(route *echo.Group, extern *echo.Group, db database.Database, 
 		}
 
 		return printerNames, nil
-	})))
+	})
 
-	route.POST("/getAvailablePrinter", echo.WrapHandler(nra.MustBind(func() (map[string]map[string]string, error) {
+	bind.MustBind(route, "/getAvailablePrinter", func() (map[string]map[string]string, error) {
 		available := map[string]map[string]string{}
 
 		for k, v := range printer {
@@ -256,13 +256,13 @@ func RegisterPrint(route *echo.Group, extern *echo.Group, db database.Database, 
 		}
 
 		return available, nil
-	})))
+	})
 
-	route.POST("/print", echo.WrapHandler(nra.MustBind(func(html string) error {
+	bind.MustBind(route, "/print", func(html string) error {
 		return print(db, printer, html)
-	})))
+	})
 
-	route.POST("/screenshot", echo.WrapHandler(nra.MustBind(func(html string, file string) error {
+	bind.MustBind(route, "/screenshot", func(html string, file string) error {
 		// Get current settings
 		settings, err := db.GetSettings()
 		if err != nil {
@@ -293,12 +293,12 @@ func RegisterPrint(route *echo.Group, extern *echo.Group, db database.Database, 
 		}
 
 		return ioutil.WriteFile(file, buf.Bytes(), 0666)
-	})))
+	})
 
-	route.POST("/previewCache", echo.WrapHandler(nra.MustBind(func(id string, html string) (string, error) {
+	bind.MustBind(route, "/previewCache", func(id string, html string) (string, error) {
 		renderCache.SetDefault(id, html)
 		return fmt.Sprintf("http://127.0.0.1:7123/api/html/%s", id), nil
-	})))
+	})
 
 	//
 	//	External API Routes

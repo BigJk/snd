@@ -2,7 +2,7 @@ package rpc
 
 import (
 	"errors"
-	"github.com/BigJk/nra"
+	"github.com/BigJk/snd/rpc/bind"
 	"github.com/labstack/echo/v4"
 	"github.com/vincent-petithory/dataurl"
 	"io/ioutil"
@@ -13,7 +13,7 @@ import (
 // RegisterImageUtilities registers all image utilities.
 func RegisterImageUtilities(route *echo.Group) {
 	// fetchImage fetches a image from a url and returns it as a dataurl.
-	route.POST("/fetchImage", echo.WrapHandler(nra.MustBind(func(url string) (string, error) {
+	bind.MustBind(route, "/fetchImage", func(url string) (string, error) {
 		resp, err := http.Get(url)
 		if err != nil {
 			return "", err
@@ -29,5 +29,5 @@ func RegisterImageUtilities(route *echo.Group) {
 		}
 
 		return dataurl.EncodeBytes(data), nil
-	})))
+	})
 }

@@ -3,10 +3,10 @@ package imexport
 import (
 	"errors"
 	"fmt"
-	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/imexport"
+	"github.com/BigJk/snd/rpc/bind"
 	"github.com/labstack/echo/v4"
 )
 
@@ -74,13 +74,13 @@ var templateExports = []TemplateExport{
 
 // RegisterTemplateExports registers all template exports.
 func RegisterTemplateExports(route *echo.Group, db database.Database) {
-	route.POST("/exportsTemplate", echo.WrapHandler(nra.MustBind(func() ([]TemplateExport, error) {
+	bind.MustBind(route, "/exportsTemplate", func() ([]TemplateExport, error) {
 		return templateExports, nil
-	})))
+	})
 
 	for i := range templateExports {
 		exportFunc := templateExports[i].Func
-		route.POST("/exportsTemplate"+templateExports[i].RPCName, echo.WrapHandler(nra.MustBind(func(id string, args []any) (string, error) {
+		bind.MustBind(route, "/exportsTemplate"+templateExports[i].RPCName, func(id string, args []any) (string, error) {
 			template, err := db.GetTemplate(id)
 			if err != nil {
 				return "", err
@@ -92,6 +92,6 @@ func RegisterTemplateExports(route *echo.Group, db database.Database) {
 			}
 
 			return exportFunc(template, entries, args)
-		})))
+		})
 	}
 }

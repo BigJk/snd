@@ -3,9 +3,9 @@ package rpc
 import (
 	"encoding/json"
 	"errors"
-	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/log"
+	"github.com/BigJk/snd/rpc/bind"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/exp/slices"
 	"io/ioutil"
@@ -101,12 +101,12 @@ func RegisterVersion(route *echo.Group) {
 	}
 
 	// getVersion returns the local version.
-	route.POST("/getVersion", echo.WrapHandler(nra.MustBind(func() (interface{}, error) {
+	bind.MustBind(route, "/getVersion", func() (interface{}, error) {
 		return localVersion, nil
-	})))
+	})
 
 	// newVersion returns the newest version and if it is newer than the local version.
-	route.POST("/newVersion", echo.WrapHandler(nra.MustBind(func() (interface{}, error) {
+	bind.MustBind(route, "/newVersion", func() (interface{}, error) {
 		type resp struct {
 			Tag    *GitHubTag `json:"tag"`
 			Newest bool       `json:"newest"`
@@ -132,5 +132,5 @@ func RegisterVersion(route *echo.Group) {
 		}
 
 		return resp{&tags[0], localVersion.GitCommitHash == tags[0].Commit.Sha}, nil
-	})))
+	})
 }

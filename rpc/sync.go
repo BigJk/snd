@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/BigJk/snd/rpc/bind"
 	"path/filepath"
 	"sync"
 	"time"
 
-	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/imexport"
@@ -55,13 +55,13 @@ func RegisterSync(route *echo.Group, m *melody.Melody, db database.Database) {
 		}
 	}()
 
-	route.POST("/syncActive", echo.WrapHandler(nra.MustBind(func(id string) (bool, error) {
+	bind.MustBind(route, "/syncActive", func(id string) (bool, error) {
 		sessionsMtx.Lock()
 		defer sessionsMtx.Unlock()
 
 		_, ok := sessions[id]
 		return ok, nil
-	})))
+	})
 
 	syncTemplate := func(id string, folder string) (string, error) {
 		// export template
@@ -229,7 +229,7 @@ func RegisterSync(route *echo.Group, m *melody.Melody, db database.Database) {
 		return filepath.Join(folder, tmplFolder), nil
 	}
 
-	route.POST("/syncStart", echo.WrapHandler(nra.MustBind(func(id string, folder string) (string, error) {
+	bind.MustBind(route, "/syncStart", func(id string, folder string) (string, error) {
 		sessionsMtx.Lock()
 
 		_, ok := sessions[id]
@@ -246,9 +246,9 @@ func RegisterSync(route *echo.Group, m *melody.Melody, db database.Database) {
 		}
 
 		return "", errors.New("not a valid id")
-	})))
+	})
 
-	route.POST("/syncStop", echo.WrapHandler(nra.MustBind(func(id string) error {
+	bind.MustBind(route, "/syncStop", func(id string) error {
 		sessionsMtx.Lock()
 		session, ok := sessions[id]
 		if !ok {
@@ -260,7 +260,7 @@ func RegisterSync(route *echo.Group, m *melody.Melody, db database.Database) {
 
 		session.wg.Wait()
 		return nil
-	})))
+	})
 
 	m.HandleMessage(func(s *melody.Session, bytes []byte) {
 		var event wsEvent

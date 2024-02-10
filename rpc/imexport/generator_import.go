@@ -3,10 +3,10 @@ package imexport
 import (
 	"encoding/base64"
 	"errors"
-	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/imexport"
+	"github.com/BigJk/snd/rpc/bind"
 	"github.com/labstack/echo/v4"
 	"github.com/mattetti/filebuffer"
 	"io/ioutil"
@@ -160,13 +160,13 @@ var generatorImports = []GeneratorImport{
 
 // RegisterGeneratorImports registers all generator imports.
 func RegisterGeneratorImports(route *echo.Group, db database.Database) {
-	route.POST("/importsGenerator", echo.WrapHandler(nra.MustBind(func() ([]GeneratorImport, error) {
+	bind.MustBind(route, "/importsGenerator", func() ([]GeneratorImport, error) {
 		return generatorImports, nil
-	})))
+	})
 
 	for i := range generatorImports {
 		importFunc := generatorImports[i].Func
-		route.POST("/importsGenerator"+generatorImports[i].RPCName, echo.WrapHandler(nra.MustBind(func(args []any) error {
+		bind.MustBind(route, "/importsGenerator"+generatorImports[i].RPCName, func(args []any) error {
 			generators, err := importFunc(args)
 			if err != nil {
 				return err
@@ -181,6 +181,6 @@ func RegisterGeneratorImports(route *echo.Group, db database.Database) {
 			}
 
 			return nil
-		})))
+		})
 	}
 }

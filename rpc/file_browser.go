@@ -1,7 +1,7 @@
 package rpc
 
 import (
-	"github.com/BigJk/nra"
+	"github.com/BigJk/snd/rpc/bind"
 	"github.com/labstack/echo/v4"
 	"os"
 	"path/filepath"
@@ -14,7 +14,7 @@ func RegisterFileBrowser(route *echo.Group) {
 		IsDir    bool   `json:"isDir"`
 	}
 
-	route.POST("/getFiles", echo.WrapHandler(nra.MustBind(func(path string, endings []string, onlyDirs bool) ([]FileInfo, error) {
+	bind.MustBind(route, "/getFiles", func(path string, endings []string, onlyDirs bool) ([]FileInfo, error) {
 		files, err := os.ReadDir(path)
 		if err != nil {
 			return nil, err
@@ -46,9 +46,9 @@ func RegisterFileBrowser(route *echo.Group) {
 		}
 
 		return result, nil
-	})))
+	})
 
-	route.POST("/getDefaultDirectories", echo.WrapHandler(nra.MustBind(func() (map[string]string, error) {
+	bind.MustBind(route, "/getDefaultDirectories", func() (map[string]string, error) {
 		home, err := os.UserHomeDir()
 		if err != nil {
 			return nil, err
@@ -66,5 +66,5 @@ func RegisterFileBrowser(route *echo.Group) {
 			"Pictures":         filepath.Join(home, "Pictures"),
 			"Sales & Dungeons": filepath.Dir(exec),
 		}, nil
-	})))
+	})
 }

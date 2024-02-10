@@ -1,20 +1,20 @@
 package rpc
 
 import (
-	"github.com/BigJk/nra"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/imexport"
+	"github.com/BigJk/snd/rpc/bind"
 	rpcImexport "github.com/BigJk/snd/rpc/imexport"
 	"github.com/labstack/echo/v4"
 )
 
 func RegisterSources(route *echo.Group, db database.Database) {
-	route.POST("/saveSource", echo.WrapHandler(nra.MustBind(db.SaveSource)))
-	route.POST("/deleteSource", echo.WrapHandler(nra.MustBind(db.DeleteSource)))
-	route.POST("/getSources", echo.WrapHandler(nra.MustBind(db.GetSources)))
-	route.POST("/getSource", echo.WrapHandler(nra.MustBind(db.GetSource)))
+	bind.MustBind(route, "/saveSource", db.SaveSource)
+	bind.MustBind(route, "/deleteSource", db.DeleteSource)
+	bind.MustBind(route, "/getSources", db.GetSources)
+	bind.MustBind(route, "/getSource", db.GetSource)
 
-	route.POST("/exportSourceJSON", echo.WrapHandler(nra.MustBind(func(id string) (string, error) {
+	bind.MustBind(route, "/exportSourceJSON", func(id string) (string, error) {
 		ds, err := db.GetSource(id)
 		if err != nil {
 			return "", err
@@ -30,7 +30,7 @@ func RegisterSources(route *echo.Group, db database.Database) {
 			return "", err
 		}
 		return string(json), nil
-	})))
+	})
 
 	rpcImexport.RegisterDataSourceExports(route, db)
 	rpcImexport.RegisterDataSourceImports(route, db)

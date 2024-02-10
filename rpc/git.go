@@ -1,9 +1,9 @@
 package rpc
 
 import (
+	"github.com/BigJk/snd/rpc/bind"
 	"time"
 
-	"github.com/BigJk/nra"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/git"
 	"github.com/labstack/echo/v4"
@@ -13,7 +13,7 @@ import (
 const officialRepo = "https://raw.githubusercontent.com/BigJk/snd-package-repo/main/packages.json"
 
 func RegisterGit(route *echo.Group, db database.Database) {
-	route.POST("/getPublicPackages", echo.WrapHandler(nra.MustBind(func() ([]git.PublicList, error) {
+	bind.MustBind(route, "/getPublicPackages", func() ([]git.PublicList, error) {
 		set, err := db.GetSettings()
 		if err != nil {
 			return nil, err
@@ -29,11 +29,11 @@ func RegisterGit(route *echo.Group, db database.Database) {
 		}
 
 		return publics, nil
-	})), cacheRpcFunction(time.Minute*30))
+	}, cacheRpcFunction(time.Minute*30))
 
-	route.POST("/getRepo", echo.WrapHandler(nra.MustBind(git.GetRepo)), cacheRpcFunction(time.Minute*30))
+	bind.MustBind(route, "/getRepo", git.GetRepo, cacheRpcFunction(time.Minute*30))
 
-	route.POST("/getPackages", echo.WrapHandler(nra.MustBind(func(url string, tag map[string]interface{}) ([]git.Package, error) {
+	bind.MustBind(route, "/getPackages", func(url string, tag map[string]interface{}) ([]git.Package, error) {
 		commitTime, _ := time.Parse(time.RFC3339, tag["date"].(string))
 
 		packages, err := git.Repo{
@@ -52,9 +52,9 @@ func RegisterGit(route *echo.Group, db database.Database) {
 		}
 
 		return packages, nil
-	})), cacheRpcFunction(time.Minute*30))
+	}, cacheRpcFunction(time.Minute*30))
 
-	route.POST("/importPackage", echo.WrapHandler(nra.MustBind(func(url string, tag map[string]interface{}, id string) error {
+	bind.MustBind(route, "/importPackage", func(url string, tag map[string]interface{}, id string) error {
 		commitTime, _ := time.Parse(time.RFC3339, tag["date"].(string))
 
 		packages, err := git.Repo{
@@ -109,5 +109,5 @@ func RegisterGit(route *echo.Group, db database.Database) {
 		}
 
 		return nil
-	})))
+	})
 }

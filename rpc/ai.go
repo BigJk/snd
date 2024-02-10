@@ -7,11 +7,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/BigJk/snd/rpc/bind"
 	"io"
 	"net/http"
 	"time"
 
-	"github.com/BigJk/nra"
 	"github.com/BigJk/snd/database"
 	"github.com/labstack/echo/v4"
 	"github.com/patrickmn/go-cache"
@@ -76,15 +76,15 @@ func RegisterAI(route *echo.Group, db database.Database) {
 		} `json:"choices"`
 	}
 
-	route.POST("/aiCached", echo.WrapHandler(nra.MustBind(func(system string, user string, token string) (string, error) {
+	bind.MustBind(route, "/aiCached", func(system string, user string, token string) (string, error) {
 		cacheKey := fmt.Sprintf("%s-%s", shortHash(system+user), token)
 		if val, ok := aiCache.Get(cacheKey); ok {
 			return val.(string), nil
 		}
 		return "", errors.New("not cached")
-	})))
+	})
 
-	route.POST("/aiPrompt", echo.WrapHandler(nra.MustBind(func(system string, user string, token string) (string, error) {
+	bind.MustBind(route, "/aiPrompt", func(system string, user string, token string) (string, error) {
 		settings, err := db.GetSettings()
 		if err != nil {
 			return "", err
@@ -175,7 +175,7 @@ func RegisterAI(route *echo.Group, db database.Database) {
 		aiCache.Set(cacheKey, aiResp.Choices[0].Message.Content, cache.DefaultExpiration)
 
 		return aiResp.Choices[0].Message.Content, nil
-	})))
+	})
 
 	type Model struct {
 		ID      string `json:"id"`
@@ -195,11 +195,11 @@ func RegisterAI(route *echo.Group, db database.Database) {
 		Data []Model `json:"data"`
 	}
 
-	route.POST("/aiProviders", echo.WrapHandler(nra.MustBind(func() ([]string, error) {
+	bind.MustBind(route, "/aiProviders", func() ([]string, error) {
 		return supportedProviders, nil
-	})))
+	})
 
-	route.POST("/aiModels", echo.WrapHandler(nra.MustBind(func(provider string) ([]string, error) {
+	bind.MustBind(route, "/aiModels", func(provider string) ([]string, error) {
 		// TODO: dynamically fetch models
 		switch provider {
 		case "OpenAI":
@@ -236,5 +236,5 @@ func RegisterAI(route *echo.Group, db database.Database) {
 		return lo.Map(models.Data, func(model Model, i int) string {
 			return model.ID
 		}), nil
-	})), cacheRpcFunction(10*time.Minute))
+	}, cacheRpcFunction(10*time.Minute))
 }

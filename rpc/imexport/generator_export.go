@@ -3,10 +3,10 @@ package imexport
 import (
 	"errors"
 	"fmt"
-	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/imexport"
+	"github.com/BigJk/snd/rpc/bind"
 	"github.com/labstack/echo/v4"
 )
 
@@ -74,19 +74,19 @@ var generatorExports = []GeneratorExport{
 
 // RegisterGeneratorExports registers all generator exports.
 func RegisterGeneratorExports(route *echo.Group, db database.Database) {
-	route.POST("/exportsGenerator", echo.WrapHandler(nra.MustBind(func() ([]GeneratorExport, error) {
+	bind.MustBind(route, "/exportsGenerator", func() ([]GeneratorExport, error) {
 		return generatorExports, nil
-	})))
+	})
 
 	for i := range generatorExports {
 		exportFunc := generatorExports[i].Func
-		route.POST("/exportsGenerator"+generatorExports[i].RPCName, echo.WrapHandler(nra.MustBind(func(id string, args []any) (string, error) {
+		bind.MustBind(route, "/exportsGenerator"+generatorExports[i].RPCName, func(id string, args []any) (string, error) {
 			template, err := db.GetGenerator(id)
 			if err != nil {
 				return "", err
 			}
 
 			return exportFunc(template, args)
-		})))
+		})
 	}
 }

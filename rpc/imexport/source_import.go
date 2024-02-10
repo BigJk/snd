@@ -3,13 +3,13 @@ package imexport
 import (
 	"encoding/base64"
 	"errors"
-	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/imexport"
 	"github.com/BigJk/snd/imexport/fightclub5e"
 	"github.com/BigJk/snd/imexport/tools5e"
 	"github.com/BigJk/snd/imexport/vtt"
+	"github.com/BigJk/snd/rpc/bind"
 	"github.com/labstack/echo/v4"
 	"github.com/mattetti/filebuffer"
 	"os"
@@ -263,13 +263,13 @@ var sourceImports = []DataSourceImport{
 
 // RegisterDataSourceImports registers all data source imports.
 func RegisterDataSourceImports(route *echo.Group, db database.Database) {
-	route.POST("/importsSource", echo.WrapHandler(nra.MustBind(func() ([]DataSourceImport, error) {
+	bind.MustBind(route, "/importsSource", func() ([]DataSourceImport, error) {
 		return sourceImports, nil
-	})))
+	})
 
 	for i := range sourceImports {
 		importFunc := sourceImports[i].Func
-		route.POST("/importsSource"+sourceImports[i].RPCName, echo.WrapHandler(nra.MustBind(func(args []any) error {
+		bind.MustBind(route, "/importsSource"+sourceImports[i].RPCName, func(args []any) error {
 			sources, entries, err := importFunc(args)
 			if err != nil {
 				return err
@@ -285,6 +285,6 @@ func RegisterDataSourceImports(route *echo.Group, db database.Database) {
 			}
 
 			return nil
-		})))
+		})
 	}
 }

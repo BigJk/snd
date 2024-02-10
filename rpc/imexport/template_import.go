@@ -3,10 +3,10 @@ package imexport
 import (
 	"encoding/base64"
 	"errors"
-	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/imexport"
+	"github.com/BigJk/snd/rpc/bind"
 	"github.com/labstack/echo/v4"
 	"github.com/mattetti/filebuffer"
 	"io/ioutil"
@@ -161,13 +161,13 @@ var templateImports = []TemplateImport{
 
 // RegisterTemplateImports registers all template imports.
 func RegisterTemplateImports(route *echo.Group, db database.Database) {
-	route.POST("/importsTemplate", echo.WrapHandler(nra.MustBind(func() ([]TemplateImport, error) {
+	bind.MustBind(route, "/importsTemplate", func() ([]TemplateImport, error) {
 		return templateImports, nil
-	})))
+	})
 
 	for i := range templateImports {
 		importFunc := templateImports[i].Func
-		route.POST("/importsTemplate"+templateImports[i].RPCName, echo.WrapHandler(nra.MustBind(func(args []any) error {
+		bind.MustBind(route, "/importsTemplate"+templateImports[i].RPCName, func(args []any) error {
 			templates, entries, err := importFunc(args)
 			if err != nil {
 				return err
@@ -183,6 +183,6 @@ func RegisterTemplateImports(route *echo.Group, db database.Database) {
 			}
 
 			return nil
-		})))
+		})
 	}
 }

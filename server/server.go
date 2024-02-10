@@ -2,8 +2,10 @@
 package server
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"github.com/BigJk/snd/rpc/bind"
 	"io/ioutil"
 	"mime"
 	"net/http"
@@ -100,12 +102,24 @@ func WithAdditionalRPC(fnName string, fn interface{}) Option {
 	}
 }
 
+// Close closes the server and all its connections.
+func (s *Server) Close() error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+	errServer := s.e.Shutdown(ctx)
+	errDB := s.db.Close()
+	cancel()
+	if errServer != nil {
+		return errServer
+	}
+	return errDB
+}
+
 // Start starts the server with the given bind address.
 //
 // Examples:
 // - ":7232" will accept all connections on port 7232
 // - "127.0.0.1:7232" will only accept local connections on port 7232
-func (s *Server) Start(bind string) error {
+func (s *Server) Start(bindAddr string) error {
 	// Create default settings if not existing
 	if _, err := s.db.GetSettings(); err != nil {
 		if err := s.db.SaveSettings(snd.Settings{
@@ -140,6 +154,26 @@ func (s *Server) Start(bind string) error {
 	rpc.RegisterCloud(api, s.db)
 	rpc.RegisterAI(api, s.db)
 	rpc.RegisterFileBrowser(api)
+
+	// Expose function list
+	api.GET("/functions", func(c echo.Context) error {
+		funcs := bind.Functions()
+		resp := make(map[string]any)
+		addr := bindAddr
+		if addr[0] == ':' {
+			addr = "127.0.0.1" + addr
+		}
+
+		for _, f := range funcs {
+			resp[f.Name] = map[string]any{
+				"route":  fmt.Sprintf("https://%s/api/%s", addr, f.Name),
+				"args":   f.Args,
+				"method": "POST",
+			}
+		}
+
+		return c.JSONPretty(http.StatusOK, resp, "  ")
+	})
 
 	// Register additional routes
 	for k, v := range s.additionalRpc {
@@ -250,7 +284,7 @@ func (s *Server) Start(bind string) error {
 		_ = s.db.AddLog(e)
 	})
 
-	log.Info("Server started", log.WithValue("bind", bind))
+	log.Info("Server started", log.WithValue("bind", bindAddr))
 
-	return s.e.Start(bind)
+	return s.e.Start(bindAddr)
 }

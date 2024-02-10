@@ -15,6 +15,9 @@ const pythonAPIHeader = `import requests
 #
 # Requires the requests library to be installed.
 # python -m pip install requests
+#
+# For the structure of "snd types" check the following files in the root of the repository:
+# data_source.go, entry.go, generator.go, settings.go, template.go
 
 class SndAPI:
 
@@ -45,9 +48,13 @@ class SndAPI:
 `
 
 func pythonArgType(argType string) string {
-	slice := strings.HasSuffix(argType, "[]")
+	if strings.HasPrefix(argType, "map") {
+		return "dict"
+	}
+
+	slice := strings.HasPrefix(argType, "[]")
 	if slice {
-		argType = argType[:len(argType)-2]
+		argType = strings.TrimPrefix(argType, "[]")
 	}
 
 	typeName := ""
@@ -60,10 +67,14 @@ func pythonArgType(argType string) string {
 		typeName = "float"
 	case "bool":
 		typeName = "bool"
-	case "interface{}":
+	case "interface {}":
 		typeName = "dict"
 	default:
-		typeName = strings.Replace(argType, "snd.", "", -1)
+		if strings.HasPrefix(argType, "snd.") {
+			typeName = fmt.Sprintf("dict [snd type %s]", strcase.ToSnake(strings.Replace(argType, "snd.", "", -1)))
+		} else {
+			typeName = argType
+		}
 	}
 
 	if slice {

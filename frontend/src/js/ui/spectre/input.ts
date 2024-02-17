@@ -8,6 +8,7 @@ type InputProps = {
 	placeholder?: string;
 	type?: 'text' | 'password' | 'email' | 'number' | 'tel' | 'url';
 	onChange?: (value: string) => void;
+	onEnter?: (value: string) => void;
 	useBlur?: boolean;
 	minimal?: boolean;
 	disabled?: boolean;
@@ -37,6 +38,24 @@ export default (): m.Component<InputProps> => ({
 			handler = {
 				oninput: onChange,
 			};
+		}
+
+		if (attrs.onEnter) {
+			handler = {
+				...handler,
+				onkeydown: (event: KeyboardEvent) => {
+					if (event.key === 'Enter') {
+						if (attrs.onEnter) {
+							attrs.onEnter((event.target as HTMLInputElement).value);
+							m.redraw();
+						}
+					}
+
+					// @ts-ignore
+					event.redraw = false;
+				},
+			};
+			console.log(handler);
 		}
 
 		return m(

@@ -7,6 +7,7 @@ import Input from 'js/ui/spectre/input';
 import Modal from 'js/ui/spectre/modal';
 
 import Icon from 'js/ui/components/atomic/icon';
+import Tooltip from 'js/ui/components/atomic/tooltip';
 import Flex from 'js/ui/components/layout/flex';
 import SideMenu from 'js/ui/components/view-layout/side-menu';
 
@@ -84,6 +85,58 @@ const fileBrowserModal = (): m.Component<FileBrowserProps> => {
 		return folders[folders.length - 1];
 	};
 
+	const goUp = (attrs: FileBrowserProps) => {
+		const path = state.path;
+		const folders = path.split('/');
+		if (folders.length === 1) {
+			return;
+		}
+		folders.pop();
+		state.path = folders.join('/');
+		if (state.path === '') {
+			state.path = '/';
+		}
+		fetchFiles(attrs);
+	};
+
+	const canGoUp = () => {
+		// If the path is a root path, we can't go up
+		if (state.path[0] === '/') {
+			return state.path.split('/').length > 1;
+		}
+
+		// If we only have 4 chars in the path (e.g. C://), we can't go up
+		return state.path.length > 4;
+	};
+
+	const getFavoriteFolders = () => JSON.parse(localStorage.getItem('favoriteFolders') || '[]');
+
+	const removeFavoriteFolder = (path: string) => {
+		const favoriteFolders = getFavoriteFolders();
+		const index = favoriteFolders.indexOf(path);
+		if (index > -1) {
+			favoriteFolders.splice(index, 1);
+			localStorage.setItem('favoriteFolders', JSON.stringify(favoriteFolders));
+		}
+	};
+
+	const favoriteFolder = () => {
+		const favoriteFolders = JSON.parse(localStorage.getItem('favoriteFolders') || '[]');
+		if (!favoriteFolders.includes(state.path)) {
+			favoriteFolders.push(state.path);
+			localStorage.setItem('favoriteFolders', JSON.stringify(favoriteFolders));
+		}
+	};
+
+	const item = (icon: string, text: string, onClick: () => void) =>
+		m(
+			'div',
+			{
+				onclick: onClick,
+			},
+			m(Flex, { items: 'center', className: '.pa1.dim.pointer' }, [m(Icon, { icon: icon, className: '.text-primary.w1.mr1' }), text]),
+		);
+
 	return {
 		oninit({ attrs }) {
 			API.exec<Record<string, string>>(API.GET_DEFAULT_DIRECTORIES).then((res) => {
@@ -94,6 +147,8 @@ const fileBrowserModal = (): m.Component<FileBrowserProps> => {
 			});
 		},
 		view({ attrs }) {
+			const favoriteFolders = getFavoriteFolders() as string[];
+
 			return m(
 				Modal,
 				{
@@ -110,15 +165,26 @@ const fileBrowserModal = (): m.Component<FileBrowserProps> => {
 					m(Flex, { className: '.h-100' }, [
 						m(SideMenu, {
 							className: '.w-30.flex-shrink-0.br.b--black-10.pa2',
-							items: Object.keys(state.defaultDirectories).map((key) => ({
-								id: key,
-								title: key,
-								icon: 'folder',
-								onClick: () => {
-									state.path = state.defaultDirectories[key];
-									fetchFiles(attrs);
-								},
-							})),
+							items: [
+								...Object.keys(state.defaultDirectories).map((key) => ({
+									id: key,
+									title: key,
+									icon: 'folder',
+									onClick: () => {
+										state.path = state.defaultDirectories[key];
+										fetchFiles(attrs);
+									},
+								})),
+								...favoriteFolders.map((path) => ({
+									id: path,
+									title: path.split('/').pop() || '',
+									icon: 'star',
+									onClick: () => {
+										state.path = path;
+										fetchFiles(attrs);
+									},
+								})),
+							],
 						}),
 						m('div.flex-grow-1', [
 							m(
@@ -129,6 +195,10 @@ const fileBrowserModal = (): m.Component<FileBrowserProps> => {
 									value: state.path,
 									minimal: true,
 									onChange: (value) => {
+										state.path = value;
+										fetchFiles(attrs);
+									},
+									onEnter: (value) => {
 										state.path = value;
 										fetchFiles(attrs);
 									},
@@ -146,12 +216,27 @@ const fileBrowserModal = (): m.Component<FileBrowserProps> => {
 									},
 								}),
 							),
-							m('div.mb2.b.ph2.pt2', getCurrentFolder()),
+							m(
+								'div.mb2.b.ph2.pt2',
+								m(Flex, { justify: 'between', items: 'center' }, [
+									getCurrentFolder(),
+									m(
+										Tooltip,
+										{ content: 'Favorite' },
+										m(Icon, {
+											icon: 'star',
+											onClick: () => (favoriteFolders.includes(state.path) ? removeFavoriteFolder(state.path) : favoriteFolder()),
+											className: favoriteFolders.includes(state.path) ? '.yellow' : '',
+										}),
+									),
+								]),
+							),
 							m(
 								'div.overflow-auto',
 								{ style: { height: '400px' } },
 								m('div.ph2.pb2', [
-									state.currentFiles.length === 0 ? m('div.text-muted', 'Nothing found...') : null,
+									canGoUp() ? item('arrow-round-up', 'Go up', () => goUp(attrs)) : null,
+									state.currentFiles.length === 0 ? m('div.mt2.text-muted', 'Nothing found...') : null,
 									state.currentFiles
 										.filter((file) => {
 											if (state.search) {
@@ -160,24 +245,16 @@ const fileBrowserModal = (): m.Component<FileBrowserProps> => {
 											return true;
 										})
 										.map((file) =>
-											m(
-												'div',
-												{
-													onclick: () => {
-														if (file.isDir) {
-															state.path = file.fullPath;
-															fetchFiles(attrs);
-														} else {
-															attrs.resolve(file.fullPath);
-															popPortal();
-														}
-													},
-												},
-												m(Flex, { items: 'center', className: '.pa1.dim.pointer' }, [
-													m(Icon, { icon: getIcon(file), className: '.text-primary.w1.mr1' }),
-													file.name,
-												]),
-											),
+											item(getIcon(file), file.name, () => {
+												if (file.isDir) {
+													state.path = file.fullPath;
+													state.search = '';
+													fetchFiles(attrs);
+												} else {
+													attrs.resolve(file.fullPath);
+													popPortal();
+												}
+											}),
 										),
 								]),
 							),

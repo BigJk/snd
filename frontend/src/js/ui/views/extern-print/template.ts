@@ -3,7 +3,7 @@ import m from 'mithril';
 import Template from 'js/types/template';
 import * as API from 'js/core/api';
 import { settings } from 'js/core/store';
-import { render } from 'js/core/templating';
+import { addEntryMeta, render } from 'js/core/templating';
 
 type ExternPrintProps = {
 	id: string;
@@ -34,7 +34,7 @@ export default (): m.Component<ExternPrintProps> => {
 			API.exec<Template>(API.GET_TEMPLATE, state.id)
 				.then((tmpl) => {
 					render(tmpl.printTemplate, {
-						it: state.json,
+						it: addEntryMeta({ name: '', id: '', data: {} }, state.json), // TODO: rework this
 						images: tmpl.images,
 						sources: tmpl.dataSources,
 						config: JSON.parse(atob(attrs.config)),

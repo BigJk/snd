@@ -2,6 +2,7 @@ import { cloneDeep } from 'lodash-es';
 
 import hash from 'object-hash';
 
+import entry from 'js/types/entry';
 import Settings from 'js/types/settings';
 // @ts-ignore
 import TemplatingWorker from 'js/workers/templating-worker?worker';
@@ -226,3 +227,22 @@ export const render = (
  */
 export const containsAi = (template: string) =>
 	(template.includes('ai') && template.includes('endai') && template.includes('user')) || template.includes('aiPrompt(');
+
+/**
+ * Add entry meta to the state it object.
+ * @param entry Entry object.
+ * @param it State it object.
+ * @returns State it object with entry meta.
+ */
+export const addEntryMeta = (entry: entry | null, it: any) => {
+	if (!it) {
+		return it;
+	}
+	return {
+		...it,
+		snd: {
+			id: entry?.id ?? 'skeleton-entry-id',
+			name: entry?.name ?? 'Skeleton Entry Name',
+		},
+	};
+};

@@ -153,11 +153,6 @@ export default (): m.Component<CreateTemplateEntityProps> => {
 						})
 						.catch(error);
 				}
-
-				// Testing stuff
-				// console.log(state.schema);
-				// console.log(getCategories());
-				// console.log(initialData(state.schema));
 			});
 		},
 		view({ attrs }) {
@@ -206,6 +201,7 @@ export default (): m.Component<CreateTemplateEntityProps> => {
 				m(SidebarPrintPage, {
 					template: state.template,
 					it: state.data,
+					entry: state,
 					tabs: [{ icon: 'filing', label: 'Entry' }],
 					content: {
 						Entry: () =>

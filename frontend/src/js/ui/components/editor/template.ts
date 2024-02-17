@@ -8,7 +8,7 @@ import { fillConfigValues } from 'src/js/types/config';
 import * as API from 'js/core/api';
 import { createNunjucksCompletionProvider } from 'js/core/monaco/completion-nunjucks';
 import { settings } from 'js/core/store';
-import { render } from 'js/core/templating';
+import { addEntryMeta, render } from 'js/core/templating';
 
 import Button from 'js/ui/spectre/button';
 import Label from 'js/ui/spectre/label';
@@ -31,6 +31,7 @@ import { dialogWarning, error } from 'js/ui/toast';
 type TemplateEditorProps = {
 	template: Template;
 	onChange: (updated: Template) => void;
+	onJSONError?: (error: any | null) => void;
 	editMode?: boolean;
 };
 
@@ -41,6 +42,7 @@ type TemplateEditorState = {
 	entriesKey: string;
 	entries: Entry[];
 	listPreview: string;
+	jsonSkeleton: string;
 	errorsPrint: PrintPreviewError[];
 	errorsList: PrintPreviewError[];
 };
@@ -53,6 +55,7 @@ export default (): m.Component<TemplateEditorProps> => {
 		entriesKey: '',
 		entries: [],
 		listPreview: '',
+		jsonSkeleton: '{}',
 		errorsPrint: [],
 		errorsList: [],
 	};
@@ -88,7 +91,7 @@ export default (): m.Component<TemplateEditorProps> => {
 		render(
 			val,
 			{
-				it: attrs.template.skeletonData,
+				it: addEntryMeta(null, attrs.template.skeletonData),
 				sources: attrs.template.dataSources,
 				config: state.config,
 				settings: settings.value,
@@ -171,6 +174,7 @@ export default (): m.Component<TemplateEditorProps> => {
 	return {
 		oninit({ attrs }) {
 			renderListPreview(attrs.template.listTemplate, attrs);
+			state.jsonSkeleton = JSON.stringify(attrs.template.skeletonData, null, 2);
 			fetchEntries(attrs);
 		},
 		onupdate({ attrs }) {
@@ -318,14 +322,16 @@ export default (): m.Component<TemplateEditorProps> => {
 										m(Monaco, {
 											key: 'data-skeleton-monaco',
 											language: 'json',
-											value: JSON.stringify(attrs.template.skeletonData, null, 2),
+											value: state.jsonSkeleton,
 											className: '.flex-grow-1',
 											wordWrap: 'on',
 											onChange: (value) => {
+												state.jsonSkeleton = value;
 												try {
 													attrs.onChange({ ...attrs.template, skeletonData: JSON.parse(value) });
+													if (attrs.onJSONError) attrs.onJSONError(null);
 												} catch (e) {
-													// Monaco will show the error
+													if (attrs.onJSONError) attrs.onJSONError(e);
 												}
 											},
 										}),
@@ -346,7 +352,7 @@ export default (): m.Component<TemplateEditorProps> => {
 										className: '.flex-grow-1',
 										errors: state.errorsPrint,
 										completion: createNunjucksCompletionProvider({
-											it: attrs.template.skeletonData,
+											it: addEntryMeta(null, attrs.template.skeletonData),
 											images: attrs.template.images,
 											settings: settings.value,
 											sources: attrs.template.dataSources,

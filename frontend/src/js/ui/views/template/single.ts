@@ -325,6 +325,7 @@ export default (): m.Component<SingleTemplateProps> => {
 					  m(SidebarPrintPage, {
 							template: state.template,
 							it: state.selectedEntry?.data,
+							entry: state.selectedEntry,
 							onRendered: (html) => (state.lastRendered = html),
 							tabs: [
 								{ icon: 'filing', label: 'Entries' },

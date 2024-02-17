@@ -1,10 +1,11 @@
 import m from 'mithril';
 import { cloneDeep, debounce, isEqual } from 'lodash-es';
 
+import Entry from 'js/types/entry';
 import Generator from 'js/types/generator';
 import Template from 'js/types/template';
 import store, { settings } from 'js/core/store';
-import { containsAi, render } from 'js/core/templating';
+import { addEntryMeta, containsAi, render } from 'js/core/templating';
 
 import Button from 'js/ui/spectre/button';
 
@@ -24,6 +25,7 @@ export type PrintPreviewTemplateProps = {
 	generator?: Generator;
 	useListTemplate?: boolean;
 	it?: any;
+	entry?: Entry;
 	config?: any;
 	hideAiNotice?: boolean;
 	width?: number;
@@ -54,7 +56,8 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 			isEqual(lastProps.template, attrs.template) &&
 			isEqual(lastProps.it, attrs.it) &&
 			isEqual(lastProps.generator, attrs.generator) &&
-			isEqual(lastProps.config, attrs.config)
+			isEqual(lastProps.config, attrs.config) &&
+			isEqual(lastProps.entry, attrs.entry)
 		) {
 			return;
 		}
@@ -65,7 +68,7 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 
 		if (attrs.template === null && attrs.generator === null) return;
 		const printTemplate = getTemplate(attrs);
-		const it = attrs.it ?? attrs.template?.skeletonData;
+		const it = addEntryMeta(attrs.entry ?? null, attrs.it) ?? addEntryMeta(null, attrs.template?.skeletonData);
 
 		render(printTemplate ?? '', {
 			it: it ?? {},

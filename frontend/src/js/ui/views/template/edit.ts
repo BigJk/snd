@@ -22,6 +22,7 @@ type EditTemplateProps = {
 
 export default (): m.Component<EditTemplateProps> => {
 	let state: Template | null = null;
+	let hadJSONError = false;
 
 	return {
 		oninit({ attrs }) {
@@ -52,7 +53,12 @@ export default (): m.Component<EditTemplateProps> => {
 								size: 'sm',
 								intend: 'success',
 								onClick: () => {
-									if (!state) return;
+									if (hadJSONError) {
+										error('Errors in the "Data Skeleton", please fix them before saving.');
+										return;
+									}
+
+									if (!state || hadJSONError) return;
 									API.exec<void>(API.SAVE_TEMPLATE, state)
 										.then(() => {
 											if (!state) return;
@@ -89,6 +95,9 @@ export default (): m.Component<EditTemplateProps> => {
 							onChange: (template) => {
 								state = template;
 								m.redraw();
+							},
+							onJSONError: (error) => {
+								hadJSONError = !!error;
 							},
 							editMode: true,
 					  })

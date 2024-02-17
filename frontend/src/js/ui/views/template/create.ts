@@ -19,6 +19,7 @@ type TemplateCreateProps = {
 
 export default (): m.Component<TemplateCreateProps> => {
 	let state: Template = createEmptyTemplate();
+	let hadJSONError = false;
 
 	return {
 		oninit({ attrs }) {
@@ -47,7 +48,12 @@ export default (): m.Component<TemplateCreateProps> => {
 								size: 'sm',
 								intend: 'success',
 								onClick: () => {
-									if (!state) return;
+									if (hadJSONError) {
+										error('Errors in the "Data Skeleton", please fix them before saving.');
+										return;
+									}
+
+									if (!state || hadJSONError) return;
 									if (attrs.id && buildId('template', state) === attrs.id) {
 										error('You cannot duplicate a template with the same slug as the original.');
 										return;
@@ -85,6 +91,9 @@ export default (): m.Component<TemplateCreateProps> => {
 					onChange: (template) => {
 						state = template;
 						m.redraw();
+					},
+					onJSONError: (error) => {
+						hadJSONError = !!error;
 					},
 				}),
 			);

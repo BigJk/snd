@@ -1,5 +1,6 @@
 import m from 'mithril';
 
+import Entry from 'js/types/entry';
 import Generator from 'js/types/generator';
 import Template from 'js/types/template';
 
@@ -17,6 +18,7 @@ type SidebarPrintProps = {
 	template?: Template;
 	generator?: Generator;
 	it?: any;
+	entry?: Entry;
 	config?: any;
 	tabs: TabDefinition[];
 	content: Record<string, () => m.Component>;
@@ -55,6 +57,7 @@ export default (): m.Component<SidebarPrintProps> => {
 							template: vnode.attrs.template,
 							generator: vnode.attrs.generator,
 							it: vnode.attrs.it,
+							entry: vnode.attrs.entry,
 							config: vnode.attrs.config,
 							width: 380,
 							className: '.bg-black-05.ph1.ba.b--black-10',

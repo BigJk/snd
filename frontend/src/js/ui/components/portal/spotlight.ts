@@ -145,12 +145,14 @@ export default (): m.Component => {
 			m(Key, { key: 'esc' }, 'Exit'),
 		]);
 
+	let listner = (e: KeyboardEvent) => {};
+
 	return {
 		oncreate(vnode): any {
 			vnode.dom.querySelector('input')?.focus();
 
 			// Register key up and down events to navigate the results and enter, also scroll down to the element if it's not visible.
-			window.addEventListener('keydown', (e) => {
+			listner = (e: KeyboardEvent) => {
 				if (e.key == 'ArrowDown') {
 					if (!state.result) return;
 
@@ -178,7 +180,8 @@ export default (): m.Component => {
 						openItem(state.result[state.selected]);
 					}
 				}
-			});
+			};
+			window.addEventListener('keydown', listner);
 
 			// Prevent the input to be affected by the up arrow.
 			vnode.dom.querySelector('input')?.addEventListener('keydown', function (e) {
@@ -186,6 +189,9 @@ export default (): m.Component => {
 					e.preventDefault();
 				}
 			});
+		},
+		onremove() {
+			window.removeEventListener('keydown', listner);
 		},
 		view() {
 			return m('div.bg-white.ba.b--black-10.br2', { style: { width: '600px', 'box-shadow': 'rgba(149, 157, 165, 0.35) 0px 8px 24px' } }, [

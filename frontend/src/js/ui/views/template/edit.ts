@@ -69,7 +69,7 @@ export default (): m.Component<EditTemplateProps> => {
 							},
 							'Save',
 						), //
-						m('div.divider.divider-vert'),
+						m('div.divider-vert'),
 						m(
 							Tooltip,
 							{ content: 'Open Dev Tools' },

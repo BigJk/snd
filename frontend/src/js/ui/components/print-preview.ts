@@ -32,20 +32,24 @@ const pre = `
 		body {
 			line-height: 1;
 		}
-  
-  	#content::-webkit-scrollbar {
+		
+		#content::-webkit-scrollbar-thumb:hover {
+			background: #d1d1d1;
+		}
+		
+  	#content::-webkit-scrollbar, ::-webkit-scrollbar {
 				width: 0;
 		}
 		
-		#content::-webkit-scrollbar-track {
+		#content::-webkit-scrollbar-track, ::-webkit-scrollbar-track {
 			background: #f1f1f1;
 		}
 		
-		#content::-webkit-scrollbar-thumb {
+		#content::-webkit-scrollbar-thumb, ::-webkit-scrollbar-thumb {
 			background: #c2c2c2;
 		}
 		
-		#content::-webkit-scrollbar-thumb:hover {
+		#content::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-thumb:hover {
 			background: #d1d1d1;
 		}
   </style>

@@ -13,7 +13,7 @@ With Sales & Dungeons you can create highly customizable handouts, quick referen
 Most Thermal Printer are small in size and can be taken with you and kept right at the gaming table. Use-cases range from printing out magic items, spells
 or a letter that the group found to little character sheets of your players to use as DM note. The possibilities are nearly endless!
 
-[Printer Setup](https://sales-and-dungeons.app/docs/printer/setup/) • [Tested Printer](https://sales-and-dungeons.app/docs/printer/models) • [Wiki](https://sales-and-dungeons.app/docs/intro)
+[Printer Setup](https://sales-and-dungeons.app/docs/printer/setup/) • [Tested Printer](https://sales-and-dungeons.app/docs/printer/models/) • [Wiki](https://sales-and-dungeons.app/docs/intro/)
 
 **Important:** If you have trouble getting this to work it's best to drop by our [Discord](https://discord.gg/5MUZEjc).
 

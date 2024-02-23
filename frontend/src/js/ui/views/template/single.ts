@@ -84,7 +84,7 @@ export default (): m.Component<SingleTemplateProps> => {
 					{
 						it: e.data,
 						sources: state.template?.dataSources!,
-						config: {},
+						config: state.config,
 						settings: settings.value,
 						images: {}, // Don't need images for list template
 					},
@@ -326,6 +326,7 @@ export default (): m.Component<SingleTemplateProps> => {
 							template: state.template,
 							it: state.selectedEntry?.data,
 							entry: state.selectedEntry,
+							config: state.config,
 							onRendered: (html) => (state.lastRendered = html),
 							tabs: [
 								{ icon: 'filing', label: 'Entries' },

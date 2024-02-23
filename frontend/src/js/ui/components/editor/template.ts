@@ -175,6 +175,7 @@ export default (): m.Component<TemplateEditorProps> => {
 		oninit({ attrs }) {
 			renderListPreview(attrs.template.listTemplate, attrs);
 			state.jsonSkeleton = JSON.stringify(attrs.template.skeletonData, null, 2);
+			state.config = fillConfigValues(state.config, attrs.template?.config ?? []);
 			fetchEntries(attrs);
 		},
 		onupdate({ attrs }) {
@@ -356,6 +357,7 @@ export default (): m.Component<TemplateEditorProps> => {
 											images: attrs.template.images,
 											settings: settings.value,
 											sources: attrs.template.dataSources,
+											config: state.config,
 										}),
 										onChange: (value) => attrs.onChange({ ...attrs.template, printTemplate: value }),
 									}),
@@ -385,6 +387,7 @@ export default (): m.Component<TemplateEditorProps> => {
 													images: attrs.template.images,
 													settings: settings.value,
 													sources: attrs.template.dataSources,
+													config: state.config,
 												}),
 												onChange: (value) => {
 													attrs.onChange({ ...attrs.template, listTemplate: value });

@@ -10,7 +10,7 @@ Although Sales & Dungeons runs as a local application it is split into a backend
 
 ## Architecture
 
-![arch](.github/images/snd_arch.png)
+![arch](../.github/images/snd_arch.png)
 
 ## Protocol
 

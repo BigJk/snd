@@ -34,7 +34,7 @@ export default (): m.Component<ExternPrintProps> => {
 			API.exec<Template>(API.GET_TEMPLATE, state.id)
 				.then((tmpl) => {
 					render(tmpl.printTemplate, {
-						it: addEntryMeta({ name: '', id: '', data: {} }, state.json), // TODO: rework this
+						it: addEntryMeta(state.json, state.json.data),
 						images: tmpl.images,
 						sources: tmpl.dataSources,
 						config: JSON.parse(atob(attrs.config)),

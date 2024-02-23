@@ -3,6 +3,7 @@ package rpc
 import (
 	"bytes"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/BigJk/snd/rpc/bind"
@@ -262,6 +263,75 @@ func RegisterPrint(route *echo.Group, extern *echo.Group, db database.Database, 
 		return print(db, printer, html)
 	})
 
+	externPrintTemplate := func(tmplId string, entry any, config any) error {
+		entryJson, err := json.Marshal(entry)
+		if err != nil {
+			return err
+		}
+
+		configJson, err := json.Marshal(config)
+		if err != nil {
+			return err
+		}
+
+		html, err := rendering.ExtractHTML(fmt.Sprintf("http://127.0.0.1:7123/#!/extern-print/template/%s/%s/%s", tmplId, base64.StdEncoding.EncodeToString(entryJson), base64.StdEncoding.EncodeToString(configJson)), "#render-done")
+		if err != nil {
+			return err
+		}
+
+		if err := print(db, printer, html); err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	bind.MustBind(route, "/printTemplate", func(id string, entry snd.Entry, config interface{}) error {
+		_, err := db.GetTemplate(id)
+		if err != nil {
+			return err
+		}
+		return externPrintTemplate(id, entry, config)
+	})
+
+	bind.MustBind(route, "/printTemplateEntry", func(id string, eid string, config interface{}) error {
+		_, err := db.GetTemplate(id)
+		if err != nil {
+			return err
+		}
+		ent, err := db.GetEntry(id, eid)
+		if err != nil {
+			return err
+		}
+		return externPrintTemplate(id, ent, config)
+	})
+
+	externPrintGenerator := func(genId string, config any) error {
+		configJson, err := json.Marshal(config)
+		if err != nil {
+			return err
+		}
+
+		html, err := rendering.ExtractHTML(fmt.Sprintf("http://127.0.0.1:7123/#!/extern-print/generator/%s/%s", genId, base64.StdEncoding.EncodeToString(configJson)), "#render-done")
+		if err != nil {
+			return err
+		}
+
+		if err := print(db, printer, html); err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	bind.MustBind(route, "/printGenerator", func(id string, config interface{}) error {
+		_, err := db.GetGenerator(id)
+		if err != nil {
+			return err
+		}
+		return externPrintGenerator(id, config)
+	})
+
 	bind.MustBind(route, "/screenshot", func(html string, file string) error {
 		// Get current settings
 		settings, err := db.GetSettings()
@@ -298,63 +368,5 @@ func RegisterPrint(route *echo.Group, extern *echo.Group, db database.Database, 
 	bind.MustBind(route, "/previewCache", func(id string, html string) (string, error) {
 		renderCache.SetDefault(id, html)
 		return fmt.Sprintf("http://127.0.0.1:7123/api/html/%s", id), nil
-	})
-
-	//
-	//	External API Routes
-	//
-
-	extern.POST("/print/:id", func(c echo.Context) error {
-		// Render the Template to HTML
-		data, err := ioutil.ReadAll(c.Request().Body)
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, err.Error())
-		}
-
-		t := "template"
-		if strings.HasPrefix(c.Param("id"), "gen:") {
-			t = "generator"
-		}
-
-		html, err := rendering.ExtractHTML(fmt.Sprintf("http://127.0.0.1:7123/#!/extern-print/%s/%s/%s", t, c.Param("id"), base64.StdEncoding.EncodeToString(data)), "#render-done")
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, err.Error())
-		}
-
-		if err := print(db, printer, html); err != nil {
-			return c.JSON(http.StatusBadRequest, err.Error())
-		}
-
-		return c.NoContent(http.StatusOK)
-	})
-
-	extern.POST("/print_raw", func(c echo.Context) error {
-		data, err := ioutil.ReadAll(c.Request().Body)
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, err.Error())
-		}
-
-		// Get current settings
-		settings, err := db.GetSettings()
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, err.Error())
-		}
-
-		if settings.PrinterWidth < 50 {
-			return c.JSON(http.StatusBadRequest, errors.New("print width is too low").Error())
-		}
-
-		// Get printer
-		selectedPrinter, ok := printer[settings.PrinterType]
-		if !ok {
-			return fmt.Errorf("printer nout found: %w", err)
-		}
-
-		err = selectedPrinter.Print(settings.PrinterEndpoint, image.NewRGBA(image.Rect(0, 0, 0, 0)), data)
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, fmt.Errorf("printer wasn't able to print: %w", err))
-		}
-
-		return c.NoContent(http.StatusOK)
 	})
 }

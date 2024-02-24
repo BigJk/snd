@@ -53,7 +53,7 @@ export default (): m.Component<SidebarPrintProps> => {
 					: null, //
 				// @ts-ignore
 				m(Flex, { className: '.bg-white.ba.b--black-10.br2.flex-grow-1.overflow-auto', direction: 'column' }, vnode.attrs.content[selectedTab]()),
-				(vnode.attrs.template || vnode.attrs.generator) && !vnode.attrs.hidePreview
+				vnode.attrs.template || vnode.attrs.generator
 					? m(PrintPreviewTemplate, {
 							template: vnode.attrs.template,
 							generator: vnode.attrs.generator,
@@ -61,7 +61,8 @@ export default (): m.Component<SidebarPrintProps> => {
 							entry: vnode.attrs.entry,
 							config: vnode.attrs.config,
 							width: 380,
-							className: '.bg-black-05.ph1.ba.b--black-10',
+							className: `.bg-black-05.ph1.ba.b--black-10${!vnode.attrs.hidePreview ? '' : '.o-0'}`,
+
 							onRendered: vnode.attrs.onRendered,
 					  })
 					: m('div'),

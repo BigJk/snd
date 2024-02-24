@@ -136,13 +136,32 @@ env.addExtension('DataImportExtension', new DataImportExtension());
 env.addExtension('JavascriptExecuteExtension', new JavascriptExecuteExtension());
 env.addExtension('AIExtension', new AIExtension());
 
+env.addFilter('shuffle', (array) => {
+	let currentIndex = array.length,
+		temporaryValue,
+		randomIndex;
+
+	// While there remain elements to shuffle...
+	while (0 !== currentIndex) {
+		// Pick a remaining element...
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex -= 1;
+
+		// And swap it with the current element.
+		temporaryValue = array[currentIndex];
+		array[currentIndex] = array[randomIndex];
+		array[randomIndex] = temporaryValue;
+	}
+
+	return array;
+});
 env.addFilter('markdown', (md) => new nunjucks.runtime.SafeString(markdown.render(md)));
 env.addFilter('markdowni', (md) => new nunjucks.runtime.SafeString(markdown.renderInline(md)));
 env.addFilter('json', (data) => new nunjucks.runtime.SafeString(JSON.stringify(data)));
 env.addFilter(
 	'source',
 	(source, cb) => {
-		// we can't use api here as mithrils request functions don't work in web-workers,
+		// We can't use api here as mithrils request functions don't work in web-workers,
 		// so we just use a simple fetch.
 		fetch('/api/getEntries', {
 			method: 'POST',

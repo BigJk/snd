@@ -23,6 +23,7 @@ type SidebarPrintProps = {
 	tabs: TabDefinition[];
 	content: Record<string, () => m.Component>;
 	onRendered?: (html: string) => void;
+	hidePreview?: boolean;
 };
 
 export default (): m.Component<SidebarPrintProps> => {
@@ -52,7 +53,7 @@ export default (): m.Component<SidebarPrintProps> => {
 					: null, //
 				// @ts-ignore
 				m(Flex, { className: '.bg-white.ba.b--black-10.br2.flex-grow-1.overflow-auto', direction: 'column' }, vnode.attrs.content[selectedTab]()),
-				vnode.attrs.template || vnode.attrs.generator
+				(vnode.attrs.template || vnode.attrs.generator) && !vnode.attrs.hidePreview
 					? m(PrintPreviewTemplate, {
 							template: vnode.attrs.template,
 							generator: vnode.attrs.generator,

@@ -5,6 +5,7 @@ import Generator, { sanitizeConfig } from 'js/types/generator';
 import * as API from 'js/core/api';
 import store from 'js/core/store';
 
+import Checkbox from 'js/ui/spectre/checkbox';
 import IconButton from 'js/ui/spectre/icon-button';
 import Loader from 'js/ui/spectre/loader';
 
@@ -31,6 +32,7 @@ type SingleGeneratorState = {
 	config: any;
 	printCount: number;
 	lastRendered: string;
+	hidePreview: boolean;
 };
 
 export default (): m.Component<SingleGeneratorProps> => {
@@ -39,6 +41,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 		config: {},
 		printCount: 1,
 		lastRendered: '',
+		hidePreview: false,
 	};
 
 	const print = () => {
@@ -160,6 +163,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 					generator: state.generator,
 					config: state.config,
 					onRendered: (html) => (state.lastRendered = html),
+					hidePreview: state.hidePreview,
 					tabs: [
 						{ icon: 'options', label: 'Config' },
 						{ icon: 'clipboard', label: 'Information' },
@@ -202,6 +206,10 @@ export default (): m.Component<SingleGeneratorProps> => {
 										}),
 									),
 									*/
+									m(Flex, { items: 'center', className: '.mr2' }, [
+										m(Checkbox, { checked: state.hidePreview, onChange: (val) => (state.hidePreview = val) }),
+										'Hide preview',
+									]),
 									m(IconButton, { icon: 'camera', intend: 'primary', onClick: screenshot }, 'Screenshot'),
 									m(IconButton, { icon: 'print', intend: 'success', onClick: print }, 'Print'),
 								]),

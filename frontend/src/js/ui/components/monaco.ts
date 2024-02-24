@@ -3,6 +3,7 @@ import m from 'mithril';
 import { emmetHTML } from 'emmet-monaco-es';
 import { css } from 'goober';
 import * as monaco from 'monaco-editor';
+import { IModelDeltaDecoration } from 'monaco-editor';
 
 import guid from 'js/core/guid';
 import type { CompletionFunction } from 'js/core/monaco/completion';
@@ -50,24 +51,30 @@ export default (): m.Component<MonacoProps> => {
 		} else {
 			state.decorations = state.editor.deltaDecorations(
 				state.decorations,
-				(attrs.errors ?? []).map((error) => {
-					const errorRange = new monaco.Range(error.line, 1, error.line, state.editor!.getModel().getLineMaxColumn(error.line));
+				(attrs.errors ?? [])
+					.map((error) => {
+						// Somehow this can be undefined even though it's not supposed to be,
+						// which breaks the entire thing.
+						if (!(error as unknown)) return null;
 
-					console.log(error);
+						const errorRange = new monaco.Range(error.line, 1, error.line, state.editor!.getModel().getLineMaxColumn(error.line));
 
-					const decorationOptions = {
-						range: errorRange,
-						options: {
-							isWholeLine: true,
-							className: errorStyle,
-							hoverMessage: {
-								value: error.error,
+						console.log(error);
+
+						const decorationOptions = {
+							range: errorRange,
+							options: {
+								isWholeLine: true,
+								className: errorStyle,
+								hoverMessage: {
+									value: error.error,
+								},
 							},
-						},
-					};
+						};
 
-					return decorationOptions;
-				}),
+						return decorationOptions;
+					})
+					.filter(Boolean) as IModelDeltaDecoration[],
 			);
 		}
 	};

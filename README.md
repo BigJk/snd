@@ -107,7 +107,7 @@ In general the rule of thumb is:
 - Most epson thermal printer obviously support it
 - A lot of older Serial printer (like Metapace T-1) also support it
 
-More specific information about tested printers can be found in the wiki: [Printer-Settings](https://sales-and-dungeons.app/docs/printer/models)
+More specific information about tested printers can be found in the wiki: [Printer-Settings](https://sales-and-dungeons.app/docs/printer/models/)
 
 ## How It Works
 
@@ -133,7 +133,7 @@ to the "draw image" command of the printer.
 
 ## Printers, Templating & Building
 
-If you want to see what printers were already tested, which settings they need, how the templates work or how you can build Sales & Dungeons yourself please visit the [**wiki**](https://sales-and-dungeons.app/docs/intro).
+If you want to see what printers were already tested, which settings they need, how the templates work or how you can build Sales & Dungeons yourself please visit the [**wiki**](https://sales-and-dungeons.app/docs/intro/).
 
 ## Thanks to all contributors ❤
 

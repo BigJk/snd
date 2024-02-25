@@ -184,7 +184,7 @@ export default (): m.Component<SingleTemplateProps> => {
 
 	const showAdditionalInfo = () => {
 		if (!state.template) return;
-		openAdditionalInfosModal('template', buildId('template', state.template));
+		openAdditionalInfosModal('template', buildId('template', state.template), state.config);
 	};
 
 	const deleteTemplate = () => {

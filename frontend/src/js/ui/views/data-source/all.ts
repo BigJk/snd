@@ -5,6 +5,7 @@ import { buildId } from 'js/types/basic-info';
 import * as API from 'js/core/api';
 import store, { sources } from 'js/core/store';
 
+import DividerVert from 'js/ui/spectre/divider-vert';
 import IconButton from 'js/ui/spectre/icon-button';
 import Input from 'js/ui/spectre/input';
 
@@ -98,6 +99,7 @@ export default (): m.Component => {
 						m(
 							IconButton,
 							{
+								intend: 'link',
 								icon: 'cloud-upload',
 								onClick: () => {
 									setPortal(ImportExport, {
@@ -112,10 +114,11 @@ export default (): m.Component => {
 							},
 							'Import',
 						), //
-						m('div.divider-vert'),
+						m(DividerVert),
 						m(
 							IconButton,
 							{
+								intend: 'link',
 								icon: 'add',
 								onClick: openDataSourceCreateModal,
 							},

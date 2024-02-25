@@ -3,12 +3,15 @@ import m from 'mithril';
 // @ts-ignore
 import { shell } from 'src/js/electron';
 
+import { intendToShoelace, sizeToShoelace } from 'js/ui/spectre/shoelace';
+
 import Flex from 'js/ui/components/layout/flex';
 
 export type ButtonProps = {
 	onClick?: () => void;
 	intend?: 'primary' | 'success' | 'error' | 'warning' | 'link';
 	size?: 'sm' | 'lg';
+	prefix?: m.Children;
 	loading?: boolean;
 	disabled?: boolean;
 	className?: string;
@@ -28,29 +31,23 @@ export default (): m.Component<ButtonProps> => {
 
 	return {
 		view({ attrs, children }) {
-			let classes = '.btn';
-			if (attrs.intend) {
-				classes += '.btn-' + attrs.intend;
-			}
-			if (attrs.size) {
-				classes += '.btn-' + attrs.size;
-			}
-			if (attrs.loading) {
-				classes += '.loading';
-			}
-			if (attrs.disabled) {
-				classes += '.disabled';
-			}
+			const intend = intendToShoelace(attrs.intend);
+			const size = sizeToShoelace(attrs.size);
 
 			let finalChildren: m.Children = children;
-			if (Array.isArray(children)) {
+			if (Array.isArray(children) && children.length > 1) {
 				finalChildren = m(Flex, { items: 'center', gap: 2 }, children);
 			}
 
 			return m(
-				'button' + classes + (attrs.className ?? ''),
-				{ onclick: attrs.link ? () => openLink(attrs.link) : !attrs.loading ? attrs.onClick : null },
-				finalChildren,
+				'sl-button' + (attrs.className ?? ''),
+				{
+					variant: intend,
+					size: size,
+					loading: !!attrs.loading,
+					onclick: attrs.link ? () => openLink(attrs.link) : !attrs.loading ? attrs.onClick : null,
+				},
+				[attrs.prefix ? m('slot', { slot: 'prefix' }, attrs.prefix) : null, finalChildren],
 			);
 		},
 	};

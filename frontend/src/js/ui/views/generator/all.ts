@@ -6,6 +6,7 @@ import { sanitizeConfig } from 'js/types/generator';
 import * as API from 'js/core/api';
 import store, { generators } from 'js/core/store';
 
+import DividerVert from 'js/ui/spectre/divider-vert';
 import IconButton from 'js/ui/spectre/icon-button';
 import Input from 'js/ui/spectre/input';
 
@@ -98,6 +99,7 @@ export default (): m.Component => {
 						m(
 							IconButton,
 							{
+								intend: 'link',
 								icon: 'cloud-upload',
 								onClick: () => {
 									setPortal(ImportExport, {
@@ -112,8 +114,8 @@ export default (): m.Component => {
 							},
 							'Import',
 						), //
-						m('div.divider-vert'),
-						m(IconButton, { link: '/generator/create', icon: 'add' }, 'Create'), //
+						m(DividerVert),
+						m(IconButton, { link: '/generator/create', intend: 'link', icon: 'add' }, 'Create'), //
 					]),
 				},
 				m('div', [search(), emptyState(), generatorsByAuthor()]),

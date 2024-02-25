@@ -6,6 +6,7 @@ import * as API from 'js/core/api';
 import store from 'js/core/store';
 
 import Checkbox from 'js/ui/spectre/checkbox';
+import DividerVert from 'js/ui/spectre/divider-vert';
 import IconButton from 'js/ui/spectre/icon-button';
 import Loader from 'js/ui/spectre/loader';
 
@@ -112,11 +113,11 @@ export default (): m.Component<SingleGeneratorProps> => {
 							{ label: state.generator ? state.generator.name : m(Loader, { className: '.mh2' }) },
 						],
 					}),
-					active: 'templates',
+					active: 'generators',
 					classNameContainer: '.pa3',
 					rightElement: m('div.flex', [
 						m(IconButton, { icon: 'create', size: 'sm', intend: 'primary', onClick: () => m.route.set(`/generator/${attrs.id}/edit`) }, 'Edit'),
-						m('div.divider-vert'),
+						m(DividerVert),
 						m(
 							Tooltip,
 							{ content: 'Export' },
@@ -130,19 +131,15 @@ export default (): m.Component<SingleGeneratorProps> => {
 						m(
 							Tooltip,
 							{ content: 'Open Dev Tools' },
-							m(
-								IconButton,
-								{
-									intend: 'primary',
-									icon: 'bug',
-									size: 'sm',
-									className: '.mr2',
-									onClick: () => {
-										openDevTools(document.body);
-									},
+							m(IconButton, {
+								intend: 'primary',
+								icon: 'bug',
+								size: 'sm',
+								className: '.mr2',
+								onClick: () => {
+									openDevTools(document.body);
 								},
-								'',
-							),
+							}),
 						),
 						m(
 							Tooltip,
@@ -190,7 +187,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 										m.redraw();
 									},
 								}),
-								m(Flex, { className: '.bt.b--black-10.pv2.ph3', justify: 'end', gap: 2 }, [
+								m(Flex, { className: '.bt.b--black-10.pv2.ph3', justify: 'end', items: 'center', gap: 2 }, [
 									/*
 									Disabled for now!
 									
@@ -206,10 +203,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 										}),
 									),
 									*/
-									m(Flex, { items: 'center', className: '.mr2' }, [
-										m(Checkbox, { checked: state.hidePreview, onChange: (val) => (state.hidePreview = val) }),
-										'Hide preview',
-									]),
+									m(Tooltip, { content: 'Hide Preview' }, m(Checkbox, { checked: state.hidePreview, onChange: (val) => (state.hidePreview = val) })),
 									m(IconButton, { icon: 'camera', intend: 'primary', onClick: screenshot }, 'Screenshot'),
 									m(IconButton, { icon: 'print', intend: 'success', onClick: print }, 'Print'),
 								]),

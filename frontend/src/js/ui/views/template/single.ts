@@ -10,6 +10,8 @@ import store, { settings } from 'js/core/store';
 import { render } from 'js/core/templating';
 
 import Button from 'js/ui/spectre/button';
+import Divider from 'js/ui/spectre/divider';
+import DividerVert from 'js/ui/spectre/divider-vert';
 import IconButton from 'js/ui/spectre/icon-button';
 import Input from 'js/ui/spectre/input';
 import Loader from 'js/ui/spectre/loader';
@@ -278,7 +280,7 @@ export default (): m.Component<SingleTemplateProps> => {
 							'New Entry',
 						),
 						m(IconButton, { icon: 'create', size: 'sm', intend: 'primary', onClick: () => m.route.set(`/template/${attrs.id}/edit`) }, 'Edit'),
-						m('div.divider-vert'),
+						m(DividerVert),
 						m(
 							Tooltip,
 							{ content: 'Export' },
@@ -292,19 +294,15 @@ export default (): m.Component<SingleTemplateProps> => {
 						m(
 							Tooltip,
 							{ content: 'Open Dev Tools' },
-							m(
-								IconButton,
-								{
-									intend: 'primary',
-									icon: 'bug',
-									size: 'sm',
-									className: '.mr2',
-									onClick: () => {
-										openDevTools(document.body);
-									},
+							m(IconButton, {
+								intend: 'primary',
+								icon: 'bug',
+								size: 'sm',
+								className: '.mr2',
+								onClick: () => {
+									openDevTools(document.body);
 								},
-								'',
-							),
+							}),
 						),
 						m(
 							Tooltip,
@@ -397,7 +395,7 @@ export default (): m.Component<SingleTemplateProps> => {
 														: null,
 												),
 											]),
-											m('div.divider'),
+											m(Divider),
 											m('div.f5.b', 'AI Translation'),
 											m('div.f7.text-muted.mb2.lh-copy', 'Enter a language to which the selected entry should be converted to.'),
 											m(TextArea, {

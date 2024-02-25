@@ -43,7 +43,7 @@ export default (): m.Component<BreadcrumbProps> => {
 					putBetween(
 						attrs.items.map((item) => {
 							if (!item.link) {
-								return m('span.b', item.label);
+								return m('span.b.flex.items-center', item.label);
 							}
 
 							return m(

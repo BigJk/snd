@@ -5,7 +5,6 @@ import Input from 'js/ui/spectre/input';
 import Label from 'js/ui/spectre/label';
 import Select, { OnInputEvent } from 'js/ui/spectre/select';
 
-import Icon from 'js/ui/components/atomic/icon';
 import MiniHeader from 'js/ui/components/atomic/mini-header';
 import Config, { ConfigProps } from 'js/ui/components/config/config';
 
@@ -58,20 +57,15 @@ export default {
 						Label,
 						{
 							className: '.mr2',
-							intent: 'primary',
+							intend: 'primary',
+							onRemove: () => {
+								attrs.onChange({
+									...value,
+									selected: value.selected.filter((_, j) => j !== i),
+								});
+							},
 						},
-						[
-							m('span.mr2', v),
-							m(Icon, {
-								icon: 'close',
-								onClick: () => {
-									attrs.onChange({
-										...value,
-										selected: value.selected.filter((_, j) => j !== i),
-									});
-								},
-							}),
-						],
+						v,
 					),
 				),
 			]);

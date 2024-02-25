@@ -1,8 +1,10 @@
-import 'css/style.scss';
 import 'ionicons/dist/css/ionicons-core.css';
 import 'ionicons/dist/css/ionicons.css';
 import 'tachyons/css/tachyons.css';
 import 'tippy.js/dist/tippy.css';
+import '@shoelace-style/shoelace/dist/themes/light.css';
+import '@shoelace-style/shoelace/dist/shoelace.js';
+import 'css/style.scss';
 
 import m from 'mithril';
 

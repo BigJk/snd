@@ -14,6 +14,7 @@ export default {
 		view: ({ attrs }) =>
 			m(Flex, { className: '.flex-gap-2' }, [
 				m(Input, {
+					className: '.w-100',
 					value: attrs.value as string,
 					onChange: (value: string) => attrs.onChange(value),
 				}),

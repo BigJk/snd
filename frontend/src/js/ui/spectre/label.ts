@@ -1,10 +1,21 @@
 import m from 'mithril';
 
+import { intendToShoelace } from 'js/ui/spectre/shoelace';
+
 export type LabelProps = {
 	className?: string;
-	intent?: 'primary' | 'success' | 'warning' | 'error';
+	intend?: 'primary' | 'success' | 'warning' | 'error';
+	removable?: boolean;
+	onRemove?(): void;
 };
 
 export default (): m.Component<LabelProps> => ({
-	view: ({ attrs, children }) => m(`div.label.${attrs.intent ? `label-${attrs.intent}` : ''}${attrs.className ?? ''}`, children),
+	view: ({ attrs, children }) =>
+		m(
+			`sl-tag[size=small]${attrs.intend ? `[variant=${intendToShoelace(attrs.intend)}]` : ''}${
+				attrs.removable || attrs.onRemove ? '[removable]' : ''
+			}${attrs.className ?? ''}`,
+			{ 'onsl-remove': attrs.onRemove },
+			children,
+		),
 });

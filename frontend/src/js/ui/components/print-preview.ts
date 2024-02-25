@@ -277,7 +277,7 @@ export default (): m.Component<PrintPreviewProps> => {
 			return m(`div.dib.relative${attrs.className ?? ''}${state.loading ? `.${loadingClass}` : ''}`, { key }, [
 				frame,
 				state.loading || attrs.loading === true
-					? m('div.absolute.left-0.top-0.bg-white.ba.br2.b--black-20.ma3.ph3.pv2.light-shadow', m(Loader))
+					? m('div.absolute.left-0.top-0.bg-white.ba.br2.b--black-20.ma3.ph2.pv1.light-shadow', m(Loader))
 					: null,
 				children,
 			]);

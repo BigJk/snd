@@ -7,6 +7,6 @@ type LoaderProps = {
 
 export default (): m.Component<LoaderProps> => ({
 	view({ attrs }) {
-		return m(`div.loading${attrs.big ? '.loading-lg' : ''}${attrs.className ?? ''}`, {}, []);
+		return m(`sl-spinner[size=${attrs.big ? 'large' : 'small'}]${attrs.className ?? ''}`);
 	},
 });

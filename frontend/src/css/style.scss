@@ -6,14 +6,66 @@ $control-size: 1.55rem;
 $font-size: 0.7rem;
 
 @import "./colors.scss";
-@import "node_modules/spectre.css/src/spectre";
-@import "./spectre.scss";
+
+html {
+    font-size:  20px;
+}
+
+body {
+    font-size: 0.7rem;
+}
 
 /*
     Other Imports
  */
 
 @import "./atomic.scss";
+
+:root {
+    --sl-input-height-small: 1.5rem;
+    --sl-input-height-medium: 1.8rem;
+    --sl-input-height-large: 20rem;
+
+    --sl-font-size-small: .75rem;
+    --sl-font-size-medium: .75rem;
+    --sl-font-size-large: .75rem;
+
+    --sl-color-primary-50: rgb(249 249 255);
+    --sl-color-primary-100: rgb(235 235 254);
+    --sl-color-primary-200: rgb(220 219 254);
+    --sl-color-primary-300: rgb(203 202 253);
+    --sl-color-primary-400: rgb(180 179 253);
+    --sl-color-primary-500: rgb(150 149 252);
+    --sl-color-primary-600: #5755d9;
+    --sl-color-primary-700: rgb(91 89 228);
+    --sl-color-primary-800: rgb(75 74 188);
+    --sl-color-primary-900: rgb(54 53 134);
+    --sl-color-primary-950: rgb(33 32 83);
+
+    --sl-color-danger-50: rgb(254 248 245);
+    --sl-color-danger-100: rgb(252 233 221);
+    --sl-color-danger-200: rgb(250 215 195);
+    --sl-color-danger-300: rgb(247 196 166);
+    --sl-color-danger-400: rgb(243 169 125);
+    --sl-color-danger-500: rgb(238 131 69);
+    --sl-color-danger-600: rgb(228 85 0);
+    --sl-color-danger-700: rgb(188 70 0);
+    --sl-color-danger-800: rgb(155 58 0);
+    --sl-color-danger-900: rgb(111 41 0);
+    --sl-color-danger-950: rgb(69 26 0);
+}
+
+sl-option {
+    --sl-spacing-x-small: 0.25rem;
+    --sl-spacing-small: 0.5rem;
+    --sl-spacing-medium: 1rem;
+    --sl-spacing-large: 2rem;
+}
+
+sl-details {
+    --sl-spacing-medium: 0.5rem;
+}
+
 
 /*
     Toastify

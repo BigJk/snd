@@ -4,6 +4,7 @@ import { css } from 'goober';
 
 type InputProps = {
 	className?: string;
+	label?: string;
 	value?: string;
 	placeholder?: string;
 	type?: 'text' | 'password' | 'email' | 'number' | 'tel' | 'url';
@@ -12,14 +13,15 @@ type InputProps = {
 	useBlur?: boolean;
 	minimal?: boolean;
 	disabled?: boolean;
+	suffix?: m.Children;
 };
 
 const minimalStyle = css`
-	border: none;
-	outline: none;
-	padding: 0;
-	&:focus {
-		box-shadow: none;
+	&::part(base),
+	&::part(input) {
+		border: none !important;
+		outline: none !important;
+		box-shadow: none !important;
 	}
 `;
 
@@ -32,11 +34,11 @@ export default (): m.Component<InputProps> => ({
 		let handler = {};
 		if (attrs.useBlur) {
 			handler = {
-				onblur: onChange,
+				'onsl-blur': onChange,
 			};
 		} else {
 			handler = {
-				oninput: onChange,
+				'onsl-input': onChange,
 			};
 		}
 
@@ -55,11 +57,10 @@ export default (): m.Component<InputProps> => ({
 					event.redraw = false;
 				},
 			};
-			console.log(handler);
 		}
 
 		return m(
-			`input.form-input${attrs.className ?? ''}${attrs.minimal ? `.${minimalStyle}` : ''}`,
+			`sl-input${attrs.className ?? ''}[size=small][label=${attrs.label ?? ''}]${attrs.minimal ? '.' + minimalStyle : ''}`,
 			{
 				value: attrs.value ?? '',
 				placeholder: attrs.placeholder,
@@ -67,7 +68,7 @@ export default (): m.Component<InputProps> => ({
 				disabled: attrs.disabled,
 				...handler,
 			},
-			[],
+			[attrs.suffix ? m('slot', { slot: 'suffix' }, attrs.suffix) : null],
 		);
 	},
 });

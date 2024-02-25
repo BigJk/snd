@@ -7,17 +7,18 @@ type CheckboxProps = {
 };
 
 export default (): m.Component<CheckboxProps> => ({
-	view({ attrs }) {
-		return m(`label.form-switch${attrs.className ?? ''}`, [
-			m('input', {
-				type: 'checkbox',
+	view({ attrs, children }) {
+		return m(
+			'sl-switch[size=small]' + (attrs.className ?? ''),
+			{
+				style: { marginBottom: '2px' },
 				checked: attrs.checked,
-				onchange: (event: Event) => {
+				'onsl-change': (event: Event) => {
 					if (!attrs.onChange) return;
 					attrs.onChange((event.target as HTMLInputElement).checked);
 				},
-			}), //
-			m('i.form-icon'),
-		]);
+			},
+			children,
+		);
 	},
 });

@@ -89,9 +89,9 @@ function dialogInternal(question: string, bg: string) {
 					m('span', { className: 'mh3' }, question),
 					m('div', { className: 'bg-white flex pv2 ph3', style: { borderRadius: '0 2px 2px 0' } }, [
 						m(
-							'div',
+							'sl-button[size=small][variant=success]',
 							{
-								className: 'mr2 btn btn-success btn-sm',
+								className: 'mr2',
 								onclick: () => {
 									clearTimeout(dialogToast.callback);
 									dialogToast.toast.hideToast();
@@ -103,9 +103,8 @@ function dialogInternal(question: string, bg: string) {
 							'Yes',
 						),
 						m(
-							'div',
+							'sl-button[size=small][variant=danger]',
 							{
-								className: 'btn btn-error btn-sm',
 								onclick: () => {
 									clearTimeout(dialogToast.callback);
 									dialogToast.toast.hideToast();

@@ -4,6 +4,7 @@ import { buildId } from 'js/types/basic-info';
 import Template from 'js/types/template';
 import * as API from 'js/core/api';
 
+import DividerVert from 'js/ui/spectre/divider-vert';
 import IconButton from 'js/ui/spectre/icon-button';
 import Loader from 'js/ui/spectre/loader';
 
@@ -69,22 +70,18 @@ export default (): m.Component<EditTemplateProps> => {
 							},
 							'Save',
 						), //
-						m('div.divider-vert'),
+						m(DividerVert),
 						m(
 							Tooltip,
 							{ content: 'Open Dev Tools' },
-							m(
-								IconButton,
-								{
-									intend: 'primary',
-									icon: 'bug',
-									size: 'sm',
-									onClick: () => {
-										openDevTools(document.body);
-									},
+							m(IconButton, {
+								intend: 'primary',
+								icon: 'bug',
+								size: 'sm',
+								onClick: () => {
+									openDevTools(document.body);
 								},
-								'',
-							),
+							}),
 						),
 					]),
 					active: 'templates',

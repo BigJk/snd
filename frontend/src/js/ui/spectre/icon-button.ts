@@ -10,6 +10,9 @@ type IconButtonProps = ButtonProps & {
 
 export default (): m.Component<IconButtonProps> => ({
 	view({ attrs, children }) {
-		return m(Button, attrs, [m(Icon, { icon: attrs.icon }), children]);
+		if (!children || (Array.isArray(children) && children.length === 0)) {
+			return m(Button, attrs, m(Icon, { icon: attrs.icon }));
+		}
+		return m(Button, { ...attrs, prefix: m(Icon, { icon: attrs.icon }) }, children);
 	},
 });

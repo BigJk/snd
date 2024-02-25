@@ -3,6 +3,7 @@ import m from 'mithril';
 import { ConfigValue } from 'js/types/config';
 
 import Button from 'js/ui/spectre/button';
+import DividerVert from 'js/ui/spectre/divider-vert';
 import IconButton from 'js/ui/spectre/icon-button';
 import Input from 'js/ui/spectre/input';
 import Select from 'js/ui/spectre/select';
@@ -81,7 +82,7 @@ export default (): m.Component<ConfigCreatorProps> => ({
 									},
 								}),
 							]), //
-							m('div.divider-vert'),
+							m(DividerVert, { noSpacing: true }),
 							m(
 								'div.pa2.bg--black-05',
 								m(types[c.type].view, {
@@ -94,7 +95,7 @@ export default (): m.Component<ConfigCreatorProps> => ({
 								}),
 							),
 						]),
-						m(Flex, { gap: 1, justify: 'between', className: '.mt2.pa2.bt.b--black-10' }, [
+						m(Flex, { gap: 1, justify: 'between', className: '.pa2.bt.b--black-10' }, [
 							m(Flex, { gap: 1 }, [
 								m(IconButton, {
 									icon: 'arrow-up',

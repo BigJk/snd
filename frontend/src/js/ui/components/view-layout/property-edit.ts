@@ -149,6 +149,7 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => ({
 									(value ?? []).map((item, index) =>
 										m(Flex, { items: 'center', className: '.mb2' }, [
 											m(Input, {
+												className: '.w-100',
 												value: item.toString(),
 												onChange: (text) => {
 													// @ts-ignore
@@ -156,16 +157,16 @@ export default <T extends Object>(): m.Component<PropertyEditProps<T>> => ({
 													newArray[index] = validator(text);
 													onChange({ ...attrs.properties, [key]: newArray });
 												},
-											}),
-											m(Icon, {
-												className: '.ml2.col-error',
-												icon: 'trash',
-												onClick: () => {
-													// @ts-ignore
-													let newArray = [...value];
-													newArray.splice(index, 1);
-													onChange({ ...attrs.properties, [key]: newArray });
-												},
+												suffix: m(Icon, {
+													className: '.mr2.col-error',
+													icon: 'trash',
+													onClick: () => {
+														// @ts-ignore
+														let newArray = [...value];
+														newArray.splice(index, 1);
+														onChange({ ...attrs.properties, [key]: newArray });
+													},
+												}),
 											}),
 										]),
 									),

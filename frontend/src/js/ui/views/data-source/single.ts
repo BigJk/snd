@@ -7,6 +7,7 @@ import * as API from 'js/core/api';
 import store from 'js/core/store';
 
 import Button from 'js/ui/spectre/button';
+import DividerVert from 'js/ui/spectre/divider-vert';
 import IconButton from 'js/ui/spectre/icon-button';
 import Input from 'js/ui/spectre/input';
 import Loader from 'js/ui/spectre/loader';
@@ -223,7 +224,7 @@ export default (): m.Component<SingleSourceProps> => {
 							},
 							'Edit',
 						),
-						m('div.divider-vert'),
+						m(DividerVert),
 						m(
 							Tooltip,
 							{ content: 'Export' },

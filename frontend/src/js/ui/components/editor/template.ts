@@ -13,7 +13,6 @@ import { addEntryMeta, render } from 'js/core/templating';
 import Button from 'js/ui/spectre/button';
 import Label from 'js/ui/spectre/label';
 
-import Icon from 'js/ui/components/atomic/icon';
 import ConfigCreator from 'js/ui/components/config/creator';
 import Editor from 'js/ui/components/config/editor';
 import BasicInfo from 'js/ui/components/editor/basic-info';
@@ -247,14 +246,11 @@ export default (): m.Component<TemplateEditorProps> => {
 											attrs.template.dataSources.map((s) =>
 												m(
 													Label,
-													{ intent: 'primary' },
-													m(Flex, { gap: 2 }, [
-														s,
-														m(Icon, {
-															icon: 'close',
-															onClick: () => attrs.onChange({ ...attrs.template, dataSources: attrs.template.dataSources.filter((ds) => ds !== s) }),
-														}),
-													]),
+													{
+														intend: 'primary',
+														onRemove: () => attrs.onChange({ ...attrs.template, dataSources: attrs.template.dataSources.filter((ds) => ds !== s) }),
+													},
+													s,
 												),
 											),
 										),

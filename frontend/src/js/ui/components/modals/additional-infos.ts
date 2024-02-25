@@ -3,11 +3,11 @@ import m from 'mithril';
 // @ts-ignore
 import { shell } from 'src/js/electron';
 
-import Details from 'js/ui/spectre/details';
-import Divider from 'js/ui/spectre/divider';
-import Input from 'js/ui/spectre/input';
-import Modal from 'js/ui/spectre/modal';
-import TextArea from 'js/ui/spectre/text-area';
+import Details from 'js/ui/shoelace/details';
+import Divider from 'js/ui/shoelace/divider';
+import Input from 'js/ui/shoelace/input';
+import Modal from 'js/ui/shoelace/modal';
+import TextArea from 'js/ui/shoelace/text-area';
 
 import Flex from 'js/ui/components/layout/flex';
 

@@ -6,9 +6,9 @@ import { sanitizeConfig } from 'js/types/generator';
 import * as API from 'js/core/api';
 import store, { generators } from 'js/core/store';
 
-import DividerVert from 'js/ui/spectre/divider-vert';
-import IconButton from 'js/ui/spectre/icon-button';
-import Input from 'js/ui/spectre/input';
+import DividerVert from 'js/ui/shoelace/divider-vert';
+import IconButton from 'js/ui/shoelace/icon-button';
+import Input from 'js/ui/shoelace/input';
 
 import Icon from 'js/ui/components/atomic/icon';
 import Title from 'js/ui/components/atomic/title';

@@ -1,8 +1,8 @@
 import m from 'mithril';
 
-import Button from 'js/ui/spectre/button';
-import Input from 'js/ui/spectre/input';
-import Modal from 'js/ui/spectre/modal';
+import Button from 'js/ui/shoelace/button';
+import Input from 'js/ui/shoelace/input';
+import Modal from 'js/ui/shoelace/modal';
 
 import HorizontalProperty from 'js/ui/components/horizontal-property';
 import Flex from 'js/ui/components/layout/flex';

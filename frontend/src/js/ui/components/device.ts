@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-import Button from 'js/ui/spectre/button';
+import Button from 'js/ui/shoelace/button';
 
 import Box from 'js/ui/components/box';
 import Flex from 'js/ui/components/layout/flex';

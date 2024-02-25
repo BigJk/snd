@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-import Button, { type ButtonProps } from 'js/ui/spectre/button';
+import Button, { type ButtonProps } from 'js/ui/shoelace/button';
 
 import Icon from 'js/ui/components/atomic/icon';
 

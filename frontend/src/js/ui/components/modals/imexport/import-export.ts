@@ -4,10 +4,10 @@ import { ImportExport } from 'js/types/import-export';
 import * as API from 'js/core/api';
 import store from 'js/core/store';
 
-import Button from 'js/ui/spectre/button';
-import Loader from 'js/ui/spectre/loader';
-import Modal from 'js/ui/spectre/modal';
-import Select from 'js/ui/spectre/select';
+import Button from 'js/ui/shoelace/button';
+import Loader from 'js/ui/shoelace/loader';
+import Modal from 'js/ui/shoelace/modal';
+import Select from 'js/ui/shoelace/select';
 
 import Config from 'js/ui/components/config/config';
 import ConfigTypes from 'js/ui/components/config/types';

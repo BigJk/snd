@@ -1,7 +1,7 @@
 import m from 'mithril';
 
-import Button from 'js/ui/spectre/button';
-import Input from 'js/ui/spectre/input';
+import Button from 'js/ui/shoelace/button';
+import Input from 'js/ui/shoelace/input';
 
 import Icon from 'js/ui/components/atomic/icon';
 import Config, { ConfigProps } from 'js/ui/components/config/config';

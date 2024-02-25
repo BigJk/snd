@@ -20,7 +20,7 @@
     "js/workers/(.*)$",
     "js/core/(.*)$",
     "",
-    "js/ui/spectre(.*)$",
+    "js/ui/shoelace(.*)$",
     "",
     "js/ui/components(.*)$",
     "",

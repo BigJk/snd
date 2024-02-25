@@ -3,7 +3,7 @@ import m from 'mithril';
 // @ts-ignore
 import { shell } from 'src/js/electron';
 
-import { intendToShoelace, sizeToShoelace } from 'js/ui/spectre/shoelace';
+import { intendToShoelace, sizeToShoelace } from 'js/ui/shoelace/shoelace';
 
 import Flex from 'js/ui/components/layout/flex';
 

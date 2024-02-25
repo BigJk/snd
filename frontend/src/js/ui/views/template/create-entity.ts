@@ -7,9 +7,9 @@ import Template from 'js/types/template';
 import * as API from 'js/core/api';
 import { buildSchema, initialData, objectPathToSchema, readableName, SchemaNode, SchemaRoot } from 'js/core/schema';
 
-import IconButton from 'js/ui/spectre/icon-button';
-import Input from 'js/ui/spectre/input';
-import Loader from 'js/ui/spectre/loader';
+import IconButton from 'js/ui/shoelace/icon-button';
+import Input from 'js/ui/shoelace/input';
+import Loader from 'js/ui/shoelace/loader';
 
 import Icon from 'js/ui/components/atomic/icon';
 import types from 'js/ui/components/config/types';

@@ -3,7 +3,7 @@ import m from 'mithril';
 import { buildId } from 'js/types/basic-info';
 import { sources } from 'js/core/store';
 
-import Input from 'js/ui/spectre/input';
+import Input from 'js/ui/shoelace/input';
 
 import Icon from 'js/ui/components/atomic/icon';
 import Flex from 'js/ui/components/layout/flex';

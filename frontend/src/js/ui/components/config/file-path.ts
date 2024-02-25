@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-import Button from 'js/ui/spectre/button';
+import Button from 'js/ui/shoelace/button';
 
 import Config, { ConfigProps } from 'js/ui/components/config/config';
 import { openFileModal } from 'js/ui/components/modals/file-browser';

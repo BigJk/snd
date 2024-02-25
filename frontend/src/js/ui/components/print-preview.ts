@@ -9,7 +9,7 @@ import * as API from 'js/core/api';
 import guid from 'js/core/guid';
 import { settings } from 'js/core/store';
 
-import Loader from 'js/ui/spectre/loader';
+import Loader from 'js/ui/shoelace/loader';
 
 const PADDING = 15;
 

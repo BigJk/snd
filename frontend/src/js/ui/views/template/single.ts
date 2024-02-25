@@ -9,13 +9,13 @@ import * as API from 'js/core/api';
 import store, { settings } from 'js/core/store';
 import { render } from 'js/core/templating';
 
-import Button from 'js/ui/spectre/button';
-import Divider from 'js/ui/spectre/divider';
-import DividerVert from 'js/ui/spectre/divider-vert';
-import IconButton from 'js/ui/spectre/icon-button';
-import Input from 'js/ui/spectre/input';
-import Loader from 'js/ui/spectre/loader';
-import TextArea from 'js/ui/spectre/text-area';
+import Button from 'js/ui/shoelace/button';
+import Divider from 'js/ui/shoelace/divider';
+import DividerVert from 'js/ui/shoelace/divider-vert';
+import IconButton from 'js/ui/shoelace/icon-button';
+import Input from 'js/ui/shoelace/input';
+import Loader from 'js/ui/shoelace/loader';
+import TextArea from 'js/ui/shoelace/text-area';
 
 import Tooltip from 'js/ui/components/atomic/tooltip';
 import Editor from 'js/ui/components/config/editor';

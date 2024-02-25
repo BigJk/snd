@@ -13,11 +13,11 @@ import { Package, Repo } from 'src/js/types/public-list';
 import * as API from 'js/core/api';
 import store from 'js/core/store';
 
-import Button from 'js/ui/spectre/button';
-import IconButton from 'js/ui/spectre/icon-button';
-import Input from 'js/ui/spectre/input';
-import Loader from 'js/ui/spectre/loader';
-import Select from 'js/ui/spectre/select';
+import Button from 'js/ui/shoelace/button';
+import IconButton from 'js/ui/shoelace/icon-button';
+import Input from 'js/ui/shoelace/input';
+import Loader from 'js/ui/shoelace/loader';
+import Select from 'js/ui/shoelace/select';
 
 import HorizontalProperty from 'js/ui/components/horizontal-property';
 import Flex from 'js/ui/components/layout/flex';

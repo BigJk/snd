@@ -3,8 +3,8 @@ import m from 'mithril';
 import * as API from 'js/core/api';
 import guid from 'js/core/guid';
 
-import Button from 'js/ui/spectre/button';
-import Input from 'js/ui/spectre/input';
+import Button from 'js/ui/shoelace/button';
+import Input from 'js/ui/shoelace/input';
 
 import Icon from 'js/ui/components/atomic/icon';
 import Flex from 'js/ui/components/layout/flex';

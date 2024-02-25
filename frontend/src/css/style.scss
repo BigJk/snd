@@ -36,7 +36,7 @@ body {
     --sl-color-primary-300: rgb(203 202 253);
     --sl-color-primary-400: rgb(180 179 253);
     --sl-color-primary-500: rgb(150 149 252);
-    --sl-color-primary-600: #5755d9;
+    --sl-color-primary-600: rgb(87 85 217);
     --sl-color-primary-700: rgb(91 89 228);
     --sl-color-primary-800: rgb(75 74 188);
     --sl-color-primary-900: rgb(54 53 134);
@@ -53,6 +53,8 @@ body {
     --sl-color-danger-800: rgb(155 58 0);
     --sl-color-danger-900: rgb(111 41 0);
     --sl-color-danger-950: rgb(69 26 0);
+
+    --sl-input-focus-ring-color: #e7e7ff;
 }
 
 sl-option {

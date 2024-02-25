@@ -3,7 +3,7 @@ import { map } from 'lodash-es';
 
 import store, { settings } from 'js/core/store';
 
-import Select from 'js/ui/spectre/select';
+import Select from 'js/ui/shoelace/select';
 
 import InfoIcon from 'js/ui/components/atomic/info-icon';
 import Title from 'js/ui/components/atomic/title';

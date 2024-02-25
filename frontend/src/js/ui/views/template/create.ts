@@ -5,7 +5,7 @@ import Template, { createEmptyTemplate } from 'js/types/template';
 import * as API from 'js/core/api';
 import store from 'js/core/store';
 
-import IconButton from 'js/ui/spectre/icon-button';
+import IconButton from 'js/ui/shoelace/icon-button';
 
 import TemplateEditor from 'js/ui/components/editor/template';
 import Base from 'js/ui/components/view-layout/base';

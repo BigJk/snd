@@ -3,7 +3,7 @@ import m from 'mithril';
 import PublicList from 'js/types/public-list';
 import * as API from 'js/core/api';
 
-import Input from 'js/ui/spectre/input';
+import Input from 'js/ui/shoelace/input';
 
 import Icon from 'js/ui/components/atomic/icon';
 import Title from 'js/ui/components/atomic/title';

@@ -5,8 +5,8 @@ import Generator, { createEmptyGenerator } from 'js/types/generator';
 import * as API from 'js/core/api';
 import store from 'js/core/store';
 
-import IconButton from 'js/ui/spectre/icon-button';
-import Loader from 'js/ui/spectre/loader';
+import IconButton from 'js/ui/shoelace/icon-button';
+import Loader from 'js/ui/shoelace/loader';
 
 import GeneratorEditor from 'js/ui/components/editor/generator';
 import Base from 'js/ui/components/view-layout/base';

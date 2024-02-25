@@ -4,9 +4,9 @@ import { buildId } from 'js/types/basic-info';
 import Template from 'js/types/template';
 import * as API from 'js/core/api';
 
-import DividerVert from 'js/ui/spectre/divider-vert';
-import IconButton from 'js/ui/spectre/icon-button';
-import Loader from 'js/ui/spectre/loader';
+import DividerVert from 'js/ui/shoelace/divider-vert';
+import IconButton from 'js/ui/shoelace/icon-button';
+import Loader from 'js/ui/shoelace/loader';
 
 import Tooltip from 'js/ui/components/atomic/tooltip';
 import TemplateEditor from 'js/ui/components/editor/template';

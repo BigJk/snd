@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-import IconButton from 'js/ui/spectre/icon-button';
+import IconButton from 'js/ui/shoelace/icon-button';
 
 import Flex from 'js/ui/components/layout/flex';
 
@@ -72,9 +72,9 @@ export default <T>(): m.Component<PaginatedContentProps<T>> => {
 					m(Flex, { justify: 'between' }, [
 						children, //
 						m(Flex, { items: 'center' }, [
-							m(IconButton, { onClick: () => prevPage(attrs), icon: 'arrow-round-back' }), //
+							m(IconButton, { onClick: () => prevPage(attrs), intend: 'link', icon: 'arrow-round-back' }), //
 							m('div.w3.tc', `${state.page + 1} / ${maxPage(attrs) + 1}`),
-							m(IconButton, { onClick: () => nextPage(attrs), icon: 'arrow-round-forward' }),
+							m(IconButton, { onClick: () => nextPage(attrs), intend: 'link', icon: 'arrow-round-forward' }),
 						]),
 					]),
 				),

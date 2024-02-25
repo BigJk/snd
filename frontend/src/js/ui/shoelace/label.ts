@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-import { intendToShoelace } from 'js/ui/spectre/shoelace';
+import { intendToShoelace } from 'js/ui/shoelace/shoelace';
 
 export type LabelProps = {
 	className?: string;

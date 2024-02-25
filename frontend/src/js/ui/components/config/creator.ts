@@ -2,11 +2,11 @@ import m from 'mithril';
 
 import { ConfigValue } from 'js/types/config';
 
-import Button from 'js/ui/spectre/button';
-import DividerVert from 'js/ui/spectre/divider-vert';
-import IconButton from 'js/ui/spectre/icon-button';
-import Input from 'js/ui/spectre/input';
-import Select from 'js/ui/spectre/select';
+import Button from 'js/ui/shoelace/button';
+import DividerVert from 'js/ui/shoelace/divider-vert';
+import IconButton from 'js/ui/shoelace/icon-button';
+import Input from 'js/ui/shoelace/input';
+import Select from 'js/ui/shoelace/select';
 
 import Icon from 'js/ui/components/atomic/icon';
 import MiniHeader from 'js/ui/components/atomic/mini-header';

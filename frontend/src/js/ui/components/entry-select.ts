@@ -2,7 +2,7 @@ import m from 'mithril';
 
 import Entry from 'js/types/entry';
 
-import Input from 'js/ui/spectre/input';
+import Input from 'js/ui/shoelace/input';
 
 import Dropdown from 'js/ui/components/overlay/dropdown';
 

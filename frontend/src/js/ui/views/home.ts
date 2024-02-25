@@ -2,7 +2,7 @@ import m from 'mithril';
 
 import store from 'js/core/store';
 
-import Button from 'js/ui/spectre/button';
+import Button from 'js/ui/shoelace/button';
 
 import Icon from 'js/ui/components/atomic/icon';
 import Logo from 'js/ui/components/atomic/logo';

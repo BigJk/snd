@@ -4,8 +4,8 @@ import { buildId } from 'js/types/basic-info';
 import * as API from 'js/core/api';
 import store from 'js/core/store';
 
-import Button from 'js/ui/spectre/button';
-import Modal from 'js/ui/spectre/modal';
+import Button from 'js/ui/shoelace/button';
+import Modal from 'js/ui/shoelace/modal';
 
 import BasicInfo from 'js/ui/components/editor/basic-info';
 

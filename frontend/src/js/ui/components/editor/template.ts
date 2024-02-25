@@ -10,8 +10,8 @@ import { createNunjucksCompletionProvider } from 'js/core/monaco/completion-nunj
 import { settings } from 'js/core/store';
 import { addEntryMeta, render } from 'js/core/templating';
 
-import Button from 'js/ui/spectre/button';
-import Label from 'js/ui/spectre/label';
+import Button from 'js/ui/shoelace/button';
+import Label from 'js/ui/shoelace/label';
 
 import ConfigCreator from 'js/ui/components/config/creator';
 import Editor from 'js/ui/components/config/editor';

@@ -3,7 +3,7 @@ import m from 'mithril';
 import { buildId } from 'js/types/basic-info';
 import { sources } from 'js/core/store';
 
-import Select from 'js/ui/spectre/select';
+import Select from 'js/ui/shoelace/select';
 
 import Config from 'js/ui/components/config/config';
 

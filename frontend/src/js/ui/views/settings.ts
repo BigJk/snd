@@ -6,10 +6,10 @@ import Settings, { Commands } from 'js/types/settings';
 import * as API from 'js/core/api';
 import store, { printer, settings } from 'js/core/store';
 
-import Button from 'js/ui/spectre/button';
-import IconButton from 'js/ui/spectre/icon-button';
-import Input from 'js/ui/spectre/input';
-import Select from 'js/ui/spectre/select';
+import Button from 'js/ui/shoelace/button';
+import IconButton from 'js/ui/shoelace/icon-button';
+import Input from 'js/ui/shoelace/input';
+import Select from 'js/ui/shoelace/select';
 
 import Title from 'js/ui/components/atomic/title';
 import HorizontalProperty from 'js/ui/components/horizontal-property';

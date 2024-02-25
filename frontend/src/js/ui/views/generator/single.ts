@@ -5,10 +5,10 @@ import Generator, { sanitizeConfig } from 'js/types/generator';
 import * as API from 'js/core/api';
 import store from 'js/core/store';
 
-import Checkbox from 'js/ui/spectre/checkbox';
-import DividerVert from 'js/ui/spectre/divider-vert';
-import IconButton from 'js/ui/spectre/icon-button';
-import Loader from 'js/ui/spectre/loader';
+import Checkbox from 'js/ui/shoelace/checkbox';
+import DividerVert from 'js/ui/shoelace/divider-vert';
+import IconButton from 'js/ui/shoelace/icon-button';
+import Loader from 'js/ui/shoelace/loader';
 
 import Tooltip from 'js/ui/components/atomic/tooltip';
 import Editor from 'js/ui/components/config/editor';

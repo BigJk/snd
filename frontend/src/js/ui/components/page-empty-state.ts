@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-import IconButton from 'js/ui/spectre/icon-button';
+import IconButton from 'js/ui/shoelace/icon-button';
 
 import Icon from 'js/ui/components/atomic/icon';
 import Flex from 'js/ui/components/layout/flex';

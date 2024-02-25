@@ -2,9 +2,9 @@ import m from 'mithril';
 
 import * as API from 'js/core/api';
 
-import Button from 'js/ui/spectre/button';
-import Input from 'js/ui/spectre/input';
-import Modal from 'js/ui/spectre/modal';
+import Button from 'js/ui/shoelace/button';
+import Input from 'js/ui/shoelace/input';
+import Modal from 'js/ui/shoelace/modal';
 
 import Icon from 'js/ui/components/atomic/icon';
 import Tooltip from 'js/ui/components/atomic/tooltip';

@@ -6,11 +6,11 @@ import Entry from 'js/types/entry';
 import * as API from 'js/core/api';
 import store from 'js/core/store';
 
-import Button from 'js/ui/spectre/button';
-import DividerVert from 'js/ui/spectre/divider-vert';
-import IconButton from 'js/ui/spectre/icon-button';
-import Input from 'js/ui/spectre/input';
-import Loader from 'js/ui/spectre/loader';
+import Button from 'js/ui/shoelace/button';
+import DividerVert from 'js/ui/shoelace/divider-vert';
+import IconButton from 'js/ui/shoelace/icon-button';
+import Input from 'js/ui/shoelace/input';
+import Loader from 'js/ui/shoelace/loader';
 
 import Icon from 'js/ui/components/atomic/icon';
 import Tooltip from 'js/ui/components/atomic/tooltip';

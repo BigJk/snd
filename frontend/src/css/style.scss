@@ -1,25 +1,12 @@
-/*
-    Spectre Setup
- */
-
-$control-size: 1.55rem;
-$font-size: 0.7rem;
+/* Generate Colors */
 
 @import "./colors.scss";
 
-html {
-    font-size:  20px;
-}
-
-body {
-    font-size: 0.7rem;
-}
-
-/*
-    Other Imports
- */
+/* Atomic Classes */
 
 @import "./atomic.scss";
+
+/* Shoelace */
 
 :root {
     --sl-input-height-small: 1.5rem;
@@ -69,17 +56,13 @@ sl-details {
 }
 
 
-/*
-    Toastify
-*/
+/* Toastify */
 
 .toastify {
     position: absolute;
 }
 
-/*
-    Scrollbar
-*/
+/* Scrollbar */
 
 ::-webkit-scrollbar {
     width: 5px;
@@ -98,11 +81,14 @@ sl-details {
     background: #d1d1d1;
 }
 
-/*
-    Common
- */
+/* Common */
+
+html {
+    font-size:  20px;
+}
 
 body {
+    font-size: 0.7rem;
     background-color: #f4f8f9;
 }
 

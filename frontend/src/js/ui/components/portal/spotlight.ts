@@ -134,8 +134,8 @@ export default (): m.Component => {
 				Key,
 				{
 					key: [
-						m(Icon, { icon: 'arrow-down', className: '.mr1', size: 7 }), //
-						m(Icon, { icon: 'arrow-up', size: 7 }),
+						m(Icon, { icon: 'arrow-down', className: '.mr1.white', size: 7 }), //
+						m(Icon, { icon: 'arrow-up', className: '.white', size: 7 }),
 					],
 					className: '.mr2',
 				},

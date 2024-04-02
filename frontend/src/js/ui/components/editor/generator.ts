@@ -61,6 +61,7 @@ export default (): m.Component<GeneratorEditorProps> => {
 								title: 'Basic Info',
 								icon: 'clipboard',
 								centerContainer: true,
+								padding: true,
 								render: () =>
 									m(BasicInfo, {
 										info: attrs.generator,
@@ -76,6 +77,7 @@ export default (): m.Component<GeneratorEditorProps> => {
 								title: 'Images',
 								icon: 'images',
 								centerContainer: true,
+								padding: true,
 								render: () =>
 									m(Images, { images: attrs.generator.images, onChange: (updated) => attrs.onChange({ ...attrs.generator, images: updated }) }),
 							},
@@ -87,8 +89,9 @@ export default (): m.Component<GeneratorEditorProps> => {
 								title: 'Data Sources',
 								icon: 'analytics',
 								centerContainer: true,
+								padding: true,
 								render: () =>
-									m('div.ph3', [
+									m('div', [
 										m(EditorHeader, {
 											title: 'Data Sources',
 											description:
@@ -125,6 +128,7 @@ export default (): m.Component<GeneratorEditorProps> => {
 								title: 'Config',
 								icon: 'cog',
 								centerContainer: true,
+								padding: true,
 								render: () => [
 									m(EditorHeader, { title: 'Config', description: 'Setup config parameters for your generator' }),
 									m(ConfigCreator, {
@@ -141,6 +145,7 @@ export default (): m.Component<GeneratorEditorProps> => {
 								title: 'Test Config',
 								icon: 'cog',
 								centerContainer: true,
+								padding: true,
 								render: () =>
 									m(Editor, {
 										current: state.config,

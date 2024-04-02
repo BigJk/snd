@@ -11,6 +11,7 @@ type SideMenuPagerItem = {
 	title: string;
 	icon: string;
 	centerContainer?: boolean;
+	padding?: boolean;
 	className?: string;
 	render: () => m.Children;
 };
@@ -36,11 +37,15 @@ export default (): m.Component<SideMenuPagerProps> => {
 		return attrs.items[index].className ?? '';
 	};
 
+	const applyPadding = (padding: boolean | undefined, content: m.Children) => (!!padding ? m('.ph3', content) : content);
+
 	const getRender = (attrs: SideMenuPagerProps) => {
 		let index = attrs.items.findIndex((item) => item.title === state.active || item.id === state.active);
 		if (index === -1) return null;
 		const content = attrs.items[index].render();
-		return attrs.items[index].centerContainer ? m(CenterContainer, content) : content;
+		return attrs.items[index].centerContainer
+			? applyPadding(attrs.items[index].padding, m(CenterContainer, content))
+			: applyPadding(attrs.items[index].padding, content);
 	};
 
 	return {

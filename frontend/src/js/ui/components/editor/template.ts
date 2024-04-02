@@ -198,6 +198,7 @@ export default (): m.Component<TemplateEditorProps> => {
 								title: 'Basic Info',
 								icon: 'clipboard',
 								centerContainer: true,
+								padding: true,
 								render: () =>
 									m(BasicInfo, {
 										info: attrs.template,
@@ -213,11 +214,9 @@ export default (): m.Component<TemplateEditorProps> => {
 								title: 'Images',
 								icon: 'images',
 								centerContainer: true,
+								padding: true,
 								render: () =>
-									m(
-										'div.ph3',
-										m(Images, { images: attrs.template.images, onChange: (updated) => attrs.onChange({ ...attrs.template, images: updated }) }),
-									),
+									m(Images, { images: attrs.template.images, onChange: (updated) => attrs.onChange({ ...attrs.template, images: updated }) }),
 							},
 							//
 							// Data Sources
@@ -227,8 +226,9 @@ export default (): m.Component<TemplateEditorProps> => {
 								title: 'Data Sources',
 								icon: 'analytics',
 								centerContainer: true,
+								padding: true,
 								render: () =>
-									m('div.ph3', [
+									m('div', [
 										m(EditorHeader, {
 											title: 'Data Sources',
 											description: 'Add and remove data sources. Entries of these data sources will be linked to this template.',
@@ -264,6 +264,7 @@ export default (): m.Component<TemplateEditorProps> => {
 								title: 'Global Config',
 								icon: 'cog',
 								centerContainer: true,
+								padding: true,
 								render: () => [
 									m(EditorHeader, { title: 'Global Config', description: 'Setup global config parameters for your template' }),
 									m(ConfigCreator, {
@@ -280,6 +281,7 @@ export default (): m.Component<TemplateEditorProps> => {
 								title: 'Test Config',
 								icon: 'cog',
 								centerContainer: true,
+								padding: true,
 								render: () => [
 									m(EditorHeader, { title: 'Test Config', description: 'Setup a temporary config for testing the template' }),
 									m(Editor, {

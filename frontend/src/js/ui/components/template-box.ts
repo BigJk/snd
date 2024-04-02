@@ -66,7 +66,7 @@ export default (): m.Component<TemplateBoxProps> => {
 					m(PrintPreviewTemplate, {
 						...attrs,
 						key: key + '.preview',
-						className: '.template.pointer.no-mouse-events.bg-black-05.ph1.ba.b--black-10.overflow-auto.flex-shrink-0',
+						className: '.template.pointer.no-mouse-events.bg-black-05.ph1.ba.b--black-10.overflow-hidden.flex-shrink-0',
 						width: 150,
 						hideAiNotice: true,
 					}),

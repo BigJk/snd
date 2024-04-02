@@ -194,7 +194,7 @@ export default (): m.Component<PrintPreviewProps> => {
 				}
 
 				doc.open();
-				doc.write(preCss + fixed + `<script>parent.postMessage({ type: 'done', id: ${state.id}}, '*')</script>` + post);
+				doc.write(preCss + fixed + `<script>parent.postMessage({ type: 'done', id: '${state.id}'}, '*');</script>` + post);
 				doc.close();
 			};
 		}

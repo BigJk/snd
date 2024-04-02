@@ -10,7 +10,7 @@ import (
 )
 
 // This is the official repository for snd packages.
-const officialRepo = "https://raw.githubusercontent.com/BigJk/snd-package-repo/main/packages.json"
+const officialRepo = "https://raw.githubusercontent.com/BigJk/snd-package-repo/v2/packages.json"
 
 func RegisterGit(route *echo.Group, db database.Database) {
 	bind.MustBind(route, "/getPublicPackages", func() ([]git.PublicList, error) {

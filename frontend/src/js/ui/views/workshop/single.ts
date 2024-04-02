@@ -70,7 +70,8 @@ export default (): m.Component<WorkshopProps> => {
 					return true;
 				}
 				return (
-					pl.author.toLowerCase().includes(state.search.toLowerCase()) || pl.repos.some((r) => r.toLowerCase().includes(state.search.toLowerCase()))
+					pl.author.toLowerCase().includes(state.search.toLowerCase()) ||
+					pl.repos.some((r) => (r.url + r.name + r.description).toLowerCase().includes(state.search.toLowerCase()))
 				);
 			})
 			.map((pl) =>
@@ -87,9 +88,9 @@ export default (): m.Component<WorkshopProps> => {
 								if (state.search === '') {
 									return true;
 								}
-								return e.toLowerCase().includes(state.search.toLowerCase());
+								return (e.url + e.name + e.description).toLowerCase().includes(state.search.toLowerCase());
 							})
-							.map((e) => m(WorkshopBox, { repo: e, onClick: () => m.route.set(`/workshop/${attrs.id}/${btoa(e)}`) })),
+							.map((e) => m(WorkshopBox, { repo: e, onClick: () => m.route.set(`/workshop/${attrs.id}/${btoa(e.url)}`) })),
 					),
 				]),
 			);

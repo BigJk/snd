@@ -5,7 +5,13 @@ import Template from './template';
 type PublicEntry = {
 	author: string;
 	contact: string;
-	repos: string[];
+	repos: RepoEntry[];
+};
+
+type RepoEntry = {
+	name: string;
+	description: string;
+	url: string;
 };
 
 type PublicList = {
@@ -38,4 +44,4 @@ type Package = {
 };
 
 export default PublicList;
-export { PublicEntry, Tag, Repo, Package };
+export { PublicEntry, RepoEntry, Tag, Repo, Package };

@@ -17,9 +17,16 @@ type PublicList struct {
 // PublicEntry represents an entry in the public package repository by some Author.
 // One entry can contain multiple git repos where packages for S&D are stored.
 type PublicEntry struct {
-	Author  string   `json:"author"`
-	Contact string   `json:"contact"`
-	Repos   []string `json:"repos"`
+	Author  string      `json:"author"`
+	Contact string      `json:"contact"`
+	Repos   []RepoEntry `json:"repos"`
+}
+
+// RepoEntry represents a single git repository with packages for S&D.
+type RepoEntry struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	URL         string `json:"url"`
 }
 
 // GetPackages fetches a PublicList by URL. It expects a JSON encoded file.

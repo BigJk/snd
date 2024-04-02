@@ -49,10 +49,10 @@ export default (): m.Component<WorkshopBoxProps> => {
 						'div.info.bg-black-01.w-100.ba.b--black-05.lh-copy.overflow-auto',
 						{ key: key + '.info' },
 						m('div.ph2.pv1.overflow-auto', [
-							m(Flex, { direction: 'column' }, [
+							m(Flex, { className: '.mb1.pb1.bb.b--black-05', justify: 'between' }, [
 								m('div.b', attrs.repo.name), //
-								m('div', cutDescription(attrs.repo.description)), //
 							]), //
+							m('div', cutDescription(attrs.repo.description)), //
 						]),
 					),
 				]),

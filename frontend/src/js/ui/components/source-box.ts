@@ -50,7 +50,7 @@ export default (): m.Component<DataSourceBoxProps> => {
 						'div.info.bg-black-01.w-100.ba.b--black-05.lh-copy.overflow-auto',
 						{ key: key + '.info' },
 						m('div.ph2.pv1.overflow-auto', [
-							m(Flex, { className: '.mb2.pb2.bb.b--black-05', justify: 'between' }, [
+							m(Flex, { className: '.mb1.pb1.bb.b--black-05', justify: 'between' }, [
 								m('div.b', attrs.source.name), //
 								m('div.text-muted', attrs.source.count),
 							]), //

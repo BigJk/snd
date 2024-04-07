@@ -258,7 +258,6 @@ export default (): m.Component<WorkshopRepoProps> => {
 			m(Flex, { items: 'center', justify: 'between', gap: 2, className: '.br2.ba.b--black-10.ph3.bg-white.h3.flex-shrink-0' }, [
 				m(
 					'div.flex-grow-1',
-					{ style: { marginTop: '5px' } },
 					m(Input, {
 						placeholder: 'Search...',
 						icon: 'search',

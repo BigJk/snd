@@ -21,8 +21,9 @@ require (
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/go-git/go-billy/v5 v5.5.0
 	github.com/go-git/go-git/v5 v5.11.0
-	github.com/go-rod/rod v0.112.2
+	github.com/go-rod/rod v0.116.0
 	github.com/google/gousb v1.1.2
+	github.com/iancoleman/strcase v0.3.0
 	github.com/jwalton/go-supportscolor v1.1.0
 	github.com/labstack/echo/v4 v4.9.0
 	github.com/mattetti/filebuffer v1.0.1
@@ -62,7 +63,6 @@ require (
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/flatbuffers v1.12.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
-	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
 	github.com/klauspost/compress v1.12.3 // indirect
@@ -79,7 +79,9 @@ require (
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
+	github.com/ysmood/fetchup v0.2.3 // indirect
 	github.com/ysmood/goob v0.4.0 // indirect
+	github.com/ysmood/got v0.34.1 // indirect
 	github.com/ysmood/gson v0.7.3 // indirect
 	github.com/ysmood/leakless v0.8.0 // indirect
 	go.opencensus.io v0.22.5 // indirect

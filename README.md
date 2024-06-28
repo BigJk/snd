@@ -145,7 +145,7 @@ If you want to see what printers were already tested, which settings they need, 
 
 This Project is supported with a JetBrains License through the [Open Source Support Program](https://www.jetbrains.com/community/opensource).
 
-<img width="140" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" alt="JetBrains Logo (Main) logo.">
+<img width="230" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.png" alt="JetBrains Logo (Main) logo.">
 
 ## Found the project useful? :smiling_face_with_three_hearts:
 

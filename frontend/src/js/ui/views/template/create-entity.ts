@@ -5,15 +5,7 @@ import { buildId } from 'js/types/basic-info';
 import Entry from 'js/types/entry';
 import Template from 'js/types/template';
 import * as API from 'js/core/api';
-import {
-	buildSchema,
-	initialData,
-	objectPathToSchema,
-	readableName,
-	SchemaNode,
-	SchemaRoot,
-	getInputTypeByElemType,
-} from "js/core/schema";
+import { buildSchema, getInputTypeByElemType, initialData, objectPathToSchema, readableName, SchemaNode, SchemaRoot } from 'js/core/schema';
 
 import IconButton from 'js/ui/shoelace/icon-button';
 import Input from 'js/ui/shoelace/input';
@@ -133,10 +125,16 @@ export default (): m.Component<CreateTemplateEntityProps> => {
 							'div.pa3',
 							(() => {
 								if (node.elemType !== 'object') {
-									return renderObject(obj, [...path, i.toString()], {...node, type: node.elemType, inputType: getInputTypeByElemType(node.elemType), readableName: undefined, key: '' });
+									return renderObject(obj, [...path, i.toString()], {
+										...node,
+										type: node.elemType,
+										inputType: getInputTypeByElemType(node.elemType),
+										readableName: undefined,
+										key: '',
+									});
 								}
 
-								return Object.keys(e).map((k) => renderObject(obj, [...path, i.toString(), k]))
+								return Object.keys(e).map((k) => renderObject(obj, [...path, i.toString(), k]));
 							})(),
 						),
 					]),

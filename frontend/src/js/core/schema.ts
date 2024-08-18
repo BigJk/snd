@@ -142,6 +142,8 @@ export function initialData(schema: SchemaRoot | SchemaNode[]): any {
 				if (node.elemType === 'object') {
 					data[node.key].push({});
 					loop(node.children ?? [], data[node.key][0]);
+				} else {
+					data[node.key] = node.default;
 				}
 			} else {
 				data[node.key] = node.default;
@@ -152,6 +154,25 @@ export function initialData(schema: SchemaRoot | SchemaNode[]): any {
 	loop(Array.isArray(schema) ? schema : schema.nodes, data);
 
 	return data;
+}
+
+/**
+ * Returns the input type for the given element type.
+ * @param elemType The element type to get the input type for.
+ */
+export function getInputTypeByElemType(elemType: SchemaType) {
+	switch (elemType) {
+		case 'string':
+			return 'Text';
+		case 'number':
+			return 'Number';
+		case 'boolean':
+			return 'Checkbox';
+		case 'array':
+			return 'Array';
+		case 'object':
+			return 'Object';
+	}
 }
 
 /**
@@ -207,7 +228,7 @@ export function buildSchema(data: any): SchemaRoot {
 			case 'object':
 				if (Array.isArray(val)) {
 					if (val.length === 0) {
-						// We assume that an empty array is a array of strings
+						// We assume that an empty array is an array of strings
 						return {
 							type: 'array',
 							inputType: 'Array',
@@ -227,7 +248,7 @@ export function buildSchema(data: any): SchemaRoot {
 								inputType: 'Array',
 								key: path[path.length - 1],
 								elemType,
-								default: [],
+								default: val,
 							};
 						case 'object':
 							const merged = mergeObjects(val);
@@ -243,9 +264,6 @@ export function buildSchema(data: any): SchemaRoot {
 							};
 					}
 				}
-
-				// Console.log(val);
-				// console.log(Object.keys(val).map((key) => buildNode([key], val)));
 
 				return {
 					type: 'object',

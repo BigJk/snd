@@ -5,7 +5,15 @@ import { buildId } from 'js/types/basic-info';
 import Entry from 'js/types/entry';
 import Template from 'js/types/template';
 import * as API from 'js/core/api';
-import { buildSchema, initialData, objectPathToSchema, readableName, SchemaNode, SchemaRoot } from 'js/core/schema';
+import {
+	buildSchema,
+	initialData,
+	objectPathToSchema,
+	readableName,
+	SchemaNode,
+	SchemaRoot,
+	getInputTypeByElemType,
+} from "js/core/schema";
 
 import IconButton from 'js/ui/shoelace/icon-button';
 import Input from 'js/ui/shoelace/input';
@@ -67,14 +75,13 @@ export default (): m.Component<CreateTemplateEntityProps> => {
 			}, {}),
 	});
 
-	const renderObject = (obj: any, path: string[]) => {
+	const renderObject = (obj: any, path: string[], schemaOverride?: SchemaNode): any => {
 		if (!state.schema) {
 			return;
 		}
 
 		const elem = get(obj, path);
-
-		const node = objectPathToSchema(state.schema!, path);
+		const node = schemaOverride ?? objectPathToSchema(state.schema!, path);
 		if (!node) {
 			return;
 		}
@@ -99,7 +106,15 @@ export default (): m.Component<CreateTemplateEntityProps> => {
 						{
 							icon: 'add',
 							intend: 'primary',
-							onClick: () => elem.push(initialData(node.children ?? [])),
+							onClick: () => {
+								if (node.elemType === 'string') {
+									elem.push('');
+								} else if (node.elemType === 'number') {
+									elem.push(0);
+								} else {
+									elem.push(initialData(node.children ?? []));
+								}
+							},
 						},
 						'Add',
 					),
@@ -116,12 +131,28 @@ export default (): m.Component<CreateTemplateEntityProps> => {
 						]),
 						m(
 							'div.pa3',
-							Object.keys(e).map((k) => renderObject(obj, [...path, i.toString(), k])),
+							(() => {
+								if (node.elemType !== 'object') {
+									return renderObject(obj, [...path, i.toString()], {...node, type: node.elemType, inputType: getInputTypeByElemType(node.elemType), readableName: undefined, key: '' });
+								}
+
+								return Object.keys(e).map((k) => renderObject(obj, [...path, i.toString(), k]))
+							})(),
 						),
 					]),
 				),
 			]);
 		} else {
+			if (node.key === '' && !node.readableName) {
+				return m(types[node.inputType].view, {
+					value: elem,
+					onChange: (value: any) => {
+						set(obj, path, value);
+						m.redraw();
+					},
+				});
+			}
+
 			return m(
 				HorizontalProperty,
 				{ label: node.readableName ?? readableName(node.key), description: node.description, bottomBorder: true, centered: true },

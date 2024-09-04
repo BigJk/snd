@@ -25,7 +25,7 @@ jobs:
       working-directory: frontend
       run: npm run build
     - name: Archive Frontend
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: snd-frontend
         path: frontend/dist

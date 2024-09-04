@@ -24,7 +24,7 @@ runs:
   steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: snd-frontend
         path: frontend/dist
@@ -67,5 +67,5 @@ runs:
       uses: actions/upload-artifact@v3
       with:
         path: build/release/
-        name: ${{ inputs.artifact-name }}-${{ steps.sha.outputs.short }}
+        name: ${{ inputs.artifact-name }}-${{ github.ref_name }}
         if-no-files-found: error

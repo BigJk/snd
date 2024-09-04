@@ -187,7 +187,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
       - name: Download Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: build/release
       - name: Check release files
@@ -205,3 +205,31 @@ jobs:
           draft: true
           fail_on_unmatched_files: true
           files: build/release/*.zip
+
+  release-itch:
+    permissions: write-all
+    name: release itch
+    runs-on: ubuntu-latest
+    needs: create-release
+    steps:
+      - name: Download Release
+        uses: robinraju/release-downloader@v1
+        with:
+          repository: "BigJk/snd"
+          tag: ${{ github.ref_name }}
+          fileName: "*.zip"
+      - name: Install Butler
+        run: |
+          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+          unzip butler.zip
+          chmod +x butler
+          rm butler.zip
+          ./butler -V
+      - name: Push to Itch.io
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: |
+          ./butler push snd-windows-libusb-${{ github.ref_name }}.zip BigJk/sales-n-dungeons:windows-amd64 --userversion ${{ github.ref_name }}
+          ./butler push snd-macos-m1-libusb-${{ github.ref_name }}.zip BigJk/sales-n-dungeons:macos-m1 --userversion ${{ github.ref_name }}
+          ./butler push snd-macos-intel-libusb-${{ github.ref_name }}.zip BigJk/sales-n-dungeons:macos-intel --userversion ${{ github.ref_name }}
+          ./butler push snd-linux-amd64-gui-libusb-${{ github.ref_name }}.zip BigJk/sales-n-dungeons:linux-amd64 --userversion ${{ github.ref_name }}

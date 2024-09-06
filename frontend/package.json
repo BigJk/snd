@@ -49,6 +49,7 @@
     "prettier": "^3.0.3",
     "reconnecting-websocket": "^4.4.0",
     "sass": "^1.25.0",
+    "seedrandom": "^3.0.5",
     "tachyons": "^4.11.1",
     "tippy.js": "^6.3.7",
     "toastify-js": "^1.6.2",

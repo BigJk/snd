@@ -1,5 +1,6 @@
 import MarkdownIt from 'markdown-it';
 import * as nunjucks from 'nunjucks';
+import seedrandom from 'seedrandom';
 
 import EvalWorker from '/js/workers/eval?worker';
 
@@ -136,7 +137,13 @@ env.addExtension('DataImportExtension', new DataImportExtension());
 env.addExtension('JavascriptExecuteExtension', new JavascriptExecuteExtension());
 env.addExtension('AIExtension', new AIExtension());
 
-env.addFilter('shuffle', (array) => {
+env.addFilter('shuffle', function (array) {
+	// If we have a seed we use a seeded random number generator.
+	const isGenerator = !!this.ctx.config.seed;
+	if (isGenerator) {
+		this.ctx.__rand ??= seedrandom(this.ctx.config.seed);
+	}
+
 	let currentIndex = array.length,
 		temporaryValue,
 		randomIndex;
@@ -144,7 +151,7 @@ env.addFilter('shuffle', (array) => {
 	// While there remain elements to shuffle...
 	while (0 !== currentIndex) {
 		// Pick a remaining element...
-		randomIndex = Math.floor(Math.random() * currentIndex);
+		randomIndex = Math.floor((this.ctx.__rand ?? math.Random)() * currentIndex);
 		currentIndex -= 1;
 
 		// And swap it with the current element.
@@ -154,6 +161,15 @@ env.addFilter('shuffle', (array) => {
 	}
 
 	return array;
+});
+env.addFilter('random', function (array) {
+	// If we have a seed we use a seeded random number generator.
+	const isGenerator = !!this.ctx.config.seed;
+	if (isGenerator) {
+		this.ctx.__rand ??= seedrandom(this.ctx.config.seed);
+	}
+
+	return array[Math.floor((this.ctx.__rand ?? math.Random)() * array.length)];
 });
 env.addFilter('markdown', (md) => new nunjucks.runtime.SafeString(markdown.render(md)));
 env.addFilter('markdowni', (md) => new nunjucks.runtime.SafeString(markdown.renderInline(md)));

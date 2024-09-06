@@ -10,6 +10,7 @@ import (
 	"github.com/BigJk/snd/rpc/bind"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/BigJk/snd/database"
@@ -141,6 +142,10 @@ func RegisterAI(route *echo.Group, db database.Database) {
 		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return "", err
+		}
+
+		if strings.HasPrefix("error code:", string(respBody)) {
+			return "", errors.New(string(respBody))
 		}
 
 		err = json.Unmarshal(respBody, &aiResp)

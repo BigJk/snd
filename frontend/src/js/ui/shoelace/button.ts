@@ -46,6 +46,7 @@ export default (): m.Component<ButtonProps> => {
 					size: size,
 					loading: !!attrs.loading,
 					onclick: attrs.link ? () => openLink(attrs.link) : !attrs.loading ? attrs.onClick : null,
+					disabled: attrs.disabled,
 				},
 				[attrs.prefix ? m('slot', { slot: 'prefix' }, attrs.prefix) : null, finalChildren],
 			);

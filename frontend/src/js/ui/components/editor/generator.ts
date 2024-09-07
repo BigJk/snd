@@ -22,6 +22,7 @@ type GeneratorEditorProps = {
 	generator: Generator;
 	onChange: (updated: Generator) => void;
 	editMode: boolean;
+	onRendered?: (html: string) => void;
 };
 
 type GeneratorEditorState = {
@@ -199,6 +200,9 @@ export default (): m.Component<GeneratorEditorProps> => {
 						generator: attrs.generator,
 						config: sanitizeConfig(attrs.generator, state.config),
 						onError: (errors) => (state.errors = errors),
+						onRendered: (html) => {
+							attrs.onRendered?.(html);
+						},
 					}),
 				]),
 			];

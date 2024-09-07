@@ -15,7 +15,7 @@ import { openDevTools } from 'js/ui/components/print-preview';
 import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
 
-import { error } from 'js/ui/toast';
+import { error, success } from 'js/ui/toast';
 
 type EditGeneratorProps = {
 	id: string;
@@ -23,6 +23,7 @@ type EditGeneratorProps = {
 
 export default (): m.Component<EditGeneratorProps> => {
 	let state: Generator | null = null;
+	let lastRenderedHTML = '';
 
 	return {
 		oninit({ attrs }) {
@@ -40,7 +41,7 @@ export default (): m.Component<EditGeneratorProps> => {
 						confirm: true,
 						confirmText: 'Are you sure you want to leave this page? Changes are not saved.',
 						items: [
-							{ link: '/generator', label: 'Templates' },
+							{ link: '/generator', label: 'Generators' },
 							{ link: `/generator/${state ? buildId('generator', state) : ''}`, label: state ? state.name : m(Loader, { className: '.mh2' }) },
 							{ label: 'Edit' },
 						],
@@ -69,11 +70,26 @@ export default (): m.Component<EditGeneratorProps> => {
 							Tooltip,
 							{ content: 'Open Dev Tools' },
 							m(IconButton, {
+								className: '.mr2',
 								intend: 'primary',
 								icon: 'bug',
 								size: 'sm',
 								onClick: () => {
 									openDevTools(document.body);
+								},
+							}),
+						),
+						m(
+							Tooltip,
+							{ content: 'Test Print' },
+							m(IconButton, {
+								intend: 'primary',
+								icon: 'print',
+								size: 'sm',
+								onClick: () => {
+									API.exec(API.PRINT, lastRenderedHTML)
+										.then(() => success('Test print sent!'))
+										.catch(error);
 								},
 							}),
 						),
@@ -86,6 +102,9 @@ export default (): m.Component<EditGeneratorProps> => {
 							onChange: (generator) => {
 								state = generator;
 								m.redraw();
+							},
+							onRendered: (html) => {
+								lastRenderedHTML = html;
 							},
 							editMode: true,
 					  })

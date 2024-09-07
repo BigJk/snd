@@ -1,4 +1,5 @@
 import m from 'mithril';
+import { isEqual } from 'lodash-es';
 
 import { css } from 'goober';
 
@@ -44,6 +45,29 @@ export default (): m.Component => {
 			neutral('Syncing is enabled. Please restart the application to apply the changes!');
 		}
 		settings.set(settingsCopy);
+	};
+
+	const testPrint = () => {
+		API.exec(
+			API.PRINT,
+			`
+			<h1 style="font-size: 2rem;">Test print</h1>
+			<p style="font-size: 1.5rem;">Thank you for using Sales & Dungeons <3</p>
+			<pre style="font-size: 1.5rem;">${JSON.stringify(
+				{
+					...settings.value,
+					aiApiKey: 'redacted',
+					syncKey: 'redacted',
+				},
+				null,
+				2,
+			)}</pre>
+			`,
+		)
+			.then(() => {
+				success('Test print sent!');
+			})
+			.catch(error);
 	};
 
 	const fetchAiProviders = () => {
@@ -112,7 +136,10 @@ export default (): m.Component => {
 					title: m(Title, 'Settings'),
 					active: 'settings',
 					classNameContainer: '.pa3',
-					rightElement: m(IconButton, { icon: 'checkmark-circle-outline', intend: 'success', onClick: applySettings }, 'Apply'),
+					rightElement: m(Flex, { gap: 2 }, [
+						m(IconButton, { icon: 'print', intend: 'primary', onClick: testPrint, disabled: !isEqual(settingsCopy, settings.value) }, 'Test Print'),
+						m(IconButton, { icon: 'checkmark-circle-outline', intend: 'success', onClick: applySettings }, 'Apply'),
+					]),
 				},
 				m(
 					Flex,

@@ -15,7 +15,7 @@ import { openDevTools } from 'js/ui/components/print-preview';
 import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
 
-import { error } from 'js/ui/toast';
+import { error, success } from 'js/ui/toast';
 
 type EditTemplateProps = {
 	id: string;
@@ -24,6 +24,7 @@ type EditTemplateProps = {
 export default (): m.Component<EditTemplateProps> => {
 	let state: Template | null = null;
 	let hadJSONError = false;
+	let lastRenderedHTML = '';
 
 	return {
 		oninit({ attrs }) {
@@ -75,11 +76,26 @@ export default (): m.Component<EditTemplateProps> => {
 							Tooltip,
 							{ content: 'Open Dev Tools' },
 							m(IconButton, {
+								className: '.mr2',
 								intend: 'primary',
 								icon: 'bug',
 								size: 'sm',
 								onClick: () => {
 									openDevTools(document.body);
+								},
+							}),
+						),
+						m(
+							Tooltip,
+							{ content: 'Test Print' },
+							m(IconButton, {
+								intend: 'primary',
+								icon: 'print',
+								size: 'sm',
+								onClick: () => {
+									API.exec(API.PRINT, lastRenderedHTML)
+										.then(() => success('Test print sent!'))
+										.catch(error);
 								},
 							}),
 						),
@@ -95,6 +111,9 @@ export default (): m.Component<EditTemplateProps> => {
 							},
 							onJSONError: (error) => {
 								hadJSONError = !!error;
+							},
+							onRendered: (html) => {
+								lastRenderedHTML = html;
 							},
 							editMode: true,
 					  })

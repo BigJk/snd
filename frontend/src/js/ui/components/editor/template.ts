@@ -31,6 +31,7 @@ type TemplateEditorProps = {
 	template: Template;
 	onChange: (updated: Template) => void;
 	onJSONError?: (error: any | null) => void;
+	onRendered?: (html: string) => void;
 	editMode?: boolean;
 };
 
@@ -408,6 +409,7 @@ export default (): m.Component<TemplateEditorProps> => {
 						it: attrs.template.skeletonData,
 						config: state.config,
 						onError: (errors: PrintPreviewError[]) => (state.errorsPrint = errors),
+						onRendered: (html) => attrs.onRendered?.(html),
 					}),
 				]),
 			];

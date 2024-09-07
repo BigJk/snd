@@ -14,6 +14,7 @@ type generatorMeta struct {
 	Slug            string                `json:"slug"`
 	Author          string                `json:"author"`
 	Description     string                `json:"description"`
+	CopyrightNotice string                `json:"copyrightNotice"`
 	PassEntriesToJS bool                  `json:"passEntriesToJS"`
 	Config          []snd.GeneratorConfig `json:"config"`
 	Images          map[string]string     `json:"images"`
@@ -30,6 +31,7 @@ func writeGenMeta(writer io.Writer, gen snd.Generator) error {
 		Slug:            gen.Slug,
 		Author:          gen.Author,
 		Description:     gen.Description,
+		CopyrightNotice: gen.CopyrightNotice,
 		PassEntriesToJS: gen.PassEntriesToJS,
 		Config:          gen.Config,
 		Images:          gen.Images,

@@ -17,6 +17,7 @@ type CreateSourceProps = {
 	slug: string;
 	author: string;
 	description: string;
+	copyrightNotice: string;
 };
 
 const dataSourceCreateModal = (): m.Component => {
@@ -25,6 +26,7 @@ const dataSourceCreateModal = (): m.Component => {
 		slug: '',
 		author: '',
 		description: '',
+		copyrightNotice: '',
 	};
 
 	return {

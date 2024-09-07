@@ -15,17 +15,18 @@ type TemplateConfig struct {
 
 // Template represents one S&D template.
 type Template struct {
-	Name          string                 `json:"name"`
-	Slug          string                 `json:"slug"`
-	Author        string                 `json:"author"`
-	Description   string                 `json:"description"`
-	PrintTemplate string                 `json:"printTemplate"`
-	ListTemplate  string                 `json:"listTemplate"`
-	SkeletonData  map[string]interface{} `json:"skeletonData"`
-	Images        map[string]string      `json:"images"`
-	Config        []TemplateConfig       `json:"config"`
-	DataSources   []string               `json:"dataSources"`
-	Version       string                 `json:"version"`
+	Name            string                 `json:"name"`
+	Slug            string                 `json:"slug"`
+	Author          string                 `json:"author"`
+	Description     string                 `json:"description"`
+	CopyrightNotice string                 `json:"copyrightNotice"`
+	PrintTemplate   string                 `json:"printTemplate"`
+	ListTemplate    string                 `json:"listTemplate"`
+	SkeletonData    map[string]interface{} `json:"skeletonData"`
+	Images          map[string]string      `json:"images"`
+	Config          []TemplateConfig       `json:"config"`
+	DataSources     []string               `json:"dataSources"`
+	Version         string                 `json:"version"`
 }
 
 func (t Template) ID() string {

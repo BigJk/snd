@@ -190,7 +190,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 								m(Flex, { className: '.bt.b--black-10.pv2.ph3', justify: 'end', items: 'center', gap: 2 }, [
 									/*
 									Disabled for now!
-									
+
 									m(
 										Tooltip,
 										{ content: 'Print Count' },
@@ -208,7 +208,14 @@ export default (): m.Component<SingleGeneratorProps> => {
 									m(IconButton, { icon: 'print', intend: 'success', onClick: print }, 'Print'),
 								]),
 							]),
-						Information: () => m('div.ph3.pv2.lh-copy', [m('div.f5.mb2.b', 'Description'), state.generator?.description ?? '']),
+						Information: () =>
+							m('div.ph3.pv2.lh-copy', [
+								m('div.f5.mb2.b', 'Description'),
+								m('div', { style: { whiteSpace: 'break-spaces' } }, state.generator?.description ?? ''),
+								...(state.generator?.copyrightNotice
+									? [m('div.f5.mb2.b.mt3', 'Copyright Notice'), m('div', { style: { whiteSpace: 'break-spaces' } }, state.generator.copyrightNotice)]
+									: []),
+							]),
 						Saved: () => m('div.ph3.pv2', 'coming soon...'),
 					},
 				}),

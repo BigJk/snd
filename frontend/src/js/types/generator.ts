@@ -40,6 +40,7 @@ function createEmptyGenerator(): Generator {
 	return {
 		name: 'Your Generator Name',
 		description: '',
+		copyrightNotice: '',
 		author: 'username',
 		slug: 'your-generator-name',
 		version: '',

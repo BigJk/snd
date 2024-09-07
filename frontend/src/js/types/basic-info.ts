@@ -4,6 +4,7 @@ type BasicInfo = {
 	author: string;
 	description: string;
 	version: string;
+	copyrightNotice?: string;
 };
 
 export default BasicInfo;

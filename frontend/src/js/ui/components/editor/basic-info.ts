@@ -36,7 +36,7 @@ export default <T extends Object>(): m.Component<BasicInfoProps<T>> => ({
 				m(PropertyEdit<BasicInfo & T>, {
 					properties: attrs.info,
 					onChange: onChange,
-					show: ['name', 'description', 'author', 'slug'].filter((p) => !attrs.hide?.includes(p)),
+					show: ['name', 'description', 'copyrightNotice', 'author', 'slug'].filter((p) => !attrs.hide?.includes(p)),
 					annotations: {
 						name: {
 							label: 'Name',
@@ -45,6 +45,12 @@ export default <T extends Object>(): m.Component<BasicInfoProps<T>> => ({
 						description: {
 							label: 'Description',
 							description: 'This will be the displayed description',
+							largeInput: true,
+							fullSize: true,
+						},
+						copyrightNotice: {
+							label: 'Copyright Notice',
+							description: 'Any legal notice you want to include',
 							largeInput: true,
 							fullSize: true,
 						},

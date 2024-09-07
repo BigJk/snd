@@ -34,6 +34,7 @@ function createEmptyTemplate(): Template {
 	return {
 		name: 'Your Template Name',
 		description: '',
+		copyrightNotice: '',
 		author: 'username',
 		slug: 'your-template-name',
 		version: '',

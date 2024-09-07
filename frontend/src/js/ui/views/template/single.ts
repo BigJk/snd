@@ -331,7 +331,7 @@ export default (): m.Component<SingleTemplateProps> => {
 								...(settings.value.aiEnabled ? [{ icon: 'planet', label: 'AI Tools' }] : []),
 								{ icon: 'clipboard', label: 'Information' },
 								...(state.template?.config && state.template?.config.length > 0 ? [{ icon: 'options', label: 'Config' }] : []),
-								{ icon: 'search', label: 'Advanced Filter' },
+								// { icon: 'search', label: 'Advanced Filter' },
 							],
 							content: {
 								Entries: () =>
@@ -441,7 +441,17 @@ export default (): m.Component<SingleTemplateProps> => {
 											]),
 										]),
 									),
-								Information: () => m('div.ph3.pv2.lh-copy', [m('div.f5.mb2.b', 'Description'), state.template?.description ?? '']),
+								Information: () =>
+									m('div.ph3.pv2.lh-copy', [
+										m('div.f5.mb2.b', 'Description'),
+										m('div', { style: { whiteSpace: 'break-spaces' } }, state.template?.description ?? ''),
+										...(state.template?.copyrightNotice
+											? [
+													m('div.f5.mb2.b.mt3', 'Copyright Notice'),
+													m('div', { style: { whiteSpace: 'break-spaces' } }, state.template.copyrightNotice),
+											  ]
+											: []),
+									]),
 								Config: () =>
 									m(Editor, {
 										current: state.config,
@@ -451,7 +461,7 @@ export default (): m.Component<SingleTemplateProps> => {
 											m.redraw();
 										},
 									}),
-								'Advanced Filter': () => m('div.pa3', 'Coming back soon...'),
+								//'Advanced Filter': () => m('div.pa3', 'Coming back soon...'),
 							},
 					  })
 					: null,

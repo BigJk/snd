@@ -21,6 +21,7 @@ type Generator struct {
 	Slug            string            `json:"slug"`
 	Author          string            `json:"author"`
 	Description     string            `json:"description"`
+	CopyrightNotice string            `json:"copyrightNotice"`
 	PrintTemplate   string            `json:"printTemplate"`
 	PassEntriesToJS bool              `json:"passEntriesToJS"`
 	Config          []GeneratorConfig `json:"config"`

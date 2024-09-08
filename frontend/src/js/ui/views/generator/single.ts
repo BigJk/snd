@@ -115,6 +115,16 @@ export default (): m.Component<SingleGeneratorProps> => {
 			description: 'Enter a name for the config',
 			onSuccess: (name) => {
 				if (!state.generator) return;
+
+				if (state.savedConfigs[name]) {
+					dialogWarning('This config already exists. Do you want to overwrite it?').then(() => {
+						state.savedConfigs[name] = cloneDeep(state.config);
+						saveConfigs()?.catch(error);
+						success('Overwrote config');
+					});
+					return;
+				}
+
 				state.savedConfigs[name] = cloneDeep(state.config);
 				saveConfigs()?.catch(error);
 				success('Saved config');
@@ -134,6 +144,18 @@ export default (): m.Component<SingleGeneratorProps> => {
 		if (!state.generator) return;
 		state.config = cloneDeep(state.savedConfigs[name]);
 	};
+
+	const buttonBar = () =>
+		m(Flex, { className: '.bt.b--black-10.pv2.ph3', justify: 'between', items: 'center', gap: 2 }, [
+			m(Flex, { gap: 2 }, [
+				m(IconButton, { icon: 'save', intend: 'primary', onClick: saveConfig }, 'Save Config'),
+				m(IconButton, { icon: 'camera', intend: 'primary', onClick: screenshot }, 'Screenshot'),
+			]),
+			m(Flex, { gap: 2, items: 'center' }, [
+				m(Tooltip, { content: 'Hide Preview' }, m(Checkbox, { checked: state.hidePreview, onChange: (val) => (state.hidePreview = val) })),
+				m(IconButton, { icon: 'print', intend: 'success', onClick: print }, 'Print'),
+			]),
+		]);
 
 	return {
 		oninit({ attrs }) {
@@ -232,35 +254,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 										m.redraw();
 									},
 								}),
-								m(Flex, { className: '.bt.b--black-10.pv2.ph3', justify: 'between', items: 'center', gap: 2 }, [
-									/*
-									Disabled for now!
-
-									m(
-										Tooltip,
-										{ content: 'Print Count' },
-										m(Input, {
-											className: '.w2.tc',
-											placeholder: '#',
-											useBlur: true,
-											value: state.printCount,
-											onChange: (value: string) => (state.printCount = parseInt(value) ?? 1),
-										}),
-									),
-									*/
-									m(Flex, { gap: 2 }, [
-										m(IconButton, { icon: 'save', intend: 'primary', onClick: saveConfig }, 'Save Config'),
-										m(IconButton, { icon: 'camera', intend: 'primary', onClick: screenshot }, 'Screenshot'),
-									]),
-									m(Flex, { gap: 2, items: 'center' }, [
-										m(
-											Tooltip,
-											{ content: 'Hide Preview' },
-											m(Checkbox, { checked: state.hidePreview, onChange: (val) => (state.hidePreview = val) }),
-										),
-										m(IconButton, { icon: 'print', intend: 'success', onClick: print }, 'Print'),
-									]),
-								]),
+								buttonBar(),
 							]),
 						Information: () =>
 							m('div.ph3.pv2.lh-copy', [
@@ -271,34 +265,53 @@ export default (): m.Component<SingleGeneratorProps> => {
 									: []),
 							]),
 						Saved: () =>
-							m('div.ph3.pv2.lh-copy', [
-								m('div.f5.b', 'Saved Configs'),
-								Object.keys(state.savedConfigs).length
-									? m(Flex, { direction: 'column' }, [
-											...map(state.savedConfigs, (config, key) =>
-												m(
-													HorizontalProperty,
-													{
-														label: key,
-														description: '',
-														bottomBorder: true,
-														centered: true,
-													},
+							m(Flex, { className: '.h-100', direction: 'column' }, [
+								m('div.ph3.pv2.lh-copy.h-100.overflow-auto', [
+									m('div.f5.b', 'Saved Configs'),
+									Object.keys(state.savedConfigs).length
+										? m(Flex, { direction: 'column' }, [
+												...map(state.savedConfigs, (config, key) =>
 													m(
-														Flex,
+														HorizontalProperty,
 														{
-															gap: 2,
-															justify: 'end',
+															label: key,
+															description: '',
+															bottomBorder: true,
+															centered: true,
 														},
-														[
-															m(IconButton, { icon: 'trash', intend: 'error', onClick: () => deleteSavedConfig(key) }),
-															m(IconButton, { icon: 'edit', intend: 'primary', onClick: () => loadSavedConfig(key) }, 'Load'),
-														],
+														m(
+															Flex,
+															{
+																justify: 'end',
+															},
+															[
+																m(IconButton, { icon: 'trash', intend: 'error', onClick: () => deleteSavedConfig(key) }),
+																m(DividerVert),
+																m(
+																	IconButton,
+																	{ icon: 'cloud-upload', className: '.mr2', intend: 'primary', onClick: () => loadSavedConfig(key) },
+																	'Load',
+																),
+																m(
+																	IconButton,
+																	{
+																		icon: 'cloud-upload',
+																		intend: 'primary',
+																		onClick: () => {
+																			loadSavedConfig(key);
+																			state.config.seed = Math.ceil(Math.random() * 999999999).toString();
+																		},
+																	},
+																	'Load + New Seed',
+																),
+															],
+														),
 													),
 												),
-											),
-									  ])
-									: m('div.pv2.text-muted', 'No saved configs yet...'),
+										  ])
+										: m('div.pv2.text-muted', 'No saved configs yet...'),
+								]),
+								buttonBar(),
 							]),
 					},
 				}),

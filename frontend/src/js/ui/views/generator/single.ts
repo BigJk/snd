@@ -5,7 +5,7 @@ import HorizontalProperty from '../../components/horizontal-property';
 import { openPromptModal } from '../../components/modals/prompt';
 
 import { buildId } from 'js/types/basic-info';
-import Generator, { sanitizeConfig } from 'js/types/generator';
+import Generator, { sanitizeConfig, seed } from 'js/types/generator';
 import * as API from 'js/core/api';
 import store from 'js/core/store';
 
@@ -245,7 +245,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 											name: 'Seed',
 											description: 'The seed used to generate the template',
 											type: 'Seed',
-											default: 'TEST_SEED',
+											default: seed(),
 										},
 										...(state.generator ? state.generator.config : []),
 									],
@@ -299,7 +299,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 																		intend: 'primary',
 																		onClick: () => {
 																			loadSavedConfig(key);
-																			state.config.seed = Math.ceil(Math.random() * 999999999).toString();
+																			state.config.seed = seed();
 																		},
 																	},
 																	'Load + New Seed',

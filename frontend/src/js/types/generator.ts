@@ -12,17 +12,21 @@ type Generator = BasicInfo & {
 	count?: number;
 };
 
+function seed() {
+	return Math.ceil(Math.random() * 999999999).toString();
+}
+
 const sanitizeConfig = (g: Generator, configs: any) => {
 	// Create base config
 	if (configs === undefined) {
 		configs = {
-			seed: 'TEST_SEED',
+			seed: seed(),
 		};
 	}
 
 	// Set seed if uninitialized
 	if (configs.seed === undefined) {
-		configs.seed = 'TEST_SEED';
+		configs.seed = seed();
 	}
 
 	// Set default values for initialized fields
@@ -53,4 +57,4 @@ function createEmptyGenerator(): Generator {
 }
 
 export default Generator;
-export { sanitizeConfig, createEmptyGenerator };
+export { sanitizeConfig, createEmptyGenerator, seed };

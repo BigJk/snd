@@ -1,7 +1,7 @@
 import m from 'mithril';
 
 import { fillConfigValues } from 'js/types/config';
-import Generator, { sanitizeConfig } from 'js/types/generator';
+import Generator, { sanitizeConfig, seed } from 'js/types/generator';
 import { createNunjucksCompletionProvider } from 'js/core/monaco/completion-nunjucks';
 import { settings } from 'js/core/store';
 
@@ -156,7 +156,7 @@ export default (): m.Component<GeneratorEditorProps> => {
 												name: 'Seed',
 												description: 'The seed used to generate the template',
 												type: 'Seed',
-												default: 'TEST_SEED',
+												default: seed(),
 											},
 											...(attrs.generator ? attrs.generator.config : []),
 										],

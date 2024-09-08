@@ -12,6 +12,7 @@ type Memory struct {
 	entries    map[string]map[string]snd.Entry
 	generators map[string]snd.Generator
 	sources    map[string]snd.DataSource
+	kv         map[string]string
 }
 
 func New() *Memory {
@@ -158,4 +159,13 @@ func (m *Memory) GetSources() ([]database.DataSourceEntry, error) {
 		})
 	}
 	return sources, nil
+}
+
+func (m *Memory) GetKey(key string) (string, error) {
+	return m.kv[key], nil
+}
+
+func (m *Memory) SetKey(key string, value string) error {
+	m.kv[key] = value
+	return nil
 }

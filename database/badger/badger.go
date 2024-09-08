@@ -211,3 +211,24 @@ func (b *Badger) GetSources() ([]database.DataSourceEntry, error) {
 
 	return sources, nil
 }
+
+func (b *Badger) GetKey(key string) (string, error) {
+	var value string
+	err := b.db.View(func(txn *badger.Txn) error {
+		item, err := txn.Get([]byte("KV_" + key))
+		if err != nil {
+			return err
+		}
+		return item.Value(func(val []byte) error {
+			value = string(val)
+			return nil
+		})
+	})
+	return value, err
+}
+
+func (b *Badger) SetKey(key string, value string) error {
+	return b.db.Update(func(txn *badger.Txn) error {
+		return txn.Set([]byte("KV_"+key), []byte(value))
+	})
+}

@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/BigJk/snd/rpc/bind"
 	"io/ioutil"
 	"mime"
 	"net/http"
@@ -13,6 +12,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/BigJk/snd/rpc/bind"
 
 	"github.com/BigJk/snd/database"
 	"github.com/labstack/echo/v4/middleware"
@@ -142,6 +143,7 @@ func (s *Server) Start(bindAddr string) error {
 	extern := api.Group("/extern")
 
 	rpc.RegisterVersion(api)
+	rpc.RegisterKeyValue(api, s.db)
 	rpc.RegisterImageUtilities(api)
 	rpc.RegisterSettings(api, s.db)
 	rpc.RegisterTemplate(api, extern, s.db)

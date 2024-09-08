@@ -1,4 +1,8 @@
 import m from 'mithril';
+import { cloneDeep, map } from 'lodash-es';
+
+import HorizontalProperty from '../../components/horizontal-property';
+import { openPromptModal } from '../../components/modals/prompt';
 
 import { buildId } from 'js/types/basic-info';
 import Generator, { sanitizeConfig } from 'js/types/generator';
@@ -34,6 +38,7 @@ type SingleGeneratorState = {
 	printCount: number;
 	lastRendered: string;
 	hidePreview: boolean;
+	savedConfigs: Record<string, any[]>;
 };
 
 export default (): m.Component<SingleGeneratorProps> => {
@@ -43,6 +48,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 		printCount: 1,
 		lastRendered: '',
 		hidePreview: false,
+		savedConfigs: {},
 	};
 
 	const print = () => {
@@ -95,12 +101,51 @@ export default (): m.Component<SingleGeneratorProps> => {
 		});
 	};
 
+	const saveConfigs = () => {
+		if (!state.generator) {
+			return;
+		}
+		return API.exec<void>(API.SET_KEY, `${buildId('generator', state.generator)}_saved_configs`, JSON.stringify(state.savedConfigs));
+	};
+
+	const saveConfig = () => {
+		openPromptModal({
+			title: 'Save Config',
+			label: 'Name',
+			description: 'Enter a name for the config',
+			onSuccess: (name) => {
+				if (!state.generator) return;
+				state.savedConfigs[name] = cloneDeep(state.config);
+				saveConfigs()?.catch(error);
+				success('Saved config');
+			},
+		});
+	};
+
+	const deleteSavedConfig = (name: string) => {
+		dialogWarning('Are you sure you want to delete this config?').then(() => {
+			if (!state.generator) return;
+			delete state.savedConfigs[name];
+			saveConfigs()?.catch(error);
+		});
+	};
+
+	const loadSavedConfig = (name: string) => {
+		if (!state.generator) return;
+		state.config = cloneDeep(state.savedConfigs[name]);
+	};
+
 	return {
 		oninit({ attrs }) {
 			API.exec<Generator>(API.GET_GENERATOR, attrs.id).then((generator) => {
 				state.generator = generator;
 				state.config = sanitizeConfig(generator, {});
 			});
+			API.exec<string>(API.GET_KEY, `${attrs.id}_saved_configs`)
+				.then((configs) => {
+					state.savedConfigs = JSON.parse(configs);
+				})
+				.catch(console.error);
 		},
 		onupdate({ attrs }) {},
 		view({ attrs }) {
@@ -187,7 +232,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 										m.redraw();
 									},
 								}),
-								m(Flex, { className: '.bt.b--black-10.pv2.ph3', justify: 'end', items: 'center', gap: 2 }, [
+								m(Flex, { className: '.bt.b--black-10.pv2.ph3', justify: 'between', items: 'center', gap: 2 }, [
 									/*
 									Disabled for now!
 
@@ -203,9 +248,18 @@ export default (): m.Component<SingleGeneratorProps> => {
 										}),
 									),
 									*/
-									m(Tooltip, { content: 'Hide Preview' }, m(Checkbox, { checked: state.hidePreview, onChange: (val) => (state.hidePreview = val) })),
-									m(IconButton, { icon: 'camera', intend: 'primary', onClick: screenshot }, 'Screenshot'),
-									m(IconButton, { icon: 'print', intend: 'success', onClick: print }, 'Print'),
+									m(Flex, { gap: 2 }, [
+										m(IconButton, { icon: 'save', intend: 'primary', onClick: saveConfig }, 'Save Config'),
+										m(IconButton, { icon: 'camera', intend: 'primary', onClick: screenshot }, 'Screenshot'),
+									]),
+									m(Flex, { gap: 2, items: 'center' }, [
+										m(
+											Tooltip,
+											{ content: 'Hide Preview' },
+											m(Checkbox, { checked: state.hidePreview, onChange: (val) => (state.hidePreview = val) }),
+										),
+										m(IconButton, { icon: 'print', intend: 'success', onClick: print }, 'Print'),
+									]),
 								]),
 							]),
 						Information: () =>
@@ -216,7 +270,36 @@ export default (): m.Component<SingleGeneratorProps> => {
 									? [m('div.f5.mb2.b.mt3', 'Copyright Notice'), m('div', { style: { whiteSpace: 'break-spaces' } }, state.generator.copyrightNotice)]
 									: []),
 							]),
-						Saved: () => m('div.ph3.pv2', 'coming soon...'),
+						Saved: () =>
+							m('div.ph3.pv2.lh-copy', [
+								m('div.f5.b', 'Saved Configs'),
+								Object.keys(state.savedConfigs).length
+									? m(Flex, { direction: 'column' }, [
+											...map(state.savedConfigs, (config, key) =>
+												m(
+													HorizontalProperty,
+													{
+														label: key,
+														description: '',
+														bottomBorder: true,
+														centered: true,
+													},
+													m(
+														Flex,
+														{
+															gap: 2,
+															justify: 'end',
+														},
+														[
+															m(IconButton, { icon: 'trash', intend: 'error', onClick: () => deleteSavedConfig(key) }),
+															m(IconButton, { icon: 'edit', intend: 'primary', onClick: () => loadSavedConfig(key) }, 'Load'),
+														],
+													),
+												),
+											),
+									  ])
+									: m('div.pv2.text-muted', 'No saved configs yet...'),
+							]),
 					},
 				}),
 			);

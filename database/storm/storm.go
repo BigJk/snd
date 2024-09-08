@@ -2,6 +2,7 @@ package storm
 
 import (
 	"bytes"
+	"errors"
 	"time"
 
 	"github.com/BigJk/snd"
@@ -184,4 +185,12 @@ func (s *Storm) GetSources() ([]database.DataSourceEntry, error) {
 	}
 
 	return sources, nil
+}
+
+func (s *Storm) GetKey(key string) (string, error) {
+	return "", errors.New("not implemented")
+}
+
+func (s *Storm) SetKey(key, value string) error {
+	return errors.New("not implemented")
 }

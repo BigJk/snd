@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/BigJk/snd"
-	"github.com/BigJk/snd/database"
-	"github.com/BigJk/snd/log"
 	"io"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/BigJk/snd"
+	"github.com/BigJk/snd/database"
+	"github.com/BigJk/snd/log"
 )
 
 type Cloud struct {
@@ -216,4 +217,12 @@ func (c *Cloud) GetSources() ([]database.DataSourceEntry, error) {
 	var sources []database.DataSourceEntry
 	_, err := c.request(http.MethodGet, "/api/sources", nil, &sources)
 	return sources, err
+}
+
+func (c *Cloud) GetKey(key string) (string, error) {
+	return "", errors.New("not implemented")
+}
+
+func (c *Cloud) SetKey(key string, value string) error {
+	return errors.New("not implemented")
 }

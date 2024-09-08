@@ -50,4 +50,7 @@ type Database interface {
 	DeleteSource(id string) error
 	GetSource(id string) (snd.DataSource, error)
 	GetSources() ([]DataSourceEntry, error)
+
+	GetKey(key string) (string, error)
+	SetKey(key string, value string) error
 }

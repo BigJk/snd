@@ -27,6 +27,10 @@ export const SAVE_SETTINGS = 'saveSettings';
 export const GET_VERSION = 'getVersion';
 export const NEW_VERSION = 'newVersion';
 
+// Key Value functions
+export const GET_KEY = 'getKey';
+export const SET_KEY = 'setKey';
+
 // Entries functions
 export const GET_ENTRIES = 'getEntries';
 export const SAVE_ENTRY = 'saveEntry';

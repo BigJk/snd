@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/BigJk/snd/rpc/bind"
 	"image"
 	"image/png"
 	"io/ioutil"
@@ -17,6 +16,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/BigJk/snd/rpc/bind"
 
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
@@ -286,7 +287,7 @@ func RegisterPrint(route *echo.Group, extern *echo.Group, db database.Database, 
 		return nil
 	}
 
-	bind.MustBind(route, "/printTemplate", func(id string, entry snd.Entry, config interface{}) error {
+	bind.MustBind(route, "/printTemplate", func(id string, entry snd.Entry, config map[string]any) error {
 		_, err := db.GetTemplate(id)
 		if err != nil {
 			return err
@@ -294,19 +295,30 @@ func RegisterPrint(route *echo.Group, extern *echo.Group, db database.Database, 
 		return externPrintTemplate(id, entry, config)
 	})
 
-	bind.MustBind(route, "/printTemplateEntry", func(id string, eid string, config interface{}) error {
-		_, err := db.GetTemplate(id)
+	bind.MustBind(route, "/printTemplateEntry", func(id string, eid string, config map[string]any) error {
+		tmpl, err := db.GetTemplate(id)
 		if err != nil {
 			return err
 		}
+
 		ent, err := db.GetEntry(id, eid)
 		if err != nil {
+			// Try to find the entry in the linked data sources
+			for _, dsid := range tmpl.DataSources {
+				if ds, err := db.GetSource(dsid); err == nil {
+					if ent, err = db.GetEntry(ds.ID(), eid); err == nil {
+						return externPrintTemplate(id, ent, config)
+					}
+				}
+			}
+
 			return err
 		}
+
 		return externPrintTemplate(id, ent, config)
 	})
 
-	externPrintGenerator := func(genId string, config any) error {
+	externPrintGenerator := func(genId string, config map[string]any) error {
 		configJson, err := json.Marshal(config)
 		if err != nil {
 			return err
@@ -324,7 +336,7 @@ func RegisterPrint(route *echo.Group, extern *echo.Group, db database.Database, 
 		return nil
 	}
 
-	bind.MustBind(route, "/printGenerator", func(id string, config interface{}) error {
+	bind.MustBind(route, "/printGenerator", func(id string, config map[string]any) error {
 		_, err := db.GetGenerator(id)
 		if err != nil {
 			return err

@@ -28,15 +28,11 @@ export default (): m.Component<ExternPrintProps> => {
 	return {
 		oninit({ attrs }) {
 			state.id = attrs.id;
-			state.json = JSON.parse(atob(attrs.json));
 			state.gen = attrs.gen;
-
-			// TODO: is this right?
 
 			API.exec<Generator>(API.GET_GENERATOR, state.id)
 				.then((gen) => {
 					render(gen.printTemplate, {
-						it: state.json,
 						sources: gen.dataSources,
 						images: gen.images,
 						config: JSON.parse(atob(attrs.config)),

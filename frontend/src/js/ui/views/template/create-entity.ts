@@ -173,7 +173,7 @@ export default (): m.Component<CreateTemplateEntityProps> => {
 				state.data = initialData(state.schema);
 
 				if (attrs.eid) {
-					API.exec<Entry>(API.GET_ENTRY, attrs.id, attrs.eid)
+					API.exec<Entry>(API.GET_ENTRY, attrs.id, atob(attrs.eid))
 						.then((entry) => {
 							state.data = entry.data;
 							state.name = entry.name;

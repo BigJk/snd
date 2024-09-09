@@ -75,7 +75,7 @@ store.actions.loadAll().then(() => {
 		'/workshop/:id': WorkshopSingle,
 		'/workshop/:id/:repo': WorkshopRepo,
 		'/extern-print/template/:id/:json/:config': ExternPrintTemplate,
-		'/extern-print/generator/:id/:json/:config': ExternPrintGenerator,
+		'/extern-print/generator/:id/:config': ExternPrintGenerator,
 	});
 
 	document.addEventListener('keydown', (e) => {

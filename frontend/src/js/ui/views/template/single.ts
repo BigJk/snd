@@ -230,7 +230,8 @@ export default (): m.Component<SingleTemplateProps> => {
 								size: 'sm',
 								icon: 'create',
 								className: '.mr2',
-								onClick: () => m.route.set(`/template/${buildId('template', state.template!)}/edit/${entry.id}`),
+								disabled: entry.source?.startsWith('ds:'),
+								onClick: () => m.route.set(`/template/${buildId('template', state.template!)}/edit/${btoa(entry.id)}`),
 							}),
 						),
 						m(

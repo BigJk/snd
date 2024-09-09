@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-import Generator from 'js/types/generator';
+import Generator, { sanitizeConfig } from 'js/types/generator';
 import * as API from 'js/core/api';
 import { settings } from 'js/core/store';
 import { render } from 'js/core/templating';
@@ -35,7 +35,7 @@ export default (): m.Component<ExternPrintProps> => {
 					render(gen.printTemplate, {
 						sources: gen.dataSources,
 						images: gen.images,
-						config: JSON.parse(atob(attrs.config)),
+						config: sanitizeConfig(gen, JSON.parse(atob(attrs.config))),
 						settings: settings.value,
 					})
 						.then((res) => {

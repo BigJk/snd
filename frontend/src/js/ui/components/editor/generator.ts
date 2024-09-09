@@ -107,7 +107,7 @@ export default (): m.Component<GeneratorEditorProps> => {
 										),
 										m(
 											Flex,
-											{ gap: 2 },
+											{ gap: 2, wrap: 'wrap' },
 											attrs.generator.dataSources.map((s) =>
 												m(
 													Label,

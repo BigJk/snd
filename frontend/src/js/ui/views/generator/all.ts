@@ -52,7 +52,9 @@ export default (): m.Component => {
 						m(TemplateBox, {
 							onClick: () => m.route.set(`/generator/${buildId('generator', generator)}`),
 							generator: generator,
-							config: sanitizeConfig(generator, {}),
+							config: sanitizeConfig(generator, {
+								seed: 'TEST_SEED',
+							}),
 						}),
 					),
 				),

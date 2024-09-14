@@ -3,7 +3,7 @@ import { isEqual } from 'lodash-es';
 
 import { css } from 'goober';
 
-import Settings, { Commands } from 'js/types/settings';
+import Settings, { Commands, createEmptySettings } from 'js/types/settings';
 import * as API from 'js/core/api';
 import store, { printer, settings } from 'js/core/store';
 
@@ -28,7 +28,7 @@ const containerClass = css`
 `;
 
 export default (): m.Component => {
-	let settingsCopy: Settings = { ...settings.value };
+	let settingsCopy: Settings = { ...createEmptySettings(), ...settings.value };
 	let aiModels: string[] = [];
 	let aiProviders: string[] = [];
 
@@ -265,51 +265,6 @@ export default (): m.Component => {
 								onChange: onChangeCommands,
 							} as PropertyEditProps<Commands>),
 							//
-							// Cloud Sync
-							m(PropertyHeader, {
-								className: '.mt3',
-								title: 'Cloud Sync',
-								description: 'Sync your data to the cloud (experimental donator-only feature)',
-								icon: 'cloudy',
-							}), //
-							m(PropertyEdit<Settings>, {
-								properties: settingsCopy,
-								annotations: {
-									syncKey: {
-										label: 'Sync Key',
-										description: 'The key to identify your data',
-									},
-									syncEnabled: {
-										label: 'Enable Sync',
-										description: 'Enable or disable sync',
-									},
-								},
-								show: ['syncKey', 'syncEnabled'],
-								onChange: onChangeSettings,
-							} as PropertyEditProps<Settings>),
-							m(
-								HorizontalProperty,
-								{
-									label: 'Force Sync to Cloud',
-									description:
-										'Force a sync of local data with the cloud. If you enabled sync for the first time this will upload all your data to the cloud.',
-									bottomBorder: true,
-									centered: true,
-								},
-								m(Button, { intend: 'error', onClick: syncToCloud }, 'Start Sync'),
-							),
-							m(
-								HorizontalProperty,
-								{
-									label: 'Force Sync from Cloud',
-									description:
-										'Force a sync of cloud data to the local data. If you stop wanting to sync this will download all your data from the cloud.',
-									bottomBorder: true,
-									centered: true,
-								},
-								m(Button, { intend: 'error', onClick: syncFromCloud }, 'Start Sync'),
-							),
-							//
 							// AI
 							m(PropertyHeader, {
 								className: '.mt3',
@@ -323,6 +278,10 @@ export default (): m.Component => {
 									aiEnabled: {
 										label: 'Enable',
 										description: 'Enable or disable AI',
+									},
+									aiAlwaysAllow: {
+										label: 'Always Allow',
+										description: 'Enable AI by default without asking for confirmation. Use with caution!',
 									},
 									aiApiKey: {
 										label: 'API Key',
@@ -338,7 +297,7 @@ export default (): m.Component => {
 											'The max tokens for the AI service. Higher values will allow the AI to generate more content. (common range: 300-10000)',
 									},
 								},
-								show: ['aiEnabled', 'aiApiKey', 'aiContextWindow', 'aiMaxTokens'],
+								show: ['aiEnabled', 'aiAlwaysAllow', 'aiApiKey', 'aiContextWindow', 'aiMaxTokens'],
 								onChange: onChangeSettings,
 							} as PropertyEditProps<Settings>),
 							m(
@@ -412,6 +371,51 @@ export default (): m.Component => {
 										),
 								  ],
 						]),
+						//
+						// Cloud Sync
+						m(PropertyHeader, {
+							className: '.mt3',
+							title: 'Cloud Sync',
+							description: 'Sync your data to the cloud (experimental donator-only feature)',
+							icon: 'cloudy',
+						}), //
+						m(PropertyEdit<Settings>, {
+							properties: settingsCopy,
+							annotations: {
+								syncKey: {
+									label: 'Sync Key',
+									description: 'The key to identify your data',
+								},
+								syncEnabled: {
+									label: 'Enable Sync',
+									description: 'Enable or disable sync',
+								},
+							},
+							show: ['syncKey', 'syncEnabled'],
+							onChange: onChangeSettings,
+						} as PropertyEditProps<Settings>),
+						m(
+							HorizontalProperty,
+							{
+								label: 'Force Sync to Cloud',
+								description:
+									'Force a sync of local data with the cloud. If you enabled sync for the first time this will upload all your data to the cloud.',
+								bottomBorder: true,
+								centered: true,
+							},
+							m(Button, { intend: 'error', onClick: syncToCloud }, 'Start Sync'),
+						),
+						m(
+							HorizontalProperty,
+							{
+								label: 'Force Sync from Cloud',
+								description:
+									'Force a sync of cloud data to the local data. If you stop wanting to sync this will download all your data from the cloud.',
+								bottomBorder: true,
+								centered: true,
+							},
+							m(Button, { intend: 'error', onClick: syncFromCloud }, 'Start Sync'),
+						),
 					),
 				),
 			);

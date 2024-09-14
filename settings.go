@@ -21,6 +21,7 @@ type Settings struct {
 	SyncKey               string   `json:"syncKey"`
 	SyncEnabled           bool     `json:"syncEnabled"`
 	AIEnabled             bool     `json:"aiEnabled"`
+	AIAlwaysAllow         bool     `json:"aiAlwaysAllow"`
 	AIApiKey              string   `json:"aiApiKey"`
 	AIModel               string   `json:"aiModel"`
 	AIProvider            string   `json:"aiProvider"`

@@ -20,6 +20,7 @@ type Settings = {
 	syncKey: string;
 	syncEnabled: boolean;
 	aiEnabled: boolean;
+	aiAlwaysAllow: boolean;
 	aiApiKey: string;
 	aiProvider: string;
 	aiModel: string;
@@ -49,6 +50,7 @@ export function createEmptySettings(): Settings {
 		syncKey: '',
 		syncEnabled: false,
 		aiEnabled: false,
+		aiAlwaysAllow: false,
 		aiApiKey: '',
 		aiProvider: '',
 		aiModel: '',

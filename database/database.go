@@ -53,4 +53,6 @@ type Database interface {
 
 	GetKey(key string) (string, error)
 	SetKey(key string, value string) error
+	DeleteKey(key string) error
+	GetKeysPrefix(prefix string) ([]string, error)
 }

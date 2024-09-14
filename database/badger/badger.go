@@ -232,3 +232,26 @@ func (b *Badger) SetKey(key string, value string) error {
 		return txn.Set([]byte("KV_"+key), []byte(value))
 	})
 }
+
+func (b *Badger) DeleteKey(key string) error {
+	return dropSingle(b.db, "KV_"+key)
+}
+
+func (b *Badger) GetKeysPrefix(prefix string) ([]string, error) {
+	var keys []string
+	err := b.db.View(func(txn *badger.Txn) error {
+		opts := badger.DefaultIteratorOptions
+		opts.PrefetchSize = 10
+		it := txn.NewIterator(opts)
+		defer it.Close()
+
+		prefix := []byte("KV_" + prefix)
+		for it.Seek(prefix); it.ValidForPrefix(prefix); it.Next() {
+			item := it.Item()
+			k := item.Key()
+			keys = append(keys, strings.TrimPrefix(string(k), "KV_"))
+		}
+		return nil
+	})
+	return keys, err
+}

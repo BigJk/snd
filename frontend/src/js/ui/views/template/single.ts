@@ -365,8 +365,11 @@ export default (): m.Component<SingleTemplateProps> => {
 												m(Button, { onClick: generateAIEntry, loading: state.aiLoading, intend: 'primary' }, 'Generate'), //
 												m(
 													Flex,
+													{ items: 'center' },
 													state.selectedEntry?.id.indexOf('ai#') === 0 && !state.aiLoading
 														? [
+																m(IconButton, { className: '.mr2', intend: 'primary', size: 'sm', icon: 'print', onClick: print }),
+																m('div.mr2', 'or'),
 																m(Input, {
 																	placeholder: 'Name',
 																	value: state.selectedEntry?.name,

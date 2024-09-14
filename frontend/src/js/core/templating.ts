@@ -90,13 +90,13 @@ const rngScript = (seed: any) => `
 		<script>
 			window.random = new Math.seedrandom('${seed}');
 			Math.random = window.random;
-			
+
 			rpgDiceRoller.NumberGenerator.generator.engine = {
 			  next () {
 				return Math.abs(window.random.int32());
 			  },
 			};
-			
+
 			window.dice = new rpgDiceRoller.DiceRoller();
 		</script>
 `;
@@ -109,26 +109,26 @@ const aiScript = `
 <script>
 	const aiEnabled = {{ aiEnabled }};
 	const aiToken = '{{ aiToken }}';
-	
+
 	const aiPrompt = (system, user) => {
 		if(!aiEnabled) {
       // Try and see if the response was cached
       const request = new XMLHttpRequest();
 			request.open("POST", "http://127.0.0.1:7123/api/aiCached", false); // Synchronous request
 			request.send(JSON.stringify([system, user, aiToken]));
-			
+
 			if(request.status === 200) {
 				return JSON.parse(request.responseText);
 			}
-      
+
       // Don't execute AI
 			return "AI content disabled.";
 		}
-		
+
 		const request = new XMLHttpRequest();
 		request.open("POST", "http://127.0.0.1:7123/api/aiPrompt", false); // Synchronous request
 		request.send(JSON.stringify([system, user, aiToken]));
-		
+
 		if(request.status === 200) {
 			return JSON.parse(request.responseText);
 		} else {

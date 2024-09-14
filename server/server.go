@@ -130,6 +130,7 @@ func (s *Server) Start(bindAddr string) error {
 			Stylesheets:           []string{},
 			SpellcheckerLanguages: []string{"en-US"},
 			AIEnabled:             false,
+			AIAlwaysAllow:         false,
 			AIProvider:            "OpenRouter.ai",
 			AIMaxTokens:           4000,
 			AIContextWindow:       6000,

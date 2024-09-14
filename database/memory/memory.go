@@ -169,3 +169,21 @@ func (m *Memory) SetKey(key string, value string) error {
 	m.kv[key] = value
 	return nil
 }
+
+func (m *Memory) DeleteKey(key string) error {
+	delete(m.kv, key)
+	return nil
+}
+
+func (m *Memory) GetKeysPrefix(prefix string) ([]string, error) {
+	var keys []string
+	for k := range m.kv {
+		if len(prefix) > len(k) {
+			continue
+		}
+		if k[:len(prefix)] == prefix {
+			keys = append(keys, k)
+		}
+	}
+	return keys, nil
+}

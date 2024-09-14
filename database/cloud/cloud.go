@@ -226,3 +226,11 @@ func (c *Cloud) GetKey(key string) (string, error) {
 func (c *Cloud) SetKey(key string, value string) error {
 	return errors.New("not implemented")
 }
+
+func (c *Cloud) DeleteKey(key string) error {
+	return errors.New("not implemented")
+}
+
+func (c *Cloud) GetKeysPrefix(prefix string) ([]string, error) {
+	return nil, errors.New("not implemented")
+}

@@ -194,3 +194,11 @@ func (s *Storm) GetKey(key string) (string, error) {
 func (s *Storm) SetKey(key, value string) error {
 	return errors.New("not implemented")
 }
+
+func (s *Storm) DeleteKey(key string) error {
+	return errors.New("not implemented")
+}
+
+func (s *Storm) GetKeysPrefix(prefix string) ([]string, error) {
+	return nil, errors.New("not implemented")
+}

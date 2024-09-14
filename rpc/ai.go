@@ -7,15 +7,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/BigJk/snd/rpc/bind"
 	"io"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/BigJk/snd/rpc/bind"
+
 	"github.com/BigJk/snd/database"
 	"github.com/labstack/echo/v4"
-	"github.com/patrickmn/go-cache"
 	"github.com/samber/lo"
 )
 
@@ -49,8 +49,6 @@ func providerToEndpoint(db database.Database, provider string) (string, error) {
 }
 
 func RegisterAI(route *echo.Group, db database.Database) {
-	aiCache := cache.New(time.Minute*30, time.Minute)
-
 	client := &http.Client{
 		Timeout: time.Second * 60,
 	}
@@ -78,11 +76,30 @@ func RegisterAI(route *echo.Group, db database.Database) {
 	}
 
 	bind.MustBind(route, "/aiCached", func(system string, user string, token string) (string, error) {
-		cacheKey := fmt.Sprintf("%s-%s", shortHash(system+user), token)
-		if val, ok := aiCache.Get(cacheKey); ok {
-			return val.(string), nil
+		if len(token) == 0 {
+			return "", errors.New("token is empty")
+		}
+		cacheKey := fmt.Sprintf("AI_CACHE_%s_%s", shortHash(system+user), token)
+		if val, err := db.GetKey(cacheKey); err == nil {
+			return val, nil
 		}
 		return "", errors.New("not cached")
+	})
+
+	bind.MustBind(route, "/aiInvalidateCached", func(token string) error {
+		if len(token) == 0 {
+			return errors.New("token is empty")
+		}
+		keys, err := db.GetKeysPrefix("AI_CACHE_")
+		if err != nil {
+			return err
+		}
+		for _, k := range keys {
+			if strings.HasSuffix(k, token) {
+				db.DeleteKey(k)
+			}
+		}
+		return nil
 	})
 
 	bind.MustBind(route, "/aiPrompt", func(system string, user string, token string) (string, error) {
@@ -100,9 +117,9 @@ func RegisterAI(route *echo.Group, db database.Database) {
 			return "", err
 		}
 
-		cacheKey := fmt.Sprintf("%s-%s", shortHash(system+user), token)
-		if val, ok := aiCache.Get(cacheKey); ok {
-			return val.(string), nil
+		cacheKey := fmt.Sprintf("AI_CACHE_%s_%s", shortHash(system+user), token)
+		if val, err := db.GetKey(cacheKey); err == nil {
+			return val, nil
 		}
 
 		prompt := AIRequest{
@@ -177,7 +194,7 @@ func RegisterAI(route *echo.Group, db database.Database) {
 			return "", errors.New("no response from AI")
 		}
 
-		aiCache.Set(cacheKey, aiResp.Choices[0].Message.Content, cache.DefaultExpiration)
+		db.SetKey(cacheKey, aiResp.Choices[0].Message.Content)
 
 		return aiResp.Choices[0].Message.Content, nil
 	})

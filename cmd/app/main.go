@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/BigJk/snd/database/cloud"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -11,13 +10,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/BigJk/snd/database/cloud"
+
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/database"
 	"github.com/BigJk/snd/database/badger"
 	"github.com/BigJk/snd/printing/cups"
 	"github.com/BigJk/snd/printing/dump"
 	"github.com/BigJk/snd/printing/remote"
-	"github.com/BigJk/snd/printing/rsnd"
 	"github.com/BigJk/snd/printing/serial"
 	"github.com/BigJk/snd/rendering"
 	"github.com/BigJk/snd/server"
@@ -85,7 +85,7 @@ func openDatabase() database.Database {
 func startServer(db database.Database, debug bool) {
 	rand.Seed(time.Now().UnixNano())
 
-	s, err := server.New(db, append(serverOptions, server.WithDebug(debug), server.WithPrinter(&cups.CUPS{}), server.WithPrinter(&remote.Remote{}), server.WithPrinter(&serial.Serial{}), server.WithPrinter(&rsnd.RemoteSND{}), server.WithPrinter(&dump.Dump{}))...)
+	s, err := server.New(db, append(serverOptions, server.WithDebug(debug), server.WithPrinter(&cups.CUPS{}), server.WithPrinter(&remote.Remote{}), server.WithPrinter(&serial.Serial{}), server.WithPrinter(&dump.Dump{}))...)
 	if err != nil {
 		panic(err)
 	}
@@ -151,12 +151,12 @@ func main() {
 	flag.Parse()
 
 	fmt.Println(`
-   _____        _____  
-  / ____| ___  |  __ \ 
+   _____        _____
+  / ____| ___  |  __ \
  | (___  ( _ ) | |  | |
   \___ \ / _ \/\ |  | |
   ____) | (_>  < |__| |
- |_____/ \___/\/_____/ 
+ |_____/ \___/\/_____/
 ________________________________________`)
 	if len(snd.GitCommitHash) > 0 {
 		fmt.Println("Build Time    :", snd.BuildTime)

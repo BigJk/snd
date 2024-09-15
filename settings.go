@@ -15,7 +15,6 @@ type Settings struct {
 		SplitHeight       int  `json:"splitHeight"`
 		SplitDelay        int  `json:"splitDelay"`
 	} `json:"commands"`
-	Stylesheets           []string `json:"stylesheets"`
 	SpellcheckerLanguages []string `json:"spellcheckerLanguages"`
 	PackageRepos          []string `json:"packageRepos"`
 	SyncKey               string   `json:"syncKey"`

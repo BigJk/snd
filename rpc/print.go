@@ -33,17 +33,10 @@ import (
 
 // GetOutboundIP gets the local ip.
 func GetOutboundIP() (net.IP, error) {
-	conn, err := net.Dial("udp", "8.8.8.8:80")
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
-
-	localAddr := conn.LocalAddr().(*net.UDPAddr)
-
-	return localAddr.IP, nil
+	return net.IPv4(127, 0, 0, 1), nil
 }
 
+// urlRegex is used to find URLs in CSS.
 var urlRegex = regexp.MustCompile(`(?U)url\(["']?(.+)\)`)
 
 // renderCache is used to cache rendered HTML.
@@ -64,18 +57,8 @@ func fixHtml(html string, settings snd.Settings) (string, error) {
   <title>print page</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>body { margin: 0; padding: 0; }</style>`
-
-	// Add global stylesheets
-	for i := range settings.Stylesheets {
-		url := settings.Stylesheets[i]
-		if strings.HasPrefix(url, "/") {
-			url = "http://" + ip.String() + ":7123" + url
-		}
-		htmlHead += `<link rel="stylesheet" href="` + settings.Stylesheets[i] + `">` + "\n"
-	}
-
-	htmlHead += `<body>
+  <style>body { margin: 0; padding: 0; }</style>
+  <body>
 		<div id="content">`
 
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlHead + html + "</div></body></html>"))

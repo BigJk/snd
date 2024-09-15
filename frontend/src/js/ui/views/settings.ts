@@ -5,7 +5,7 @@ import { css } from 'goober';
 
 import Settings, { Commands, createEmptySettings } from 'js/types/settings';
 import * as API from 'js/core/api';
-import store, { printer, settings } from 'js/core/store';
+import store, { printerTypes, settings } from 'js/core/store';
 
 import Button from 'js/ui/shoelace/button';
 import IconButton from 'js/ui/shoelace/icon-button';
@@ -179,6 +179,10 @@ export default (): m.Component => {
 								description: 'The main printer settings',
 								icon: 'print',
 							}), //
+							m('div.pa2.mb3.bg-white.ba.br2.b--black-10.lh-copy', [
+								m('div.f6.b.mb1', settingsCopy.printerType),
+								printerTypes.value[settingsCopy.printerType] ?? '',
+							]),
 							m(PropertyEdit<Settings>, {
 								properties: settingsCopy,
 								annotations: {
@@ -186,7 +190,7 @@ export default (): m.Component => {
 										label: 'Type',
 										description: 'The type of printer you are using',
 										customComponent: m(Select, {
-											keys: Object.keys(printer.value),
+											keys: Object.keys(printerTypes.value),
 											selected: settingsCopy.printerType,
 											onInput: (e) => {
 												settingsCopy = { ...settingsCopy, printerType: e.value };

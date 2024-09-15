@@ -52,6 +52,7 @@ type Store = {
 	generators: Generator[];
 	sources: DataSource[];
 	printer: Record<string, Printer>;
+	printerTypes: Record<string, string>;
 	publicLists: PublicList[];
 	version: {
 		current: Version.LocalVersion | null;
@@ -69,6 +70,7 @@ const initialState: Store = {
 	generators: [],
 	sources: [],
 	printer: {},
+	printerTypes: {},
 	publicLists: [],
 	version: {
 		current: null,
@@ -91,6 +93,7 @@ const store = create(initialState, (atom) => ({
 			this.loadGenerators(),
 			this.loadSources(),
 			this.loadPrinter(),
+			this.loadPrinterTypes(),
 			this.loadPublicList(),
 			this.loadVersion(),
 		]);
@@ -151,6 +154,18 @@ const store = create(initialState, (atom) => ({
 			atom.update((state) => ({
 				...state,
 				printer: res ?? {},
+			}));
+		});
+	},
+
+	/**
+	 * LoadPrinterTypes loads the printer types with description from the backend.
+	 */
+	loadPrinterTypes() {
+		return API.exec<Record<string, string>>(API.GET_PRINTER).then((res) => {
+			atom.update((state) => ({
+				...state,
+				printerTypes: res ?? {},
 			}));
 		});
 	},
@@ -245,5 +260,6 @@ export const templates = store.focus('templates');
 export const generators = store.focus('generators');
 export const sources = store.focus('sources');
 export const printer = store.focus('printer');
+export const printerTypes = store.focus('printerTypes');
 export const packages = store.focus('publicLists');
 export const ai = store.focus('ai');

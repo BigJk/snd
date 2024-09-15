@@ -18,7 +18,7 @@ func (dp *Direct) Name() string {
 }
 
 func (dp *Direct) Description() string {
-	return "Directly print to a attached printer. Use the Name of the printer as Endpoint."
+	return "Directly print to a attached printer. Use the Name of the printer as endpoint."
 }
 
 func (dp *Direct) AvailableEndpoints() (map[string]string, error) {

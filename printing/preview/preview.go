@@ -20,7 +20,7 @@ func (r *Preview) Name() string {
 }
 
 func (r *Preview) Description() string {
-	return "Instead of printing show a window with the result."
+	return "Instead of printing show a window with the result. No endpoint needed."
 }
 
 func (r *Preview) AvailableEndpoints() (map[string]string, error) {

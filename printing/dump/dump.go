@@ -13,7 +13,7 @@ func (r *Dump) Name() string {
 }
 
 func (r *Dump) Description() string {
-	return "Dumps the raw commands content to file. Endpoint should be the path to the file that will be written."
+	return "Dumps the raw ESC/POS commands to file. Endpoint should be the path to the file that will be written. Can be used to debug the raw commands."
 }
 
 func (r *Dump) AvailableEndpoints() (map[string]string, error) {

@@ -33,7 +33,7 @@ func (c *USB) Name() string {
 }
 
 func (c *USB) Description() string {
-	return "Print directly to a USB attached printer. Use {vendor_id}:{product_id}:{endpoint_address} like 0416:5011:03. To find out how to get these values please take a look at the S&D documentation."
+	return "Print directly to a USB attached printer. Use {vendor_id}:{product_id}:{endpoint_address} like 0416:5011:03 as endpoint. To find out how to get these values please take a look at the S&D documentation."
 }
 
 func (c *USB) AvailableEndpoints() (map[string]string, error) {

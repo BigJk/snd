@@ -18,7 +18,7 @@ func (c *CUPS) Name() string {
 }
 
 func (c *CUPS) Description() string {
-	return "Print via CUPS attached printer. Use the Name of the printer (not the URI) as Endpoint."
+	return "Print via CUPS attached printer. Use the Name of the printer (not the URI) as endpoint. Check the S&D documentation for more information on how to set up CUPS."
 }
 
 var devicesRegex = regexp.MustCompile(`(?mU)device for (.+):`)

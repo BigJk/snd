@@ -3,7 +3,6 @@ package server
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"mime"
@@ -20,7 +19,6 @@ import (
 	"github.com/patrickmn/go-cache"
 	"gopkg.in/olahol/melody.v1"
 
-	"github.com/BigJk/nra"
 	"github.com/BigJk/snd"
 	"github.com/BigJk/snd/log"
 	"github.com/BigJk/snd/printing"
@@ -50,24 +48,22 @@ type Option func(s *Server) error
 // Server represents an instance of the S&D server.
 type Server struct {
 	sync.RWMutex
-	debug         bool
-	db            database.Database
-	e             *echo.Echo
-	m             *melody.Melody
-	cache         *cache.Cache
-	printers      printing.PossiblePrinter
-	additionalRpc map[string]interface{}
+	debug    bool
+	db       database.Database
+	e        *echo.Echo
+	m        *melody.Melody
+	cache    *cache.Cache
+	printers printing.PossiblePrinter
 }
 
 // New creates a new instance of the S&D server.
 func New(db database.Database, options ...Option) (*Server, error) {
 	s := &Server{
-		db:            db,
-		e:             echo.New(),
-		m:             melody.New(),
-		cache:         cache.New(time.Minute*10, time.Minute),
-		printers:      map[string]printing.Printer{},
-		additionalRpc: map[string]interface{}{},
+		db:       db,
+		e:        echo.New(),
+		m:        melody.New(),
+		cache:    cache.New(time.Minute*10, time.Minute),
+		printers: map[string]printing.Printer{},
 	}
 
 	for i := range options {
@@ -91,14 +87,6 @@ func WithDebug(value bool) Option {
 func WithPrinter(printer printing.Printer) Option {
 	return func(s *Server) error {
 		s.printers[printer.Name()] = printer
-		return nil
-	}
-}
-
-// WithAdditionalRPC adds an RPC function to the Server.
-func WithAdditionalRPC(fnName string, fn interface{}) Option {
-	return func(s *Server) error {
-		s.additionalRpc[fnName] = fn
 		return nil
 	}
 }
@@ -127,7 +115,6 @@ func (s *Server) Start(bindAddr string) error {
 			PrinterWidth:          384,
 			PrinterType:           "Preview Printing",
 			PrinterEndpoint:       "window",
-			Stylesheets:           []string{},
 			SpellcheckerLanguages: []string{"en-US"},
 			AIEnabled:             false,
 			AIAlwaysAllow:         false,
@@ -177,20 +164,6 @@ func (s *Server) Start(bindAddr string) error {
 
 		return c.JSONPretty(http.StatusOK, resp, "  ")
 	})
-
-	// Register additional routes
-	for k, v := range s.additionalRpc {
-		api.POST(fmt.Sprintf("/%s", k), echo.WrapHandler(nra.MustBind(v)))
-	}
-
-	// Makes it possible to check in frontend if an
-	// additional function has been registered.
-	api.POST("/hasExt", echo.WrapHandler(nra.MustBind(func(name string) error {
-		if _, ok := s.additionalRpc[name]; ok {
-			return nil
-		}
-		return errors.New("function not available")
-	})))
 
 	// Register proxy route so that the iframes that are used
 	// in the frontend can proxy images and other data that they

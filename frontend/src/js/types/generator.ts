@@ -12,10 +12,18 @@ type Generator = BasicInfo & {
 	count?: number;
 };
 
+/**
+ * Generates a random seed.
+ */
 function seed() {
 	return Math.ceil(Math.random() * 999999999).toString();
 }
 
+/**
+ * Sanitizes the config object by setting default values for missing fields and removing old fields that are not present in the config anymore.
+ * @param g Generator object.
+ * @param configs Config object.
+ */
 const sanitizeConfig = (g: Generator, configs: any) => {
 	// Create base config
 	if (configs === undefined) {
@@ -40,6 +48,9 @@ const sanitizeConfig = (g: Generator, configs: any) => {
 	return pickBy(configs, (val, key) => key === 'seed' || g.config.some((conf) => conf.key === key));
 };
 
+/**
+ * Creates an empty generator object.
+ */
 function createEmptyGenerator(): Generator {
 	return {
 		name: 'Your Generator Name',

@@ -47,19 +47,26 @@ func isMacAppBundle() bool {
 	return strings.Contains(execDir, "Sales & Dungeons.app")
 }
 
-func openDatabase() database.Database {
-	userdata := "./userdata/"
+func getSndDataDir() string {
+	dir := "./"
 
 	if isMacAppBundle() {
 		home, err := os.UserHomeDir()
 		if err != nil {
 			panic(err)
 		}
-		userdata = filepath.Join(home, "/Documents/Sales & Dungeons/userdata")
-
-		err = os.MkdirAll(userdata, 0777)
-		fmt.Println("INFO: changed userdata folder because of app bundle", userdata, err)
+		dir = filepath.Join(home, "/Documents/Sales & Dungeons")
+		err = os.MkdirAll(dir, 0777)
+		fmt.Println("INFO: changed data folder because of app bundle", dir, err)
 	}
+
+	return dir
+}
+
+var sndDataDir = getSndDataDir()
+
+func openDatabase() database.Database {
+	userdata := filepath.Join(sndDataDir, "userdata")
 
 	db, err := badger.New(userdata)
 	if err != nil {
@@ -85,7 +92,7 @@ func openDatabase() database.Database {
 func startServer(db database.Database, debug bool) {
 	rand.Seed(time.Now().UnixNano())
 
-	s, err := server.New(db, append(serverOptions, server.WithDebug(debug), server.WithPrinter(&cups.CUPS{}), server.WithPrinter(&remote.Remote{}), server.WithPrinter(&serial.Serial{}), server.WithPrinter(&dump.Dump{}))...)
+	s, err := server.New(db, append(serverOptions, server.WithDataDir(sndDataDir), server.WithDebug(debug), server.WithPrinter(&cups.CUPS{}), server.WithPrinter(&remote.Remote{}), server.WithPrinter(&serial.Serial{}), server.WithPrinter(&dump.Dump{}))...)
 	if err != nil {
 		panic(err)
 	}

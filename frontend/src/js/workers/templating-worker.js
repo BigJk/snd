@@ -151,7 +151,7 @@ env.addFilter('shuffle', function (array) {
 	// While there remain elements to shuffle...
 	while (0 !== currentIndex) {
 		// Pick a remaining element...
-		randomIndex = Math.floor((this.ctx.__rand ?? math.Random)() * currentIndex);
+		randomIndex = Math.floor((this.ctx.__rand ?? Math.random)() * currentIndex);
 		currentIndex -= 1;
 
 		// And swap it with the current element.

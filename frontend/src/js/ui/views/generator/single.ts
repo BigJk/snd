@@ -1,12 +1,10 @@
 import m from 'mithril';
 import { cloneDeep, map } from 'lodash-es';
 
-import HorizontalProperty from '../../components/horizontal-property';
-import { openPromptModal } from '../../components/modals/prompt';
-
 import { buildId } from 'js/types/basic-info';
 import Generator, { sanitizeConfig, seed } from 'js/types/generator';
 import * as API from 'js/core/api';
+import { createOnMessage } from 'js/core/generator-ipc';
 import store from 'js/core/store';
 
 import Checkbox from 'js/ui/shoelace/checkbox';
@@ -16,10 +14,12 @@ import Loader from 'js/ui/shoelace/loader';
 
 import Tooltip from 'js/ui/components/atomic/tooltip';
 import Editor from 'js/ui/components/config/editor';
+import HorizontalProperty from 'js/ui/components/horizontal-property';
 import Flex from 'js/ui/components/layout/flex';
 import { openAdditionalInfosModal } from 'js/ui/components/modals/additional-infos';
 import { openFileModal } from 'js/ui/components/modals/file-browser';
 import ImportExport from 'js/ui/components/modals/imexport/import-export';
+import { openPromptModal } from 'js/ui/components/modals/prompt';
 import { openDevTools } from 'js/ui/components/print-preview';
 import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
@@ -227,6 +227,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 					generator: state.generator,
 					config: state.config,
 					onRendered: (html) => (state.lastRendered = html),
+					onMessage: createOnMessage(state.generator, state),
 					hidePreview: state.hidePreview,
 					tabs: [
 						{ icon: 'options', label: 'Config' },

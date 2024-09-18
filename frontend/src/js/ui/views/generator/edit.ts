@@ -1,6 +1,7 @@
 import m from 'mithril';
 
 import { buildId } from 'js/types/basic-info';
+import { filterOutDynamicConfigValues } from 'js/types/config';
 import Generator from 'js/types/generator';
 import * as API from 'js/core/api';
 
@@ -55,7 +56,10 @@ export default (): m.Component<EditGeneratorProps> => {
 								intend: 'success',
 								onClick: () => {
 									if (!state) return;
-									API.exec<void>(API.SAVE_GENERATOR, state)
+									API.exec<void>(API.SAVE_GENERATOR, {
+										...state,
+										config: filterOutDynamicConfigValues(state.config),
+									})
 										.then(() => {
 											if (!state) return;
 											m.route.set(`/generator/${buildId('generator', state)}`);

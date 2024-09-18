@@ -23,6 +23,7 @@ type SidebarPrintProps = {
 	tabs: TabDefinition[];
 	content: Record<string, () => m.Component>;
 	onRendered?: (html: string) => void;
+	onMessage?: (type: string, data: any) => void;
 	hidePreview?: boolean;
 };
 
@@ -62,8 +63,8 @@ export default (): m.Component<SidebarPrintProps> => {
 							config: vnode.attrs.config,
 							width: 380,
 							className: `.bg-black-05.ph1.ba.b--black-10${!vnode.attrs.hidePreview ? '' : '.o-0'}`,
-
 							onRendered: vnode.attrs.onRendered,
+							onMessage: vnode.attrs.onMessage,
 					  })
 					: m('div'),
 			]),

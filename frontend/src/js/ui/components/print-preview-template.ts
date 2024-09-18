@@ -34,6 +34,7 @@ export type PrintPreviewTemplateProps = {
 	width?: number;
 	onRendered?: (html: string) => void;
 	onError?: (error: PrintPreviewError[]) => void;
+	onMessage?: (type: string, data: any) => void;
 };
 
 export default (): m.Component<PrintPreviewTemplateProps> => {
@@ -124,6 +125,7 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 					className: attrs.className,
 					content: lastRendered,
 					width: attrs.width ?? 320,
+					onMessage: attrs.onMessage,
 					loading,
 				},
 				aiPresent && !attrs.hideAiNotice && settings.value.aiEnabled

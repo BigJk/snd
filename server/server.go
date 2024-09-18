@@ -8,6 +8,7 @@ import (
 	"mime"
 	"net/http"
 	"net/url"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -50,6 +51,7 @@ type Server struct {
 	sync.RWMutex
 	debug    bool
 	db       database.Database
+	dataDir  string
 	e        *echo.Echo
 	m        *melody.Melody
 	cache    *cache.Cache
@@ -87,6 +89,14 @@ func WithDebug(value bool) Option {
 func WithPrinter(printer printing.Printer) Option {
 	return func(s *Server) error {
 		s.printers[printer.Name()] = printer
+		return nil
+	}
+}
+
+// WithDataDir sets the data directory of the Server.
+func WithDataDir(dir string) Option {
+	return func(s *Server) error {
+		s.dataDir = dir
 		return nil
 	}
 }
@@ -129,6 +139,14 @@ func (s *Server) Start(bindAddr string) error {
 	// Register rpc routes
 	api := s.e.Group("/api")
 	extern := api.Group("/extern")
+
+	api.GET("/dataDir", func(c echo.Context) error {
+		absDir, err := filepath.Abs(s.dataDir)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err.Error())
+		}
+		return c.JSON(http.StatusOK, absDir)
+	})
 
 	rpc.RegisterVersion(api)
 	rpc.RegisterKeyValue(api, s.db)

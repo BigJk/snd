@@ -14,7 +14,6 @@ type Settings = {
 	printerEndpoint: string;
 	printerWidth: number;
 	commands: Commands;
-	stylesheets: string[];
 	spellcheckerLanguages: string[];
 	packageRepos: string[];
 	syncKey: string;
@@ -29,6 +28,9 @@ type Settings = {
 	aiUrl: string;
 };
 
+/**
+ * Create an empty settings object.
+ */
 export function createEmptySettings(): Settings {
 	return {
 		printerType: 'unknown',
@@ -44,7 +46,6 @@ export function createEmptySettings(): Settings {
 			splitHeight: 0,
 			splitDelay: 0,
 		},
-		stylesheets: [],
 		spellcheckerLanguages: [],
 		packageRepos: [],
 		syncKey: '',

@@ -4,6 +4,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	stdlog "log"
@@ -40,6 +41,18 @@ func init() {
 }
 
 func startElectron(db database.Database, debug bool) {
+	// Writing the preload.js file that is needed for the electron web-view
+	if err := os.WriteFile(filepath.Join(sndDataDir, "/preload.js"), []byte(`
+// Helper for Sales & Dungeons to let template/generator preview communicate with the main process
+const { contextBridge, ipcRenderer } = require("electron");
+contextBridge.exposeInMainWorld("api", {
+  sendData: (type, data) => {
+    ipcRenderer.sendToHost("data", type, JSON.stringify(data));
+  },
+});`), 0666); err != nil {
+		panic(fmt.Errorf("could not write preload.js file: %w", err))
+	}
+
 	// Start the S&D Backend in separate go-routine.
 	go func() {
 		startServer(db, debug)

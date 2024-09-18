@@ -2,6 +2,7 @@ import m from 'mithril';
 
 import { fillConfigValues } from 'js/types/config';
 import Generator, { sanitizeConfig, seed } from 'js/types/generator';
+import { createOnMessage } from 'js/core/generator-ipc';
 import { createNunjucksCompletionProvider } from 'js/core/monaco/completion-nunjucks';
 import { settings } from 'js/core/store';
 
@@ -203,6 +204,7 @@ export default (): m.Component<GeneratorEditorProps> => {
 						onRendered: (html) => {
 							attrs.onRendered?.(html);
 						},
+						onMessage: createOnMessage(attrs.generator, state),
 					}),
 				]),
 			];

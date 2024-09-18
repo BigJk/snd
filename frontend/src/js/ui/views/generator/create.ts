@@ -2,6 +2,7 @@ import m from 'mithril';
 
 import { buildId } from 'js/types/basic-info';
 import Generator, { createEmptyGenerator } from 'js/types/generator';
+import { filterOutDynamicConfigValues } from 'src/js/types/config';
 import * as API from 'js/core/api';
 import store from 'js/core/store';
 
@@ -53,7 +54,10 @@ export default (): m.Component<GeneratorCreateProps> => {
 										error('You cannot duplicate a generator with the same slug as the original.');
 										return;
 									}
-									API.exec<void>(API.SAVE_GENERATOR, state)
+									API.exec<void>(API.SAVE_GENERATOR, {
+										...state,
+										config: filterOutDynamicConfigValues(state.config),
+									})
 										.then(() => {
 											if (!state) return;
 

@@ -139,6 +139,20 @@ const aiScript = `
 </script>
 `;
 
+const IPCScript = `
+<script>
+  const isElectron = !!window.api?.sendData;
+
+  function registerConfig(config) {
+    if(isElectron) {
+      window.api.sendData('registerConfig', config);
+    } else {
+      window.parent.postMessage({ type: 'registerConfig', data: config }, '*');
+    }
+  }
+</script>
+`;
+
 /**
  * State object for template rendering.
  */
@@ -209,6 +223,7 @@ export const render = (
 		let additional = '';
 		additional += rngScript(clonedState.config.seed ?? Math.ceil(Math.random() * 500000000));
 		additional += aiScript;
+		additional += IPCScript;
 
 		if (minimal) {
 			additional = '';

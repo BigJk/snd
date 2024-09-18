@@ -13,6 +13,11 @@ type Template = BasicInfo & {
 	count?: number;
 };
 
+/**
+ * Sanitizes the config object by setting default values for missing fields and removing old fields that are not present in the config anymore.
+ * @param t Template object.
+ * @param configs Config object.
+ */
 const sanitizeConfig = (t: Template, configs: any) => {
 	// Create base config
 	if (configs === undefined) {
@@ -30,6 +35,9 @@ const sanitizeConfig = (t: Template, configs: any) => {
 	return pickBy(configs, (val, key) => key === 'seed' || t.config.some((conf) => conf.key === key));
 };
 
+/**
+ * Creates an empty template object.
+ */
 function createEmptyTemplate(): Template {
 	return {
 		name: 'Your Template Name',

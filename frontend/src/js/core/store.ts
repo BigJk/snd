@@ -1,3 +1,4 @@
+import m from 'mithril';
 import { flatten } from 'lodash-es';
 
 import Fuse from 'fuse.js';
@@ -62,6 +63,7 @@ type Store = {
 	ai: {
 		token: string;
 	};
+	dataDir: string;
 };
 
 const initialState: Store = {
@@ -80,6 +82,7 @@ const initialState: Store = {
 	ai: {
 		token: '',
 	},
+	dataDir: '',
 };
 
 const store = create(initialState, (atom) => ({
@@ -88,6 +91,7 @@ const store = create(initialState, (atom) => ({
 	 */
 	loadAll(noSettings: boolean = false) {
 		return Promise.all([
+			this.loadDataDir(),
 			...(noSettings ? [] : [this.loadSettings()]),
 			this.loadTemplates(),
 			this.loadGenerators(),
@@ -97,6 +101,21 @@ const store = create(initialState, (atom) => ({
 			this.loadPublicList(),
 			this.loadVersion(),
 		]);
+	},
+
+	/**
+	 * LoadDataDir loads the data directory from the backend.
+	 */
+	loadDataDir() {
+		m.request({
+			method: 'GET',
+			url: '/api/dataDir',
+		}).then((res) =>
+			atom.update((state) => ({
+				...state,
+				dataDir: res as string,
+			})),
+		);
 	},
 
 	/**
@@ -263,3 +282,4 @@ export const printer = store.focus('printer');
 export const printerTypes = store.focus('printerTypes');
 export const packages = store.focus('publicLists');
 export const ai = store.focus('ai');
+export const dataDir = store.focus('dataDir');

@@ -7,7 +7,7 @@ import { inElectron } from 'js/electron';
 
 import * as API from 'js/core/api';
 import guid from 'js/core/guid';
-import { settings } from 'js/core/store';
+import { dataDir, settings } from 'js/core/store';
 
 import Loader from 'js/ui/shoelace/loader';
 
@@ -25,30 +25,30 @@ const pre = `
 			border: 0;
 			vertical-align: baseline;
 		}
-		article, aside, details, figcaption, figure, 
+		article, aside, details, figcaption, figure,
 		footer, header, hgroup, menu, nav, section {
 			display: block;
 		}
 		body {
 			line-height: 1;
 		}
-		
+
 		#content::-webkit-scrollbar-thumb:hover {
 			background: #d1d1d1;
 		}
-		
+
   	#content::-webkit-scrollbar, ::-webkit-scrollbar {
 				width: 0;
 		}
-		
+
 		#content::-webkit-scrollbar-track, ::-webkit-scrollbar-track {
 			background: #f1f1f1;
 		}
-		
+
 		#content::-webkit-scrollbar-thumb, ::-webkit-scrollbar-thumb {
 			background: #c2c2c2;
 		}
-		
+
 		#content::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-thumb:hover {
 			background: #d1d1d1;
 		}
@@ -88,6 +88,7 @@ export type PrintPreviewProps = {
 	loading?: boolean;
 	overflow?: string;
 	devTools?: boolean;
+	onMessage?: (type: string, data: any) => void;
 };
 
 type PrintPreviewState = {
@@ -95,6 +96,7 @@ type PrintPreviewState = {
 	loading: boolean;
 	lastContent: string;
 	aiEnabled: boolean;
+	onMessage?: (type: string, data: any) => void;
 };
 
 export function openDevTools(dom: HTMLElement) {
@@ -203,7 +205,7 @@ export default (): m.Component<PrintPreviewProps> => {
 	let targetElement = inElectron ? 'webview' : 'iframe';
 
 	let onIFrameMessage = (event: any) => {
-		if (event.data.id !== state.id) {
+		if (event.type === 'done' && event.data.id !== state.id) {
 			return;
 		}
 
@@ -211,6 +213,10 @@ export default (): m.Component<PrintPreviewProps> => {
 			case 'done':
 				state.loading = false;
 				m.redraw();
+				break;
+			default:
+				console.log(event);
+				state.onMessage?.(event.data.type, event.data.data);
 				break;
 		}
 	};
@@ -224,11 +230,16 @@ export default (): m.Component<PrintPreviewProps> => {
 				return;
 			}
 
+			state.onMessage = attrs.onMessage;
+
 			let scale = calcScale(attrs.width);
 			let overflow = attrs.overflow ?? 'overlay';
 			if (inElectron) {
 				frame.addEventListener('dom-ready', () => updateContent(frame as HTMLElement, attrs.content, scale, overflow), {
 					once: true,
+				});
+				frame.addEventListener('ipc-message', (data: any) => {
+					state.onMessage?.(data.args[0], JSON.parse(data.args[1] ?? '{}'));
 				});
 			} else {
 				window.addEventListener('message', onIFrameMessage);
@@ -240,6 +251,8 @@ export default (): m.Component<PrintPreviewProps> => {
 			if (!frame) {
 				return;
 			}
+
+			state.onMessage = attrs.onMessage;
 
 			updateContent(frame as HTMLElement, attrs.content, calcScale(attrs.width), attrs.overflow ?? 'overlay');
 		},
@@ -254,11 +267,14 @@ export default (): m.Component<PrintPreviewProps> => {
 		view({ attrs, key, children }) {
 			let width = attrs.width + PADDING * 2 + 'px';
 
+			state.onMessage = attrs.onMessage;
+
 			let frame: m.Children;
 			if (inElectron) {
 				frame = m('webview.h-100', {
 					src: 'data:text/html,',
 					disablewebsecurity: true,
+					preload: `file:${dataDir.value}/preload.js`,
 					webpreferences: 'allowRunningInsecureContent, javascript=yes',
 					style: { width: width },
 				});

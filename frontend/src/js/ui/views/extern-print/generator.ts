@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-import Generator, { sanitizeConfig } from 'js/types/generator';
+import Generator, { sanitizeConfig, seed } from 'js/types/generator';
 import * as API from 'js/core/api';
 import { settings } from 'js/core/store';
 import { render } from 'js/core/templating';
@@ -32,11 +32,18 @@ export default (): m.Component<ExternPrintProps> => {
 
 			API.exec<Generator>(API.GET_GENERATOR, state.id)
 				.then((gen) => {
+					const rawConfig = JSON.parse(atob(attrs.config));
+					const config = sanitizeConfig(gen, rawConfig);
+					const aiEnabled = !!rawConfig['aiEnabled'];
+					const aiToken = rawConfig['aiToken'] ?? config['seed'] ?? seed();
+
 					render(gen.printTemplate, {
 						sources: gen.dataSources,
 						images: gen.images,
-						config: sanitizeConfig(gen, JSON.parse(atob(attrs.config))),
+						config: config,
 						settings: settings.value,
+						aiEnabled: aiEnabled,
+						aiToken: aiEnabled ? aiToken : undefined,
 					})
 						.then((res) => {
 							state.gen = res;

@@ -5,6 +5,7 @@ type GridProps = {
 	minWidth?: string;
 	maxWidth?: string;
 	gap?: number;
+	columns?: string;
 };
 
 /**
@@ -17,7 +18,7 @@ export default (): m.Component<GridProps> => ({
 
 		let style = {
 			display: 'grid',
-			gridTemplateColumns: `repeat(auto-fit, minmax(${min}, ${max}))`,
+			gridTemplateColumns: attrs.columns ?? `repeat(auto-fit, minmax(${min}, ${max}))`,
 		};
 
 		return m(

@@ -130,3 +130,36 @@ body {
 .monaco-editor {
   position: absolute !important;
 }
+
+.scroll-text {
+  display: block;
+  -moz-transform: translateX(100%);
+  -webkit-transform: translateX(100%);
+  transform: translateX(100%);
+  -moz-animation: scroll-anim 80s linear infinite;
+  -webkit-animation: scroll-anim 80s linear infinite;
+  animation: scroll-anim 80s linear infinite;
+}
+
+@-moz-keyframes scroll-anim {
+  from { -moz-transform: translateX(100%); }
+  to { -moz-transform: translateX(-100%); }
+}
+
+@-webkit-keyframes scroll-anim {
+  from { -webkit-transform: translateX(100%); }
+  to { -webkit-transform: translateX(-100%); }
+}
+
+@keyframes scroll-anim {
+  from {
+    -moz-transform: translateX(100%);
+    -webkit-transform: translateX(100%);
+    transform: translateX(100%);
+  }
+  to {
+    -moz-transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+    transform: translateX(-100%);
+  }
+}

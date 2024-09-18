@@ -39,3 +39,5 @@ build/
 __pycache__/
 
 !.github/images/*.png
+
+preload.js

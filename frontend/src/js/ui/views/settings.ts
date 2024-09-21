@@ -84,7 +84,7 @@ export default (): m.Component => {
 
 		API.exec<string[]>(API.AI_MODELS, settingsCopy.aiProvider)
 			.then((models) => {
-				aiModels = models;
+				aiModels = models.sort((a, b) => a.localeCompare(b));
 				m.redraw();
 			})
 			.catch((err) => {

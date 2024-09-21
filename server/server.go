@@ -49,13 +49,14 @@ type Option func(s *Server) error
 // Server represents an instance of the S&D server.
 type Server struct {
 	sync.RWMutex
-	debug    bool
-	db       database.Database
-	dataDir  string
-	e        *echo.Echo
-	m        *melody.Melody
-	cache    *cache.Cache
-	printers printing.PossiblePrinter
+	debug            bool
+	db               database.Database
+	dataDir          string
+	e                *echo.Echo
+	m                *melody.Melody
+	cache            *cache.Cache
+	printers         printing.PossiblePrinter
+	additionalRoutes []func(e *echo.Group)
 }
 
 // New creates a new instance of the S&D server.
@@ -101,6 +102,14 @@ func WithDataDir(dir string) Option {
 	}
 }
 
+// WithAdditionalRoutes adds additional routes to the server.
+func WithAdditionalRoutes(routes ...func(e *echo.Group)) Option {
+	return func(s *Server) error {
+		s.additionalRoutes = routes
+		return nil
+	}
+}
+
 // Close closes the server and all its connections.
 func (s *Server) Close() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
@@ -139,6 +148,10 @@ func (s *Server) Start(bindAddr string) error {
 	// Register rpc routes
 	api := s.e.Group("/api")
 	extern := api.Group("/extern")
+
+	for i := range s.additionalRoutes {
+		s.additionalRoutes[i](api)
+	}
 
 	api.GET("/dataDir", func(c echo.Context) error {
 		absDir, err := filepath.Abs(s.dataDir)

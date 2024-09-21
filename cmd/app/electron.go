@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	stdlog "log"
+	"net/http"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -20,6 +21,7 @@ import (
 	"github.com/BigJk/snd/printing/preview"
 	"github.com/BigJk/snd/rendering"
 	"github.com/BigJk/snd/server"
+	"github.com/labstack/echo/v4"
 
 	"github.com/asticode/go-astikit"
 	"github.com/asticode/go-astilectron"
@@ -33,11 +35,28 @@ var astilectronVersion = "0.0.1"
 
 var prev preview.Preview
 
+var mainWindow *astilectron.Window
+
 // This will change the starting routine so that an additional Electron window
 // will open with the frontend in it.
 func init() {
 	startFunc = startElectron
-	serverOptions = append(serverOptions, server.WithPrinter(&prev))
+	onAlreadyRunning = func() {
+		fmt.Println("ERROR: Sales & Dungeons is already running!")
+
+		// Send GET request to the server to focus the Electron window
+		if _, err := http.Get("http://127.0.0.1:7123/api/focusElectron"); err != nil {
+			fmt.Println("ERROR: could not focus Electron window:", err)
+		}
+	}
+	serverOptions = append(serverOptions, server.WithPrinter(&prev), server.WithAdditionalRoutes(func(api *echo.Group) {
+		api.GET("/focusElectron", func(c echo.Context) error {
+			if mainWindow != nil {
+				go mainWindow.Show()
+			}
+			return c.NoContent(http.StatusOK)
+		})
+	}))
 }
 
 func startElectron(db database.Database, debug bool) {
@@ -83,14 +102,10 @@ contextBridge.exposeInMainWorld("api", {
 	}
 
 	if isMacAppBundle() {
-		home, err := os.UserHomeDir()
-		if err != nil {
-			panic(err)
-		}
-		opts.BaseDirectoryPath = filepath.Join(home, "/Documents/Sales & Dungeons/electron")
-		opts.DataDirectoryPath = filepath.Join(home, "/Documents/Sales & Dungeons/electron")
+		opts.BaseDirectoryPath = filepath.Join(sndDataDir, "/electron")
+		opts.DataDirectoryPath = filepath.Join(sndDataDir, "/electron")
 
-		err = os.MkdirAll(opts.BaseDirectoryPath, 0777)
+		err := os.MkdirAll(opts.BaseDirectoryPath, 0777)
 		log.Info("Changed electron provision folder because of app bundle", log.WithValue("path", opts.BaseDirectoryPath), log.WithValue("mkdir error", err))
 
 		// copy icon files to the electron folder
@@ -132,6 +147,8 @@ contextBridge.exposeInMainWorld("api", {
 	if debug {
 		_ = w.OpenDevTools()
 	}
+
+	mainWindow = w
 
 	// Wait for interrupt signal to trigger shutdown of application.
 	go func() {

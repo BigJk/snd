@@ -25,6 +25,9 @@ import (
 
 var serverOptions []server.Option
 var startFunc = startServer
+var onAlreadyRunning = func() {
+	fmt.Println("ERROR: Sales & Dungeons is already running!")
+}
 
 func syncBaseUrl() string {
 	override := os.Getenv("SND_SYNC_BASE_URL")
@@ -70,6 +73,10 @@ func openDatabase() database.Database {
 
 	db, err := badger.New(userdata)
 	if err != nil {
+		if strings.Contains(err.Error(), "Another process is using this Badger database") {
+			onAlreadyRunning()
+			os.Exit(0)
+		}
 		panic(err)
 	}
 
@@ -92,7 +99,14 @@ func openDatabase() database.Database {
 func startServer(db database.Database, debug bool) {
 	rand.Seed(time.Now().UnixNano())
 
-	s, err := server.New(db, append(serverOptions, server.WithDataDir(sndDataDir), server.WithDebug(debug), server.WithPrinter(&cups.CUPS{}), server.WithPrinter(&remote.Remote{}), server.WithPrinter(&serial.Serial{}), server.WithPrinter(&dump.Dump{}))...)
+	s, err := server.New(db, append(serverOptions,
+		server.WithDataDir(sndDataDir),
+		server.WithDebug(debug),
+		server.WithPrinter(&cups.CUPS{}),
+		server.WithPrinter(&remote.Remote{}),
+		server.WithPrinter(&serial.Serial{}),
+		server.WithPrinter(&dump.Dump{}))...,
+	)
 	if err != nil {
 		panic(err)
 	}

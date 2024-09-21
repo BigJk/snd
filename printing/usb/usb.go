@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"image"
+	"os/exec"
 	"runtime"
 	"strconv"
 	"strings"
@@ -42,6 +43,38 @@ func (c *USB) AvailableEndpoints() (map[string]string, error) {
 	}
 
 	available := map[string]string{}
+
+	// This is a fallback to use the lsusb command if libusb is not able to iterate over the devices.
+	lsusb, lsusbErr := exec.LookPath("lsusb")
+	lsusbFallback := func() {
+		if lsusbErr != nil {
+			return
+		}
+
+		if res, err := exec.Command(lsusb).CombinedOutput(); err == nil {
+			for _, line := range strings.Split(string(res), "\n") {
+				lower := strings.ToLower(line)
+				if strings.Contains(lower, "hub") || strings.HasSuffix(lower, "bus") {
+					continue
+				}
+
+				fmt.Println(line)
+
+				if strings.Contains(line, "ID") {
+					parts := strings.Split(line, " ")
+					fmt.Println(parts)
+					if len(parts) >= 7 {
+						vendorAndProduct := strings.Split(parts[5], ":")
+						if len(vendorAndProduct) == 2 {
+							available[strings.Split(strings.Join(parts[6:], " "), " Serial:")[0]] = fmt.Sprintf("%s:%s:01", vendorAndProduct[0], vendorAndProduct[1])
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Iterate over all USB devices and collect the available endpoints.
 	if _, err := c.ctx.OpenDevices(func(desc *gousb.DeviceDesc) bool {
 		for _, cfg := range desc.Configs {
 			if len(cfg.Interfaces) > 0 && len(cfg.Interfaces[0].AltSettings) > 0 {
@@ -62,7 +95,17 @@ func (c *USB) AvailableEndpoints() (map[string]string, error) {
 		}
 		return false
 	}); err != nil && err != gousb.ErrorNotFound {
-		return nil, err
+		lsusbFallback()
+		if len(available) > 0 {
+			return available, nil
+		}
+
+		return nil, fmt.Errorf("could not open devices: %v", err)
+	}
+
+	// If no devices were found, try to use the lsusb command.
+	if len(available) == 0 {
+		lsusbFallback()
 	}
 
 	return available, nil

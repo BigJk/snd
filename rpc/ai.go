@@ -222,10 +222,7 @@ func RegisterAI(route *echo.Group, db database.Database) {
 	})
 
 	bind.MustBind(route, "/aiModels", func(provider string) ([]string, error) {
-		// TODO: dynamically fetch models
 		switch provider {
-		case "OpenAI":
-			return []string{"gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-3.5-turbo-16k", "gpt-4-1106-preview", "gpt-4", "gpt-4-32k"}, nil
 		case "Custom (e.g. Local)":
 			return []string{"Custom"}, nil
 		}
@@ -235,7 +232,25 @@ func RegisterAI(route *echo.Group, db database.Database) {
 			return nil, err
 		}
 
-		resp, err := http.Get(endpoint + "/v1/models")
+		req, err := http.NewRequest("GET", endpoint+"/v1/models", nil)
+		if err != nil {
+			return nil, err
+		}
+
+		if provider == "OpenAI" {
+			settings, err := db.GetSettings()
+			if err != nil {
+				return nil, err
+			}
+
+			if settings.AIApiKey == "" {
+				return nil, errors.New("OpenAI API key not set")
+			}
+
+			req.Header.Set("Authorization", "Bearer "+settings.AIApiKey)
+		}
+
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			return nil, err
 		}
@@ -243,6 +258,10 @@ func RegisterAI(route *echo.Group, db database.Database) {
 		res, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, err
+		}
+
+		if strings.Contains(string(res), "invalid_api_key") {
+			return nil, errors.New("invalid API key")
 		}
 
 		var models ModelsList

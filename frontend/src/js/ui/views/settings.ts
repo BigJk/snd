@@ -88,7 +88,7 @@ export default (): m.Component => {
 				m.redraw();
 			})
 			.catch((err) => {
-				error('Could not fetch AI models... retrying...');
+				error('Could not fetch AI models. retrying... (' + err + ')');
 				setTimeout(fetchAiModels, 3000);
 			});
 	};
@@ -293,7 +293,8 @@ export default (): m.Component => {
 									},
 									aiContextWindow: {
 										label: 'Context Window',
-										description: 'The context window for the AI service',
+										description:
+											'The context window for the AI service. This window is used to provide the AI with examples in case of the entry generator. Higher values should provide better results.',
 									},
 									aiMaxTokens: {
 										label: 'Max Tokens',

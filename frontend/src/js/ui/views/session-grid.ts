@@ -318,27 +318,29 @@ export default (): m.Component<SessionGridProps> => {
 							});
 						}),
 
-						m(
-							'div.flex.items-center.justify-center.o-50',
-							{
-								onclick: () => {
-									createEditGridButtonModal({
-										onSuccess: (element) => {
-											section.elements.push(element);
-											saveGrids();
+						state.playMode || state.minimalMode
+							? null
+							: m(
+									'div.flex.items-center.justify-center.o-50',
+									{
+										onclick: () => {
+											createEditGridButtonModal({
+												onSuccess: (element) => {
+													section.elements.push(element);
+													saveGrids();
+												},
+											});
 										},
-									});
-								},
-								style: { aspectRatio: '1 / 1', padding: 0 },
-							},
-							[
-								m(
-									'div.bg-black-05.br3.flex.items-center.justify-center.pointer.grow',
-									{ style: { height: '90%', width: '90%' } },
-									m(Icon, { icon: 'add-circle-outline', size: 3, className: '.o-30' }),
-								), //
-							],
-						), //
+										style: { aspectRatio: '1 / 1', padding: 0 },
+									},
+									[
+										m(
+											'div.bg-black-05.br3.flex.items-center.justify-center.pointer.grow',
+											{ style: { height: '90%', width: '90%' } },
+											m(Icon, { icon: 'add-circle-outline', size: 3, className: '.o-30' }),
+										), //
+									],
+							  ), //
 					],
 				),
 			]),
@@ -371,6 +373,7 @@ export default (): m.Component<SessionGridProps> => {
 			if (attrs.gridName) {
 				state.selectedGrid = decodeURIComponent(attrs.gridName);
 				state.minimalMode = true;
+				state.playMode = true;
 
 				console.log(attrs.gridName);
 

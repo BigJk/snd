@@ -8,10 +8,14 @@ const noSpace = css`
 
 type DividerProps = {
 	noSpacing?: boolean;
+	className?: string;
 };
 
 export default (): m.Component<DividerProps> => ({
 	view({ attrs }) {
-		return m('div.flex.items-center', m(`sl-divider[vertical].${attrs.noSpacing ? noSpace : ''}`, { style: { minHeight: '15px' } }));
+		return m(
+			`div.flex.items-center${attrs.className ?? ''}`,
+			m(`sl-divider[vertical].${attrs.noSpacing ? noSpace : ''}`, { style: { minHeight: '15px' } }),
+		);
 	},
 });

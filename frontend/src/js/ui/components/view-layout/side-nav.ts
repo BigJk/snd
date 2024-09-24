@@ -28,6 +28,11 @@ const pages = {
 		icon: 'analytics',
 		url: 'data-source',
 	},
+	'session-grid': {
+		name: 'Session Grid',
+		icon: 'apps',
+		url: 'session-grid',
+	},
 	workshop: {
 		name: 'Workshop',
 		icon: 'cart',

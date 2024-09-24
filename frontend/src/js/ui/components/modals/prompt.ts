@@ -12,18 +12,19 @@ type PromptProps = {
 	title: string;
 	label: string;
 	description: string;
+	value?: string;
 	buttonText?: string;
 	onSuccess: (answer: string) => void;
 };
 
 const promptModal = (props: PromptProps) => (): m.Component => {
-	let state = '';
+	let state = props.value ?? '';
 
 	return {
 		view: () =>
 			m(
 				Modal,
-				{ title: props.title, onClose: () => popPortal() },
+				{ title: props.title, className: '.pt0', onClose: () => popPortal() },
 				m('div', [
 					m(
 						HorizontalProperty,

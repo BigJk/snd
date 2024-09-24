@@ -1,6 +1,7 @@
 import m from 'mithril';
 
 type GridProps = {
+	key?: string;
 	className?: string;
 	minWidth?: string;
 	maxWidth?: string;
@@ -24,6 +25,7 @@ export default (): m.Component<GridProps> => ({
 		return m(
 			`div${attrs.className ?? ''}${attrs.gap ? `.gap-${attrs.gap}` : '.gap-3'}`,
 			{
+				key: attrs.key,
 				style,
 			},
 			children,

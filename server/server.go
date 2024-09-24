@@ -175,6 +175,7 @@ func (s *Server) Start(bindAddr string) error {
 	rpc.RegisterCloud(api, s.db)
 	rpc.RegisterAI(api, s.db)
 	rpc.RegisterFileBrowser(api)
+	rpc.RegisterMisc(api)
 
 	// Expose function list
 	api.GET("/functions", func(c echo.Context) error {

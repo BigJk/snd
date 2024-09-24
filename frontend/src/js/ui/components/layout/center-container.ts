@@ -9,6 +9,10 @@ const containerClass = css`
 	width: 100%;
 `;
 
-export default (): m.Component => ({
-	view: ({ children }) => m(Flex, { justify: 'center' }, m(`div.${containerClass}`, children)),
+type CenterContainerProps = {
+	key?: string;
+};
+
+export default (): m.Component<CenterContainerProps> => ({
+	view: ({ attrs, children }) => m(Flex, { key: attrs.key, justify: 'center' }, m(`div.${containerClass}`, { key: attrs.key }, children)),
 });

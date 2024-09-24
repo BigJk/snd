@@ -22,6 +22,7 @@ import GeneratorCreate from 'js/ui/views/generator/create';
 import GeneratorEdit from 'js/ui/views/generator/edit';
 import GeneratorSingle from 'js/ui/views/generator/single';
 import Home from 'js/ui/views/home';
+import SessionGrid from 'js/ui/views/session-grid';
 import Settings from 'js/ui/views/settings';
 import TemplateAll from 'js/ui/views/template/all';
 import TemplateCreate from 'js/ui/views/template/create';
@@ -69,6 +70,7 @@ store.actions.loadAll().then(() => {
 		'/generator/create/:id': GeneratorCreate,
 		'/generator/:id': GeneratorSingle,
 		'/generator/:id/edit': GeneratorEdit,
+		'/session-grid': SessionGrid,
 		'/data-source': DataSourceAll,
 		'/data-source/:id': DataSourceSingle,
 		'/workshop': WorkshopAll,

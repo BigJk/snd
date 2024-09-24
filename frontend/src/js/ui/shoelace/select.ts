@@ -1,5 +1,7 @@
 import m from 'mithril';
 
+import { buildProps } from './util';
+
 export type OnInputEvent = {
 	target: {
 		value: string;
@@ -8,6 +10,7 @@ export type OnInputEvent = {
 };
 
 type SelectProps = {
+	key?: string;
 	className?: string;
 	keys: string[];
 	names?: string[];
@@ -16,13 +19,15 @@ type SelectProps = {
 	noDefault?: boolean;
 	width?: number;
 	onInput: (e: OnInputEvent) => void;
+	clearable?: boolean;
 };
 
 export default (): m.Component<SelectProps> => ({
 	view({ attrs }) {
 		return m(
-			`sl-select[size=small]${attrs.className ?? ''}`,
+			`sl-select[size=small]${attrs.className ?? ''}${buildProps({ clearable: attrs.clearable })}`,
 			{
+				key: attrs.key,
 				value: attrs.selected?.replaceAll(' ', '%_%') ?? '',
 				defaultValue: attrs.default,
 				'onsl-change': (e: any) => {

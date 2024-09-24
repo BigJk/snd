@@ -8,6 +8,7 @@ type BoxProps = {
 	maxHeight?: number;
 	minHeight?: number;
 	height?: number;
+	style?: any;
 };
 
 /**
@@ -15,7 +16,7 @@ type BoxProps = {
  */
 export default (): m.Component<BoxProps> => ({
 	view({ attrs, children }) {
-		let style: any = {};
+		let style: any = { ...attrs.style };
 
 		if (attrs.maxWidth !== undefined && attrs.maxWidth > 0) {
 			style['max-width'] = `${attrs.maxWidth}px`;

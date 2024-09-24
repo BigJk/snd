@@ -1,13 +1,14 @@
 import m from 'mithril';
 
 // @ts-ignore
-import { shell } from 'src/js/electron';
+import { inElectron, shell } from 'src/js/electron';
 
 import { intendToShoelace, sizeToShoelace } from 'js/ui/shoelace/shoelace';
 
 import Flex from 'js/ui/components/layout/flex';
 
 export type ButtonProps = {
+	key?: string;
 	onClick?: () => void;
 	intend?: 'primary' | 'success' | 'error' | 'warning' | 'link';
 	size?: 'sm' | 'lg';
@@ -24,8 +25,10 @@ export default (): m.Component<ButtonProps> => {
 
 		if (url.startsWith('/')) {
 			m.route.set(url);
-		} else {
+		} else if (inElectron) {
 			shell.openExternal(url);
+		} else {
+			window.open(url, '_blank');
 		}
 	};
 
@@ -42,6 +45,7 @@ export default (): m.Component<ButtonProps> => {
 			return m(
 				'sl-button' + (attrs.className ?? ''),
 				{
+					key: attrs.key,
 					variant: intend,
 					size: size,
 					loading: !!attrs.loading,

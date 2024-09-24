@@ -14,6 +14,7 @@ export type ModalProps = {
 	loading?: boolean;
 	loadingMessage?: string;
 	noPadding?: boolean;
+	className?: string;
 };
 
 export default (): m.Component<ModalProps> => ({
@@ -32,7 +33,7 @@ export default (): m.Component<ModalProps> => ({
 					m(Flex, { items: 'center', gap: 2 }, [attrs.icon ? m(Icon, { icon: attrs.icon }) : null, attrs.title]),
 					!attrs.loading ? m(Icon, { icon: 'close', onClick: attrs.onClose }) : null,
 				]),
-				m(`div${attrs.noPadding ? '' : '.pa3'}.relative.flex-grow-1`, [
+				m(`div${attrs.noPadding ? '' : '.pa3'}${attrs.className ?? ''}.relative.flex-grow-1`, [
 					attrs.loading
 						? m(Flex, { className: '.bg-white-80.absolute.left-0.top-0.w-100.h-100.z-5', justify: 'center', items: 'center', direction: 'column' }, [
 								m(Loader),

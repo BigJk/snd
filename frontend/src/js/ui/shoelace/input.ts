@@ -3,6 +3,7 @@ import m from 'mithril';
 import { css } from 'goober';
 
 type InputProps = {
+	key?: string;
 	className?: string;
 	label?: string;
 	value?: string;
@@ -62,6 +63,7 @@ export default (): m.Component<InputProps> => ({
 		return m(
 			`sl-input${attrs.className ?? ''}[size=small][label=${attrs.label ?? ''}]${attrs.minimal ? '.' + minimalStyle : ''}`,
 			{
+				key: attrs.key,
 				value: attrs.value ?? '',
 				placeholder: attrs.placeholder,
 				type: attrs.type ?? 'text',

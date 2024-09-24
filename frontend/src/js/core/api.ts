@@ -102,3 +102,4 @@ export const GET_DEFAULT_DIRECTORIES = 'getDefaultDirectories';
 // Misc function
 export const FETCH_IMAGE = 'fetchImage';
 export const PREVIEW_CACHE = 'previewCache';
+export const GET_LOCAL_URL = 'getLocalURL';

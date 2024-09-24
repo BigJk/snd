@@ -144,7 +144,7 @@ export default (): m.Component<SessionGridProps> => {
 						icon: 'exit',
 						intend: 'primary',
 						size: 'sm',
-						onClick: () => window.open(`${location.href}?gridName=${state.selectedGrid}`, '_blank'),
+						onClick: () => window.open(`${location.href}?gridName=${encodeURIComponent(state.selectedGrid)}`, '_blank'),
 					}),
 				),
 				m(
@@ -155,7 +155,7 @@ export default (): m.Component<SessionGridProps> => {
 						intend: 'primary',
 						size: 'sm',
 						onClick: () => {
-							API.exec<string>(API.GET_LOCAL_URL, `/${location.hash}?gridName=${state.selectedGrid}`).then((url) => {
+							API.exec<string>(API.GET_LOCAL_URL, `/${location.hash}?gridName=${encodeURIComponent(state.selectedGrid)}`).then((url) => {
 								console.log(url);
 								if (inElectron) {
 									shell.openExternal(url);
@@ -369,8 +369,10 @@ export default (): m.Component<SessionGridProps> => {
 		},
 		view({ attrs }) {
 			if (attrs.gridName) {
-				state.selectedGrid = decodeURI(attrs.gridName);
+				state.selectedGrid = decodeURIComponent(attrs.gridName);
 				state.minimalMode = true;
+
+				console.log(attrs.gridName);
 
 				document.title = `${state.selectedGrid} - Session Grid`;
 			}

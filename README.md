@@ -53,6 +53,15 @@ or a letter that the group found to little character sheets of your players to u
   - Support for using Local LLMs (for example via [LM Studio](https://lmstudio.ai/)) or any custom endpoints that are compatible with OpenAI API
 - Cloud sync for templates, generators and data sources
 
+## 🖨️ Examples
+
+<details>
+ <summary>Some example prints</summary>
+  
+ ![image](https://github.com/user-attachments/assets/6d0bfcb6-3e45-40ab-8c47-ecfa1c3d22ec)
+ 
+</details>
+
 ## 📁 Download
 
 You can find the latest version on the release page:

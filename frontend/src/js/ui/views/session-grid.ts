@@ -29,6 +29,8 @@ const infoText = `
   Put the Templates and Generators you need in the grid for quick access.
 `;
 
+const breakPoints = [400, 600, 800];
+
 type SessionGridProps = {
 	gridName?: string;
 };
@@ -124,7 +126,7 @@ export default (): m.Component<SessionGridProps> => {
 			return '';
 		}
 
-		return m(Flex, { justify: 'between', items: 'center', className: '.pa2.bg-white.mb3.ba.b--black-10' }, [
+		return m(Flex, { justify: 'between', items: 'center', className: '.pa2.bg-white.mb3.ba.b--black-10.br2' }, [
 			m('div', [m('div.ttu.text-muted.f8.fw5.mb2', 'selected grid'), m('div.f6', state.selectedGrid)]), //
 			m(Flex, { gap: 2 }, [
 				m(
@@ -216,9 +218,22 @@ export default (): m.Component<SessionGridProps> => {
 		]);
 	};
 
-	const content = (small?: boolean) => {
+	const content = () => {
 		if (state.selectedGrid.length === 0 || !state.grids[state.selectedGrid]) {
-			return '';
+			return m(Flex, { justify: 'center', items: 'center', className: '.pa4.o-30', direction: 'column', gap: 2 }, [
+				m(Icon, { icon: 'information-circle-outline', size: 3 }),
+				m('div', 'Select a grid to start or create a new one'),
+			]);
+		}
+
+		let columns = 4;
+		if (!!state.width) {
+			for (let i = 0; i < breakPoints.length; i++) {
+				if (state.width < breakPoints[i]) {
+					columns = i + 1;
+					break;
+				}
+			}
 		}
 
 		return [
@@ -272,7 +287,7 @@ export default (): m.Component<SessionGridProps> => {
 				m(
 					Grid,
 					{
-						columns: small ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)',
+						columns: 'minmax(0, 1fr)'.repeat(columns),
 						gap: -1,
 						className: '.mb4',
 					},
@@ -375,13 +390,11 @@ export default (): m.Component<SessionGridProps> => {
 				state.minimalMode = true;
 				state.playMode = true;
 
-				console.log(attrs.gridName);
-
 				document.title = `${state.selectedGrid} - Session Grid`;
 			}
 
 			if (state.minimalMode) {
-				return m(CenterContainer, m('div.pa3', [content(!!state.width && state.width < 700)]));
+				return m(CenterContainer, m('div.pa3', [content()]));
 			}
 
 			return m(

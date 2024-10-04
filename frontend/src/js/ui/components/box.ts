@@ -42,6 +42,6 @@ export default (): m.Component<BoxProps> => ({
 			style['height'] = `${attrs.height}px`;
 		}
 
-		return m(`div.ba.b--black-05.br3.dib.pa2.bg-black-05${attrs.className ?? ''}`, { style }, children);
+		return m(`div.ba.b--black-05.br3.dib.pa2${attrs.className ?? ''}${attrs.className?.includes('.bg-') ? '' : '.bg-black-05'}`, { style }, children);
 	},
 });

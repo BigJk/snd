@@ -53,6 +53,7 @@ func init() {
 		api.GET("/focusElectron", func(c echo.Context) error {
 			if mainWindow != nil {
 				go mainWindow.Show()
+				go mainWindow.Focus()
 			}
 			return c.NoContent(http.StatusOK)
 		})

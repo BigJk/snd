@@ -129,7 +129,7 @@ has to offer and even include any common framework you might need (e.g. Fontawes
 **Rendered HTML:** After creating a template you can create entries with the data you want and print them.
 Nunjucks will create the rendered HTML from the data you want to print.
 
-**Rendered Image:** Then this HTML get's converted to a image. Currently this conversion is done by Chrome via the
+**Rendered Image:** Then this HTML get's converted to an image. Currently this conversion is done by Chrome via the
 Chrome Debug Protocol. Although Chrome seems like a huge overkill for just HTML-To-Image conversion it's the standard solution at the
 moment because it supports most of the modern HTML and CSS features.
 

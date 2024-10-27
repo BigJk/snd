@@ -286,7 +286,7 @@ export default (): m.Component<SingleSourceProps> => {
 																	{ content: 'Delete Entry' },
 																	m(IconButton, { intend: 'error', size: 'sm', onClick: () => deleteEntry(attrs.id, item), icon: 'trash' }),
 																),
-														  ])
+															])
 														: null,
 											}),
 									},
@@ -311,7 +311,7 @@ export default (): m.Component<SingleSourceProps> => {
 										onClick: () => saveSelected(attrs.id),
 									},
 									'Save Change',
-							  )
+								)
 							: null,
 						m(Monaco, {
 							className: '.z-0',

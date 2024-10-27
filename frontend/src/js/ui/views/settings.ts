@@ -367,7 +367,7 @@ export default (): m.Component => {
 												settingsCopy = { ...settingsCopy, aiModel: e.value };
 											},
 										}),
-								  ),
+									),
 							!settingsCopy.aiProvider.startsWith('Custom')
 								? null
 								: [
@@ -402,7 +402,7 @@ export default (): m.Component => {
 												},
 											}),
 										),
-								  ],
+									],
 						]),
 						//
 						// Cache

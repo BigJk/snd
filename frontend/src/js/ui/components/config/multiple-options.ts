@@ -38,7 +38,7 @@ export default {
 								checked: value.allowDuplicate,
 								onChange: (allowDuplicate: boolean) => attrs.onChange({ ...value, allowDuplicate }),
 							}),
-					  ]
+						]
 					: []), //
 				// @ts-ignore
 				!attrs.inEdit ? null : m(MiniHeader, 'Default'),

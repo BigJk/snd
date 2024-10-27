@@ -287,7 +287,7 @@ export default (): m.Component<TemplateEditorProps> => {
 									m(EditorHeader, { title: 'Test Config', description: 'Setup a temporary config for testing the template' }),
 									m(Editor, {
 										current: fillConfigValues(state.config, attrs.template?.config ?? []),
-										definition: [...(attrs.template ? attrs.template.config ?? [] : [])],
+										definition: [...(attrs.template ? (attrs.template.config ?? []) : [])],
 										onChange: (updated) => {
 											state.config = updated;
 											m.redraw();

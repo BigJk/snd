@@ -37,7 +37,7 @@ export default (): m.Component<SidebarProps> => {
 									return leftElement(tab.icon, tab.label, selectedTab === tab.label, () => (selectedTab = tab.label));
 								}),
 							]),
-					  )
+						)
 					: null, //
 				// @ts-ignore
 				m(Flex, { className: '.bg-white.ba.b--black-10.br2.flex-grow-1.overflow-auto', direction: 'column' }, attrs.content[selectedTab]()),

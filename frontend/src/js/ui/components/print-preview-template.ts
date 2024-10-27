@@ -181,12 +181,12 @@ export default (): m.Component<PrintPreviewTemplateProps> => {
 														},
 														'',
 													),
-											  )
+												)
 											: null,
 									]),
 								]),
 							),
-					  )
+						)
 					: null,
 			);
 		},

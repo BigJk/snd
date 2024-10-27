@@ -309,7 +309,7 @@ export default (): m.Component<SingleGeneratorProps> => {
 														),
 													),
 												),
-										  ])
+											])
 										: m('div.pv2.text-muted', 'No saved configs yet...'),
 								]),
 								buttonBar(),

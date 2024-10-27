@@ -285,7 +285,7 @@ const fileBrowserModal = (): m.Component<FileBrowserProps> => {
 										},
 									},
 									'Select',
-							  ),
+								),
 					]),
 				],
 			);

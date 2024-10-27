@@ -77,7 +77,7 @@ export default <T extends Object>(): m.Component<BasicInfoProps<T>> => ({
 								m('div.f6', attrs.info.name), //
 								m('div.f8.text-muted', `${attrs.info.author}/${attrs.info.slug}`),
 							]),
-					  ]),
+						]),
 			]),
 		);
 	},

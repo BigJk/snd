@@ -106,7 +106,7 @@ export default (): m.Component => {
 							m(
 								Flex,
 								{ className: `.w2.h2.br2.white.mr2${itemBackground(item.item.type)}`, items: 'center', justify: 'center' },
-								m(Icon, { icon: item.item.type != 'operation' ? icons[item.item.type] : item.item.operation?.icon ?? '', size: 5 }),
+								m(Icon, { icon: item.item.type != 'operation' ? icons[item.item.type] : (item.item.operation?.icon ?? ''), size: 5 }),
 							), //
 							m('div', [
 								m('div.b', name), //

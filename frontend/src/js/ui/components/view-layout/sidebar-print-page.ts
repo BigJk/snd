@@ -50,7 +50,7 @@ export default (): m.Component<SidebarPrintProps> => {
 									return leftElement(tab.icon, tab.label, selectedTab === tab.label, () => (selectedTab = tab.label));
 								}),
 							]),
-					  )
+						)
 					: null, //
 				// @ts-ignore
 				m(Flex, { className: '.bg-white.ba.b--black-10.br2.flex-grow-1.overflow-auto', direction: 'column' }, vnode.attrs.content[selectedTab]()),
@@ -65,7 +65,7 @@ export default (): m.Component<SidebarPrintProps> => {
 							className: `.bg-black-05.ph1.ba.b--black-10${!vnode.attrs.hidePreview ? '' : '.o-0'}`,
 							onRendered: vnode.attrs.onRendered,
 							onMessage: vnode.attrs.onMessage,
-					  })
+						})
 					: m('div'),
 			]),
 	};

@@ -272,7 +272,7 @@ export default (): m.Component<CreateTemplateEntityProps> => {
 																value: state.id,
 																onChange: (val) => (state.id = val),
 															}),
-													  ),
+														),
 											]),
 									},
 									...Object.keys(cats).map((c) => ({
@@ -285,7 +285,7 @@ export default (): m.Component<CreateTemplateEntityProps> => {
 												c === 'Global'
 													? m(EditorHeader, {
 															title: c,
-													  })
+														})
 													: null,
 												cats[c].map((n: SchemaNode) => renderObject(state.data, [n.key])),
 											]),

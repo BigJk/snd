@@ -300,7 +300,7 @@ export default (): m.Component<WorkshopRepoProps> => {
 									exists(p) ? 'Re-Download' : 'Download',
 								),
 							),
-					  ),
+						),
 			),
 		]);
 

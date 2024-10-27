@@ -282,7 +282,7 @@ export default (): m.Component<SessionGridProps> => {
 										});
 									},
 								}),
-						  ]),
+							]),
 				]),
 				m(
 					Grid,
@@ -355,7 +355,7 @@ export default (): m.Component<SessionGridProps> => {
 											m(Icon, { icon: 'add-circle-outline', size: 3, className: '.o-30' }),
 										), //
 									],
-							  ), //
+								), //
 					],
 				),
 			]),
@@ -366,7 +366,7 @@ export default (): m.Component<SessionGridProps> => {
 						m('div.flex-grow-1.bb.b--black-10'),
 						m(Icon, { icon: 'add-circle-outline', size: 6, className: '.o-30.pointer.grow' }),
 						m('div.flex-grow-1.bb.b--black-10'),
-				  ])
+					])
 				: null,
 		];
 	};
@@ -414,14 +414,14 @@ export default (): m.Component<SessionGridProps> => {
 										},
 									}),
 									m(DividerVert, { noSpacing: true, className: '.ml3.mr2' }),
-							  ]
+								]
 							: null,
 						m(IconButton, { icon: 'add-circle-outline', intend: 'link', onClick: () => createNew() }, 'Create'),
 						state.playMode
 							? [
 									m(DividerVert, { noSpacing: true, className: '.mr3' }),
 									m(IconButton, { icon: 'close', onClick: () => (state.playMode = false) }, 'End Play-Mode'),
-							  ]
+								]
 							: null,
 					]),
 				},

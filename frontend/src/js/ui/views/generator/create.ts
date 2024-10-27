@@ -90,7 +90,7 @@ export default (): m.Component<GeneratorCreateProps> => {
 								state = generator;
 								m.redraw();
 							},
-					  })
+						})
 					: m(Loader),
 			);
 		},

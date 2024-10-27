@@ -226,7 +226,7 @@ const createEditGridButton = (props: CreateEditGridButtonProps) => (): m.Compone
 											state.element!.configName = e.target.value;
 										},
 									}),
-							  )
+								)
 							: null,
 						m(
 							HorizontalProperty,

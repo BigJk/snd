@@ -89,7 +89,7 @@ const AditionalInfos = (): m.Component<AdditionalInfosProps> => {
 									m('div.f5.b', 'Config'),
 									m('div', `This is the current config you selected in the ${attrs.type}.`),
 									m(TextArea, { value: JSON.stringify(attrs.config, null, '\t'), rows: 8 }),
-							  ])
+								])
 							: null,
 					]),
 				]),

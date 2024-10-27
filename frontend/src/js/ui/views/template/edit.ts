@@ -116,7 +116,7 @@ export default (): m.Component<EditTemplateProps> => {
 								lastRenderedHTML = html;
 							},
 							editMode: true,
-					  })
+						})
 					: m(Loader),
 			);
 		},

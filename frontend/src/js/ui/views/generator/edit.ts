@@ -111,7 +111,7 @@ export default (): m.Component<EditGeneratorProps> => {
 								lastRenderedHTML = html;
 							},
 							editMode: true,
-					  })
+						})
 					: m(Loader),
 			);
 		},

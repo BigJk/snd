@@ -251,7 +251,7 @@ export default (): m.Component<SingleTemplateProps> => {
 								},
 							}),
 						),
-				  ])
+					])
 				: null,
 		});
 	};
@@ -321,7 +321,7 @@ export default (): m.Component<SingleTemplateProps> => {
 				},
 				state.template
 					? // @ts-ignore
-					  m(SidebarPrintPage, {
+						m(SidebarPrintPage, {
 							template: state.template,
 							it: state.selectedEntry?.data,
 							entry: state.selectedEntry,
@@ -395,7 +395,7 @@ export default (): m.Component<SingleTemplateProps> => {
 																	},
 																	'Save',
 																),
-														  ]
+															]
 														: null,
 												),
 											]),
@@ -439,7 +439,7 @@ export default (): m.Component<SingleTemplateProps> => {
 																	},
 																	'Save',
 																),
-														  ]
+															]
 														: null,
 												),
 											]),
@@ -453,7 +453,7 @@ export default (): m.Component<SingleTemplateProps> => {
 											? [
 													m('div.f5.mb2.b.mt3', 'Copyright Notice'),
 													m('div', { style: { whiteSpace: 'break-spaces' } }, state.template.copyrightNotice),
-											  ]
+												]
 											: []),
 									]),
 								Config: () =>
@@ -467,7 +467,7 @@ export default (): m.Component<SingleTemplateProps> => {
 									}),
 								//'Advanced Filter': () => m('div.pa3', 'Coming back soon...'),
 							},
-					  })
+						})
 					: null,
 			);
 		},

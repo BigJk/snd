@@ -1,28 +1,29 @@
 import m from 'mithril';
-import { groupBy, map } from 'lodash-es';
+import { groupBy } from 'lodash-es';
 
 import { buildId } from 'js/types/basic-info';
-import { sanitizeConfig } from 'js/types/generator';
+import Generator from 'js/types/generator';
 import * as API from 'js/core/api';
 import store, { generators } from 'js/core/store';
 
+import Button from 'js/ui/shoelace/button';
 import DividerVert from 'js/ui/shoelace/divider-vert';
 import IconButton from 'js/ui/shoelace/icon-button';
-import Input from 'js/ui/shoelace/input';
 
-import Icon from 'js/ui/components/atomic/icon';
+import AuthorTag from 'js/ui/components/atomic/author-tag';
 import Title from 'js/ui/components/atomic/title';
+import DataTable from 'js/ui/components/data-table/data-table';
+import FilterBox from 'js/ui/components/filter-box';
 import Flex from 'js/ui/components/layout/flex';
-import Grid from 'js/ui/components/layout/grid';
 import ImportExport from 'js/ui/components/modals/imexport/import-export';
 import PageEmptyState from 'js/ui/components/page-empty-state';
-import TemplateBox from 'js/ui/components/template-box';
 import Base from 'js/ui/components/view-layout/base';
 
 import { setPortal } from 'js/ui/portal';
 
 export default (): m.Component => {
 	let searchValue = '';
+	let hovered: Generator | null = null;
 
 	const filteredGenerators = () =>
 		generators.value.filter(
@@ -30,61 +31,76 @@ export default (): m.Component => {
 				generator.name.toLowerCase().includes(searchValue.toLowerCase()) || generator.author.toLowerCase().includes(searchValue.toLowerCase()),
 		);
 
-	const authorGroupTitle = (author: string) =>
-		m('div', [
-			m('div.text-muted.f8.fw5.ttu.mb1', 'Generator by'), //
-			m(Title, author), //
-		]);
-
-	const generatorCount = (length: number) => m('div.f8.fw5.ttu.mb1.text-muted', `${length} Generators`);
-
-	const generatorsByAuthor = () =>
-		map(groupBy(filteredGenerators(), 'author'), (generators, author) =>
-			m('div.bg-white.br2.ph3.mb3.ba.b--black-10', [
-				m(Flex, { justify: 'between', className: '.mv3.bb.b--black-10.pb3' }, [
-					authorGroupTitle(author), //
-					generatorCount(generators.length), //
-				]), //
-				m(
-					Grid,
-					{ className: '.mb3', minWidth: '350px', maxWidth: '1fr' },
-					generators.map((generator) =>
-						m(TemplateBox, {
-							onClick: () => m.route.set(`/generator/${buildId('generator', generator)}`),
-							generator: generator,
-							config: sanitizeConfig(generator, {
-								seed: 'TEST_SEED',
-							}),
-						}),
-					),
-				),
-			]),
-		);
+	const allAuthors = Object.keys(groupBy(generators.value, 'author'));
 
 	const search = () =>
-		m('div.bg-white.mb3.br2.ba.b--black-10.pa3', [
-			m('div.f8.fw5.ttu.mb3.text-muted', 'What are you looking for?'),
-			m(Flex, { items: 'center' }, [
-				m(Icon, { icon: 'search', className: '.mr3', size: 4 }), //
-				m(Input, {
-					value: searchValue,
-					placeholder: 'Search generators...',
-					className: '.f6',
-					minimal: true,
-					onChange: (value) => {
-						searchValue = value;
+		m(FilterBox, {
+			value: searchValue,
+			placeholder: 'Search generator...',
+			onChange: (value) => {
+				searchValue = value;
+			},
+			authors: allAuthors,
+			footer: [filteredGenerators().length, ' generators'],
+			hoveredId: hovered ? buildId('generator', hovered) : undefined,
+			hoverText: 'Hover over a generator to preview',
+		});
+
+	const dataTable = () =>
+		m('div.mb3.pr3', { style: { marginRight: '250px' } }, [
+			m(DataTable<Generator>, {
+				data: filteredGenerators(),
+				items: 'center',
+				columns: [
+					{
+						customID: 'action',
+						header: ' ',
+						width: 'max-content',
+
+						render: (parent) =>
+							m(
+								'div.relative.dim.pointer',
+								{
+									style: {
+										width: '100px',
+										height: '40px',
+										backgroundImage: `url("/api/preview-image/${buildId('generator', parent)}")`,
+										backgroundSize: '100% auto',
+										backgroundPosition: 'center top',
+										backgroundRepeat: 'no-repeat',
+									},
+									onclick: () => m.route.set(`/generator/${buildId('generator', parent)}`),
+									onmouseover: () => (hovered = parent),
+									onmouseout: () => (hovered = null),
+								},
+								[
+									m('div.absolute.bottom-0.right-0.w-100', {
+										style: {
+											height: '50%',
+											background: 'linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)',
+										},
+									}),
+								],
+							),
 					},
-				}),
-			]),
+					{
+						field: 'name',
+						width: '250px',
+						render: (parent) =>
+							m('div', [
+								m('div.b.f7.mb1', parent.name), //
+								m('div.f8.text-muted.', [m('span.mr1', 'by'), m(AuthorTag, { author: parent.author })]),
+							]),
+					},
+					{ field: 'description', width: '1fr', noBorder: true },
+					{
+						customID: ' ',
+						width: 'max-content',
+						render: (parent) => m(Button, { intend: 'link', onClick: () => m.route.set(`/generator/${buildId('generator', parent)}`) }, 'Open'),
+					},
+				],
+			}), //
 		]);
-
-	const emptyState = () => {
-		if (filteredGenerators().length > 0) {
-			return null;
-		}
-
-		return m(PageEmptyState, { name: 'generators', bigMessage: generators.value.length === 0 });
-	};
 
 	return {
 		oninit() {
@@ -120,7 +136,7 @@ export default (): m.Component => {
 						m(IconButton, { link: '/generator/create', intend: 'link', icon: 'add' }, 'Create'), //
 					]),
 				},
-				m('div', [search(), emptyState(), generatorsByAuthor()]),
+				m('div', generators.value.length === 0 ? m(PageEmptyState, { name: 'generators', bigMessage: true }) : [search(), dataTable()]),
 			);
 		},
 	};

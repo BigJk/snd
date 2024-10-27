@@ -7,6 +7,8 @@ type GridProps = {
 	maxWidth?: string;
 	gap?: number;
 	columns?: string;
+	justifyContent?: 'start' | 'end' | 'center' | 'stretch' | 'space-around' | 'space-between' | 'space-evenly';
+	alignItems?: 'start' | 'end' | 'center' | 'stretch' | 'baseline';
 };
 
 /**
@@ -20,6 +22,8 @@ export default (): m.Component<GridProps> => ({
 		let style = {
 			display: 'grid',
 			gridTemplateColumns: attrs.columns ?? `repeat(auto-fit, minmax(${min}, ${max}))`,
+			justifyContent: attrs.justifyContent ?? undefined,
+			alignItems: attrs.alignItems ?? undefined,
 		};
 
 		return m(

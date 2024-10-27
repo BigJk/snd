@@ -30,6 +30,11 @@ export const NEW_VERSION = 'newVersion';
 // Key Value functions
 export const GET_KEY = 'getKey';
 export const SET_KEY = 'setKey';
+export const GET_KEYS_PREFIX = 'getKeysPrefix';
+
+// Cache functions
+export const CLEAR_PREVIEW_CACHE = 'clearPreviewCache';
+export const CLEAR_AI_CACHE = 'clearAICache';
 
 // Entries functions
 export const GET_ENTRIES = 'getEntries';

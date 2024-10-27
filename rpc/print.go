@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -15,6 +16,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/BigJk/snd/rpc/bind"
@@ -209,6 +211,17 @@ func print(db database.Database, printer printing.PossiblePrinter, html string) 
 	return nil
 }
 
+// hashObject will hash the given object and return the hash as a string.
+func hashObject(data any) (string, error) {
+	json, err := json.Marshal(data)
+	if err != nil {
+		return "", err
+	}
+	hash := sha256.New()
+	hash.Write(json)
+	return fmt.Sprintf("%x", hash.Sum(nil)), nil
+}
+
 func RegisterPrint(route *echo.Group, extern *echo.Group, db database.Database, printer printing.PossiblePrinter) {
 	route.GET("/html/:id", func(c echo.Context) error {
 		val, ok := renderCache.Get(c.Param("id"))
@@ -363,5 +376,104 @@ func RegisterPrint(route *echo.Group, extern *echo.Group, db database.Database, 
 	bind.MustBind(route, "/previewCache", func(id string, html string) (string, error) {
 		renderCache.SetDefault(id, html)
 		return fmt.Sprintf("http://127.0.0.1:7123/api/html/%s", id), nil
+	})
+
+	previewImageMutex := sync.Mutex{}
+	route.GET("/preview-image/:id", func(c echo.Context) error {
+		// Lock the mutex to prevent too many requests at once
+		previewImageMutex.Lock()
+		defer previewImageMutex.Unlock()
+
+		id := c.Param("id")
+		html := ""
+		cacheKey := ""
+
+		if strings.HasPrefix(id, "tmpl:") {
+			tmpl, err := db.GetTemplate(id)
+			if err != nil {
+				return err
+			}
+
+			if hash, err := hashObject(tmpl); err == nil {
+				cacheKey = fmt.Sprintf("PIMG_%s_%s", id, hash)
+				if data, err := db.GetKey(cacheKey); err == nil {
+					if bytes, err := base64.StdEncoding.DecodeString(data); err == nil {
+						fmt.Println("Cache hit", cacheKey, id)
+						return c.Blob(http.StatusOK, "image/jpeg", bytes)
+					}
+				}
+			}
+
+			entryJson, err := json.Marshal(map[string]any{
+				"id":   "skeleton",
+				"name": "Skeleton",
+				"data": tmpl.SkeletonData,
+			})
+			if err != nil {
+				return err
+			}
+			tmplHtml, err := rendering.ExtractHTML(fmt.Sprintf("http://127.0.0.1:7123/#!/extern-print/template/%s/%s/%s", id, base64.StdEncoding.EncodeToString(entryJson), base64.StdEncoding.EncodeToString([]byte("{}"))), "#render-done")
+			if err != nil {
+				return err
+			}
+			html = tmplHtml
+
+		} else if strings.HasPrefix(id, "gen:") {
+			gen, err := db.GetGenerator(id)
+			if err != nil {
+				return err
+			}
+
+			if hash, err := hashObject(gen); err == nil {
+				cacheKey = fmt.Sprintf("PIMG_%s_%s", id, hash)
+				if data, err := db.GetKey(cacheKey); err == nil {
+					if bytes, err := base64.StdEncoding.DecodeString(data); err == nil {
+						fmt.Println("Cache hit", cacheKey, id)
+						return c.Blob(http.StatusOK, "image/jpeg", bytes)
+					}
+				}
+			}
+
+			genHtml, err := rendering.ExtractHTML(fmt.Sprintf("http://127.0.0.1:7123/#!/extern-print/generator/%s/%s", id, base64.StdEncoding.EncodeToString([]byte("{}"))), "#render-done")
+			if err != nil {
+				return err
+			}
+			html = genHtml
+		} else {
+			return c.NoContent(http.StatusNotFound)
+		}
+
+		settings, err := db.GetSettings()
+		if err != nil {
+			return err
+		}
+
+		if settings.PrinterWidth < 50 {
+			return log.ErrorString("print width is too low", log.WithValue("width", settings.PrinterWidth))
+		}
+
+		finalHtml, err := fixHtml(html, settings)
+		if err != nil {
+			return err
+		}
+
+		tempId := fmt.Sprint(rand.Int63())
+		renderCache.SetDefault(tempId, finalHtml)
+
+		img, err := rendering.RenderURL(fmt.Sprintf("http://127.0.0.1:7123/api/html/%s", tempId), settings.PrinterWidth)
+		if err != nil {
+			return err
+		}
+
+		buf, err := convertTo1BitPNG(img)
+		if err != nil {
+			return err
+		}
+
+		if len(cacheKey) > 0 {
+			db.SetKey(cacheKey, base64.StdEncoding.EncodeToString(buf))
+		}
+
+		return c.Blob(http.StatusOK, "image/jpeg", buf)
 	})
 }

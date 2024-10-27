@@ -1,26 +1,28 @@
-@use "sass:map";
+@use 'sass:map';
+@use 'sass:color';
 
-$colours: ( "primary": #5755d9,
-	        "success": #32b643,
-	        "warning": #ffb700,
-	        "error": #e85600,
-	        "dark": #303742,
-            "secondary": #f1f1fc,
-			"alt-dark": #0D1B2A
+$colours: (
+	'primary': #5755d9,
+	'success': #32b643,
+	'warning': #ffb700,
+	'error': #e85600,
+	'dark': #303742,
+	'secondary': #f1f1fc,
+	'alt-dark': #0d1b2a,
 );
 
 @mixin linear-gradient($direction, $color-stops...) {
-  background: nth(nth($color-stops, 1), 1);
-  background: -webkit-linear-gradient(legacy-direction($direction), $color-stops);
-  background: linear-gradient($direction, $color-stops);
+	background: nth(nth($color-stops, 1), 1);
+	background: -webkit-linear-gradient(legacy-direction($direction), $color-stops);
+	background: linear-gradient($direction, $color-stops);
 }
 
 :root {
 	@each $i in $colours {
 		--col-#{nth($i, 1)}: #{nth($i, 2)};
-		--col-#{nth($i, 1)}-lighten: #{lighten(nth($i, 2), 10%)};
-		--col-#{nth($i, 1)}-darken: #{darken(nth($i, 2), 10%)};
-		--col-#{nth($i, 1)}-muted: #{transparentize(nth($i, 2), 0.9)};
+		--col-#{nth($i, 1)}-lighten: #{color.adjust(nth($i, 2), $lightness: 10%)};
+		--col-#{nth($i, 1)}-darken: #{color.adjust(nth($i, 2), $lightness: -10%)};
+		--col-#{nth($i, 1)}-muted: #{color.adjust(nth($i, 2), $alpha: -0.9)};
 	}
 }
 
@@ -29,24 +31,27 @@ $colours: ( "primary": #5755d9,
 		background: nth($i, 2);
 	}
 	.bg-#{nth($i, 1)}-lighten {
-		background: lighten(nth($i, 2), 10%);
+		background: color.adjust(nth($i, 2), $lightness: 10%);
 	}
 	.bg-#{nth($i, 1)}-darken {
-		background: darken(nth($i, 2), 10%);
+		background: color.adjust(nth($i, 2), $lightness: -10%);
 	}
 	.bg-#{nth($i, 1)}-muted {
-		background: transparentize(nth($i, 2), 0.9);
+		background: color.adjust(nth($i, 2), $alpha: -0.9);
+	}
+	.bg-#{nth($i, 1)}-muted-05 {
+		background: color.adjust(nth($i, 2), $alpha: -0.95);
 	}
 	.hover-bg-#{nth($i, 1)}-muted:hover {
 		transition: 200ms ease-in-out;
-		background: transparentize(nth($i, 2), 0.9);
+		background: color.adjust(nth($i, 2), $alpha: -0.9);
 	}
 	.hover-bg-#{nth($i, 1)}-lighten:hover {
-        transition: 200ms ease-in-out;
-		background: lighten(nth($i, 2), 10%);
+		transition: 200ms ease-in-out;
+		background: color.adjust(nth($i, 2), $lightness: 10%);
 	}
 	.hover-bg-#{nth($i, 1)}:hover {
-        transition: 200ms ease-in-out;
+		transition: 200ms ease-in-out;
 		background: nth($i, 2);
 	}
 	.col-#{nth($i, 1)} {
@@ -56,24 +61,20 @@ $colours: ( "primary": #5755d9,
 		border-color: nth($i, 2);
 	}
 	.b--col-#{nth($i, 1)}-muted {
-		border-color: transparentize(nth($i, 2), 0.9);
+		border-color: color.adjust(nth($i, 2), $alpha: -0.9);
 	}
 	.b--col-#{nth($i, 1)}-darken {
-		border-color: darken(nth($i, 2), 10%);
+		border-color: color.adjust(nth($i, 2), $lightness: -10%);
 	}
 }
 
-$primary-color: map.get($colours, "primary");
-$success-color: map.get($colours, "success");
-$warning-color: map.get($colours, "warning");
-$error-color: map.get($colours, "error");
-$dark-color: map.get($colours, "dark");
-$secondary-color: map.get($colours, "secondary");
+$primary-color: map.get($colours, 'primary');
+$success-color: map.get($colours, 'success');
+$warning-color: map.get($colours, 'warning');
+$error-color: map.get($colours, 'error');
+$dark-color: map.get($colours, 'dark');
+$secondary-color: map.get($colours, 'secondary');
 
 .bg-grad-primary {
-  @include linear-gradient(0deg, transparentize(map.get($colours, "primary"), 0.95), transparentize(map.get($colours, "primary"), 1.0));
-}
-
-.bg-g-dark-trans {
-  @include linear-gradient(0deg, transparentize($dark-color, 0.4%), transparentize(white, 1%));
+	@include linear-gradient(0deg, color.adjust(map.get($colours, 'primary'), $alpha: -0.95), map.get($colours, 'primary'), 1);
 }

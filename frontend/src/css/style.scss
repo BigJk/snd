@@ -1,165 +1,190 @@
 /* Generate Colors */
 
-@import "./colors.scss";
+@import './colors.scss';
 
 /* Atomic Classes */
 
-@import "./atomic.scss";
+@import './atomic.scss';
 
 /* Shoelace */
 
 :root {
-    --sl-input-height-small: 1.5rem;
-    --sl-input-height-medium: 1.8rem;
-    --sl-input-height-large: 20rem;
+	--sl-input-height-small: 1.5rem;
+	--sl-input-height-medium: 1.8rem;
+	--sl-input-height-large: 20rem;
 
-    --sl-font-size-small: .75rem;
-    --sl-font-size-medium: .75rem;
-    --sl-font-size-large: .75rem;
+	--sl-font-size-small: 0.75rem;
+	--sl-font-size-medium: 0.75rem;
+	--sl-font-size-large: 0.75rem;
 
-    --sl-color-primary-50: rgb(249 249 255);
-    --sl-color-primary-100: rgb(235 235 254);
-    --sl-color-primary-200: rgb(220 219 254);
-    --sl-color-primary-300: rgb(203 202 253);
-    --sl-color-primary-400: rgb(180 179 253);
-    --sl-color-primary-500: rgb(150 149 252);
-    --sl-color-primary-600: rgb(87 85 217);
-    --sl-color-primary-700: rgb(91 89 228);
-    --sl-color-primary-800: rgb(75 74 188);
-    --sl-color-primary-900: rgb(54 53 134);
-    --sl-color-primary-950: rgb(33 32 83);
+	--sl-color-primary-50: rgb(249 249 255);
+	--sl-color-primary-100: rgb(235 235 254);
+	--sl-color-primary-200: rgb(220 219 254);
+	--sl-color-primary-300: rgb(203 202 253);
+	--sl-color-primary-400: rgb(180 179 253);
+	--sl-color-primary-500: rgb(150 149 252);
+	--sl-color-primary-600: rgb(87 85 217);
+	--sl-color-primary-700: rgb(91 89 228);
+	--sl-color-primary-800: rgb(75 74 188);
+	--sl-color-primary-900: rgb(54 53 134);
+	--sl-color-primary-950: rgb(33 32 83);
 
-    --sl-color-danger-50: rgb(254 248 245);
-    --sl-color-danger-100: rgb(252 233 221);
-    --sl-color-danger-200: rgb(250 215 195);
-    --sl-color-danger-300: rgb(247 196 166);
-    --sl-color-danger-400: rgb(243 169 125);
-    --sl-color-danger-500: rgb(238 131 69);
-    --sl-color-danger-600: rgb(228 85 0);
-    --sl-color-danger-700: rgb(188 70 0);
-    --sl-color-danger-800: rgb(155 58 0);
-    --sl-color-danger-900: rgb(111 41 0);
-    --sl-color-danger-950: rgb(69 26 0);
+	--sl-color-danger-50: rgb(254 248 245);
+	--sl-color-danger-100: rgb(252 233 221);
+	--sl-color-danger-200: rgb(250 215 195);
+	--sl-color-danger-300: rgb(247 196 166);
+	--sl-color-danger-400: rgb(243 169 125);
+	--sl-color-danger-500: rgb(238 131 69);
+	--sl-color-danger-600: rgb(228 85 0);
+	--sl-color-danger-700: rgb(188 70 0);
+	--sl-color-danger-800: rgb(155 58 0);
+	--sl-color-danger-900: rgb(111 41 0);
+	--sl-color-danger-950: rgb(69 26 0);
 
-    --sl-input-focus-ring-color: #e7e7ff;
+	--sl-input-focus-ring-color: #e7e7ff;
 }
 
 sl-option {
-    --sl-spacing-x-small: 0.25rem;
-    --sl-spacing-small: 0.5rem;
-    --sl-spacing-medium: 1rem;
-    --sl-spacing-large: 2rem;
+	--sl-spacing-x-small: 0.25rem;
+	--sl-spacing-small: 0.5rem;
+	--sl-spacing-medium: 1rem;
+	--sl-spacing-large: 2rem;
 }
 
 sl-details {
-    --sl-spacing-medium: 0.5rem;
+	--sl-spacing-medium: 0.5rem;
 }
-
 
 /* Toastify */
 
 .toastify {
-    position: absolute;
+	position: absolute;
 }
 
 /* Scrollbar */
 
 ::-webkit-scrollbar {
-    width: 5px;
-    border-radius: 10px;
+	width: 5px;
+	border-radius: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #eee;
+	background: #eee;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #c2c2c2;
+	background: #c2c2c2;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #d1d1d1;
+	background: #d1d1d1;
 }
 
 /* Common */
 
 html {
-    font-size:  20px;
+	font-size: 20px;
 }
 
 body {
-    font-size: 0.7rem;
-    background-color: #f4f8f9;
+	font-size: 0.7rem;
+	background-color: #f4f8f9;
 }
 
 .form-select {
-    appearance: none !important;
-    -webkit-appearance: none;
-    -moz-appearance: none;
+	appearance: none !important;
+	-webkit-appearance: none;
+	-moz-appearance: none;
 }
 
 .markdown {
-    .code code {
-        white-space: pre-wrap;
-    }
+	.code code {
+		white-space: pre-wrap;
+	}
 
-    .code {
-        margin-bottom: 1.75em;
-    }
+	.code {
+		margin-bottom: 1.75em;
+	}
 
-    h1 { font-size: 2em }
-    h2 { font-size: 1.5em }
-    h3 { font-size: 1.17em }
-    h4 { font-size: 1em }
-    h5 { font-size: 0.83em }
-    h6 { font-size: 0.75em }
-    h2, h3, h4, h5, h6 { margin-top: 0.75em; }
-    hr {
-        border: none;
-        border-top: 0.05rem solid #f1f3f5;
-        height: 0.05rem;
-        margin: 1rem 0;
-    }
+	h1 {
+		font-size: 2em;
+	}
+	h2 {
+		font-size: 1.5em;
+	}
+	h3 {
+		font-size: 1.17em;
+	}
+	h4 {
+		font-size: 1em;
+	}
+	h5 {
+		font-size: 0.83em;
+	}
+	h6 {
+		font-size: 0.75em;
+	}
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		margin-top: 0.75em;
+	}
+	hr {
+		border: none;
+		border-top: 0.05rem solid #f1f3f5;
+		height: 0.05rem;
+		margin: 1rem 0;
+	}
 }
 
 .monaco-container {
-  height: 100%;
+	height: 100%;
 }
 
 // https://stackoverflow.com/a/71876526
 .monaco-editor {
-  position: absolute !important;
+	position: absolute !important;
 }
 
 .scroll-text {
-  display: block;
-  -moz-transform: translateX(100%);
-  -webkit-transform: translateX(100%);
-  transform: translateX(100%);
-  -moz-animation: scroll-anim 80s linear infinite;
-  -webkit-animation: scroll-anim 80s linear infinite;
-  animation: scroll-anim 80s linear infinite;
+	display: block;
+	-moz-transform: translateX(100%);
+	-webkit-transform: translateX(100%);
+	transform: translateX(100%);
+	-moz-animation: scroll-anim 80s linear infinite;
+	-webkit-animation: scroll-anim 80s linear infinite;
+	animation: scroll-anim 80s linear infinite;
 }
 
 @-moz-keyframes scroll-anim {
-  from { -moz-transform: translateX(100%); }
-  to { -moz-transform: translateX(-100%); }
+	from {
+		-moz-transform: translateX(100%);
+	}
+	to {
+		-moz-transform: translateX(-100%);
+	}
 }
 
 @-webkit-keyframes scroll-anim {
-  from { -webkit-transform: translateX(100%); }
-  to { -webkit-transform: translateX(-100%); }
+	from {
+		-webkit-transform: translateX(100%);
+	}
+	to {
+		-webkit-transform: translateX(-100%);
+	}
 }
 
 @keyframes scroll-anim {
-  from {
-    -moz-transform: translateX(100%);
-    -webkit-transform: translateX(100%);
-    transform: translateX(100%);
-  }
-  to {
-    -moz-transform: translateX(-100%);
-    -webkit-transform: translateX(-100%);
-    transform: translateX(-100%);
-  }
+	from {
+		-moz-transform: translateX(100%);
+		-webkit-transform: translateX(100%);
+		transform: translateX(100%);
+	}
+	to {
+		-moz-transform: translateX(-100%);
+		-webkit-transform: translateX(-100%);
+		transform: translateX(-100%);
+	}
 }

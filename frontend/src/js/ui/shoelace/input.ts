@@ -9,11 +9,13 @@ type InputProps = {
 	value?: string;
 	placeholder?: string;
 	type?: 'text' | 'password' | 'email' | 'number' | 'tel' | 'url';
+	size?: 'small' | 'medium' | 'large';
 	onChange?: (value: string) => void;
 	onEnter?: (value: string) => void;
 	useBlur?: boolean;
 	minimal?: boolean;
 	disabled?: boolean;
+	clearable?: boolean;
 	suffix?: m.Children;
 };
 
@@ -61,7 +63,7 @@ export default (): m.Component<InputProps> => ({
 		}
 
 		return m(
-			`sl-input${attrs.className ?? ''}[size=small][label=${attrs.label ?? ''}]${attrs.minimal ? '.' + minimalStyle : ''}`,
+			`sl-input${attrs.className ?? ''}[size=${attrs.size ?? 'small'}][label=${attrs.label ?? ''}]${attrs.clearable ? '[clearable]' : ''}${attrs.minimal ? '.' + minimalStyle : ''}`,
 			{
 				key: attrs.key,
 				value: attrs.value ?? '',

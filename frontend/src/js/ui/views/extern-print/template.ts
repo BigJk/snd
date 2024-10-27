@@ -1,6 +1,6 @@
 import m from 'mithril';
 
-import Template from 'js/types/template';
+import Template, { sanitizeConfig } from 'js/types/template';
 import * as API from 'js/core/api';
 import { settings } from 'js/core/store';
 import { addEntryMeta, render } from 'js/core/templating';
@@ -37,7 +37,7 @@ export default (): m.Component<ExternPrintProps> => {
 						it: addEntryMeta(state.json, state.json.data),
 						images: tmpl.images,
 						sources: tmpl.dataSources,
-						config: JSON.parse(atob(attrs.config)),
+						config: sanitizeConfig(tmpl, JSON.parse(atob(attrs.config))),
 						settings: settings.value,
 					})
 						.then((res) => {

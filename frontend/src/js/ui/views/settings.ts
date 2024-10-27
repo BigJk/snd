@@ -124,6 +124,34 @@ export default (): m.Component => {
 			.finally(clearPortal);
 	};
 
+	const clearPreviewImageCache = () => {
+		setPortal(FullscreenLoader, {
+			attributes: {
+				reason: 'Clearing preview image cache...',
+			},
+		});
+		API.exec<number>(API.CLEAR_PREVIEW_CACHE)
+			.then((num) => {
+				clearPortal();
+				success(`Cleared ${num} preview images from cache!`);
+			})
+			.catch(error);
+	};
+
+	const clearAICache = () => {
+		setPortal(FullscreenLoader, {
+			attributes: {
+				reason: 'Clearing AI cache...',
+			},
+		});
+		API.exec<number>(API.CLEAR_AI_CACHE)
+			.then((num) => {
+				clearPortal();
+				success(`Cleared ${num} AI results from cache!`);
+			})
+			.catch(error);
+	};
+
 	return {
 		oninit() {
 			fetchAiProviders();
@@ -377,11 +405,40 @@ export default (): m.Component => {
 								  ],
 						]),
 						//
+						// Cache
+						m(PropertyHeader, {
+							className: '.mt3',
+							title: 'Cache',
+							description: 'Control for the cache',
+							icon: 'cube',
+						}), //
+						m(
+							HorizontalProperty,
+							{
+								label: 'Clear AI Cache',
+								description: 'Clear the AI cache. This will remove all cached AI data. This can be useful if you encounter issues with the AI.',
+								bottomBorder: true,
+								centered: true,
+							},
+							m(Button, { intend: 'error', onClick: clearAICache }, 'Clear AI Cache'),
+						),
+						m(
+							HorizontalProperty,
+							{
+								label: 'Clear Image Cache',
+								description:
+									'Clear the preview image cache. This will remove all cached preview images. This can be useful if you encounter issues with the preview images.',
+								bottomBorder: true,
+								centered: true,
+							},
+							m(Button, { intend: 'error', onClick: clearPreviewImageCache }, 'Clear Preview Cache'),
+						),
+						//
 						// Cloud Sync
 						m(PropertyHeader, {
 							className: '.mt3',
 							title: 'Cloud Sync',
-							description: 'Sync your data to the cloud (experimental donator-only feature)',
+							description: 'Sync your data to the cloud (experimental feature)',
 							icon: 'cloudy',
 						}), //
 						m(PropertyEdit<Settings>, {

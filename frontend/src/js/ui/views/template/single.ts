@@ -238,6 +238,7 @@ export default (): m.Component<SingleTemplateProps> => {
 							Tooltip,
 							{ content: 'Delete' },
 							m(IconButton, {
+								disabled: entry.source?.startsWith('ds:'),
 								intend: 'error',
 								size: 'sm',
 								icon: 'trash',

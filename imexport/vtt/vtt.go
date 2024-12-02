@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -11,16 +12,19 @@ import (
 )
 
 type Module struct {
-	Name        string        `json:"name"`
-	Title       string        `json:"title"`
-	Description string        `json:"description"`
-	Version     string        `json:"version"`
-	Systems     []string      `json:"systems"`
-	Author      interface{}   `json:"author"`
-	Scripts     []interface{} `json:"scripts"`
-	Esmodules   []interface{} `json:"esmodules"`
-	Styles      []interface{} `json:"styles"`
-	Packs       []struct {
+	Name        string      `json:"name"`
+	Title       string      `json:"title"`
+	Description string      `json:"description"`
+	Version     string      `json:"version"`
+	Systems     []string    `json:"systems"`
+	Author      interface{} `json:"author"`
+	Authors     []struct {
+		Name string `json:"name"`
+	} `json:"authors"`
+	Scripts   []interface{} `json:"scripts"`
+	Esmodules []interface{} `json:"esmodules"`
+	Styles    []interface{} `json:"styles"`
+	Packs     []struct {
 		Name    string `json:"name"`
 		Label   string `json:"label"`
 		Package string `json:"package"`
@@ -40,7 +44,6 @@ type PackEntry struct {
 	Permission struct {
 		Default int `json:"default"`
 	} `json:"permission"`
-	Data  map[string]interface{} `json:"data"`
 	Flags struct {
 	} `json:"flags"`
 	Type string `json:"type"`
@@ -49,12 +52,46 @@ type PackEntry struct {
 
 // ConvertPackEntries converts a .db FoundryVTT file to S&D entries.
 func ConvertPackEntries(packFile string) ([]snd.Entry, error) {
+	// Check if packFile is a directory
+	fi, err := os.Stat(packFile)
+	if err != nil {
+		return nil, err
+	}
+
+	if fi.IsDir() {
+		var entries []snd.Entry
+		return entries, filepath.Walk(packFile, func(path string, info os.FileInfo, err error) error {
+			if filepath.Ext(path) != ".json" || filepath.Base(path)[0] == '_' {
+				return nil
+			}
+
+			fmt.Println(path)
+
+			e, err := ConvertPackEntries(path)
+			if err == nil {
+				entries = append(entries, e...)
+			} else {
+				fmt.Println("error while converting pack entries:", err)
+			}
+			return nil
+		})
+	}
+
 	packBytes, err := ioutil.ReadFile(packFile)
 	if err != nil {
 		return nil, err
 	}
 
-	packLines := strings.Split(string(packBytes), "\n")
+	packLines := []string{string(packBytes)}
+
+	// Check if each line is it's own json object
+	split := strings.Split(string(packBytes), "\n")
+	if len(split) >= 1 {
+		test := map[string]any{}
+		if err := json.Unmarshal([]byte(split[0]), &test); err == nil {
+			packLines = split
+		}
+	}
 
 	var entries []snd.Entry
 	for i := range packLines {
@@ -63,16 +100,17 @@ func ConvertPackEntries(packFile string) ([]snd.Entry, error) {
 		}
 
 		pack := PackEntry{}
+		packRaw := map[string]any{}
 		if err := json.Unmarshal([]byte(packLines[i]), &pack); err != nil {
 			return nil, err
 		}
-
-		if pack.Data == nil {
-			continue
+		if err := json.Unmarshal([]byte(packLines[i]), &packRaw); err != nil {
+			return nil, err
 		}
 
-		pack.Data["name"] = pack.Name
-		pack.Data["vtt_meta"] = map[string]interface{}{
+		data := map[string]any{}
+		data["name"] = pack.Name
+		data["vtt_meta"] = map[string]interface{}{
 			"ID":         pack.ID,
 			"Img":        pack.Img,
 			"Permission": pack.Permission,
@@ -80,10 +118,17 @@ func ConvertPackEntries(packFile string) ([]snd.Entry, error) {
 			"Type":       pack.Type,
 		}
 
+		for k, v := range packRaw {
+			if k == "_id" || k == "name" || k == "permission" || k == "flags" || k == "type" || k == "img" {
+				continue
+			}
+			data[k] = v
+		}
+
 		entries = append(entries, snd.Entry{
 			ID:   pack.ID,
 			Name: pack.Name,
-			Data: pack.Data,
+			Data: data,
 		})
 	}
 
@@ -112,9 +157,19 @@ func ConvertDataSources(moduleFile string) ([]snd.DataSource, [][]snd.Entry, err
 		author = strings.Join(mod.Author.([]string), ", ")
 	}
 
+	if len(mod.Authors) > 0 {
+		var authors []string
+		for i := range mod.Authors {
+			authors = append(authors, mod.Authors[i].Name)
+		}
+		author = strings.Join(authors, ", ")
+	}
+
 	var sources []snd.DataSource
 	var sourceEntries [][]snd.Entry
 	for i := range mod.Packs {
+		fmt.Println(mod.Packs[i].Path)
+
 		entries, err := ConvertPackEntries(filepath.Join(filepath.Dir(moduleFile), "/", mod.Packs[i].Path))
 		if err != nil {
 			return nil, nil, err

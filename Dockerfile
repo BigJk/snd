@@ -36,5 +36,7 @@ RUN apt-get -y update &&\
     rm google-chrome-stable_current_amd64.deb 
 
 COPY --from=build-stage /app /app
+RUN adduser --system --group --home /home/app app && chown app:app /app
+USER app
 EXPOSE 7123
 CMD ["/app/snd"]

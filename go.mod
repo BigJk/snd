@@ -19,8 +19,8 @@ require (
 	github.com/dgraph-io/badger/v3 v3.2103.5
 	github.com/fatih/color v1.9.0
 	github.com/fsnotify/fsnotify v1.5.1
-	github.com/go-git/go-billy/v5 v5.5.0
-	github.com/go-git/go-git/v5 v5.11.0
+	github.com/go-git/go-billy/v5 v5.6.0
+	github.com/go-git/go-git/v5 v5.13.0
 	github.com/go-rod/rod v0.116.0
 	github.com/google/gousb v1.1.2
 	github.com/iancoleman/strcase v0.3.0
@@ -34,7 +34,7 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.3.5
 	go.bug.st/serial v1.3.5
 	go.etcd.io/bbolt v1.3.3
-	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17
+	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
 	gopkg.in/olahol/melody.v1 v1.0.0-20170518105555-d52139073376
 )
 
@@ -42,15 +42,15 @@ require (
 	dario.cat/mergo v1.0.0 // indirect
 	github.com/DataDog/zstd v1.4.4 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
-	github.com/ProtonMail/go-crypto v0.0.0-20230828082145-3c4c8a2d2371 // indirect
+	github.com/ProtonMail/go-crypto v1.1.3 // indirect
 	github.com/Sereal/Sereal v0.0.0-20200210135736-180ff2394e8a // indirect
 	github.com/andybalholm/cascadia v1.1.0 // indirect
 	github.com/antchfx/xpath v1.2.1 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
-	github.com/cloudflare/circl v1.3.3 // indirect
+	github.com/cloudflare/circl v1.3.7 // indirect
 	github.com/creack/goselect v0.1.2 // indirect
-	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
+	github.com/cyphar/filepath-securejoin v0.2.5 // indirect
 	github.com/dgraph-io/ristretto v0.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
@@ -72,8 +72,8 @@ require (
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/sergi/go-diff v1.1.0 // indirect
-	github.com/skeema/knownhosts v1.2.1 // indirect
+	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
+	github.com/skeema/knownhosts v1.3.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
@@ -85,14 +85,15 @@ require (
 	github.com/ysmood/gson v0.7.3 // indirect
 	github.com/ysmood/leakless v0.8.0 // indirect
 	go.opencensus.io v0.22.5 // indirect
-	golang.org/x/crypto v0.16.0 // indirect
-	golang.org/x/mod v0.12.0 // indirect
-	golang.org/x/net v0.19.0 // indirect
-	golang.org/x/sys v0.15.0 // indirect
-	golang.org/x/term v0.15.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/crypto v0.31.0 // indirect
+	golang.org/x/mod v0.19.0 // indirect
+	golang.org/x/net v0.33.0 // indirect
+	golang.org/x/sync v0.10.0 // indirect
+	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/term v0.27.0 // indirect
+	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
-	golang.org/x/tools v0.13.0 // indirect
+	golang.org/x/tools v0.23.0 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )

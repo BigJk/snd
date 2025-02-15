@@ -17,6 +17,8 @@ type InputProps = {
 	disabled?: boolean;
 	clearable?: boolean;
 	suffix?: m.Children;
+	textarea?: boolean;
+	rows?: number;
 };
 
 const minimalStyle = css`
@@ -63,7 +65,7 @@ export default (): m.Component<InputProps> => ({
 		}
 
 		return m(
-			`sl-input${attrs.className ?? ''}[size=${attrs.size ?? 'small'}][label=${attrs.label ?? ''}]${attrs.clearable ? '[clearable]' : ''}${attrs.minimal ? '.' + minimalStyle : ''}`,
+			`sl-${attrs.textarea ? 'textarea' : 'input'}${attrs.className ?? ''}${attrs.textarea ? `[rows=${attrs.rows ?? 3}]` : ''}[size=${attrs.size ?? 'small'}][label=${attrs.label ?? ''}]${attrs.clearable ? '[clearable]' : ''}${attrs.minimal ? '.' + minimalStyle : ''}`,
 			{
 				key: attrs.key,
 				value: attrs.value ?? '',

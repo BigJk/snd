@@ -13,6 +13,8 @@ export default {
 			!attrs.inEdit ? null : m(MiniHeader, 'Default'),
 			m(Input, {
 				value: attrs.value as string,
+				textarea: true,
+				rows: (attrs.value as string).length < 40 ? 1 : 5,
 				onChange: (value: string) => attrs.onChange(value),
 			}),
 		],

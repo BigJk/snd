@@ -5,9 +5,13 @@ import Template, { createEmptyTemplate } from 'js/types/template';
 import * as API from 'js/core/api';
 import store from 'js/core/store';
 
+import DividerVert from 'js/ui/shoelace/divider-vert';
 import IconButton from 'js/ui/shoelace/icon-button';
 
+import Tooltip from 'js/ui/components/atomic/tooltip';
 import TemplateEditor from 'js/ui/components/editor/template';
+import Flex from 'js/ui/components/layout/flex';
+import { openDevTools } from 'js/ui/components/print-preview';
 import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
 
@@ -40,7 +44,7 @@ export default (): m.Component<TemplateCreateProps> => {
 						confirmText: 'Are you sure you want to leave this page? Changes are not saved.',
 						items: [{ link: '/template', label: 'Templates' }, { label: 'Create Template' }],
 					}),
-					rightElement: [
+					rightElement: m(Flex, { items: 'center' }, [
 						m(
 							IconButton,
 							{
@@ -82,7 +86,21 @@ export default (): m.Component<TemplateCreateProps> => {
 							},
 							'Save',
 						), //
-					],
+						m(DividerVert),
+						m(
+							Tooltip,
+							{ content: 'Open Dev Tools' },
+							m(IconButton, {
+								className: '.mr2',
+								intend: 'primary',
+								icon: 'bug',
+								size: 'sm',
+								onClick: () => {
+									openDevTools(document.body);
+								},
+							}),
+						),
+					]),
 					active: 'templates',
 					classNameContainer: '',
 				},

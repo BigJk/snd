@@ -163,7 +163,7 @@ func (s *Server) Start(bindAddr string) error {
 
 	rpc.RegisterVersion(api)
 	rpc.RegisterKeyValue(api, s.db)
-	rpc.RegisterImageUtilities(api)
+	rpc.RegisterImageUtilities(api, s.db)
 	rpc.RegisterSettings(api, s.db)
 	rpc.RegisterTemplate(api, extern, s.db)
 	rpc.RegisterGenerator(api, extern, s.db)

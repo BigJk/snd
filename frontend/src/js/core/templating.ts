@@ -1,5 +1,6 @@
 import { cloneDeep } from 'lodash-es';
 
+import jsSHA from 'jssha';
 import hash from 'object-hash';
 
 import entry from 'js/types/entry';
@@ -210,6 +211,12 @@ export const render = (
 		if (!clonedState.aiToken) {
 			clonedState.aiToken = ai.value.token;
 		}
+
+		Object.keys(clonedState.images).forEach((key) => {
+			const imageHash = new jsSHA('SHA-256', 'TEXT', { encoding: 'UTF8' }).update(clonedState.images[key]).getHash('HEX');
+			console.log(imageHash);
+			clonedState.images[key] = `/api/image-cache/${imageHash}`;
+		});
 
 		// Setup promises for response
 		let id = hash + '-' + Math.ceil(Math.random() * 10000000).toString();

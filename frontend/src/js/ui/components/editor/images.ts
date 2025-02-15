@@ -37,7 +37,15 @@ export default (): m.Component<ImagesProps> => {
 						className: '.mb3',
 						onUpload: (name, image) => {
 							if (!attrs.onChange) return;
-							attrs.onChange({ ...attrs.images, [name]: image });
+
+							m.request({
+								url: `/api/image-cache`,
+								method: 'POST',
+								body: image,
+							}).then(() => {
+								if (!attrs.onChange) return;
+								attrs.onChange({ ...attrs.images, [name]: image });
+							});
 						},
 					}),
 					...map(attrs.images, (image, key) => {

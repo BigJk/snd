@@ -2,7 +2,7 @@ import m from 'mithril';
 
 import { GridElement, GridGeneratorElement, GridTemplateElement, isGridGeneratorElement, isGridTemplateElement } from 'js/types/session-grid';
 import { buildId } from 'src/js/types/basic-info';
-import { is, safeCall, safePromise } from 'js/core/safe';
+import { safePromise } from 'js/core/safe';
 import { getGridGeneratorConfigChoices, getGridTemplateChoices } from 'js/core/session-grid';
 import { generators, templates } from 'js/core/store';
 

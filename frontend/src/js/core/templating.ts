@@ -180,6 +180,8 @@ export type GlobalState = {
 	aiToken?: string;
 };
 
+const dataURIsCommitted: Record<string, boolean> = {};
+
 /**
  * Render template with given state.
  * @param template Template string.
@@ -212,9 +214,51 @@ export const render = (
 			clonedState.aiToken = ai.value.token;
 		}
 
+		const cleanupImages = (obj: any, parent: any, key: string) => {
+			if (obj === null || obj === undefined) {
+				return;
+			}
+
+			switch (typeof obj) {
+				case 'string':
+					if (obj.startsWith('!IMAGE:')) {
+						const stripped = obj.replace('!IMAGE:', '');
+						if (stripped.startsWith('http') || stripped.startsWith('data:')) {
+							parent[key] = stripped;
+						} else {
+							parent[key] = 'https://dummyimage.com/' + stripped;
+						}
+					} else if (obj.startsWith('!IMAGE')) {
+						parent[key] = 'https://dummyimage.com/400x3:2';
+					}
+
+					if (parent[key].startsWith('data:')) {
+						const imageHash = new jsSHA('SHA-256', 'TEXT', { encoding: 'UTF8' }).update(parent[key]).getHash('HEX');
+
+						if (!dataURIsCommitted[imageHash]) {
+							const request = new XMLHttpRequest();
+							request.open("POST", "/api/image-cache", false); // `false` makes the request synchronous
+							request.send(JSON.stringify(parent[key]));
+						}
+
+						parent[key] = `/api/image-cache/${imageHash}`;
+					}
+					return;
+				case 'object':
+					Object.keys(obj).forEach((key) => {
+						cleanupImages(obj[key], obj, key);
+					});
+					break;
+				default:
+					return;
+			}
+		};
+
+		cleanupImages((clonedState as any).it, null, '');
+		cleanupImages((clonedState as any).config, null, '');
+
 		Object.keys(clonedState.images).forEach((key) => {
 			const imageHash = new jsSHA('SHA-256', 'TEXT', { encoding: 'UTF8' }).update(clonedState.images[key]).getHash('HEX');
-			console.log(imageHash);
 			clonedState.images[key] = `/api/image-cache/${imageHash}`;
 		});
 

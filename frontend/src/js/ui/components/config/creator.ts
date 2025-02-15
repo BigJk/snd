@@ -84,7 +84,7 @@ export default (): m.Component<ConfigCreatorProps> => ({
 							]), //
 							m(DividerVert, { noSpacing: true }),
 							m(
-								'div.pa2.bg--black-05',
+								'div.pa2.bg--black-05.w-100',
 								m(types[c.type].view, {
 									value: c.default,
 									inEdit: true,

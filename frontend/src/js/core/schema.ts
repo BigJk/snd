@@ -205,6 +205,14 @@ export function buildSchema(data: any): SchemaRoot {
 			case 'bigint':
 				break;
 			case 'string':
+				if (val.startsWith('!IMAGE')) {
+					return {
+						type: 'string',
+						inputType: 'Image',
+						key: path[path.length - 1],
+						default: val,
+					};
+				}
 				return {
 					type: 'string',
 					inputType: 'Text',

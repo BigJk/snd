@@ -10,6 +10,7 @@ import Icon from 'js/ui/components/atomic/icon';
 import Flex from 'js/ui/components/layout/flex';
 
 type ImageUploadProps = {
+	compact?: boolean;
 	className?: string;
 	height?: number;
 	onUpload?: (name: string, base: string) => void;
@@ -30,8 +31,12 @@ export default (): m.Component<ImageUploadProps> => {
 						'label.pointer.db.h-100.w-100.ba.bw1.br2.b--dashed.b--col-primary-muted.bg-black-05',
 						{ style: { height: attrs.height ? attrs.height + 'px' : '250px' }, for: id },
 						[
-							m(Flex, { className: '.w-100.h-100', justify: 'center', items: 'center', direction: 'column' }, [
-								m(Icon, { icon: 'document', size: 2, className: '.mb3' }),
+							m(Flex, { className: '.w-100.h-100', justify: 'center', items: 'center', direction: attrs.compact ? 'row' : 'column' }, [
+								m(Icon, {
+									icon: 'document',
+									size: attrs.compact ? 4 : 2,
+									className: attrs.compact ? '.mr3' : '.mb3',
+								}),
 								m('div.fw5', 'Select image from your computer'),
 							]), //
 						],
@@ -59,17 +64,17 @@ export default (): m.Component<ImageUploadProps> => {
 					}),
 					//
 					// Divider
-					m(Icon, { icon: 'more', size: 3, className: '.mv3.o-50' }),
+					attrs.compact ? m('div.mb2') : m(Icon, { icon: 'more', size: 3, className: '.mv3.o-50' }),
 					//
 					// Upload from URL
-					m('div.db.h-100.w-100.ba.bw1.br2.b--dashed.b--col-primary-muted.bg-black-05.pa3', [
+					m('div.db.h-100.w-100.ba.bw1.br2.b--dashed.b--col-primary-muted.bg-black-05' + (attrs.compact ? '.pa2' : '.pa3'), [
 						m('div.tc.mb3.fw5', 'Download from URL'),
-						m(Flex, [
+						m(Flex, { direction: attrs.compact ? 'column' : 'row' }, [
 							m(Input, { className: '.w-100', placeholder: 'https://example.com/image.png', value: url }), //
 							m(
 								Button,
 								{
-									className: '.ml2',
+									className: attrs.compact ? '.mt2' : '.ml2',
 									intend: 'primary',
 									onClick: () => {
 										if (url.length === 0) return;

@@ -2,6 +2,7 @@ import Checkbox from './checkbox';
 import DataSources from './data-source';
 import FilePath from './file-path';
 import FolderPath from './folder-path';
+import Image from './image';
 import MultipleOptions from './multiple-options';
 import Number from './number';
 import Options from './options';
@@ -18,4 +19,5 @@ export default {
 	DataSources,
 	FilePath,
 	FolderPath,
+	Image,
 };

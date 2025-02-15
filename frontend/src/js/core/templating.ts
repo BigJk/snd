@@ -237,7 +237,7 @@ export const render = (
 
 						if (!dataURIsCommitted[imageHash]) {
 							const request = new XMLHttpRequest();
-							request.open("POST", "/api/image-cache", false); // `false` makes the request synchronous
+							request.open('POST', '/api/image-cache', false); // `false` makes the request synchronous
 							request.send(JSON.stringify(parent[key]));
 						}
 

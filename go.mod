@@ -1,6 +1,7 @@
 module github.com/BigJk/snd
 
 go 1.21
+toolchain go1.24.1
 
 // CGO Problem: https://github.com/go-git/go-git/issues/624
 replace github.com/pjbgf/sha1cd => github.com/pjbgf/sha1cd v0.2.3
@@ -85,14 +86,15 @@ require (
 	github.com/ysmood/gson v0.7.3 // indirect
 	github.com/ysmood/leakless v0.8.0 // indirect
 	go.opencensus.io v0.22.5 // indirect
-	golang.org/x/crypto v0.16.0 // indirect
-	golang.org/x/mod v0.12.0 // indirect
-	golang.org/x/net v0.19.0 // indirect
-	golang.org/x/sys v0.15.0 // indirect
-	golang.org/x/term v0.15.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/crypto v0.36.0 // indirect
+	golang.org/x/mod v0.17.0 // indirect
+	golang.org/x/net v0.38.0 // indirect
+	golang.org/x/sync v0.12.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
+	golang.org/x/term v0.30.0 // indirect
+	golang.org/x/text v0.23.0 // indirect
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
-	golang.org/x/tools v0.13.0 // indirect
+	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )

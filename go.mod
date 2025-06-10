@@ -1,6 +1,6 @@
 module github.com/BigJk/snd
 
-go 1.21
+go 1.22.0
 
 // CGO Problem: https://github.com/go-git/go-git/issues/624
 replace github.com/pjbgf/sha1cd => github.com/pjbgf/sha1cd v0.2.3
@@ -48,7 +48,7 @@ require (
 	github.com/antchfx/xpath v1.2.1 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
-	github.com/cloudflare/circl v1.3.3 // indirect
+	github.com/cloudflare/circl v1.6.1 // indirect
 	github.com/creack/goselect v0.1.2 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
 	github.com/dgraph-io/ristretto v0.1.1 // indirect

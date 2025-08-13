@@ -265,8 +265,12 @@ export default (): m.Component => {
 										label: 'Lines After',
 										description: 'Number of lines to send after printing',
 									},
+									useEscStar: {
+										label: 'Use ESC *',
+										description: 'Use ESC * instead of GS v 0 (use in case your printer outputs gibberish)',
+									},
 								},
-								show: ['explicitInit', 'cut', 'linesBefore', 'linesAfter'],
+								show: ['explicitInit', 'cut', 'linesBefore', 'linesAfter', 'useEscStar'],
 								onChange: onChangeCommands,
 							} as PropertyEditProps<Commands>),
 							//

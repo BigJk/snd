@@ -7,6 +7,7 @@ type Commands = {
 	splitPrinting: boolean;
 	splitHeight: number;
 	splitDelay: number;
+	useEscStar: boolean;
 };
 
 type Settings = {

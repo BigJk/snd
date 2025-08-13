@@ -77,3 +77,61 @@ func Image(buf io.Writer, image image.Image) {
 		}
 	}
 }
+
+// ImageESCStar prints using ESC * in 24-dot mode.
+func ImageESCStar(buf io.Writer, img image.Image) {
+	bb := img.Bounds()
+	minX, minY := bb.Min.X, bb.Min.Y
+	width := bb.Dx()
+	height := bb.Dy()
+
+	isBlack := func(x, y int) bool {
+		r, g, b, a := img.At(minX+x, minY+y).RGBA()
+		r, g, b, a = r>>8, g>>8, b>>8, a>>8
+		if a <= 127 {
+			return false
+		}
+		grey := 0.2126*float64(r) + 0.7152*float64(g) + 0.0722*float64(b)
+		return grey < 185
+	}
+
+	// Set line spacing to 24 dots to match 24-dot bands: ESC 3 24
+	_, _ = buf.Write([]byte{0x1B, 0x33, 24})
+
+	for y := 0; y < height; y += 24 {
+		// ESC * m nL nH, m=33 (24-dot double density)
+		n := width
+		nL := byte(n & 0xFF)
+		nH := byte((n >> 8) & 0xFF)
+		_, _ = buf.Write([]byte{0x1B, 0x2A, 33, nL, nH})
+
+		for x := 0; x < width; x++ {
+			var b0, b1, b2 byte
+			for bit := 0; bit < 8; bit++ {
+				yy := y + bit
+				if yy < height && isBlack(x, yy) {
+					b0 |= 1 << (7 - uint(bit))
+				}
+			}
+			for bit := 0; bit < 8; bit++ {
+				yy := y + 8 + bit
+				if yy < height && isBlack(x, yy) {
+					b1 |= 1 << (7 - uint(bit))
+				}
+			}
+			for bit := 0; bit < 8; bit++ {
+				yy := y + 16 + bit
+				if yy < height && isBlack(x, yy) {
+					b2 |= 1 << (7 - uint(bit))
+				}
+			}
+			_, _ = buf.Write([]byte{b0, b1, b2})
+		}
+
+		// Advance exactly one band (24 dots): LF because we set line spacing=24
+		_, _ = buf.Write([]byte{0x0A})
+	}
+
+	// Restore default line spacing: ESC 2
+	_, _ = buf.Write([]byte{0x1B, 0x32})
+}

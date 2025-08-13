@@ -14,6 +14,7 @@ type Settings struct {
 		SplitPrinting     bool `json:"splitPrinting"`
 		SplitHeight       int  `json:"splitHeight"`
 		SplitDelay        int  `json:"splitDelay"`
+		UseESCStar        bool `json:"useEscStar"`
 	} `json:"commands"`
 	SpellcheckerLanguages []string `json:"spellcheckerLanguages"`
 	PackageRepos          []string `json:"packageRepos"`

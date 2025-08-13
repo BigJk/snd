@@ -185,7 +185,11 @@ func print(db database.Database, printer printing.PossiblePrinter, html string) 
 			buf.WriteString(strings.Repeat("\n", settings.Commands.LinesBefore))
 		}
 
-		epson.Image(buf, img)
+		if settings.Commands.UseESCStar {
+			epson.ImageESCStar(buf, img)
+		} else {
+			epson.Image(buf, img)
+		}
 
 		// At the last chunk insert lines and cut
 		if i == len(images)-1 {

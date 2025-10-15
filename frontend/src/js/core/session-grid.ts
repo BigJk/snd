@@ -141,6 +141,7 @@ export async function executeElement(element: GridElement | GridLinearExecution)
 				const configs = JSON.parse(savedConfigs);
 				if (configs[element.configName]) {
 					Object.assign(config, configs[element.configName]);
+					delete (config as Record<string, any>)['seed']
 				}
 			}
 		}

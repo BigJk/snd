@@ -7,6 +7,7 @@ type GridTemplateElement = TemplateElementBase & {
 	templateId: string;
 	dataSourceId?: string;
 	entryId?: string;
+	configName?: string;
 };
 
 type GridGeneratorElement = TemplateElementBase & {

@@ -1,5 +1,5 @@
 import m from 'mithril';
-import { debounce } from 'lodash-es';
+import { cloneDeep, debounce, map } from 'lodash-es';
 
 import { buildId } from 'js/types/basic-info';
 import Entry from 'js/types/entry';
@@ -20,10 +20,12 @@ import TextArea from 'js/ui/shoelace/text-area';
 import Tooltip from 'js/ui/components/atomic/tooltip';
 import Editor from 'js/ui/components/config/editor';
 import EntryListItem from 'js/ui/components/entry-list-item';
+import HorizontalProperty from 'js/ui/components/horizontal-property';
 import Flex from 'js/ui/components/layout/flex';
 import { openAdditionalInfosModal } from 'js/ui/components/modals/additional-infos';
 import { openFileModal } from 'js/ui/components/modals/file-browser';
 import ImportExport from 'js/ui/components/modals/imexport/import-export';
+import { openPromptModal } from 'js/ui/components/modals/prompt';
 import { openDevTools } from 'js/ui/components/print-preview';
 import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
@@ -51,6 +53,7 @@ type SingleTemplateState = {
 	aiLanguage: string;
 	aiLoading: boolean;
 	lastRendered: string;
+	savedConfigs: Record<string, any>;
 };
 
 export default (): m.Component<SingleTemplateProps> => {
@@ -66,6 +69,7 @@ export default (): m.Component<SingleTemplateProps> => {
 		aiLanguage: '',
 		aiLoading: false,
 		lastRendered: '',
+		savedConfigs: {},
 	};
 
 	const fetchEntries = () => {
@@ -204,6 +208,55 @@ export default (): m.Component<SingleTemplateProps> => {
 		});
 	};
 
+	const saveConfigs = () => {
+		if (!state.template) {
+			return;
+		}
+		return API.exec<void>(API.SET_KEY, `${buildId('template', state.template)}_saved_configs`, JSON.stringify(state.savedConfigs));
+	};
+
+	const saveConfig = () => {
+		openPromptModal({
+			title: 'Save Config',
+			label: 'Name',
+			description: 'Enter a name for the config',
+			onSuccess: (name) => {
+				if (!state.template) return;
+
+				if (state.savedConfigs[name]) {
+					dialogWarning('This config already exists. Do you want to overwrite it?').then(() => {
+						state.savedConfigs[name] = cloneDeep(state.config);
+						saveConfigs()?.catch(error);
+						success('Overwrote config');
+					});
+					return;
+				}
+
+				state.savedConfigs[name] = cloneDeep(state.config);
+				saveConfigs()?.catch(error);
+				success('Saved config');
+			},
+		});
+	};
+
+	const deleteSavedConfig = (name: string) => {
+		dialogWarning('Are you sure you want to delete this config?').then(() => {
+			if (!state.template) return;
+			delete state.savedConfigs[name];
+			saveConfigs()?.catch(error);
+		});
+	};
+
+	const loadSavedConfig = (name: string) => {
+		if (!state.template) return;
+		state.config = cloneDeep(state.savedConfigs[name]);
+	};
+
+	const buttonBar = () =>
+		m(Flex, { className: '.bt.b--black-10.pv2.ph3', justify: 'between', items: 'center', gap: 2 }, [
+			m(Flex, { gap: 2 }, [m(IconButton, { icon: 'save', intend: 'primary', onClick: saveConfig }, 'Save Config')]),
+		]);
+
 	const entryElement = (entry: Entry) => {
 		const selected = state.selectedEntry && entry.id === state.selectedEntry.id;
 		return m(EntryListItem, {
@@ -265,6 +318,11 @@ export default (): m.Component<SingleTemplateProps> => {
 
 				fetchEntries();
 			});
+			API.exec<string>(API.GET_KEY, `${attrs.id}_saved_configs`)
+				.then((configs) => {
+					state.savedConfigs = JSON.parse(configs);
+				})
+				.catch(console.error);
 		},
 		view({ attrs }) {
 			return m(
@@ -332,7 +390,12 @@ export default (): m.Component<SingleTemplateProps> => {
 								{ icon: 'filing', label: 'Entries' },
 								...(settings.value.aiEnabled ? [{ icon: 'planet', label: 'AI Tools' }] : []),
 								{ icon: 'clipboard', label: 'Information' },
-								...(state.template?.config && state.template?.config.length > 0 ? [{ icon: 'options', label: 'Config' }] : []),
+								...(state.template?.config && state.template?.config.length > 0
+									? [
+											{ icon: 'options', label: 'Config' },
+											{ icon: 'save', label: 'Saved' },
+										]
+									: []),
 								// { icon: 'search', label: 'Advanced Filter' },
 							],
 							content: {
@@ -458,14 +521,55 @@ export default (): m.Component<SingleTemplateProps> => {
 											: []),
 									]),
 								Config: () =>
-									m(Editor, {
-										current: state.config,
-										definition: state.template!.config,
-										onChange: (config) => {
-											state.config = config;
-											m.redraw();
-										},
-									}),
+									m(Flex, { className: '.h-100', direction: 'column' }, [
+										m(Editor, {
+											className: '.flex-grow-1.overflow-auto.h-100',
+											current: state.config,
+											definition: state.template!.config,
+											onChange: (config) => {
+												state.config = config;
+												m.redraw();
+											},
+										}),
+										buttonBar(),
+									]),
+								Saved: () =>
+									m(Flex, { className: '.h-100', direction: 'column' }, [
+										m('div.ph3.pv2.lh-copy.h-100.overflow-auto', [
+											m('div.f5.b', 'Saved Configs'),
+											Object.keys(state.savedConfigs).length
+												? m(Flex, { direction: 'column' }, [
+														...map(state.savedConfigs, (config, key) =>
+															m(
+																HorizontalProperty,
+																{
+																	label: key,
+																	description: '',
+																	bottomBorder: true,
+																	centered: true,
+																},
+																m(
+																	Flex,
+																	{
+																		justify: 'end',
+																	},
+																	[
+																		m(IconButton, { icon: 'trash', intend: 'error', onClick: () => deleteSavedConfig(key) }),
+																		m(DividerVert),
+																		m(
+																			IconButton,
+																			{ icon: 'cloud-upload', className: '.mr2', intend: 'primary', onClick: () => loadSavedConfig(key) },
+																			'Load',
+																		),
+																	],
+																),
+															),
+														),
+													])
+												: m('div.pv2.text-muted', 'No saved configs yet...'),
+										]),
+										buttonBar(),
+									]),
 								//'Advanced Filter': () => m('div.pa3', 'Coming back soon...'),
 							},
 						})

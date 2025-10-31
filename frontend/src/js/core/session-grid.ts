@@ -92,6 +92,19 @@ export async function getGridTemplateChoices(
 }
 
 /**
+ * Get the choices for a grid template element.
+ * @param element The grid template element to get the choices for
+ * @returns A promise that resolves to the choices for the grid template element
+ */
+export async function getGridTemplateConfigChoices(element: GridTemplateElement): Promise<string[]> {
+	if (element.templateId.length === 0) {
+		return [];
+	}
+
+	return API.exec<string>(API.GET_KEY, `${element.templateId}_saved_configs`).then((configs) => Object.keys(JSON.parse(configs)));
+}
+
+/**
  * Get the choices for a grid generator element.
  * @param element The grid generator element to get the choices for
  * @returns A promise that resolves to the choices for the grid generator element
@@ -123,9 +136,21 @@ export async function executeElement(element: GridElement | GridLinearExecution)
 
 		const template = await API.exec<Template>(API.GET_TEMPLATE, element.templateId);
 		const entry = await API.exec<Entry>(API.GET_ENTRY, element.dataSourceId ?? buildId('template', template), element.entryId);
+		
+		let config = {};
+		if (element.configName && element.configName.length > 0) {
+			const savedConfigs = await API.exec<string>(API.GET_KEY, `${element.templateId}_saved_configs`);
+			if (savedConfigs) {
+				const configs = JSON.parse(savedConfigs);
+				if (configs[element.configName]) {
+					Object.assign(config, configs[element.configName]);
+				}
+			}
+		}
+		
 		const res = await render(template.printTemplate, {
 			it: entry.data,
-			config: {},
+			config: config,
 			sources: template.dataSources,
 			images: template.images,
 			settings: settings.value,

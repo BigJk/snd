@@ -3,7 +3,7 @@ import m from 'mithril';
 import { GridElement, GridGeneratorElement, GridTemplateElement, isGridGeneratorElement, isGridTemplateElement } from 'js/types/session-grid';
 import { buildId } from 'src/js/types/basic-info';
 import { safePromise } from 'js/core/safe';
-import { getGridGeneratorConfigChoices, getGridTemplateChoices } from 'js/core/session-grid';
+import { getGridGeneratorConfigChoices, getGridTemplateChoices, getGridTemplateConfigChoices } from 'js/core/session-grid';
 import { generators, templates } from 'js/core/store';
 
 import Button from 'js/ui/shoelace/button';
@@ -34,6 +34,7 @@ type CreateEditGridButtonState = {
 		name: string;
 		source?: string;
 	}[];
+	choicesTemplateConfig: string[];
 	choicesGenerator: string[];
 };
 
@@ -57,12 +58,19 @@ const createEditGridButton = (props: CreateEditGridButtonProps) => (): m.Compone
 		element: props.element,
 		choiceSearch: '',
 		choicesTemplate: [],
+		choicesTemplateConfig: [],
 		choicesGenerator: [],
 	};
 
 	const fetchChoices = async () => {
 		if (isGridTemplateElement(state.element)) {
 			state.choicesTemplate = await getGridTemplateChoices(state.element, state.choiceSearch);
+			const res = await safePromise(getGridTemplateConfigChoices(state.element));
+			if (!res.hasError) {
+				state.choicesTemplateConfig = res.value;
+			} else {
+				state.choicesTemplateConfig = [];
+			}
 		}
 
 		if (isGridGeneratorElement(state.element)) {
@@ -149,6 +157,7 @@ const createEditGridButton = (props: CreateEditGridButtonProps) => (): m.Compone
 									}
 									state.element!.templateId = e.target.value;
 									state.element!.entryId = undefined;
+									state.element!.configName = undefined;
 									fetchChoices();
 								},
 							}),
@@ -175,6 +184,28 @@ const createEditGridButton = (props: CreateEditGridButtonProps) => (): m.Compone
 								},
 							}),
 						),
+						state.choicesTemplateConfig.length > 0
+							? m(
+									HorizontalProperty,
+									{
+										label: 'Config',
+										description: 'Pick a config to use for this button. Can be left empty.',
+										bottomBorder: true,
+										centered: true,
+									},
+									m(Select, {
+										keys: state.choicesTemplateConfig,
+										selected: state.element.configName,
+										clearable: true,
+										onInput: (e) => {
+											if (!isGridTemplateElement(state.element)) {
+												return;
+											}
+											state.element!.configName = e.target.value;
+										},
+									}),
+								)
+							: null,
 					],
 				);
 				break;

@@ -46,6 +46,7 @@ export function createEmptySettings(): Settings {
 			splitPrinting: false,
 			splitHeight: 0,
 			splitDelay: 0,
+			useEscStar: false,
 		},
 		spellcheckerLanguages: [],
 		packageRepos: [],

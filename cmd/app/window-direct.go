@@ -12,5 +12,5 @@ import (
 // available printing types. This will only be build
 // and executed on Windows systems.
 func init() {
-	serverOptions = append(serverOptions, server.WithPrinter(&windows.Direct{}))
+	serverOptions = append(serverOptions, server.WithPrinter(&windows.Direct{}), server.WithPrinter(&windows.Image{}))
 }

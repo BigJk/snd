@@ -120,7 +120,7 @@ jobs:
   # macOS AMD64
   build-darwin-amd64-app:
     name: Build ${{ matrix.artifact-name }}
-    runs-on: macos-13
+    runs-on: macos-14
     needs: build-frontend
     strategy:
       matrix:
@@ -182,7 +182,13 @@ jobs:
 
   create-release:
     runs-on: ubuntu-latest
-    needs: [build-linux-app, build-windows-app, build-darwin-amd64-app, build-darwin-arm64-app]
+    needs:
+      [
+        build-linux-app,
+        build-windows-app,
+        build-darwin-amd64-app,
+        build-darwin-arm64-app,
+      ]
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3

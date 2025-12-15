@@ -1,7 +1,15 @@
 import m from 'mithril';
 
-import { GridElement, GridGeneratorElement, GridTemplateElement, isGridGeneratorElement, isGridTemplateElement } from 'js/types/session-grid';
-import { buildId } from 'src/js/types/basic-info';
+import { buildId } from 'js/types/basic-info';
+import {
+	GridElement,
+	GridGeneratorElement,
+	GridPrinterCommandElement,
+	GridTemplateElement,
+	isGridGeneratorElement,
+	isGridPrinterCommandElement,
+	isGridTemplateElement,
+} from 'js/types/session-grid';
 import { safePromise } from 'js/core/safe';
 import { getGridGeneratorConfigChoices, getGridTemplateChoices, getGridTemplateConfigChoices } from 'js/core/session-grid';
 import { generators, templates } from 'js/core/store';
@@ -26,7 +34,7 @@ type CreateEditGridButtonProps = {
 
 type CreateEditGridButtonState = {
 	isNew: boolean;
-	type?: 'template' | 'generator';
+	type?: 'template' | 'generator' | 'printer-command';
 	element?: GridElement;
 	choiceSearch: string;
 	choicesTemplate: {
@@ -51,6 +59,9 @@ const createEditGridButton = (props: CreateEditGridButtonProps) => (): m.Compone
 			}
 			if (isGridGeneratorElement(props.element)) {
 				return 'generator';
+			}
+			if (isGridPrinterCommandElement(props.element)) {
+				return 'printer-command';
 			}
 
 			return undefined;
@@ -85,11 +96,11 @@ const createEditGridButton = (props: CreateEditGridButtonProps) => (): m.Compone
 
 	const typeSelector = () =>
 		m(Select, {
-			keys: ['template', 'generator'],
-			names: ['Template', 'Generator'],
+			keys: ['template', 'generator', 'printer-command'],
+			names: ['Template', 'Generator', 'Printer Command'],
 			selected: state.type,
 			onInput: (e) => {
-				state.type = e.target.value as 'template' | 'generator';
+				state.type = e.target.value as 'template' | 'generator' | 'printer-command';
 				switch (state.type) {
 					case 'template':
 						state.element = {
@@ -99,6 +110,11 @@ const createEditGridButton = (props: CreateEditGridButtonProps) => (): m.Compone
 					case 'generator':
 						state.element = {
 							generatorId: '',
+						};
+						break;
+					case 'printer-command':
+						state.element = {
+							command: 'cut',
 						};
 						break;
 				}
@@ -111,7 +127,7 @@ const createEditGridButton = (props: CreateEditGridButtonProps) => (): m.Compone
 				HorizontalProperty,
 				{
 					label: 'Button Name',
-					description: 'Leave empty to use the template/generator name',
+					description: 'Leave empty to use the default name',
 					bottomBorder: true,
 					centered: true,
 				},
@@ -280,6 +296,33 @@ const createEditGridButton = (props: CreateEditGridButtonProps) => (): m.Compone
 					],
 				);
 				break;
+			case 'printer-command':
+				if (!isGridPrinterCommandElement(state.element)) {
+					break;
+				}
+				base.push(
+					m(
+						HorizontalProperty,
+						{
+							label: 'Command',
+							description: 'Select the printer command to execute',
+							bottomBorder: true,
+							centered: true,
+						},
+						m(Select, {
+							keys: ['cut', 'drawer1', 'drawer2'],
+							names: ['Cut Paper', 'Open Cash Drawer 1', 'Open Cash Drawer 2'],
+							selected: state.element.command,
+							onInput: (e) => {
+								if (!isGridPrinterCommandElement(state.element)) {
+									return;
+								}
+								state.element!.command = e.target.value as 'cut' | 'drawer1' | 'drawer2';
+							},
+						}),
+					),
+				);
+				break;
 		}
 
 		return m('div', [
@@ -289,7 +332,10 @@ const createEditGridButton = (props: CreateEditGridButtonProps) => (): m.Compone
 				{
 					intend: 'success',
 					className: '.mt2',
-					disabled: !(state.element as GridTemplateElement)?.templateId && !(state.element as GridGeneratorElement)?.generatorId,
+					disabled:
+						!(state.element as GridTemplateElement)?.templateId &&
+						!(state.element as GridGeneratorElement)?.generatorId &&
+						!(state.element as GridPrinterCommandElement)?.command,
 					onClick: () => {
 						if (state.element) {
 							props.onSuccess(state.element);

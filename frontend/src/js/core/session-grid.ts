@@ -8,6 +8,7 @@ import {
 	GridTemplateElement,
 	isGridGeneratorElement,
 	isGridLinearExecution,
+	isGridPrinterCommandElement,
 	isGridTemplateElement,
 } from 'js/types/session-grid';
 import Template from 'js/types/template';
@@ -41,6 +42,13 @@ export function getGridElementName(element: GridElement): Promise<string> {
 					resolve(res.name);
 				})
 				.catch(reject);
+		} else if (isGridPrinterCommandElement(element)) {
+			const commandNames: Record<string, string> = {
+				cut: 'Cut Paper',
+				drawer1: 'Open Drawer 1',
+				drawer2: 'Open Drawer 2',
+			};
+			resolve(commandNames[element.command] || 'Printer Command');
 		}
 	});
 }
@@ -136,7 +144,7 @@ export async function executeElement(element: GridElement | GridLinearExecution)
 
 		const template = await API.exec<Template>(API.GET_TEMPLATE, element.templateId);
 		const entry = await API.exec<Entry>(API.GET_ENTRY, element.dataSourceId ?? buildId('template', template), element.entryId);
-		
+
 		let config = {};
 		if (element.configName && element.configName.length > 0) {
 			const savedConfigs = await API.exec<string>(API.GET_KEY, `${element.templateId}_saved_configs`);
@@ -147,7 +155,7 @@ export async function executeElement(element: GridElement | GridLinearExecution)
 				}
 			}
 		}
-		
+
 		const res = await render(template.printTemplate, {
 			it: entry.data,
 			config: config,
@@ -166,7 +174,7 @@ export async function executeElement(element: GridElement | GridLinearExecution)
 				const configs = JSON.parse(savedConfigs);
 				if (configs[element.configName]) {
 					Object.assign(config, configs[element.configName]);
-					delete (config as Record<string, any>)['seed']
+					delete (config as Record<string, any>)['seed'];
 				}
 			}
 		}
@@ -182,6 +190,19 @@ export async function executeElement(element: GridElement | GridLinearExecution)
 			aiToken: finalConfig.seed,
 		});
 		await API.exec(API.PRINT, res);
+	}
+
+	if (isGridPrinterCommandElement(element)) {
+		const commandMap: Record<string, string> = {
+			cut: API.CUT_PAPER,
+			drawer1: API.OPEN_CASH_DRAWER_1,
+			drawer2: API.OPEN_CASH_DRAWER_2,
+		};
+
+		const apiCommand = commandMap[element.command];
+		if (apiCommand) {
+			await API.exec(apiCommand);
+		}
 	}
 
 	if (isGridLinearExecution(element)) {

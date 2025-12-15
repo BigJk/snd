@@ -89,6 +89,9 @@ export const GET_PRINTER = 'getPrinter';
 // Printing
 export const PRINT = 'print';
 export const SCREENSHOT = 'screenshot';
+export const CUT_PAPER = 'cutPaper';
+export const OPEN_CASH_DRAWER_1 = 'openCashDrawer1';
+export const OPEN_CASH_DRAWER_2 = 'openCashDrawer2';
 
 // Cloud Sync
 export const SYNC_CLOUD_TO_LOCAL = 'syncCloudToLocal';

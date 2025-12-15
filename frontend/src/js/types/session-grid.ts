@@ -16,7 +16,11 @@ type GridGeneratorElement = TemplateElementBase & {
 	aiEnabled?: boolean;
 };
 
-type GridElement = GridTemplateElement | GridGeneratorElement;
+type GridPrinterCommandElement = TemplateElementBase & {
+	command: 'cut' | 'drawer1' | 'drawer2';
+};
+
+type GridElement = GridTemplateElement | GridGeneratorElement | GridPrinterCommandElement;
 
 type GridLinearExecution = {
 	repeat?: number;
@@ -47,6 +51,15 @@ export function isGridGeneratorElement(element: any): element is GridGeneratorEl
 }
 
 /**
+ * Check if an element is a grid printer command element
+ * @param element The element to check
+ * @returns True if the element is a grid printer command element
+ */
+export function isGridPrinterCommandElement(element: any): element is GridPrinterCommandElement {
+	return (element as GridPrinterCommandElement).command !== undefined;
+}
+
+/**
  * Check if an element is a grid linear execution
  * @param element The element to check
  * @returns True if the element is a grid linear execution
@@ -55,4 +68,4 @@ export function isGridLinearExecution(element: any): element is GridLinearExecut
 	return (element as GridLinearExecution).elements !== undefined;
 }
 
-export { GridElement, GridTemplateElement, GridGeneratorElement, GridLinearExecution, SessionGrid };
+export { GridElement, GridTemplateElement, GridGeneratorElement, GridPrinterCommandElement, GridLinearExecution, SessionGrid };

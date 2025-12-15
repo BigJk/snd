@@ -1,5 +1,5 @@
 // Package epson implements the protocol used by most thermal printer,
-//also commonly referred to as ESC or POS commands.
+// also commonly referred to as ESC or POS commands.
 package epson
 
 import (
@@ -24,6 +24,32 @@ func SetStandardMode(buf io.Writer) {
 // CutPaper will cut the paper if the printer supports it.
 func CutPaper(buf io.Writer) {
 	_, _ = buf.Write([]byte{0x1B, 0x6D, '\n'})
+}
+
+// OpenCashDrawer1 opens cash drawer connected to pin 2.
+// Uses standard pulse duration (t1=2, t2=5 which is ~100ms on, ~250ms off).
+func OpenCashDrawer1(buf io.Writer) {
+	_, _ = buf.Write([]byte{0x1B, 0x70, 0x00, 0x02, 0x05})
+}
+
+// OpenCashDrawer2 opens cash drawer connected to pin 5.
+// Uses standard pulse duration (t1=2, t2=5 which is ~100ms on, ~250ms off).
+func OpenCashDrawer2(buf io.Writer) {
+	_, _ = buf.Write([]byte{0x1B, 0x70, 0x01, 0x02, 0x05})
+}
+
+// OpenCashDrawer1WithPulse opens cash drawer 1 with custom pulse duration.
+// t1: ON time (0-255, each unit is approximately 50ms)
+// t2: OFF time (0-255, each unit is approximately 50ms)
+func OpenCashDrawer1WithPulse(buf io.Writer, t1, t2 byte) {
+	_, _ = buf.Write([]byte{0x1B, 0x70, 0x00, t1, t2})
+}
+
+// OpenCashDrawer2WithPulse opens cash drawer 2 with custom pulse duration.
+// t1: ON time (0-255, each unit is approximately 50ms)
+// t2: OFF time (0-255, each unit is approximately 50ms)
+func OpenCashDrawer2WithPulse(buf io.Writer, t1, t2 byte) {
+	_, _ = buf.Write([]byte{0x1B, 0x70, 0x01, t1, t2})
 }
 
 // LineBreak adds a line break to the printer buffer.

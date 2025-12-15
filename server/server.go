@@ -170,6 +170,7 @@ func (s *Server) Start(bindAddr string) error {
 	rpc.RegisterEntry(api, s.db)
 	rpc.RegisterSources(api, s.db)
 	rpc.RegisterPrint(api, extern, s.db, s.printers)
+	rpc.RegisterPrintCommand(api, s.db, s.printers)
 	rpc.RegisterSync(api, s.m, s.db)
 	rpc.RegisterGit(api, s.db)
 	rpc.RegisterCloud(api, s.db)

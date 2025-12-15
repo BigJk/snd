@@ -34,6 +34,10 @@ func (r *Preview) Print(printerEndpoint string, image image.Image, data []byte) 
 		return errors.New("not initialized")
 	}
 
+	if image == nil {
+		return errors.New("image is nil")
+	}
+
 	buf := &bytes.Buffer{}
 	if err := png.Encode(buf, image); err != nil {
 		return err

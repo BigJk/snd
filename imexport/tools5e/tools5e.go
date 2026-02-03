@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/BigJk/snd"
-	"github.com/samber/lo"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/BigJk/snd"
+	"github.com/samber/lo"
 )
 
 var nonAlphanumericRegex = regexp.MustCompile(`[^a-zA-Z0-9 ]+`)
@@ -300,10 +301,17 @@ func ImportFile(path string) ([]snd.DataSource, [][]snd.Entry, error) {
 
 		// Render and add the new entries
 		for _, entryData := range newEntriesList {
-			entryData := entryData.(map[string]interface{})
+			entryData, isMap := entryData.(map[string]interface{})
+			if !isMap || entryData == nil || entryData["name"] == nil {
+				continue
+			}
 
 			// Pop the entry name out of the data
-			entryName := entryData["name"].(string)
+			entryName, isString := entryData["name"].(string)
+			if !isString {
+				continue
+			}
+
 			entryId := makeID(entryName)
 			delete(entryData, "name")
 
@@ -353,7 +361,8 @@ func ImportFolder(path string) ([]snd.DataSource, [][]snd.Entry, error) {
 		// Import the file
 		sources, entries, err := ImportFile(path + "/" + file.Name())
 		if err != nil {
-			return nil, nil, err
+			fmt.Printf("Failed to import file: %s (%s)\n", path+"/"+file.Name(), err)
+			continue
 		}
 
 		// Merge the sources

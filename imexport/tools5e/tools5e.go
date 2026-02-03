@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -20,6 +21,13 @@ func makeID(str string) string {
 	cleanStr := nonAlphanumericRegex.ReplaceAllString(str, "")
 	kebabStr := spacesRegex.ReplaceAllString(cleanStr, "-")
 	return fmt.Sprintf("5etools/%s", strings.ToLower(kebabStr))
+}
+
+// Formats an arbitrary name into a slug fragment
+func makeSlug(str string) string {
+	cleanStr := nonAlphanumericRegex.ReplaceAllString(str, "")
+	kebabStr := spacesRegex.ReplaceAllString(cleanStr, "-")
+	return strings.ToLower(kebabStr)
 }
 
 // Naive function to walk a json object and recursively render string nodes
@@ -262,6 +270,67 @@ func entriesBlock(block map[string]interface{}, prefix string) string {
 	return out
 }
 
+type metaSource struct {
+	JSON         string
+	Abbreviation string
+	Full         string
+	URL          string
+	Authors      []string
+}
+
+func extractHomebrewSources(rawData map[string]interface{}) []metaSource {
+	metaRaw, ok := rawData["_meta"].(map[string]interface{})
+	if !ok || metaRaw == nil {
+		return nil
+	}
+
+	sourcesRaw, ok := metaRaw["sources"].([]interface{})
+	if !ok || len(sourcesRaw) == 0 {
+		return nil
+	}
+
+	var sources []metaSource
+	for _, sourceRaw := range sourcesRaw {
+		sourceMap, ok := sourceRaw.(map[string]interface{})
+		if !ok || sourceMap == nil {
+			continue
+		}
+
+		source := metaSource{}
+		if jsonValue, ok := sourceMap["json"].(string); ok {
+			source.JSON = jsonValue
+		}
+		if abbreviationValue, ok := sourceMap["abbreviation"].(string); ok {
+			source.Abbreviation = abbreviationValue
+		}
+		if fullValue, ok := sourceMap["full"].(string); ok {
+			source.Full = fullValue
+		}
+		if urlValue, ok := sourceMap["url"].(string); ok {
+			source.URL = urlValue
+		}
+		if authorsRaw, ok := sourceMap["authors"].([]interface{}); ok {
+			for _, authorRaw := range authorsRaw {
+				if author, ok := authorRaw.(string); ok {
+					trimmed := strings.TrimSpace(author)
+					if trimmed != "" {
+						source.Authors = append(source.Authors, trimmed)
+					}
+				}
+			}
+		}
+
+		if source.JSON != "" || source.Abbreviation != "" || source.Full != "" || source.URL != "" {
+			sources = append(sources, source)
+
+			// We ignore any past the first for now. In all cases that I saw there is just 1 anyways
+			break
+		}
+	}
+
+	return sources
+}
+
 func ImportFile(path string) ([]snd.DataSource, [][]snd.Entry, error) {
 	// Read the listed file into a dictionary
 	content, err := os.ReadFile(path)
@@ -276,6 +345,7 @@ func ImportFile(path string) ([]snd.DataSource, [][]snd.Entry, error) {
 
 	var allSources []snd.DataSource
 	var allEntries [][]snd.Entry
+	homebrewSources := extractHomebrewSources(rawData)
 
 	// Loop over the different data-sources in this file
 	for dataSourceName, dataSource := range rawData {
@@ -291,13 +361,86 @@ func ImportFile(path string) ([]snd.DataSource, [][]snd.Entry, error) {
 			continue
 		}
 
-		allSources = append(allSources, snd.DataSource{
-			Name:        fmt.Sprintf("5e Tools %ss", strings.Title(dataSourceName)),
-			Slug:        fmt.Sprintf("5e-tools-%ss", dataSourceName),
-			Author:      "Nth",
-			Description: fmt.Sprintf("Imported %s data from 5e tools", dataSourceName),
-		})
-		allEntries = append(allEntries, nil)
+		if len(homebrewSources) == 0 {
+			allSources = append(allSources, snd.DataSource{
+				Name:        fmt.Sprintf("5e Tools %s", strings.Title(dataSourceName)),
+				Slug:        fmt.Sprintf("5e-tools-%s", dataSourceName),
+				Author:      "Nth",
+				Description: fmt.Sprintf("Imported %s data from 5e tools", dataSourceName),
+			})
+			allEntries = append(allEntries, nil)
+
+			// Render and add the new entries
+			for _, entryData := range newEntriesList {
+				entryData, isMap := entryData.(map[string]interface{})
+				if !isMap || entryData == nil || entryData["name"] == nil {
+					continue
+				}
+
+				// Pop the entry name out of the data
+				entryName, isString := entryData["name"].(string)
+				if !isString {
+					continue
+				}
+
+				entryId := makeID(entryName)
+				delete(entryData, "name")
+
+				// Render text to markdown
+				renderObject(entryData)
+
+				// Write the finished entry
+				allEntries[len(allEntries)-1] = append(allEntries[len(allEntries)-1], snd.Entry{
+					Name: entryName,
+					ID:   entryId,
+					Data: entryData,
+				})
+			}
+			continue
+		}
+
+		sourceKeyToIndex := map[string]int{}
+		firstSourceIndex := -1
+		for _, source := range homebrewSources {
+			sourceName := source.Full
+			if sourceName == "" {
+				sourceName = source.Abbreviation
+			}
+			if sourceName == "" {
+				sourceName = source.JSON
+			}
+			if sourceName == "" {
+				sourceName = "Homebrew"
+			}
+
+			author := "None"
+			if len(source.Authors) > 0 {
+				author = strings.Join(source.Authors, ", ")
+			}
+
+			sourceSlugBase := sourceName
+			if sourceSlugBase == "" {
+				sourceSlugBase = "homebrew"
+			}
+
+			allSources = append(allSources, snd.DataSource{
+				Name:        fmt.Sprintf("%s (%s)", sourceName, strings.Title(dataSourceName)),
+				Slug:        fmt.Sprintf("5e-tools-%s-%s", makeSlug(sourceSlugBase), dataSourceName),
+				Author:      author,
+				Description: fmt.Sprintf("Imported %s data from %s", dataSourceName, sourceName),
+			})
+			allEntries = append(allEntries, nil)
+
+			idx := len(allSources) - 1
+			if firstSourceIndex == -1 {
+				firstSourceIndex = idx
+			}
+			for _, key := range []string{source.Abbreviation, source.JSON, source.Full} {
+				if key != "" {
+					sourceKeyToIndex[strings.ToLower(key)] = idx
+				}
+			}
+		}
 
 		// Render and add the new entries
 		for _, entryData := range newEntriesList {
@@ -315,11 +458,24 @@ func ImportFile(path string) ([]snd.DataSource, [][]snd.Entry, error) {
 			entryId := makeID(entryName)
 			delete(entryData, "name")
 
+			targetIndex := -1
+			if sourceValue, ok := entryData["source"].(string); ok {
+				if idx, ok := sourceKeyToIndex[strings.ToLower(sourceValue)]; ok {
+					targetIndex = idx
+				}
+			}
+			if targetIndex == -1 && firstSourceIndex != -1 && len(homebrewSources) == 1 {
+				targetIndex = firstSourceIndex
+			}
+			if targetIndex == -1 {
+				continue
+			}
+
 			// Render text to markdown
 			renderObject(entryData)
 
 			// Write the finished entry
-			allEntries[len(allEntries)-1] = append(allEntries[len(allEntries)-1], snd.Entry{
+			allEntries[targetIndex] = append(allEntries[targetIndex], snd.Entry{
 				Name: entryName,
 				ID:   entryId,
 				Data: entryData,
@@ -331,38 +487,27 @@ func ImportFile(path string) ([]snd.DataSource, [][]snd.Entry, error) {
 }
 
 func ImportFolder(path string) ([]snd.DataSource, [][]snd.Entry, error) {
-	// Open the folder
-	dir, err := os.Open(path)
-	if err != nil {
-		return nil, nil, err
-	}
-	defer dir.Close()
-
-	// List the files in the folder
-	files, err := dir.Readdir(0)
-	if err != nil {
-		return nil, nil, err
-	}
-
 	allSources := map[string]snd.DataSource{}
 	allEntries := map[string]map[string]snd.Entry{}
 
-	// Loop over the files in the folder
-	for _, file := range files {
-		if file.IsDir() {
-			continue
+	// Walk the folder recursively
+	err := filepath.WalkDir(path, func(filePath string, d os.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			fmt.Printf("Failed to access path: %s (%s)\n", filePath, walkErr)
+			return nil
 		}
-
-		// Skip non-json files
-		if !strings.HasSuffix(file.Name(), ".json") {
-			continue
+		if d.IsDir() {
+			return nil
+		}
+		if !strings.HasSuffix(d.Name(), ".json") {
+			return nil
 		}
 
 		// Import the file
-		sources, entries, err := ImportFile(path + "/" + file.Name())
+		sources, entries, err := ImportFile(filePath)
 		if err != nil {
-			fmt.Printf("Failed to import file: %s (%s)\n", path+"/"+file.Name(), err)
-			continue
+			fmt.Printf("Failed to import file: %s (%s)\n", filePath, err)
+			return nil
 		}
 
 		// Merge the sources
@@ -379,6 +524,10 @@ func ImportFolder(path string) ([]snd.DataSource, [][]snd.Entry, error) {
 				allEntries[sources[i].Slug][entry.ID] = entry
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return nil, nil, err
 	}
 
 	keys := lo.Keys(allSources)

@@ -16,7 +16,7 @@ func (r *Remote) Name() string {
 }
 
 func (r *Remote) Description() string {
-	return "Print via a remote server. The endpoint should be the URL of the server. The raw ESC/POS printer commands will be sent as http post request."
+	return "Print via a remote http server. The endpoint should be the URL of the server. The raw ESC/POS printer commands will be sent as http post request."
 }
 
 func (r *Remote) AvailableEndpoints() (map[string]string, error) {

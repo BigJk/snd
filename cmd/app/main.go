@@ -104,6 +104,7 @@ func startServer(db database.Database, debug bool) {
 		server.WithDebug(debug),
 		server.WithPrinter(&cups.CUPS{}),
 		server.WithPrinter(&cups.CUPSImage{}),
+		server.WithPrinter(&cups.CUPSIPP{}),
 		server.WithPrinter(&remote.Remote{}),
 		server.WithPrinter(&serial.Serial{}),
 		server.WithPrinter(&dump.Dump{}))...,

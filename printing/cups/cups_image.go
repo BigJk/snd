@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"image"
 	"image/png"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strconv"
@@ -79,7 +78,7 @@ func (c *CUPSImage) Print(printerEndpoint string, img image.Image, data []byte) 
 	}
 
 	heightMM := calculateHeight(img, widthMM)
-	file, err := ioutil.TempFile("", "print_*.png")
+	file, err := os.CreateTemp("", "print_*.png")
 	if err != nil {
 		return err
 	}

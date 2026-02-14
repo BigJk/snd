@@ -5,7 +5,6 @@ package cups
 
 import (
 	"image"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"regexp"
@@ -39,7 +38,7 @@ func (c *CUPS) AvailableEndpoints() (map[string]string, error) {
 }
 
 func (c *CUPS) Print(printerEndpoint string, image image.Image, data []byte) error {
-	file, err := ioutil.TempFile("", "print_*.bin")
+	file, err := os.CreateTemp("", "print_*.bin")
 	if err != nil {
 		return err
 	}

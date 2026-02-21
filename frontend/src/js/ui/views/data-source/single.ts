@@ -16,6 +16,7 @@ import Icon from 'js/ui/components/atomic/icon';
 import Tooltip from 'js/ui/components/atomic/tooltip';
 import EntryListItem from 'js/ui/components/entry-list-item';
 import Flex from 'js/ui/components/layout/flex';
+import { openAdditionalInfosModal } from 'js/ui/components/modals/additional-infos';
 import ImportExport from 'js/ui/components/modals/imexport/import-export';
 import CreateSourceEntry from 'js/ui/components/modals/source/create-edit-entry';
 import Monaco from 'js/ui/components/monaco';
@@ -118,6 +119,11 @@ export default (): m.Component<SingleSourceProps> => {
 				id: buildId('source', state.source),
 			},
 		});
+	};
+
+	const showAdditionalInfo = () => {
+		if (!state.source) return;
+		openAdditionalInfosModal('source', buildId('source', state.source));
 	};
 
 	const deleteEntry = (id: string, entry: Entry) => {
@@ -229,6 +235,11 @@ export default (): m.Component<SingleSourceProps> => {
 							Tooltip,
 							{ content: 'Export' },
 							m(IconButton, { icon: 'download', size: 'sm', intend: 'primary', className: '.mr2', onClick: showExport }),
+						),
+						m(
+							Tooltip,
+							{ content: 'Additional Information' },
+							m(IconButton, { icon: 'information-circle-outline', size: 'sm', intend: 'primary', className: '.mr2', onClick: showAdditionalInfo }),
 						),
 						m(
 							Tooltip,

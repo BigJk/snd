@@ -22,8 +22,7 @@ const COMMAND_ICONS: Record<string, string> = {
 	drawer2: 'box',
 };
 
-export default (): m.Component<GridPrinterCommandButtonProps> => {
-	return {
+export default (): m.Component<GridPrinterCommandButtonProps> => ({
 		view: ({ attrs }) => {
 			const name = attrs.element.name || COMMAND_NAMES[attrs.element.command] || 'Command';
 			const icon = COMMAND_ICONS[attrs.element.command] || 'terminal';
@@ -53,5 +52,4 @@ export default (): m.Component<GridPrinterCommandButtonProps> => {
 				),
 			]);
 		},
-	};
-};
+	});

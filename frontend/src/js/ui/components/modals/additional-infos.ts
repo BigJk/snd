@@ -71,8 +71,7 @@ const routes = (type: Exclude<AdditionalInfoType, 'source'>, id: string) => {
 const identifierDescription = (entityName: string) =>
 	`This is the unique identifier of the ${entityName}. It can be used to access the ${entityName} via the API.`;
 
-const AdditionalInfos = (): m.Component<AdditionalInfosProps> => {
-	return {
+const AdditionalInfos = (): m.Component<AdditionalInfosProps> => ({
 		view: ({ attrs }) => {
 			const entityName = typeName(attrs.type);
 			return m(
@@ -109,8 +108,7 @@ const AdditionalInfos = (): m.Component<AdditionalInfosProps> => {
 				]),
 			);
 		},
-	};
-};
+	});
 
 export function openAdditionalInfosModal(type: AdditionalInfoType, id: string, config?: Record<string, unknown>) {
 	pushPortal<AdditionalInfosProps>(AdditionalInfos, { attributes: { type, id, config } });

@@ -5,7 +5,6 @@ import DataSource from 'js/types/data-source';
 import * as API from 'js/core/api';
 import store from 'js/core/store';
 
-import DividerVert from 'js/ui/shoelace/divider-vert';
 import IconButton from 'js/ui/shoelace/icon-button';
 import Loader from 'js/ui/shoelace/loader';
 

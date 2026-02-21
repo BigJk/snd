@@ -13,6 +13,7 @@ import store, { settings } from 'js/core/store';
 import Spotlight from 'js/ui/components/portal/spotlight';
 
 import DataSourceAll from 'js/ui/views/data-source/all';
+import DataSourceEdit from 'js/ui/views/data-source/edit';
 import DataSourceSingle from 'js/ui/views/data-source/single';
 import Devices from 'js/ui/views/devices';
 import ExternPrintGenerator from 'js/ui/views/extern-print/generator';
@@ -72,6 +73,7 @@ store.actions.loadAll().then(() => {
 		'/generator/:id/edit': GeneratorEdit,
 		'/session-grid': SessionGrid,
 		'/data-source': DataSourceAll,
+		'/data-source/:id/edit': DataSourceEdit,
 		'/data-source/:id': DataSourceSingle,
 		'/workshop': WorkshopAll,
 		'/workshop/:id': WorkshopSingle,

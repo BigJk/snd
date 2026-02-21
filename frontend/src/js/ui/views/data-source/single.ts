@@ -68,7 +68,7 @@ export default (): m.Component<SingleSourceProps> => {
 		});
 
 	const editSource = (id: string) => {
-		// TODO: ...
+		m.route.set(`/data-source/${id}/edit`);
 	};
 
 	const deleteSource = (id: string) => {

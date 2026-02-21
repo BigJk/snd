@@ -24,6 +24,7 @@ type Settings struct {
 	AIAlwaysAllow         bool     `json:"aiAlwaysAllow"`
 	AIApiKey              string   `json:"aiApiKey"`
 	AIModel               string   `json:"aiModel"`
+	AICodingModel         string   `json:"aiCodingModel"`
 	AIProvider            string   `json:"aiProvider"`
 	AIContextWindow       int      `json:"aiContextWindow"`
 	AIMaxTokens           int      `json:"aiMaxTokens"`

@@ -138,6 +138,7 @@ func (s *Server) Start(bindAddr string) error {
 			AIEnabled:             false,
 			AIAlwaysAllow:         false,
 			AIProvider:            "OpenRouter.ai",
+			AICodingModel:         "",
 			AIMaxTokens:           4000,
 			AIContextWindow:       6000,
 		}); err != nil {

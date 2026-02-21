@@ -75,63 +75,21 @@ func RegisterAI(route *echo.Group, db database.Database) {
 		} `json:"choices"`
 	}
 
-	bind.MustBind(route, "/aiCached", func(system string, user string, token string) (string, error) {
-		if len(token) == 0 {
-			return "", errors.New("token is empty")
-		}
-		cacheKey := fmt.Sprintf("AI_CACHE_%s_%s", shortHash(system+user), token)
-		if val, err := db.GetKey(cacheKey); err == nil {
-			return val, nil
-		}
-		return "", errors.New("not cached")
-	})
-
-	bind.MustBind(route, "/aiInvalidateCached", func(token string) error {
-		if len(token) == 0 {
-			return errors.New("token is empty")
-		}
-		keys, err := db.GetKeysPrefix("AI_CACHE_")
-		if err != nil {
-			return err
-		}
-		for _, k := range keys {
-			if strings.HasSuffix(k, token) {
-				db.DeleteKey(k)
-			}
-		}
-		return nil
-	})
-
-	bind.MustBind(route, "/aiPrompt", func(system string, user string, token string) (string, error) {
-		settings, err := db.GetSettings()
-		if err != nil {
-			return "", err
-		}
-
-		if !settings.AIEnabled {
-			return "", errors.New("AI is not enabled")
-		}
-
-		endpoint, err := providerToEndpoint(db, settings.AIProvider)
-		if err != nil {
-			return "", err
-		}
-
-		cacheKey := fmt.Sprintf("AI_CACHE_%s_%s", shortHash(system+user), token)
-		if val, err := db.GetKey(cacheKey); err == nil {
-			return val, nil
+	runPrompt := func(endpoint string, apiKey string, provider string, model string, maxTokens int, system string, user string) (string, error) {
+		if strings.TrimSpace(model) == "" {
+			return "", errors.New("AI model is not set")
 		}
 
 		prompt := AIRequest{
-			Model:     settings.AIModel,
-			MaxTokens: settings.AIMaxTokens,
+			Model:     model,
+			MaxTokens: maxTokens,
 			Messages: []AIMessage{
 				{Role: "system", Content: system},
 				{Role: "user", Content: user},
 			},
 		}
 
-		if settings.AIProvider == "OpenAI" {
+		if provider == "OpenAI" {
 			prompt.MaxTokens -= len(system) + len(user)
 		}
 
@@ -146,7 +104,7 @@ func RegisterAI(route *echo.Group, db database.Database) {
 		}
 
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Authorization", "Bearer "+settings.AIApiKey)
+		req.Header.Set("Authorization", "Bearer "+apiKey)
 		req.Header.Set("HTTP-Referer", "https://sales-and-dungeons.app/")
 		req.Header.Set("X-Title", "Sales & Dungeons")
 
@@ -194,9 +152,87 @@ func RegisterAI(route *echo.Group, db database.Database) {
 			return "", errors.New("no response from AI")
 		}
 
-		db.SetKey(cacheKey, aiResp.Choices[0].Message.Content)
-
 		return aiResp.Choices[0].Message.Content, nil
+	}
+
+	bind.MustBind(route, "/aiCached", func(system string, user string, token string) (string, error) {
+		if len(token) == 0 {
+			return "", errors.New("token is empty")
+		}
+		cacheKey := fmt.Sprintf("AI_CACHE_%s_%s", shortHash(system+user), token)
+		if val, err := db.GetKey(cacheKey); err == nil {
+			return val, nil
+		}
+		return "", errors.New("not cached")
+	})
+
+	bind.MustBind(route, "/aiInvalidateCached", func(token string) error {
+		if len(token) == 0 {
+			return errors.New("token is empty")
+		}
+		keys, err := db.GetKeysPrefix("AI_CACHE_")
+		if err != nil {
+			return err
+		}
+		for _, k := range keys {
+			if strings.HasSuffix(k, token) {
+				db.DeleteKey(k)
+			}
+		}
+		return nil
+	})
+
+	bind.MustBind(route, "/aiPrompt", func(system string, user string, token string) (string, error) {
+		settings, err := db.GetSettings()
+		if err != nil {
+			return "", err
+		}
+
+		if !settings.AIEnabled {
+			return "", errors.New("AI is not enabled")
+		}
+
+		endpoint, err := providerToEndpoint(db, settings.AIProvider)
+		if err != nil {
+			return "", err
+		}
+
+		cacheKey := fmt.Sprintf("AI_CACHE_%s_%s", shortHash(system+user), token)
+		if val, err := db.GetKey(cacheKey); err == nil {
+			return val, nil
+		}
+
+		response, err := runPrompt(endpoint, settings.AIApiKey, settings.AIProvider, settings.AIModel, settings.AIMaxTokens, system, user)
+		if err != nil {
+			return "", err
+		}
+
+		db.SetKey(cacheKey, response)
+
+		return response, nil
+	})
+
+	bind.MustBind(route, "/aiCodingPrompt", func(system string, user string) (string, error) {
+		settings, err := db.GetSettings()
+		if err != nil {
+			return "", err
+		}
+
+		if !settings.AIEnabled {
+			return "", errors.New("AI is not enabled")
+		}
+
+		endpoint, err := providerToEndpoint(db, settings.AIProvider)
+		if err != nil {
+			return "", err
+		}
+
+		model := settings.AICodingModel
+		if strings.TrimSpace(model) == "" {
+			model = settings.AIModel
+		}
+
+		return runPrompt(endpoint, settings.AIApiKey, settings.AIProvider, model, settings.AIMaxTokens, system, user)
 	})
 
 	type Model struct {

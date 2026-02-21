@@ -99,6 +99,7 @@ export const SYNC_LOCAL_TO_CLOUD = 'syncLocalToCloud';
 
 // AI
 export const AI_GENERATE = 'aiPrompt';
+export const AI_GENERATE_CODING = 'aiCodingPrompt';
 export const AI_MODELS = 'aiModels';
 export const AI_PROVIDERS = 'aiProviders';
 export const AI_INVALIDATE_CACHE = 'aiInvalidateCached';

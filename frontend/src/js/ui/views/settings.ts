@@ -469,7 +469,7 @@ export default (): m.Component => {
 									keys: aiProviders,
 									onInput: (e) => {
 										aiModelSearch = '';
-										settingsCopy = { ...settingsCopy, aiModel: '', aiProvider: e.value };
+										settingsCopy = { ...settingsCopy, aiModel: '', aiCodingModel: '', aiProvider: e.value };
 										fetchAiModels();
 									},
 								}),
@@ -480,37 +480,61 @@ export default (): m.Component => {
 										m(
 											HorizontalProperty,
 											{
+												label: 'Model Filter',
+												description: 'Filter the model dropdowns',
+												centered: true,
+												bottomBorder: true,
+											},
+											m(Input, {
+												value: aiModelSearch,
+												placeholder: 'Search models...',
+												clearable: true,
+												onChange: (val) => {
+													aiModelSearch = val;
+												},
+											}),
+										),
+										m(
+											HorizontalProperty,
+											{
 												label: 'Model',
 												description: 'The AI model to use',
 												centered: true,
 												bottomBorder: true,
 											},
 											m(Flex, { direction: 'column', className: '.w-100' }, [
-												m('div.mb1', [
-													m(Input, {
-														value: aiModelSearch,
-														placeholder: 'Search models...',
-														clearable: true,
-														onChange: (val) => {
-															aiModelSearch = val;
-														},
-													}),
-												]),
 												m(Select, {
 													selected: settingsCopy.aiModel,
 													placeholder: 'Select a Model',
-													keys: filteredAiModels,
-													onInput: (e) => {
-														settingsCopy = { ...settingsCopy, aiModel: e.value };
+														keys: filteredAiModels,
+														onInput: (e) => {
+															settingsCopy = { ...settingsCopy, aiModel: e.value };
 													},
 												}),
 											]),
 										),
-									],
-							!settingsCopy.aiProvider.startsWith('Custom')
-								? null
-								: [
 										m(
+												HorizontalProperty,
+												{
+													label: 'Coding Model',
+													description: 'The AI model to use for HTML/CSS/JS generation',
+													centered: true,
+													bottomBorder: true,
+												},
+												m(Select, {
+													selected: settingsCopy.aiCodingModel,
+													placeholder: 'Select a Coding Model',
+													keys: filteredAiModels,
+													onInput: (e) => {
+														settingsCopy = { ...settingsCopy, aiCodingModel: e.value };
+													},
+												}),
+											),
+										],
+								!settingsCopy.aiProvider.startsWith('Custom')
+									? null
+									: [
+											m(
 											HorizontalProperty,
 											{
 												label: 'Custom Model',
@@ -523,6 +547,21 @@ export default (): m.Component => {
 												value: settingsCopy.aiModel,
 												onChange: (val) => {
 													settingsCopy = { ...settingsCopy, aiModel: val };
+												},
+												}),
+											),
+										m(
+											HorizontalProperty,
+											{
+												label: 'Coding Model',
+												description: 'The AI model to use for HTML/CSS/JS generation',
+												centered: true,
+												bottomBorder: true,
+											},
+											m(Input, {
+												value: settingsCopy.aiCodingModel,
+												onChange: (val) => {
+													settingsCopy = { ...settingsCopy, aiCodingModel: val };
 												},
 											}),
 										),
@@ -541,7 +580,7 @@ export default (): m.Component => {
 												},
 											}),
 										),
-									],
+										],
 						]),
 						//
 						// Cache

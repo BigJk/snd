@@ -13,6 +13,9 @@ type PromptProps = {
 	label: string;
 	description: string;
 	value?: string;
+	placeholder?: string;
+	multiline?: boolean;
+	rows?: number;
 	buttonText?: string;
 	onSuccess: (answer: string) => void;
 };
@@ -32,9 +35,16 @@ const promptModal = (props: PromptProps) => (): m.Component => {
 							label: props.label,
 							description: props.description,
 							bottomBorder: false,
-							centered: true,
+							centered: !(props.multiline ?? false),
+							fullSize: props.multiline ?? false,
 						},
-						m(Input, { value: state, placeholder: '', onChange: (val: string) => (state = val) }),
+						m(Input, {
+							value: state,
+							placeholder: props.placeholder ?? '',
+							textarea: props.multiline ?? false,
+							rows: props.rows ?? 6,
+							onChange: (val: string) => (state = val),
+						}),
 					),
 					m(
 						Button,

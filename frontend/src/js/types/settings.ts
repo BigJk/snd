@@ -24,6 +24,7 @@ type Settings = {
 	aiApiKey: string;
 	aiProvider: string;
 	aiModel: string;
+	aiCodingModel: string;
 	aiContextWindow: number;
 	aiMaxTokens: number;
 	aiUrl: string;
@@ -57,6 +58,7 @@ export function createEmptySettings(): Settings {
 		aiApiKey: '',
 		aiProvider: '',
 		aiModel: '',
+		aiCodingModel: '',
 		aiContextWindow: 0,
 		aiMaxTokens: 0,
 		aiUrl: '',

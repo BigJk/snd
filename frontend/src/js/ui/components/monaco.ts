@@ -26,6 +26,7 @@ type MonacoProps = {
 	value: string;
 	errors?: { line: number; column: number; error: string }[];
 	onChange?: (value: string) => void;
+	onEditor?: (editor?: monaco.editor.IStandaloneCodeEditor) => void;
 	completion?: CompletionFunction;
 	wordWrap?: 'on' | 'off' | 'wordWrapColumn' | 'bounded';
 };
@@ -98,6 +99,7 @@ export default (): m.Component<MonacoProps> => {
 				state.completion = attrs.completion;
 			}
 
+			attrs.onEditor?.(state.editor);
 			updateErrors(attrs);
 		},
 		onupdate({ attrs }) {
@@ -121,6 +123,7 @@ export default (): m.Component<MonacoProps> => {
 			if (attrs.completion) {
 				monacoCompletion.unregisterCompletionItemProvider(state.id);
 			}
+			attrs.onEditor?.(undefined);
 		},
 		view({ attrs, key }) {
 			return m(`div.h-100${attrs.className ?? ''}`, { key }, m('div.monaco-container', { key }));

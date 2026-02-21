@@ -1,11 +1,13 @@
 import m from 'mithril';
 import { debounce } from 'lodash-es';
+import * as monaco from 'monaco-editor';
 
 import Entry from 'js/types/entry';
 import Template from 'js/types/template';
 import { buildId } from 'src/js/types/basic-info';
 import { fillConfigValues } from 'src/js/types/config';
 import * as API from 'js/core/api';
+import { runAICodeEditorAction } from 'js/core/ai-editor';
 import { createNunjucksCompletionProvider } from 'js/core/monaco/completion-nunjucks';
 import { settings } from 'js/core/store';
 import { addEntryMeta, render } from 'js/core/templating';
@@ -45,6 +47,9 @@ type TemplateEditorState = {
 	jsonSkeleton: string;
 	errorsPrint: PrintPreviewError[];
 	errorsList: PrintPreviewError[];
+	printTemplateEditor?: monaco.editor.IStandaloneCodeEditor;
+	listTemplateEditor?: monaco.editor.IStandaloneCodeEditor;
+	aiEditorLoading: '' | 'print' | 'list';
 };
 
 export default (): m.Component<TemplateEditorProps> => {
@@ -58,6 +63,84 @@ export default (): m.Component<TemplateEditorProps> => {
 		jsonSkeleton: '{}',
 		errorsPrint: [],
 		errorsList: [],
+		printTemplateEditor: undefined,
+		listTemplateEditor: undefined,
+		aiEditorLoading: '',
+	};
+
+	const getEditorByTarget = (target: 'print' | 'list') => (target === 'print' ? state.printTemplateEditor : state.listTemplateEditor);
+
+	const runEditorAIAction = (attrs: TemplateEditorProps, target: 'print' | 'list', mode: 'generate' | 'edit') => {
+		const editor = getEditorByTarget(target);
+		if (!editor) return;
+
+		const templateKind = target === 'print' ? 'print template' : 'list template';
+		const skeletonJSON = JSON.stringify(attrs.template.skeletonData ?? {}, null, 2);
+		const skeletonPreview = skeletonJSON.length > 6000 ? `${skeletonJSON.slice(0, 6000)}\n... (truncated)` : skeletonJSON;
+		const dataSources = (attrs.template.dataSources ?? []).join(', ');
+
+		const system = `
+You are an expert HTML and Nunjucks template assistant for Sales & Dungeons.
+Return code only.
+Do not use markdown fences.
+Do not explain the output.
+Keep the response valid for direct insertion into a ${templateKind}.
+
+Output constraints:
+- The final print is on a black-and-white thermal receipt printer.
+- The printable width is limited to about ${settings.value.printerWidth}px.
+- Use a narrow, single-column receipt-style layout.
+- Avoid gradients, shadows, transparency effects, or color-dependent styling.
+- Prefer strong contrast with simple borders/spacing for structure.
+- Keep typography legible on small paper; avoid tiny text.
+- Use at least around 22px as a baseline minimum font size for key text, otherwise thermal print output is often too small.
+- Avoid relying on backgrounds or decorative effects that do not print well.
+- If dynamic content with randomness is needed, prefer JavaScript output generation using \`.innerHTML\` or \`document.write()\`.
+- For randomness, always use \`random()\` and never use \`Math.random()\` because \`random()\` is seeded.
+
+Nunjucks context:
+- Main entry object is available as \`it\`.
+- Linked data sources are available as \`sources\`.
+- Template config values are available as \`config\`.
+- App settings are available as \`settings\`.
+- Uploaded template images are available as \`images\` (example: \`images["logo"]\`).
+- Use normal Nunjucks syntax like \`{{ it.name }}\`, \`{% if ... %}\`, and \`{% for item in it.items %}\`.
+
+Current data skeleton for \`it\`:
+${skeletonPreview}
+Linked data sources: ${dataSources || 'none'}
+		`.trim();
+
+		runAICodeEditorAction({
+			editor,
+			mode,
+			editSource: 'ai-template-editor',
+			systemPrompt: system,
+			descriptionEdit: 'Describe exactly how the selected HTML/Nunjucks should be changed',
+			descriptionGenerate: 'Describe what HTML/Nunjucks should be generated and inserted at the cursor',
+			placeholderEdit: 'Example: Make this item block more compact and move price to the right.',
+			placeholderGenerate: 'Example: Create a minimalist monster stat block for receipt printers.',
+			buildUserPrompt: (prompt, selectedText, editorValue) =>
+				mode === 'edit'
+					? `
+Task:
+${prompt}
+
+Selected code to replace:
+${selectedText}
+					`.trim()
+					: `
+Task:
+${prompt}
+
+Current ${templateKind}:
+${editorValue}
+					`.trim(),
+			setLoading: (loading) => {
+				state.aiEditorLoading = loading ? target : '';
+				m.redraw();
+			},
+		});
 	};
 
 	const fetchEntries = (attrs: TemplateEditorProps) => {
@@ -345,21 +428,49 @@ export default (): m.Component<TemplateEditorProps> => {
 								title: 'Print Template',
 								icon: 'code-working',
 								render: () =>
-									m(Monaco, {
-										key: 'print-template',
-										language: 'html',
-										value: attrs.template.printTemplate,
-										className: '.flex-grow-1',
-										errors: state.errorsPrint,
-										completion: createNunjucksCompletionProvider({
-											it: addEntryMeta(null, attrs.template.skeletonData),
-											images: attrs.template.images,
-											settings: settings.value,
-											sources: attrs.template.dataSources,
-											config: state.config,
+									m(Flex, { className: '.h-100', direction: 'column' }, [
+										m(Monaco, {
+											language: 'html',
+											value: attrs.template.printTemplate,
+											className: '.flex-grow-1',
+											errors: state.errorsPrint,
+											onEditor: (editor) => {
+												state.printTemplateEditor = editor;
+											},
+											completion: createNunjucksCompletionProvider({
+												it: addEntryMeta(null, attrs.template.skeletonData),
+												images: attrs.template.images,
+												settings: settings.value,
+												sources: attrs.template.dataSources,
+												config: state.config,
+											}),
+											onChange: (value) => attrs.onChange({ ...attrs.template, printTemplate: value }),
 										}),
-										onChange: (value) => attrs.onChange({ ...attrs.template, printTemplate: value }),
-									}),
+										!settings.value.aiEnabled
+											? null
+											: m(Flex, { gap: 2, className: '.pa2.bg-white.bt.b--black-10' }, [
+													m(
+														Button,
+														{
+															size: 'sm',
+															intend: 'primary',
+															loading: state.aiEditorLoading === 'print',
+															onClick: () => runEditorAIAction(attrs, 'print', 'generate'),
+														},
+														'Generate with AI',
+													),
+													m(
+														Button,
+														{
+															size: 'sm',
+															intend: 'primary',
+															loading: state.aiEditorLoading === 'print',
+															onClick: () => runEditorAIAction(attrs, 'print', 'edit'),
+														},
+														'Edit Selection with AI',
+													),
+												]),
+									]),
 							},
 							//
 							// List Template
@@ -381,6 +492,9 @@ export default (): m.Component<TemplateEditorProps> => {
 												value: attrs.template.listTemplate,
 												className: '.h-100',
 												errors: state.errorsList,
+												onEditor: (editor) => {
+													state.listTemplateEditor = editor;
+												},
 												completion: createNunjucksCompletionProvider({
 													it: attrs.template.skeletonData,
 													images: attrs.template.images,
@@ -398,6 +512,30 @@ export default (): m.Component<TemplateEditorProps> => {
 											m('div.mb3.text-muted', 'Preview'),
 											m('div.h3.ph3.pv1.ba.br2.b--black-10.bg-paper.overflow-hidden', m.trust(state.listPreview)),
 										]),
+										!settings.value.aiEnabled
+											? null
+											: m(Flex, { gap: 2, className: '.pa2.bg-white.bt.b--black-10' }, [
+													m(
+														Button,
+														{
+															size: 'sm',
+															intend: 'primary',
+															loading: state.aiEditorLoading === 'list',
+															onClick: () => runEditorAIAction(attrs, 'list', 'generate'),
+														},
+														'Generate with AI',
+													),
+													m(
+														Button,
+														{
+															size: 'sm',
+															intend: 'primary',
+															loading: state.aiEditorLoading === 'list',
+															onClick: () => runEditorAIAction(attrs, 'list', 'edit'),
+														},
+														'Edit Selection with AI',
+													),
+												]),
 									]),
 							},
 						],

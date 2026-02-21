@@ -12,6 +12,7 @@ export type OnInputEvent = {
 type SelectProps = {
 	key?: string;
 	className?: string;
+	placeholder?: string;
 	keys: string[];
 	names?: string[];
 	selected: string | null;
@@ -29,6 +30,7 @@ export default (): m.Component<SelectProps> => ({
 			{
 				key: attrs.key,
 				value: attrs.selected?.replaceAll(' ', '%_%') ?? '',
+				placeholder: attrs.placeholder ?? '',
 				defaultValue: attrs.default,
 				'onsl-change': (e: any) => {
 					const value = e.target.value.replaceAll('%_%', ' ');

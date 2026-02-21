@@ -36,6 +36,7 @@ export default (): m.Component => {
 	let settingsCopy: Settings = { ...createEmptySettings(), ...settings.value };
 	let aiModels: string[] = [];
 	let aiProviders: string[] = [];
+	let aiModelSearch = '';
 	let printerConfigs: Record<string, PrinterConfigPreset> = {};
 	let selectedPrinterConfig = '';
 
@@ -255,6 +256,7 @@ export default (): m.Component => {
 		},
 		view() {
 			const printerConfigNames = Object.keys(printerConfigs).sort((a, b) => a.localeCompare(b));
+			const filteredAiModels = aiModels.filter((model) => model.toLowerCase().includes(aiModelSearch.trim().toLowerCase()));
 
 			return m(
 				Base,
@@ -466,6 +468,7 @@ export default (): m.Component => {
 									selected: settingsCopy.aiProvider,
 									keys: aiProviders,
 									onInput: (e) => {
+										aiModelSearch = '';
 										settingsCopy = { ...settingsCopy, aiModel: '', aiProvider: e.value };
 										fetchAiModels();
 									},
@@ -473,22 +476,37 @@ export default (): m.Component => {
 							),
 							aiModels.length === 0 || settingsCopy.aiProvider.startsWith('Custom')
 								? null
-								: m(
-										HorizontalProperty,
-										{
-											label: 'Model',
-											description: 'The AI model to use',
-											centered: true,
-											bottomBorder: true,
-										},
-										m(Select, {
-											selected: settingsCopy.aiModel,
-											keys: aiModels,
-											onInput: (e) => {
-												settingsCopy = { ...settingsCopy, aiModel: e.value };
+								: [
+										m(
+											HorizontalProperty,
+											{
+												label: 'Model',
+												description: 'The AI model to use',
+												centered: true,
+												bottomBorder: true,
 											},
-										}),
-									),
+											m(Flex, { direction: 'column', className: '.w-100' }, [
+												m('div.mb1', [
+													m(Input, {
+														value: aiModelSearch,
+														placeholder: 'Search models...',
+														clearable: true,
+														onChange: (val) => {
+															aiModelSearch = val;
+														},
+													}),
+												]),
+												m(Select, {
+													selected: settingsCopy.aiModel,
+													placeholder: 'Select a Model',
+													keys: filteredAiModels,
+													onInput: (e) => {
+														settingsCopy = { ...settingsCopy, aiModel: e.value };
+													},
+												}),
+											]),
+										),
+									],
 							!settingsCopy.aiProvider.startsWith('Custom')
 								? null
 								: [

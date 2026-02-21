@@ -16,21 +16,28 @@ import Title from 'js/ui/components/atomic/title';
 import HorizontalProperty from 'js/ui/components/horizontal-property';
 import Flex from 'js/ui/components/layout/flex';
 import FullscreenLoader from 'js/ui/components/portal/fullscreen-loader';
+import { openPromptModal } from 'js/ui/components/modals/prompt';
 import Base from 'js/ui/components/view-layout/base';
 import PropertyEdit, { PropertyEditProps } from 'js/ui/components/view-layout/property-edit';
 import PropertyHeader from 'js/ui/components/view-layout/property-header';
 
 import { clearPortal, setPortal } from 'js/ui/portal';
-import { error, neutral, success } from 'js/ui/toast';
+import { dialogWarning, error, neutral, success } from 'js/ui/toast';
 
 const containerClass = css`
 	max-width: 1000px;
 `;
 
+type PrinterConfigPreset = Pick<Settings, 'printerType' | 'printerEndpoint' | 'printerWidth'>;
+
+const PRINTER_CONFIGS_KEY = 'settings_printer_configs';
+
 export default (): m.Component => {
 	let settingsCopy: Settings = { ...createEmptySettings(), ...settings.value };
 	let aiModels: string[] = [];
 	let aiProviders: string[] = [];
+	let printerConfigs: Record<string, PrinterConfigPreset> = {};
+	let selectedPrinterConfig = '';
 
 	const onChangeSettings = (updated: Settings) => {
 		settingsCopy = { ...settingsCopy, ...updated };
@@ -38,6 +45,94 @@ export default (): m.Component => {
 
 	const onChangeCommands = (updated: Commands) => {
 		settingsCopy = { ...settingsCopy, commands: updated };
+	};
+
+	const savePrinterConfigs = () => API.exec<void>(API.SET_KEY, PRINTER_CONFIGS_KEY, JSON.stringify(printerConfigs));
+
+	const loadPrinterConfigs = () => {
+		API.exec<string>(API.GET_KEY, PRINTER_CONFIGS_KEY)
+			.then((configs) => {
+				printerConfigs = JSON.parse(configs || '{}');
+				if (selectedPrinterConfig && !printerConfigs[selectedPrinterConfig]) {
+					selectedPrinterConfig = '';
+				}
+			})
+			.catch(() => {
+				printerConfigs = {};
+			});
+	};
+
+	const persistCurrentPrinterConfig = (name: string) => {
+		const cleaned = name.trim();
+		if (cleaned.length === 0) {
+			error('Please enter a config name');
+			return;
+		}
+
+		const persist = () => {
+			printerConfigs = {
+				...printerConfigs,
+				[cleaned]: {
+					printerType: settingsCopy.printerType,
+					printerEndpoint: settingsCopy.printerEndpoint,
+					printerWidth: settingsCopy.printerWidth,
+				},
+			};
+			selectedPrinterConfig = cleaned;
+
+			savePrinterConfigs()
+				.then(() => {
+					success('Saved printer config');
+				})
+				.catch(error);
+		};
+
+		if (printerConfigs[cleaned]) {
+			dialogWarning('This config already exists. Do you want to overwrite it?')
+				.then(persist)
+				.catch(() => {});
+			return;
+		}
+
+		persist();
+	};
+
+	const saveCurrentPrinterConfig = () => {
+		openPromptModal({
+			title: 'Save Printer Config',
+			label: 'Name',
+			description: 'Enter a name for this printer config',
+			value: selectedPrinterConfig,
+			buttonText: 'Save',
+			onSuccess: persistCurrentPrinterConfig,
+		});
+	};
+
+	const applyPrinterConfig = (name: string) => {
+		selectedPrinterConfig = name;
+		const selected = printerConfigs[name];
+		if (!selected) return;
+
+		settingsCopy = {
+			...settingsCopy,
+			printerType: selected.printerType,
+			printerEndpoint: selected.printerEndpoint,
+			printerWidth: selected.printerWidth,
+		};
+	};
+
+	const deletePrinterConfig = () => {
+		if (!selectedPrinterConfig || !printerConfigs[selectedPrinterConfig]) {
+			return;
+		}
+
+		dialogWarning('Are you sure you want to delete this config?').then(() => {
+			delete printerConfigs[selectedPrinterConfig];
+			selectedPrinterConfig = '';
+			savePrinterConfigs()
+				.then(() => success('Deleted printer config'))
+				.catch(error);
+		});
 	};
 
 	const applySettings = () => {
@@ -156,8 +251,11 @@ export default (): m.Component => {
 		oninit() {
 			fetchAiProviders();
 			fetchAiModels();
+			loadPrinterConfigs();
 		},
 		view() {
+			const printerConfigNames = Object.keys(printerConfigs).sort((a, b) => a.localeCompare(b));
+
 			return m(
 				Base,
 				{
@@ -238,6 +336,25 @@ export default (): m.Component => {
 								show: ['printerType', 'printerEndpoint', 'printerWidth'],
 								onChange: onChangeSettings,
 							} as PropertyEditProps<Settings>),
+							m(
+								HorizontalProperty,
+								{
+									label: 'Saved Configs',
+									description: 'Save and quickly switch printer type/endpoint/width combinations',
+									centered: true,
+									bottomBorder: true,
+								},
+								m(Flex, { gap: 2, items: 'center', className: '.w-100' }, [
+									m(Select, {
+										selected: selectedPrinterConfig,
+										keys: printerConfigNames,
+										onInput: (e) => applyPrinterConfig(e.value),
+										clearable: true,
+									}),
+									m(IconButton, { icon: 'save', intend: 'primary', onClick: saveCurrentPrinterConfig }),
+									m(IconButton, { icon: 'trash', intend: 'error', onClick: deletePrinterConfig, disabled: !selectedPrinterConfig }),
+								]),
+							),
 							//
 							// Printer Commands
 							m(PropertyHeader, {

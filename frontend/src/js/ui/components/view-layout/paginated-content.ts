@@ -27,7 +27,6 @@ export default <T>(): m.Component<PaginatedContentProps<T>> => {
 	const maxPage = (attrs: PaginatedContentProps<T>) => Math.floor(attrs.items.length / attrs.perPage);
 
 	const nextPage = (attrs: PaginatedContentProps<T>) => {
-		console.log('nextPage');
 		if (state.page >= Math.floor(attrs.items.length / attrs.perPage)) return;
 		state.page++;
 

@@ -72,43 +72,43 @@ const identifierDescription = (entityName: string) =>
 	`This is the unique identifier of the ${entityName}. It can be used to access the ${entityName} via the API.`;
 
 const AdditionalInfos = (): m.Component<AdditionalInfosProps> => ({
-		view: ({ attrs }) => {
-			const entityName = typeName(attrs.type);
-			return m(
-				Modal,
-				{ title: 'Additional Information', onClose: popPortal, width: 1000 },
-				m(Flex, { direction: 'column', gap: 2 }, [
-					m('div.f5.b', 'Identifier'), //
-					m('div', identifierDescription(entityName)),
-					m(Input, { value: attrs.id }),
-					attrs.type !== 'source'
-						? [
-								m(Divider),
-								m(Flex, { gap: 3 }, [
-									m(
-										'div.w-50.flex-shrink-0',
-										m('div.f5.b', 'Print Endpoint'),
-										m('div', [
-											`This is the endpoint to print the ${attrs.type}. Use a POST request containing the arguments as JSON array. You can find more infos `,
-											m('a', { href: '#', onclick: openApiDocs }, 'here'),
-											'.',
-										]),
-										routes(attrs.type, attrs.id),
-									),
-									attrs.config
-										? m(Flex, { direction: 'column', gap: 2, className: '.w-50' }, [
-												m('div.f5.b', 'Config'),
-												m('div', `This is the current config you selected in the ${attrs.type}.`),
-												m(TextArea, { value: JSON.stringify(attrs.config, null, '\t'), rows: 8 }),
-											])
-										: null,
-								]),
-							]
-						: null,
-				]),
-			);
-		},
-	});
+	view: ({ attrs }) => {
+		const entityName = typeName(attrs.type);
+		return m(
+			Modal,
+			{ title: 'Additional Information', onClose: popPortal, width: 1000 },
+			m(Flex, { direction: 'column', gap: 2 }, [
+				m('div.f5.b', 'Identifier'), //
+				m('div', identifierDescription(entityName)),
+				m(Input, { value: attrs.id }),
+				attrs.type !== 'source'
+					? [
+							m(Divider),
+							m(Flex, { gap: 3 }, [
+								m(
+									'div.w-50.flex-shrink-0',
+									m('div.f5.b', 'Print Endpoint'),
+									m('div', [
+										`This is the endpoint to print the ${attrs.type}. Use a POST request containing the arguments as JSON array. You can find more infos `,
+										m('a', { href: '#', onclick: openApiDocs }, 'here'),
+										'.',
+									]),
+									routes(attrs.type, attrs.id),
+								),
+								attrs.config
+									? m(Flex, { direction: 'column', gap: 2, className: '.w-50' }, [
+											m('div.f5.b', 'Config'),
+											m('div', `This is the current config you selected in the ${attrs.type}.`),
+											m(TextArea, { value: JSON.stringify(attrs.config, null, '\t'), rows: 8 }),
+										])
+									: null,
+							]),
+						]
+					: null,
+			]),
+		);
+	},
+});
 
 export function openAdditionalInfosModal(type: AdditionalInfoType, id: string, config?: Record<string, unknown>) {
 	pushPortal<AdditionalInfosProps>(AdditionalInfos, { attributes: { type, id, config } });

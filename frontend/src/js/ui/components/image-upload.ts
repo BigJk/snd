@@ -9,11 +9,14 @@ import Input from 'js/ui/shoelace/input';
 import Icon from 'js/ui/components/atomic/icon';
 import Flex from 'js/ui/components/layout/flex';
 
+export type ImageUploadEntry = { name: string; base: string };
+
 type ImageUploadProps = {
 	compact?: boolean;
 	className?: string;
 	height?: number;
-	onUpload?: (name: string, base: string) => void;
+	multiple?: boolean;
+	onUpload?: (entries: ImageUploadEntry[]) => void;
 };
 
 export default (): m.Component<ImageUploadProps> => {
@@ -37,29 +40,38 @@ export default (): m.Component<ImageUploadProps> => {
 									size: attrs.compact ? 4 : 2,
 									className: attrs.compact ? '.mr3' : '.mb3',
 								}),
-								m('div.fw5', 'Select image from your computer'),
+								m('div.fw5', attrs.multiple ? 'Select images from your computer' : 'Select image from your computer'),
 							]), //
 						],
 					), //
 					m(`input.dn#${id}`, {
 						type: 'file',
+						multiple: attrs.multiple ?? false,
 						onchange: (e: Event) => {
 							let files = (e.target as HTMLInputElement).files;
 							if (!files) return;
 
-							for (let i = 0, f; (f = files[i]); i++) {
-								if (!f.type.match('image.*')) {
-									continue;
-								}
+							let readers: Promise<ImageUploadEntry>[] = [];
 
-								let reader = new FileReader();
-								reader.onload = ((name) => (e) => {
-									if (!e.target) return;
-									if (attrs.onUpload) attrs.onUpload(name, e.target.result as string);
-									m.redraw();
-								})(f.name);
-								reader.readAsDataURL(f);
+							for (let i = 0, f; (f = files[i]); i++) {
+								if (!f.type.match('image.*')) continue;
+
+								readers.push(
+									new Promise<ImageUploadEntry>((resolve) => {
+										let reader = new FileReader();
+										let name = f.name;
+										reader.onload = (ev) => {
+											resolve({ name, base: ev.target!.result as string });
+										};
+										reader.readAsDataURL(f);
+									}),
+								);
 							}
+
+							Promise.all(readers).then((entries) => {
+								if (attrs.onUpload) attrs.onUpload(entries);
+								m.redraw();
+							});
 						},
 					}),
 					//
@@ -80,7 +92,7 @@ export default (): m.Component<ImageUploadProps> => {
 										if (url.length === 0) return;
 
 										API.exec<string>(API.FETCH_IMAGE, url).then((base) => {
-											if (attrs.onUpload) attrs.onUpload(guid(), base);
+											if (attrs.onUpload) attrs.onUpload([{ name: guid(), base }]);
 											m.redraw();
 										});
 									},

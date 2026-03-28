@@ -15,8 +15,8 @@ import Select from 'js/ui/shoelace/select';
 import Title from 'js/ui/components/atomic/title';
 import HorizontalProperty from 'js/ui/components/horizontal-property';
 import Flex from 'js/ui/components/layout/flex';
-import FullscreenLoader from 'js/ui/components/portal/fullscreen-loader';
 import { openPromptModal } from 'js/ui/components/modals/prompt';
+import FullscreenLoader from 'js/ui/components/portal/fullscreen-loader';
 import Base from 'js/ui/components/view-layout/base';
 import PropertyEdit, { PropertyEditProps } from 'js/ui/components/view-layout/property-edit';
 import PropertyHeader from 'js/ui/components/view-layout/property-header';
@@ -506,35 +506,35 @@ export default (): m.Component => {
 												m(Select, {
 													selected: settingsCopy.aiModel,
 													placeholder: 'Select a Model',
-														keys: filteredAiModels,
-														onInput: (e) => {
-															settingsCopy = { ...settingsCopy, aiModel: e.value };
+													keys: filteredAiModels,
+													onInput: (e) => {
+														settingsCopy = { ...settingsCopy, aiModel: e.value };
 													},
 												}),
 											]),
 										),
 										m(
-												HorizontalProperty,
-												{
-													label: 'Coding Model',
-													description: 'The AI model to use for HTML/CSS/JS generation',
-													centered: true,
-													bottomBorder: true,
+											HorizontalProperty,
+											{
+												label: 'Coding Model',
+												description: 'The AI model to use for HTML/CSS/JS generation',
+												centered: true,
+												bottomBorder: true,
+											},
+											m(Select, {
+												selected: settingsCopy.aiCodingModel,
+												placeholder: 'Select a Coding Model',
+												keys: filteredAiModels,
+												onInput: (e) => {
+													settingsCopy = { ...settingsCopy, aiCodingModel: e.value };
 												},
-												m(Select, {
-													selected: settingsCopy.aiCodingModel,
-													placeholder: 'Select a Coding Model',
-													keys: filteredAiModels,
-													onInput: (e) => {
-														settingsCopy = { ...settingsCopy, aiCodingModel: e.value };
-													},
-												}),
-											),
-										],
-								!settingsCopy.aiProvider.startsWith('Custom')
-									? null
-									: [
-											m(
+											}),
+										),
+									],
+							!settingsCopy.aiProvider.startsWith('Custom')
+								? null
+								: [
+										m(
 											HorizontalProperty,
 											{
 												label: 'Custom Model',
@@ -548,8 +548,8 @@ export default (): m.Component => {
 												onChange: (val) => {
 													settingsCopy = { ...settingsCopy, aiModel: val };
 												},
-												}),
-											),
+											}),
+										),
 										m(
 											HorizontalProperty,
 											{
@@ -580,7 +580,7 @@ export default (): m.Component => {
 												},
 											}),
 										),
-										],
+									],
 						]),
 						//
 						// Cache

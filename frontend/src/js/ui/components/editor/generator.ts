@@ -1,4 +1,5 @@
 import m from 'mithril';
+
 import * as monaco from 'monaco-editor';
 
 import { fillConfigValues } from 'js/types/config';

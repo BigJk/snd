@@ -3,6 +3,7 @@ import * as monaco from 'monaco-editor';
 import * as API from 'js/core/api';
 
 import { openPromptModal } from 'js/ui/components/modals/prompt';
+
 import { error } from 'js/ui/toast';
 
 export type AICodeEditorMode = 'generate' | 'edit';

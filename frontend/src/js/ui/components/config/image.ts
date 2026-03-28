@@ -39,16 +39,18 @@ export default {
 						height: 50,
 						compact: true,
 						className: '.mb3',
-						onUpload: (name, image) => {
+						onUpload: (entries) => {
 							if (!attrs.onChange) return;
+							const entry = entries[0];
+							if (!entry) return;
 
 							m.request({
 								url: `/api/image-cache`,
 								method: 'POST',
-								body: image,
+								body: entry.base,
 							}).then(() => {
 								if (!attrs.onChange) return;
-								attrs.onChange(image);
+								attrs.onChange(entry.base);
 							});
 						},
 					}),

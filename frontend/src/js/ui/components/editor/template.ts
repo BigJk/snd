@@ -1,13 +1,14 @@
 import m from 'mithril';
 import { debounce } from 'lodash-es';
+
 import * as monaco from 'monaco-editor';
 
 import Entry from 'js/types/entry';
 import Template from 'js/types/template';
 import { buildId } from 'src/js/types/basic-info';
 import { fillConfigValues } from 'src/js/types/config';
-import * as API from 'js/core/api';
 import { runAICodeEditorAction } from 'js/core/ai-editor';
+import * as API from 'js/core/api';
 import { createNunjucksCompletionProvider } from 'js/core/monaco/completion-nunjucks';
 import { settings } from 'js/core/store';
 import { addEntryMeta, render } from 'js/core/templating';

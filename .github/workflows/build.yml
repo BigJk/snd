@@ -49,6 +49,10 @@ jobs:
           # HEADLESS
           - arch: "amd64"
             artifact-name: "snd-linux-amd64-headless"
+          - arch: "amd64"
+            libusb: true
+            tags: "LIBUSB"
+            artifact-name: "snd-linux-amd64-headless-libusb"
           - arch: "arm64"
             artifact-name: "snd-linux-arm64-headless"
           - arch: "386"
@@ -182,13 +186,7 @@ jobs:
 
   create-release:
     runs-on: ubuntu-latest
-    needs:
-      [
-        build-linux-app,
-        build-windows-app,
-        build-darwin-amd64-app,
-        build-darwin-arm64-app,
-      ]
+    needs: [build-linux-app, build-windows-app, build-darwin-amd64-app, build-darwin-arm64-app]
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3

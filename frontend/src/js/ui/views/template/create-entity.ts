@@ -19,7 +19,7 @@ import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
 import EditorHeader from 'js/ui/components/view-layout/property-header';
 import SideMenuPager from 'js/ui/components/view-layout/side-menu-pager';
-import SidebarPrintPage from 'js/ui/components/view-layout/sidebar-print-page';
+import SidebarPage from 'js/ui/components/view-layout/sidebar-page';
 
 import { error } from 'js/ui/toast';
 
@@ -227,7 +227,7 @@ export default (): m.Component<CreateTemplateEntityProps> => {
 					active: 'templates',
 					classNameContainer: '.pa3',
 				},
-				m(SidebarPrintPage, {
+				m(SidebarPage, {
 					template: state.template,
 					it: state.data,
 					entry: state,

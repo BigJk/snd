@@ -4,7 +4,7 @@ import * as monaco from 'monaco-editor';
 
 import { fillConfigValues } from 'js/types/config';
 import Generator, { sanitizeConfig, seed } from 'js/types/generator';
-import { runAICodeEditorAction } from 'js/core/ai-editor';
+import { buildAiSystemPrompt, runAICodeEditorAction } from 'js/core/ai-editor';
 import { createOnMessage } from 'js/core/generator-ipc';
 import { createNunjucksCompletionProvider } from 'js/core/monaco/completion-nunjucks';
 import { settings } from 'js/core/store';
@@ -56,36 +56,16 @@ export default (): m.Component<GeneratorEditorProps> => {
 		const configPreview = JSON.stringify(attrs.generator.config ?? [], null, 2);
 		const configSummary = configPreview.length > 5000 ? `${configPreview.slice(0, 5000)}\n... (truncated)` : configPreview;
 
-		const system = `
-You are an expert HTML and Nunjucks template assistant for Sales & Dungeons.
-Return code only.
-Do not use markdown fences.
-Do not explain the output.
-Keep the response valid for direct insertion into a generator print template.
-
-Output constraints:
-- The final print is on a black-and-white thermal receipt printer.
-- The printable width is limited to about ${settings.value.printerWidth}px.
-- Use a narrow, single-column receipt-style layout.
-- Avoid gradients, shadows, transparency effects, or color-dependent styling.
-- Prefer strong contrast with simple borders/spacing for structure.
-- Keep typography legible on small paper; avoid tiny text.
-- Use at least around 22px as a baseline minimum font size for key text, otherwise thermal print output is often too small.
-- Avoid relying on backgrounds or decorative effects that do not print well.
-- If dynamic content with randomness is needed, prefer JavaScript output generation using \`.innerHTML\` or \`document.write()\`.
-- For randomness, always use \`random()\` and never use \`Math.random()\` because \`random()\` is seeded.
-
-Nunjucks context:
-- Generator config values are available as \`config\`.
+		const system = buildAiSystemPrompt({
+			templateKind: 'generator print template',
+			printerWidth: settings.value.printerWidth,
+			nunjucksContext: `- Generator config values are available as \`config\`.
 - Linked data sources are available as \`sources\`.
 - App settings are available as \`settings\`.
 - Uploaded generator images are available as \`images\` (example: \`images["logo"]\`).
-- Use normal Nunjucks syntax like \`{{ config.seed }}\`, \`{% if ... %}\`, and \`{% for item in ... %}\`.
-
-Current generator config definition:
-${configSummary}
-Linked data sources: ${dataSources || 'none'}
-		`.trim();
+- Use normal Nunjucks syntax like \`{{ config.seed }}\`, \`{% if ... %}\`, and \`{% for item in ... %}\`.`,
+			dataSummary: `Current generator config definition:\n${configSummary}\nLinked data sources: ${dataSources || 'none'}`,
+		});
 
 		runAICodeEditorAction({
 			editor,

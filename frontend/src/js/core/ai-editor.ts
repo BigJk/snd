@@ -8,6 +8,48 @@ import { error } from 'js/ui/toast';
 
 export type AICodeEditorMode = 'generate' | 'edit';
 
+type AiSystemPromptOptions = {
+	/** Label inserted into "Keep the response valid for direct insertion into a <templateKind>" */
+	templateKind: string;
+	/** Printer width in px from settings */
+	printerWidth: number;
+	/** The Nunjucks context section (entity-specific) */
+	nunjucksContext: string;
+	/** The trailing data section shown after the context (e.g. skeleton JSON or config definition) */
+	dataSummary: string;
+};
+
+/**
+ * Builds the shared AI system prompt used by both the template and generator editors.
+ * The thermal-printer constraints and general instructions are identical in both;
+ * only the Nunjucks context docs and trailing data differ.
+ */
+export const buildAiSystemPrompt = (opts: AiSystemPromptOptions): string =>
+	`
+You are an expert HTML and Nunjucks template assistant for Sales & Dungeons.
+Return code only.
+Do not use markdown fences.
+Do not explain the output.
+Keep the response valid for direct insertion into a ${opts.templateKind}.
+
+Output constraints:
+- The final print is on a black-and-white thermal receipt printer.
+- The printable width is limited to about ${opts.printerWidth}px.
+- Use a narrow, single-column receipt-style layout.
+- Avoid gradients, shadows, transparency effects, or color-dependent styling.
+- Prefer strong contrast with simple borders/spacing for structure.
+- Keep typography legible on small paper; avoid tiny text.
+- Use at least around 22px as a baseline minimum font size for key text, otherwise thermal print output is often too small.
+- Avoid relying on backgrounds or decorative effects that do not print well.
+- If dynamic content with randomness is needed, prefer JavaScript output generation using \`.innerHTML\` or \`document.write()\`.
+- For randomness, always use \`random()\` and never use \`Math.random()\` because \`random()\` is seeded.
+
+Nunjucks context:
+${opts.nunjucksContext}
+
+${opts.dataSummary}
+	`.trim();
+
 type RunAICodeEditorActionProps = {
 	editor?: monaco.editor.IStandaloneCodeEditor;
 	mode: AICodeEditorMode;

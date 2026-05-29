@@ -1,98 +1,40 @@
 import m from 'mithril';
 
 import { buildId } from 'js/types/basic-info';
+import { filterOutDynamicConfigValues } from 'js/types/config';
 import Generator, { createEmptyGenerator } from 'js/types/generator';
-import { filterOutDynamicConfigValues } from 'src/js/types/config';
 import * as API from 'js/core/api';
 import store from 'js/core/store';
 
-import IconButton from 'js/ui/shoelace/icon-button';
-import Loader from 'js/ui/shoelace/loader';
-
 import GeneratorEditor from 'js/ui/components/editor/generator';
-import Base from 'js/ui/components/view-layout/base';
-import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
 
-import { error } from 'js/ui/toast';
+import EntityCreate from 'js/ui/views/shared/entity-create';
 
-type GeneratorCreateProps = {
-	id?: string;
-};
-
-export default (): m.Component<GeneratorCreateProps> => {
-	let state: Generator | null = createEmptyGenerator();
-
-	return {
-		oninit({ attrs }) {
-			if (attrs.id) {
-				API.exec<Generator>(API.GET_GENERATOR, attrs.id)
-					.then((generator) => {
-						state = generator;
-					})
-					.catch(error);
-			}
+export default () =>
+	EntityCreate<Generator>({
+		kind: 'generator',
+		listLabel: 'Generators',
+		listRoute: '/generator',
+		active: 'generators',
+		createEmpty: createEmptyGenerator,
+		fetchEntity: (id) => API.exec<Generator>(API.GET_GENERATOR, id),
+		saveEntity: (entity) =>
+			API.exec<void>(API.SAVE_GENERATOR, {
+				...entity,
+				config: filterOutDynamicConfigValues(entity.config),
+			}).then(() => {
+				store.actions.loadGenerators();
+			}),
+		copyEntries: (fromId, toId) => API.exec<void>(API.COPY_ENTRIES, fromId, toId),
+		validate: (entity, isDuplicate, sourceId) => {
+			if (isDuplicate && sourceId && buildId('generator', entity) === sourceId)
+				return 'You cannot duplicate a generator with the same slug as the original.';
+			return null;
 		},
-		view({ attrs }) {
-			return m(
-				Base,
-				{
-					title: m(Breadcrumbs, {
-						confirm: true,
-						confirmText: 'Are you sure you want to leave this page? Changes are not saved.',
-						items: [{ link: '/generator', label: 'Generators' }, { label: 'Create Generator' }],
-					}),
-					rightElement: [
-						m(
-							IconButton,
-							{
-								icon: 'add',
-								size: 'sm',
-								intend: 'success',
-								onClick: () => {
-									if (!state) return;
-									if (attrs.id && buildId('generator', state) === attrs.id) {
-										error('You cannot duplicate a generator with the same slug as the original.');
-										return;
-									}
-									API.exec<void>(API.SAVE_GENERATOR, {
-										...state,
-										config: filterOutDynamicConfigValues(state.config),
-									})
-										.then(() => {
-											if (!state) return;
-
-											if (attrs.id) {
-												// If we are duplicating a generator, we need to copy the entries.
-												API.exec<void>(API.COPY_ENTRIES, attrs.id, buildId('generator', state))
-													.then(() => {
-														if (!state) return;
-														m.route.set(`/generator/${buildId('generator', state)}`);
-														store.actions.loadGenerators();
-													})
-													.catch(error);
-											} else {
-												m.route.set(`/generator/${buildId('generator', state)}`);
-												store.actions.loadGenerators();
-											}
-										})
-										.catch(error);
-								},
-							},
-							'Save',
-						), //
-					],
-					active: 'generators',
-				},
-				state
-					? m(GeneratorEditor, {
-							generator: state,
-							onChange: (generator) => {
-								state = generator;
-								m.redraw();
-							},
-						})
-					: m(Loader),
-			);
-		},
-	};
-};
+		renderEditor: (entity, onChange) =>
+			m(GeneratorEditor, {
+				generator: entity,
+				onChange,
+				editMode: false,
+			}),
+	});

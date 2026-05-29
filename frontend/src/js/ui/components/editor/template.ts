@@ -7,7 +7,7 @@ import Entry from 'js/types/entry';
 import Template from 'js/types/template';
 import { buildId } from 'src/js/types/basic-info';
 import { fillConfigValues } from 'src/js/types/config';
-import { runAICodeEditorAction } from 'js/core/ai-editor';
+import { buildAiSystemPrompt, runAICodeEditorAction } from 'js/core/ai-editor';
 import * as API from 'js/core/api';
 import { createNunjucksCompletionProvider } from 'js/core/monaco/completion-nunjucks';
 import { settings } from 'js/core/store';
@@ -80,37 +80,17 @@ export default (): m.Component<TemplateEditorProps> => {
 		const skeletonPreview = skeletonJSON.length > 6000 ? `${skeletonJSON.slice(0, 6000)}\n... (truncated)` : skeletonJSON;
 		const dataSources = (attrs.template.dataSources ?? []).join(', ');
 
-		const system = `
-You are an expert HTML and Nunjucks template assistant for Sales & Dungeons.
-Return code only.
-Do not use markdown fences.
-Do not explain the output.
-Keep the response valid for direct insertion into a ${templateKind}.
-
-Output constraints:
-- The final print is on a black-and-white thermal receipt printer.
-- The printable width is limited to about ${settings.value.printerWidth}px.
-- Use a narrow, single-column receipt-style layout.
-- Avoid gradients, shadows, transparency effects, or color-dependent styling.
-- Prefer strong contrast with simple borders/spacing for structure.
-- Keep typography legible on small paper; avoid tiny text.
-- Use at least around 22px as a baseline minimum font size for key text, otherwise thermal print output is often too small.
-- Avoid relying on backgrounds or decorative effects that do not print well.
-- If dynamic content with randomness is needed, prefer JavaScript output generation using \`.innerHTML\` or \`document.write()\`.
-- For randomness, always use \`random()\` and never use \`Math.random()\` because \`random()\` is seeded.
-
-Nunjucks context:
-- Main entry object is available as \`it\`.
+		const system = buildAiSystemPrompt({
+			templateKind,
+			printerWidth: settings.value.printerWidth,
+			nunjucksContext: `- Main entry object is available as \`it\`.
 - Linked data sources are available as \`sources\`.
 - Template config values are available as \`config\`.
 - App settings are available as \`settings\`.
 - Uploaded template images are available as \`images\` (example: \`images["logo"]\`).
-- Use normal Nunjucks syntax like \`{{ it.name }}\`, \`{% if ... %}\`, and \`{% for item in it.items %}\`.
-
-Current data skeleton for \`it\`:
-${skeletonPreview}
-Linked data sources: ${dataSources || 'none'}
-		`.trim();
+- Use normal Nunjucks syntax like \`{{ it.name }}\`, \`{% if ... %}\`, and \`{% for item in it.items %}\`.`,
+			dataSummary: `Current data skeleton for \`it\`:\n${skeletonPreview}\nLinked data sources: ${dataSources || 'none'}`,
+		});
 
 		runAICodeEditorAction({
 			editor,

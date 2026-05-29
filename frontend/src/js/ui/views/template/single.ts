@@ -1,5 +1,5 @@
 import m from 'mithril';
-import { cloneDeep, debounce, map } from 'lodash-es';
+import { debounce } from 'lodash-es';
 
 import { buildId } from 'js/types/basic-info';
 import Entry from 'js/types/entry';
@@ -20,19 +20,28 @@ import TextArea from 'js/ui/shoelace/text-area';
 import Tooltip from 'js/ui/components/atomic/tooltip';
 import Editor from 'js/ui/components/config/editor';
 import EntryListItem from 'js/ui/components/entry-list-item';
-import HorizontalProperty from 'js/ui/components/horizontal-property';
 import Flex from 'js/ui/components/layout/flex';
-import { openAdditionalInfosModal } from 'js/ui/components/modals/additional-infos';
-import { openFileModal } from 'js/ui/components/modals/file-browser';
-import ImportExport from 'js/ui/components/modals/imexport/import-export';
-import { openPromptModal } from 'js/ui/components/modals/prompt';
 import { openDevTools } from 'js/ui/components/print-preview';
 import Base from 'js/ui/components/view-layout/base';
 import Breadcrumbs from 'js/ui/components/view-layout/breadcrumbs';
 import PaginatedContent from 'js/ui/components/view-layout/paginated-content';
-import SidebarPrintPage from 'js/ui/components/view-layout/sidebar-print-page';
+import SidebarPage from 'js/ui/components/view-layout/sidebar-page';
 
-import { setPortal } from 'js/ui/portal';
+import {
+	deleteSavedConfigAction,
+	loadSavedConfigAction,
+	loadSavedConfigs,
+	printAction,
+	renderInformationTab,
+	renderSaveConfigBar,
+	renderSavedTab,
+	saveConfigAction,
+	screenshotAction,
+	showAdditionalInfoAction,
+	showExportAction,
+	type SavedConfigsState,
+} from 'js/ui/views/shared/entity-single-helpers';
+
 import { dialogWarning, error, success } from 'js/ui/toast';
 
 const PER_PAGE = 10;
@@ -41,7 +50,7 @@ type SingleTemplateProps = {
 	id: string;
 };
 
-type SingleTemplateState = {
+type SingleTemplateState = SavedConfigsState & {
 	template: Template | null;
 	entries: Entry[];
 	selectedEntry: Entry | null;
@@ -53,7 +62,6 @@ type SingleTemplateState = {
 	aiLanguage: string;
 	aiLoading: boolean;
 	lastRendered: string;
-	savedConfigs: Record<string, any>;
 };
 
 export default (): m.Component<SingleTemplateProps> => {
@@ -79,9 +87,6 @@ export default (): m.Component<SingleTemplateProps> => {
 		});
 	};
 
-	/**
-	 * Generates print templates for the given entries and caches them.
-	 */
 	const ensureRenderCache = debounce((entries: Entry[]) => {
 		Promise.all(
 			entries.map((e) =>
@@ -92,7 +97,7 @@ export default (): m.Component<SingleTemplateProps> => {
 						sources: state.template?.dataSources!,
 						config: state.config,
 						settings: settings.value,
-						images: {}, // Don't need images for list template
+						images: {},
 					},
 					false,
 				),
@@ -114,21 +119,15 @@ export default (): m.Component<SingleTemplateProps> => {
 			return e.name.toLowerCase().includes(state.search.toLowerCase());
 		});
 
-	/**
-	 * Generates a new AI entry.
-	 */
 	const generateAIEntry = () => {
-		if (!state.template) return;
-		if (state.aiPrompt === '') return;
+		if (!state.template || state.aiPrompt === '') return;
 		state.aiLoading = true;
-
 		AI.generateEntry(state.aiPrompt, state.template, state.entries)
 			.then((entry) => {
 				if (entry.hasError) {
 					error('AI generation failed. Please try again or test another model.');
 					return;
 				}
-
 				state.selectedEntry = entry.value;
 			})
 			.catch(error)
@@ -137,65 +136,21 @@ export default (): m.Component<SingleTemplateProps> => {
 			});
 	};
 
-	/**
-	 * Generates a new AI translation.
-	 */
 	const generateAITranslation = () => {
-		if (!state.template) return;
-		if (!state.selectedEntry) return;
-		if (state.aiLanguage === '') return;
+		if (!state.template || !state.selectedEntry || state.aiLanguage === '') return;
 		state.aiLoading = true;
-
 		AI.translateEntry(state.aiLanguage, state.selectedEntry).then((entry) => {
 			state.aiLoading = false;
-
 			if (entry.hasError) {
 				error('AI translation failed. Please try again or test another model.');
 				return;
 			}
-
 			state.selectedEntry = entry.value;
 		});
 	};
 
-	const screenshot = () => {
-		if (!state.template) return;
-		openFileModal('Select a save folder', [], true).then((folder) => {
-			API.exec<void>(API.SCREENSHOT, state.lastRendered, `${folder}/${state.selectedEntry?.name}.png`)
-				.then(() => success('Saved screenshot'))
-				.catch(error);
-		});
-	};
-
-	const print = () => {
-		if (!state.template) return;
-		API.exec<void>(API.PRINT, state.lastRendered)
-			.then(() => success('Printed entry'))
-			.catch(error);
-	};
-
-	const showExport = () => {
-		if (!state.template) return;
-
-		setPortal(ImportExport, {
-			attributes: {
-				endpoint: API.EXPORT_TEMPLATE,
-				title: 'Export Template',
-				loadingMessage: 'Exporting... Please wait',
-				verb: 'Export',
-				id: buildId('template', state.template),
-			},
-		});
-	};
-
-	const showAdditionalInfo = () => {
-		if (!state.template) return;
-		openAdditionalInfosModal('template', buildId('template', state.template), state.config);
-	};
-
 	const deleteTemplate = () => {
 		if (!state.template) return;
-
 		dialogWarning('Are you sure you want to delete this template?').then(() => {
 			if (!state.template) return;
 			API.exec<void>(API.DELETE_TEMPLATE, buildId('template', state.template))
@@ -208,54 +163,15 @@ export default (): m.Component<SingleTemplateProps> => {
 		});
 	};
 
-	const saveConfigs = () => {
-		if (!state.template) {
-			return;
-		}
-		return API.exec<void>(API.SET_KEY, `${buildId('template', state.template)}_saved_configs`, JSON.stringify(state.savedConfigs));
-	};
-
-	const saveConfig = () => {
-		openPromptModal({
-			title: 'Save Config',
-			label: 'Name',
-			description: 'Enter a name for the config',
-			onSuccess: (name) => {
-				if (!state.template) return;
-
-				if (state.savedConfigs[name]) {
-					dialogWarning('This config already exists. Do you want to overwrite it?').then(() => {
-						state.savedConfigs[name] = cloneDeep(state.config);
-						saveConfigs()?.catch(error);
-						success('Overwrote config');
-					});
-					return;
-				}
-
-				state.savedConfigs[name] = cloneDeep(state.config);
-				saveConfigs()?.catch(error);
-				success('Saved config');
-			},
-		});
-	};
-
-	const deleteSavedConfig = (name: string) => {
-		dialogWarning('Are you sure you want to delete this config?').then(() => {
-			if (!state.template) return;
-			delete state.savedConfigs[name];
-			saveConfigs()?.catch(error);
-		});
-	};
-
-	const loadSavedConfig = (name: string) => {
-		if (!state.template) return;
-		state.config = cloneDeep(state.savedConfigs[name]);
-	};
-
 	const buttonBar = () =>
-		m(Flex, { className: '.bt.b--black-10.pv2.ph3', justify: 'between', items: 'center', gap: 2 }, [
-			m(Flex, { gap: 2 }, [m(IconButton, { icon: 'save', intend: 'primary', onClick: saveConfig }, 'Save Config')]),
-		]);
+		renderSaveConfigBar(() =>
+			saveConfigAction(
+				'template',
+				() => state.template,
+				() => state.config,
+				state,
+			),
+		);
 
 	const entryElement = (entry: Entry) => {
 		const selected = state.selectedEntry && entry.id === state.selectedEntry.id;
@@ -272,9 +188,25 @@ export default (): m.Component<SingleTemplateProps> => {
 						m(
 							Tooltip,
 							{ content: 'Screenshot' },
-							m(IconButton, { intend: 'primary', size: 'sm', className: '.mr2', icon: 'camera', onClick: screenshot }),
-						), //
-						m(Tooltip, { content: 'Print' }, m(IconButton, { className: '.mr2', intend: 'primary', size: 'sm', icon: 'print', onClick: print })),
+							m(IconButton, {
+								intend: 'primary',
+								size: 'sm',
+								className: '.mr2',
+								icon: 'camera',
+								onClick: () => screenshotAction(() => state.lastRendered, state.selectedEntry?.name ?? 'entry'),
+							}),
+						),
+						m(
+							Tooltip,
+							{ content: 'Print' },
+							m(IconButton, {
+								className: '.mr2',
+								intend: 'primary',
+								size: 'sm',
+								icon: 'print',
+								onClick: () => printAction(() => state.lastRendered),
+							}),
+						),
 						m(
 							Tooltip,
 							{ content: 'Edit Entry' },
@@ -315,14 +247,9 @@ export default (): m.Component<SingleTemplateProps> => {
 			API.exec<Template>(API.GET_TEMPLATE, attrs.id).then((template) => {
 				state.template = template;
 				state.config = sanitizeConfig(template, {});
-
 				fetchEntries();
 			});
-			API.exec<string>(API.GET_KEY, `${attrs.id}_saved_configs`)
-				.then((configs) => {
-					state.savedConfigs = JSON.parse(configs);
-				})
-				.catch(console.error);
+			loadSavedConfigs(attrs.id, state);
 		},
 		view({ attrs }) {
 			return m(
@@ -344,12 +271,24 @@ export default (): m.Component<SingleTemplateProps> => {
 						m(
 							Tooltip,
 							{ content: 'Export' },
-							m(IconButton, { icon: 'download', size: 'sm', intend: 'primary', className: '.mr2', onClick: showExport }),
+							m(IconButton, {
+								icon: 'download',
+								size: 'sm',
+								intend: 'primary',
+								className: '.mr2',
+								onClick: () => state.template && showExportAction('template', state.template, API.EXPORT_TEMPLATE, 'Export Template'),
+							}),
 						),
 						m(
 							Tooltip,
 							{ content: 'Additional Information' },
-							m(IconButton, { icon: 'information-circle-outline', size: 'sm', intend: 'primary', className: '.mr2', onClick: showAdditionalInfo }),
+							m(IconButton, {
+								icon: 'information-circle-outline',
+								size: 'sm',
+								intend: 'primary',
+								className: '.mr2',
+								onClick: () => state.template && showAdditionalInfoAction('template', state.template, state.config),
+							}),
 						),
 						m(
 							Tooltip,
@@ -359,9 +298,7 @@ export default (): m.Component<SingleTemplateProps> => {
 								icon: 'bug',
 								size: 'sm',
 								className: '.mr2',
-								onClick: () => {
-									openDevTools(document.body);
-								},
+								onClick: () => openDevTools(document.body),
 							}),
 						),
 						m(
@@ -380,7 +317,7 @@ export default (): m.Component<SingleTemplateProps> => {
 				},
 				state.template
 					? // @ts-ignore
-						m(SidebarPrintPage, {
+						m(SidebarPage, {
 							template: state.template,
 							it: state.selectedEntry?.data,
 							entry: state.selectedEntry,
@@ -396,7 +333,6 @@ export default (): m.Component<SingleTemplateProps> => {
 											{ icon: 'save', label: 'Saved' },
 										]
 									: []),
-								// { icon: 'search', label: 'Advanced Filter' },
 							],
 							content: {
 								Entries: () =>
@@ -426,13 +362,19 @@ export default (): m.Component<SingleTemplateProps> => {
 												onChange: (val) => (state.aiPrompt = val),
 											}),
 											m(Flex, { justify: 'between', className: '.mt2' }, [
-												m(Button, { onClick: generateAIEntry, loading: state.aiLoading, intend: 'primary' }, 'Generate'), //
+												m(Button, { onClick: generateAIEntry, loading: state.aiLoading, intend: 'primary' }, 'Generate'),
 												m(
 													Flex,
 													{ items: 'center' },
 													state.selectedEntry?.id.indexOf('ai#') === 0 && !state.aiLoading
 														? [
-																m(IconButton, { className: '.mr2', intend: 'primary', size: 'sm', icon: 'print', onClick: print }),
+																m(IconButton, {
+																	className: '.mr2',
+																	intend: 'primary',
+																	size: 'sm',
+																	icon: 'print',
+																	onClick: () => printAction(() => state.lastRendered),
+																}),
 																m('div.mr2', 'or'),
 																m(Input, {
 																	placeholder: 'Name',
@@ -473,7 +415,7 @@ export default (): m.Component<SingleTemplateProps> => {
 												onChange: (val) => (state.aiLanguage = val),
 											}),
 											m(Flex, { justify: 'between', className: '.mt2' }, [
-												m(Button, { onClick: generateAITranslation, loading: state.aiLoading, intend: 'primary' }, 'Translate'), //
+												m(Button, { onClick: generateAITranslation, loading: state.aiLoading, intend: 'primary' }, 'Translate'),
 												m(
 													Flex,
 													state.selectedEntry?.id.indexOf('ai_translate#') === 0 && !state.aiLoading
@@ -509,17 +451,7 @@ export default (): m.Component<SingleTemplateProps> => {
 											]),
 										]),
 									),
-								Information: () =>
-									m('div.ph3.pv2.lh-copy', [
-										m('div.f5.mb2.b', 'Description'),
-										m('div', { style: { whiteSpace: 'break-spaces' } }, state.template?.description ?? ''),
-										...(state.template?.copyrightNotice
-											? [
-													m('div.f5.mb2.b.mt3', 'Copyright Notice'),
-													m('div', { style: { whiteSpace: 'break-spaces' } }, state.template.copyrightNotice),
-												]
-											: []),
-									]),
+								Information: () => renderInformationTab(state.template),
 								Config: () =>
 									m(Flex, { className: '.h-100', direction: 'column' }, [
 										m(Editor, {
@@ -534,43 +466,12 @@ export default (): m.Component<SingleTemplateProps> => {
 										buttonBar(),
 									]),
 								Saved: () =>
-									m(Flex, { className: '.h-100', direction: 'column' }, [
-										m('div.ph3.pv2.lh-copy.h-100.overflow-auto', [
-											m('div.f5.b', 'Saved Configs'),
-											Object.keys(state.savedConfigs).length
-												? m(Flex, { direction: 'column' }, [
-														...map(state.savedConfigs, (config, key) =>
-															m(
-																HorizontalProperty,
-																{
-																	label: key,
-																	description: '',
-																	bottomBorder: true,
-																	centered: true,
-																},
-																m(
-																	Flex,
-																	{
-																		justify: 'end',
-																	},
-																	[
-																		m(IconButton, { icon: 'trash', intend: 'error', onClick: () => deleteSavedConfig(key) }),
-																		m(DividerVert),
-																		m(
-																			IconButton,
-																			{ icon: 'cloud-upload', className: '.mr2', intend: 'primary', onClick: () => loadSavedConfig(key) },
-																			'Load',
-																		),
-																	],
-																),
-															),
-														),
-													])
-												: m('div.pv2.text-muted', 'No saved configs yet...'),
-										]),
-										buttonBar(),
-									]),
-								//'Advanced Filter': () => m('div.pa3', 'Coming back soon...'),
+									renderSavedTab({
+										state,
+										onDelete: (key) => deleteSavedConfigAction('template', () => state.template, key, state),
+										onLoad: (key) => loadSavedConfigAction(key, state, (c) => (state.config = c)),
+										buttonBar,
+									}),
 							},
 						})
 					: null,

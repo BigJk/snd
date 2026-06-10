@@ -82,7 +82,12 @@ export default (): m.Component<ImageUploadProps> => {
 					m('div.db.h-100.w-100.ba.bw1.br2.b--dashed.b--col-primary-muted.bg-black-05' + (attrs.compact ? '.pa2' : '.pa3'), [
 						m('div.tc.mb3.fw5', 'Download from URL'),
 						m(Flex, { direction: attrs.compact ? 'column' : 'row' }, [
-							m(Input, { className: '.w-100', placeholder: 'https://example.com/image.png', value: url }), //
+							m(Input, {
+								className: '.w-100',
+								placeholder: 'https://example.com/image.png',
+								value: url,
+								onChange: (value) => (url = value),
+							}), //
 							m(
 								Button,
 								{

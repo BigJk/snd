@@ -1,3 +1,5 @@
+//go:build !android
+
 // Package rendering provides a function to render HTML to images or HTML after JS execution.
 // It uses the Chrome Debug Protocol through the rod package. It will download a headless
 // Chrome version if needed that matches the current platform.
@@ -28,6 +30,13 @@ const IdleRequestTimeout = 5
 const ReadyTimeout = 5
 
 var browser *rod.Browser
+
+type AndroidRenderer interface {
+	RenderURL(url string, width int32) ([]byte, error)
+	ExtractHTML(url string, selector string) (string, error)
+}
+
+func SetAndroidRenderer(renderer AndroidRenderer) {}
 
 func InitBrowser() {
 	if browser != nil {
@@ -80,10 +89,17 @@ func InitBrowser() {
 }
 
 func Shutdown() error {
+	if browser == nil {
+		return nil
+	}
 	return browser.Close()
 }
 
 func tryOpenPage(url string) (*rod.Page, error) {
+	if browser == nil {
+		return nil, errors.New("rendering browser is not initialized")
+	}
+
 	var page *rod.Page
 	var err error
 

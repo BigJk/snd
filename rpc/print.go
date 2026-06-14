@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"image"
+	"image/draw"
 	"image/png"
 	"io/ioutil"
 	"math"
@@ -142,7 +143,7 @@ func print(db database.Database, printer printing.PossiblePrinter, html string) 
 		return fmt.Errorf("html to image rendering failed: %w", err)
 	}
 
-	imageRgb := renderedImage.(*image.RGBA)
+	imageRgb := toRGBA(renderedImage)
 	height := imageRgb.Bounds().Max.Y
 	width := imageRgb.Bounds().Max.X
 
@@ -201,7 +202,7 @@ func print(db database.Database, printer printing.PossiblePrinter, html string) 
 		}
 
 		// Print chunk
-		err = selectedPrinter.Print(settings.PrinterEndpoint, renderedImage, buf.Bytes())
+		err = selectedPrinter.Print(settings.PrinterEndpoint, img, buf.Bytes())
 		if err != nil {
 			return fmt.Errorf("printer wasn't able to print: %w", err)
 		}
@@ -213,6 +214,17 @@ func print(db database.Database, printer printing.PossiblePrinter, html string) 
 	}
 
 	return nil
+}
+
+func toRGBA(img image.Image) *image.RGBA {
+	if rgba, ok := img.(*image.RGBA); ok {
+		return rgba
+	}
+
+	bounds := img.Bounds()
+	rgba := image.NewRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
+	draw.Draw(rgba, rgba.Bounds(), img, bounds.Min, draw.Src)
+	return rgba
 }
 
 // hashObject will hash the given object and return the hash as a string.

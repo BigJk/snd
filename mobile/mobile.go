@@ -22,6 +22,7 @@ type Server struct {
 	data   string
 	bridge USBBridge
 	render RendererBridge
+	picker FilePickerBridge
 	server *server.Server
 }
 
@@ -33,6 +34,11 @@ type USBBridge interface {
 type RendererBridge interface {
 	RenderURL(url string, width int32) ([]byte, error)
 	ExtractHTML(url string, selector string) (string, error)
+}
+
+type FilePickerBridge interface {
+	PickFile(fileEndingsJSON string) (string, error)
+	PickFolder() (string, error)
 }
 
 func NewServer(dataDir string, bridge USBBridge) *Server {
@@ -47,6 +53,15 @@ func NewServerWithRenderer(dataDir string, bridge USBBridge, renderer RendererBr
 		data:   dataDir,
 		bridge: bridge,
 		render: renderer,
+	}
+}
+
+func NewServerWithBridges(dataDir string, bridge USBBridge, renderer RendererBridge, picker FilePickerBridge) *Server {
+	return &Server{
+		data:   dataDir,
+		bridge: bridge,
+		render: renderer,
+		picker: picker,
 	}
 }
 
@@ -86,6 +101,7 @@ func (s *Server) Start(bindAddr string, debug bool) error {
 		server.WithPrinter(androidusb.New(s.bridge)),
 		server.WithPrinter(&remote.Remote{}),
 		server.WithPrinter(&dump.Dump{}),
+		server.WithFilePicker(s.picker),
 	)
 	if err != nil {
 		_ = db.Close()

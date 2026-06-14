@@ -107,6 +107,9 @@ export const AI_INVALIDATE_CACHE = 'aiInvalidateCached';
 // File Browser
 export const GET_FILES = 'getFiles';
 export const GET_DEFAULT_DIRECTORIES = 'getDefaultDirectories';
+export const HAS_NATIVE_FILE_PICKER = 'hasNativeFilePicker';
+export const PICK_FILE = 'pickFile';
+export const PICK_FOLDER = 'pickFolder';
 
 // Misc function
 export const FETCH_IMAGE = 'fetchImage';

@@ -2,6 +2,8 @@ package app.salesanddungeons
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -13,6 +15,7 @@ import mobile.Server
 
 class MainActivity : Activity() {
     private var sndServer: Server? = null
+    private lateinit var filePickerBridge: AndroidFilePickerBridge
     private lateinit var webView: WebView
     private val serverUrl = "http://127.0.0.1:7123"
     private val viewportWidth = 1280
@@ -25,7 +28,8 @@ class MainActivity : Activity() {
 
         val usbBridge = AndroidUsbBridge(this)
         val renderBridge = AndroidRenderBridge(this)
-        sndServer = Mobile.newServerWithRenderer(filesDir.absolutePath, usbBridge, renderBridge).also {
+        filePickerBridge = AndroidFilePickerBridge(this)
+        sndServer = Mobile.newServerWithBridges(filesDir.absolutePath, usbBridge, renderBridge, filePickerBridge).also {
             it.start("127.0.0.1:7123", false)
         }
 
@@ -62,10 +66,25 @@ class MainActivity : Activity() {
         super.onDestroy()
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        if (::webView.isInitialized && webView.canGoBack()) {
+            webView.goBack()
+            return
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Close Sales & Dungeons?")
+            .setMessage("Are you sure you want to close the app?")
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Close") { _, _ -> finish() }
+            .show()
+    }
+
     private fun copyFrontendAssets() {
         val target = File(filesDir, "frontend/dist")
         if (target.exists()) {
-            return
+            target.deleteRecursively()
         }
 
         target.mkdirs()
@@ -116,4 +135,16 @@ class MainActivity : Activity() {
         } catch (_: Exception) {
             false
         }
+
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+    ) {
+        if (::filePickerBridge.isInitialized && filePickerBridge.onActivityResult(requestCode, resultCode, data)) {
+            return
+        }
+
+        super.onActivityResult(requestCode, resultCode, data)
+    }
 }

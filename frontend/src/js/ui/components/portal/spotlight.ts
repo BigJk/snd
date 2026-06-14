@@ -146,6 +146,7 @@ export default (): m.Component => {
 		]);
 
 	let listner = (e: KeyboardEvent) => {};
+	let outsideListner = (e: Event) => {};
 
 	return {
 		oncreate(vnode): any {
@@ -183,6 +184,20 @@ export default (): m.Component => {
 			};
 			window.addEventListener('keydown', listner);
 
+			setTimeout(() => {
+				outsideListner = (e: Event) => {
+					if (vnode.dom.contains(e.target as Node)) {
+						return;
+					}
+
+					clearPortal();
+				};
+
+				document.addEventListener('mousedown', outsideListner, true);
+				document.addEventListener('touchstart', outsideListner, true);
+				document.addEventListener('click', outsideListner, true);
+			}, 0);
+
 			// Prevent the input to be affected by the up arrow.
 			vnode.dom.querySelector('input')?.addEventListener('keydown', function (e) {
 				if (e.keyCode == 38 || e.keyCode == 40) {
@@ -192,6 +207,9 @@ export default (): m.Component => {
 		},
 		onremove() {
 			window.removeEventListener('keydown', listner);
+			document.removeEventListener('mousedown', outsideListner, true);
+			document.removeEventListener('touchstart', outsideListner, true);
+			document.removeEventListener('click', outsideListner, true);
 		},
 		view() {
 			return m('div.bg-white.ba.b--black-10.br2', { style: { width: '600px', 'box-shadow': 'rgba(149, 157, 165, 0.35) 0px 8px 24px' } }, [

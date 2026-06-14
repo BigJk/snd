@@ -11,6 +11,8 @@ SKIP_FRONTEND_BUILD=${SND_SKIP_FRONTEND_BUILD:="false"}
 ANDROID_NDK_VERSION=${SND_ANDROID_NDK_VERSION:="26.3.11579264"}
 ANDROID_API=${SND_ANDROID_API:="26"}
 INSTALL_NDK=${SND_ANDROID_INSTALL_NDK:="false"}
+DEPLOY_APK=${SND_ANDROID_DEPLOY:="false"}
+ANDROID_PACKAGE=${SND_ANDROID_PACKAGE:="app.salesanddungeons"}
 ANDROID_SDK_DIR=${ANDROID_HOME:-${ANDROID_SDK_ROOT:-"${HOME}/Library/Android/sdk"}}
 
 BUILD_TIME=$(date -Iseconds)
@@ -31,6 +33,7 @@ echo "AAR Path     : ${AAR_PATH}"
 echo "Android SDK  : ${ANDROID_SDK_DIR}"
 echo "Android NDK  : ${ANDROID_NDK_VERSION}"
 echo "Android API  : ${ANDROID_API}"
+echo "Deploy APK   : ${DEPLOY_APK}"
 
 require_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -145,6 +148,25 @@ fi
 echo "Collecting artifacts..."
 mkdir -p "${TARGET_DIR}"
 find "${ANDROID_DIR}/app/build/outputs" -type f \( -name "*.apk" -o -name "*.aab" \) -exec cp {} "${TARGET_DIR}/" \;
+
+if [ "${DEPLOY_APK}" = "true" ]; then
+  require_command adb
+
+  APK_PATH="$(find "${TARGET_DIR}" -maxdepth 1 -type f -name "*.apk" | sort | head -n 1)"
+  if [ -z "${APK_PATH}" ]; then
+    echo "Error: no APK found in ${TARGET_DIR}."
+    exit 1
+  fi
+
+  echo "Installing ${APK_PATH}..."
+  adb install -r "${APK_PATH}"
+
+  echo "Force-stopping ${ANDROID_PACKAGE} so copied frontend assets refresh..."
+  adb shell am force-stop "${ANDROID_PACKAGE}"
+
+  echo "Launching ${ANDROID_PACKAGE}..."
+  adb shell monkey -p "${ANDROID_PACKAGE}" 1 >/dev/null
+fi
 
 echo "Building version.txt..."
 echo "Commit: ${GIT_COMMIT}" > "${TARGET_DIR}/version.txt"

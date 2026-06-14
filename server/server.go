@@ -56,6 +56,7 @@ type Server struct {
 	m                *melody.Melody
 	cache            *cache.Cache
 	printers         printing.PossiblePrinter
+	filePicker       rpc.FilePicker
 	additionalRoutes []func(e *echo.Group)
 }
 
@@ -98,6 +99,13 @@ func WithPrinter(printer printing.Printer) Option {
 func WithDataDir(dir string) Option {
 	return func(s *Server) error {
 		s.dataDir = dir
+		return nil
+	}
+}
+
+func WithFilePicker(filePicker rpc.FilePicker) Option {
+	return func(s *Server) error {
+		s.filePicker = filePicker
 		return nil
 	}
 }
@@ -176,7 +184,7 @@ func (s *Server) Start(bindAddr string) error {
 	rpc.RegisterGit(api, s.db)
 	rpc.RegisterCloud(api, s.db)
 	rpc.RegisterAI(api, s.db)
-	rpc.RegisterFileBrowser(api)
+	rpc.RegisterFileBrowser(api, s.filePicker)
 	rpc.RegisterMisc(api)
 
 	// Expose function list

@@ -1,3 +1,8 @@
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+}
+
 fun requiredEnv(name: String): String =
     System.getenv(name)
         ?: error("Missing required environment variable: $name")
@@ -21,16 +26,22 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file(requiredEnv("ANDROID_KEYSTORE_PATH"))
-            storePassword = requiredEnv("ANDROID_KEYSTORE_PASSWORD")
-            keyAlias = requiredEnv("ANDROID_KEY_ALIAS")
-            keyPassword = requiredEnv("ANDROID_KEY_PASSWORD")
+            val keystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
+            if (keystorePath != null) {
+                storeFile = file(keystorePath)
+                storePassword = requiredEnv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias = requiredEnv("ANDROID_KEY_ALIAS")
+                keyPassword = requiredEnv("ANDROID_KEY_PASSWORD")
+            }
         }
     }
 
     buildTypes {
         getByName("release") {
-            signingConfig = signingConfigs.getByName("release")
+            val keystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
+            if (keystorePath != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 
@@ -39,4 +50,8 @@ android {
     }
 
     sourceSets["main"].assets.srcDir("../../frontend/dist")
+}
+
+dependencies {
+    implementation(files("libs/sndmobile.aar"))
 }

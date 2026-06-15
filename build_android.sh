@@ -4,6 +4,11 @@ set -e
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ANDROID_DIR="${ROOT_DIR}/android"
 TARGET_DIR=${SND_RELEASE_DIR:="${ROOT_DIR}/build/android"}
+# Resolve relative paths against ROOT_DIR so cd operations don't break them
+case "${TARGET_DIR}" in
+  /*) ;;
+  *) TARGET_DIR="${ROOT_DIR}/${TARGET_DIR}" ;;
+esac
 GRADLE_TASK=${SND_ANDROID_GRADLE_TASK:="assembleDebug"}
 GRADLE_BIN=${SND_GRADLE:-""}
 AAR_PATH=${SND_ANDROID_AAR:="${ANDROID_DIR}/app/libs/sndmobile.aar"}
@@ -145,9 +150,18 @@ else
   exit 1
 fi
 
+cd "${ROOT_DIR}"
+
 echo "Collecting artifacts..."
 mkdir -p "${TARGET_DIR}"
 find "${ANDROID_DIR}/app/build/outputs" -type f \( -name "*.apk" -o -name "*.aab" \) -exec cp {} "${TARGET_DIR}/" \;
+
+APK_COUNT=$(find "${TARGET_DIR}" -maxdepth 1 -type f \( -name "*.apk" -o -name "*.aab" \) | wc -l | tr -d ' ')
+if [ "${APK_COUNT}" -eq 0 ]; then
+  echo "Error: no APK or AAB files found in ${ANDROID_DIR}/app/build/outputs"
+  echo "The Gradle build may have failed silently."
+  exit 1
+fi
 
 if [ "${DEPLOY_APK}" = "true" ]; then
   require_command adb

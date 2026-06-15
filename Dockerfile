@@ -25,6 +25,7 @@ WORKDIR /app
 
 RUN apt-get -y update &&\
     apt-get -y install \
+      adduser \
       libusb-1.0.0-dev \
       pkg-config \
       curl &&\

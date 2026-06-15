@@ -1,5 +1,5 @@
 # Build image
-FROM golang:1.25.5-bullseye AS build-stage
+FROM golang:1.25-bookworm AS build-stage
 
 ENV SND_TAGS=LIBUSB
 ENV SND_RELEASE_DIR=/app
@@ -33,7 +33,7 @@ RUN apt-get -y update &&\
     apt-get -y clean &&\
     apt-get autoremove &&\
     rm -rf /var/lib/apt/lists/* &&\
-    rm google-chrome-stable_current_amd64.deb 
+    rm google-chrome-stable_current_amd64.deb
 
 COPY --from=build-stage /app /app
 RUN adduser --system --group --home /home/app app && chown app:app /app

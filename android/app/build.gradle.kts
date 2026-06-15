@@ -1,7 +1,6 @@
-plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-}
+fun requiredEnv(name: String): String =
+    System.getenv(name)
+        ?: error("Missing required environment variable: $name")
 
 android {
     namespace = "app.salesanddungeons"
@@ -20,13 +19,24 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(requiredEnv("ANDROID_KEYSTORE_PATH"))
+            storePassword = requiredEnv("ANDROID_KEYSTORE_PASSWORD")
+            keyAlias = requiredEnv("ANDROID_KEY_ALIAS")
+            keyPassword = requiredEnv("ANDROID_KEY_PASSWORD")
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
+
     kotlinOptions {
         jvmTarget = "17"
     }
 
     sourceSets["main"].assets.srcDir("../../frontend/dist")
-}
-
-dependencies {
-    implementation(files("libs/sndmobile.aar"))
 }

@@ -44,6 +44,17 @@ func RegisterImageUtilities(route *echo.Group, db database.Database) {
 	cacheMutex := sync.RWMutex{}
 	cache := map[string]string{}
 
+	cacheImage := func(img string) string {
+		hash := sha256.Sum256([]byte(img))
+		hashHex := fmt.Sprintf("%x", hash)
+
+		cacheMutex.Lock()
+		cache[hashHex] = img
+		cacheMutex.Unlock()
+
+		return hashHex
+	}
+
 	decodeDataURI := func(dataURI string) ([]byte, string, error) {
 		data, err := dataurl.DecodeString(dataURI)
 		if err != nil {
@@ -58,12 +69,16 @@ func RegisterImageUtilities(route *echo.Group, db database.Database) {
 	if err == nil {
 		for _, template := range templates {
 			for _, img := range template.Images {
-				hash := sha256.Sum256([]byte(img))
-				hashHex := fmt.Sprintf("%x", hash)
+				cacheImage(img)
+			}
+		}
+	}
 
-				cacheMutex.Lock()
-				cache[hashHex] = img
-				cacheMutex.Unlock()
+	generators, err := db.GetGenerators()
+	if err == nil {
+		for _, generator := range generators {
+			for _, img := range generator.Images {
+				cacheImage(img)
 			}
 		}
 	}
@@ -75,12 +90,7 @@ func RegisterImageUtilities(route *echo.Group, db database.Database) {
 		}
 
 		dataUri := strings.Trim(string(body), "\"")
-		hash := sha256.Sum256([]byte(dataUri))
-		hashHex := fmt.Sprintf("%x", hash)
-
-		cacheMutex.Lock()
-		cache[hashHex] = dataUri
-		cacheMutex.Unlock()
+		cacheImage(dataUri)
 
 		return c.NoContent(http.StatusOK)
 	})
@@ -107,14 +117,24 @@ func RegisterImageUtilities(route *echo.Group, db database.Database) {
 
 		for _, template := range templates {
 			for _, img := range template.Images {
-				hash := sha256.Sum256([]byte(img))
-				hashHex := fmt.Sprintf("%x", hash)
+				if cacheImage(img) == hash {
+					data, contentType, err := decodeDataURI(img)
+					if err != nil {
+						return c.JSON(http.StatusBadRequest, err)
+					}
+					return c.Blob(http.StatusOK, contentType, data)
+				}
+			}
+		}
 
-				cacheMutex.Lock()
-				cache[hashHex] = img
-				cacheMutex.Unlock()
+		generators, err := db.GetGenerators()
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err)
+		}
 
-				if hashHex == c.Param("id") {
+		for _, generator := range generators {
+			for _, img := range generator.Images {
+				if cacheImage(img) == hash {
 					data, contentType, err := decodeDataURI(img)
 					if err != nil {
 						return c.JSON(http.StatusBadRequest, err)

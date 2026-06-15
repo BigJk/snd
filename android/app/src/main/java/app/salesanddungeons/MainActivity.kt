@@ -29,11 +29,19 @@ class MainActivity : Activity() {
         copyFrontendAssets()
 
         val usbBridge = AndroidUsbBridge(this)
+        val bluetoothBridge = AndroidBluetoothBridge(this)
         val renderBridge = AndroidRenderBridge(this)
         filePickerBridge = AndroidFilePickerBridge(this)
-        sndServer = Mobile.newServerWithBridges(filesDir.absolutePath, usbBridge, renderBridge, filePickerBridge).also {
-            it.start("127.0.0.1:7123", false)
-        }
+        sndServer =
+            Mobile.newServerWithAndroidBridges(
+                filesDir.absolutePath,
+                usbBridge,
+                bluetoothBridge,
+                renderBridge,
+                filePickerBridge,
+            ).also {
+                it.start("127.0.0.1:7123", false)
+            }
 
         webView = WebView(this)
         webView.settings.javaScriptEnabled = true

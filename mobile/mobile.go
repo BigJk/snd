@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/BigJk/snd/database/badger"
+	"github.com/BigJk/snd/printing/androidbt"
 	"github.com/BigJk/snd/printing/androidusb"
 	"github.com/BigJk/snd/printing/dump"
 	"github.com/BigJk/snd/printing/remote"
@@ -21,12 +22,18 @@ type Server struct {
 	mu     sync.Mutex
 	data   string
 	bridge USBBridge
+	bt     BluetoothBridge
 	render RendererBridge
 	picker FilePickerBridge
 	server *server.Server
 }
 
 type USBBridge interface {
+	AvailableEndpointsJSON() (string, error)
+	Print(endpoint string, data []byte) error
+}
+
+type BluetoothBridge interface {
 	AvailableEndpointsJSON() (string, error)
 	Print(endpoint string, data []byte) error
 }
@@ -61,6 +68,22 @@ func NewServerWithBridges(dataDir string, bridge USBBridge, renderer RendererBri
 	return &Server{
 		data:   dataDir,
 		bridge: bridge,
+		render: renderer,
+		picker: picker,
+	}
+}
+
+func NewServerWithAndroidBridges(
+	dataDir string,
+	bridge USBBridge,
+	bt BluetoothBridge,
+	renderer RendererBridge,
+	picker FilePickerBridge,
+) *Server {
+	return &Server{
+		data:   dataDir,
+		bridge: bridge,
+		bt:     bt,
 		render: renderer,
 		picker: picker,
 	}
@@ -105,6 +128,7 @@ func (s *Server) Start(bindAddr string, debug bool) error {
 		server.WithDebug(debug),
 		server.WithDefaultSettings(defaultSettings),
 		server.WithPrinter(androidusb.New(s.bridge)),
+		server.WithPrinter(androidbt.New(s.bt)),
 		server.WithPrinter(&remote.Remote{}),
 		server.WithPrinter(&dump.Dump{}),
 		server.WithFilePicker(s.picker),

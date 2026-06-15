@@ -1,5 +1,5 @@
 # Build image
-FROM golang:bullseye as build-stage
+FROM golang:1.25.5-bullseye AS build-stage
 
 ENV SND_TAGS=LIBUSB
 ENV SND_RELEASE_DIR=/app

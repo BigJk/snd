@@ -226,8 +226,7 @@ export default (): m.Component<SessionGridProps> => {
 				items: 'center',
 				justify: 'center',
 				gap: 3,
-				className: '.tc.text-muted',
-				style: { minHeight: '50vh' },
+				className: '.h-100.tc.text-muted',
 			},
 			m(Icon, { icon: 'apps', size: 1, className: '.o-40' }),
 			m('div', [
@@ -445,7 +444,7 @@ export default (): m.Component<SessionGridProps> => {
 							: null,
 					]),
 				},
-				m(CenterContainer, [content()]),
+				state.selectedGrid.length === 0 || !state.grids[state.selectedGrid] ? emptyState() : m(CenterContainer, [content()]),
 			);
 		},
 	};

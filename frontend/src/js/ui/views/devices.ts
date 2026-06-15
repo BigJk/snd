@@ -3,6 +3,8 @@ import { map } from 'lodash-es';
 
 import store, { settings } from 'js/core/store';
 
+import DividerVert from 'js/ui/shoelace/divider-vert';
+import IconButton from 'js/ui/shoelace/icon-button';
 import Select from 'js/ui/shoelace/select';
 
 import Icon from 'js/ui/components/atomic/icon';
@@ -12,41 +14,65 @@ import Device from 'js/ui/components/device';
 import Flex from 'js/ui/components/layout/flex';
 import Base from 'js/ui/components/view-layout/base';
 
+import { error } from 'js/ui/toast';
+
 const infoText = `On this page you can select the printer you want to use from the ones that were automatically detected.`;
 
 type DevicesState = {
 	typeFilter: string;
+	refreshing: boolean;
 };
 
 const DevicesGridStyle = {
 	display: 'grid',
 	gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
 	gridGap: '1rem',
+	alignItems: 'start',
+	alignContent: 'start',
 };
 
 export default (): m.Component => {
 	let state: DevicesState = {
 		typeFilter: '',
+		refreshing: false,
 	};
 
 	const availablePrinterTypes = () => Object.keys(store.value.printer).filter((k) => Object.keys(store.value.printer[k] ?? {}).length > 0);
 	const hasAvailableDevices = () => availablePrinterTypes().length > 0;
 
+	const refreshDevices = () => {
+		state.refreshing = true;
+		store.actions
+			.loadPrinter()
+			.then(() => {
+				if (state.typeFilter && !availablePrinterTypes().includes(state.typeFilter)) {
+					state.typeFilter = '';
+				}
+			})
+			.catch(error)
+			.finally(() => {
+				state.refreshing = false;
+				m.redraw();
+			});
+	};
+
 	const header = () =>
-		m(
-			'div',
+		m(Flex, { justify: 'center', items: 'center' }, [
 			hasAvailableDevices()
 				? m(Select, {
 						width: 250,
 						default: 'Filter by type...',
 						keys: availablePrinterTypes(),
-						selected: null,
+						selected: state.typeFilter,
+						clearable: true,
 						onInput: (e) => {
 							state.typeFilter = e.value;
 						},
 					})
 				: m('div.f7.text-muted', 'No devices available'),
-		);
+			m(DividerVert, { noSpacing: true, className: '.ml3.mr2' }),
+			m(IconButton, { icon: 'refresh', intend: 'link', loading: state.refreshing, onClick: refreshDevices }, 'Refresh'),
+		]);
 
 	const emptyState = () =>
 		m(

@@ -182,6 +182,17 @@ export type GlobalState = {
 
 const dataURIsCommitted: Record<string, boolean> = {};
 
+const commitDataURI = (dataURI: string, imageHash: string) => {
+	if (!dataURI.startsWith('data:') || dataURIsCommitted[imageHash]) {
+		return;
+	}
+
+	const request = new XMLHttpRequest();
+	request.open('POST', '/api/image-cache', false); // `false` makes the request synchronous
+	request.send(JSON.stringify(dataURI));
+	dataURIsCommitted[imageHash] = true;
+};
+
 /**
  * Render template with given state.
  * @param template Template string.
@@ -234,12 +245,7 @@ export const render = (
 
 					if (parent[key].startsWith('data:')) {
 						const imageHash = new jsSHA('SHA-256', 'TEXT', { encoding: 'UTF8' }).update(parent[key]).getHash('HEX');
-
-						if (!dataURIsCommitted[imageHash]) {
-							const request = new XMLHttpRequest();
-							request.open('POST', '/api/image-cache', false); // `false` makes the request synchronous
-							request.send(JSON.stringify(parent[key]));
-						}
+						commitDataURI(parent[key], imageHash);
 
 						parent[key] = `/api/image-cache/${imageHash}`;
 					}
@@ -259,6 +265,8 @@ export const render = (
 
 		Object.keys(clonedState.images).forEach((key) => {
 			const imageHash = new jsSHA('SHA-256', 'TEXT', { encoding: 'UTF8' }).update(clonedState.images[key]).getHash('HEX');
+			commitDataURI(clonedState.images[key], imageHash);
+
 			clonedState.images[key] = `/api/image-cache/${imageHash}`;
 		});
 

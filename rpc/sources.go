@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func RegisterSources(route *echo.Group, db database.Database) {
+func RegisterSources(route *echo.Group, db database.Database, filePicker FilePicker) {
 	bind.MustBind(route, "/saveSource", db.SaveSource)
 	bind.MustBind(route, "/deleteSource", db.DeleteSource)
 	bind.MustBind(route, "/getSources", db.GetSources)
@@ -32,6 +32,6 @@ func RegisterSources(route *echo.Group, db database.Database) {
 		return string(json), nil
 	})
 
-	rpcImexport.RegisterDataSourceExports(route, db)
+	rpcImexport.RegisterDataSourceExports(route, db, filePicker)
 	rpcImexport.RegisterDataSourceImports(route, db)
 }

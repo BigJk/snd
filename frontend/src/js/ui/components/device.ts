@@ -27,7 +27,11 @@ export default (): m.Component<DeviceProps> => {
 		view({ attrs }) {
 			return m(
 				Box,
-				{ minWidth: 300, minHeight: 180, className: `${attrs.active ? '.ba.b--dashed.bw1.b--col-success' : ''}${attrs.className ?? ''}` },
+				{
+					minWidth: 300,
+					height: 180,
+					className: `${attrs.active ? '.ba.b--dashed.bw1.b--col-success' : ''}${attrs.className ?? ''}`,
+				},
 				m(
 					'div.h-100.lh-copy',
 					{ style: { wordBreak: 'break-all' } },
@@ -35,7 +39,7 @@ export default (): m.Component<DeviceProps> => {
 						m('div', [
 							m(`div.b.col-primary`, attrs.type), //
 							m('div.b.f5.lh-title.bb.b--black-05.mb2.pb2', attrs.printer),
-							m('div.f8.code.o-50', 'endpoint=' + attrs.endpoint),
+							m('div.f8.code.o-50', attrs.endpoint),
 						]),
 						m('div', button(attrs)),
 					]),

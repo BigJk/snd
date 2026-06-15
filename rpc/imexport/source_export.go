@@ -1,6 +1,7 @@
 package imexport
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"github.com/BigJk/snd"
@@ -73,9 +74,44 @@ var sourceExports = []DataSourceExport{
 }
 
 // RegisterDataSourceExports registers all data source exports.
-func RegisterDataSourceExports(route *echo.Group, db database.Database) {
+func RegisterDataSourceExports(route *echo.Group, db database.Database, nativeSaver NativeFileSaver) {
 	bind.MustBind(route, "/exportsSource", func() ([]DataSourceExport, error) {
+		if nativeSaver != nil {
+			return []DataSourceExport{
+				{
+					ImExport: NewImExport("ZIP", "NativeZIP", "Export a ZIP file."),
+				},
+			}, nil
+		}
 		return sourceExports, nil
+	})
+
+	bind.MustBind(route, "/exportsSourceNativeZIP", func(id string, args []any) (string, error) {
+		if nativeSaver == nil {
+			return "", errors.New("native save dialog is not available")
+		}
+
+		source, err := db.GetSource(id)
+		if err != nil {
+			return "", err
+		}
+
+		entries, err := db.GetEntries(id)
+		if err != nil {
+			return "", err
+		}
+
+		buf := &bytes.Buffer{}
+		file, err := imexport.ExportSourceZIP(source, entries, buf)
+		if err != nil {
+			return "", err
+		}
+
+		if err := nativeSaver.SaveFile(file, "application/zip", buf.Bytes()); err != nil {
+			return "", err
+		}
+
+		return fmt.Sprintf("Successfully saved '%s'", file), nil
 	})
 
 	for i := range sourceExports {

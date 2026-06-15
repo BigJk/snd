@@ -14,7 +14,7 @@ import (
 	"net/http"
 )
 
-func RegisterGenerator(route *echo.Group, extern *echo.Group, db database.Database) {
+func RegisterGenerator(route *echo.Group, extern *echo.Group, db database.Database, filePicker FilePicker) {
 	bind.MustBind(route, "/saveGenerator", db.SaveGenerator)
 	bind.MustBind(route, "/deleteGenerator", db.DeleteGenerator)
 	bind.MustBind(route, "/getGenerators", db.GetGenerators)
@@ -72,7 +72,7 @@ func RegisterGenerator(route *echo.Group, extern *echo.Group, db database.Databa
 		return c.Blob(http.StatusOK, "application/zip", buf.Bytes())
 	})
 
-	rpcImexport.RegisterGeneratorExports(route, db)
+	rpcImexport.RegisterGeneratorExports(route, db, filePicker)
 	rpcImexport.RegisterGeneratorImports(route, db)
 
 	//

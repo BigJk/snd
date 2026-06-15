@@ -295,14 +295,25 @@ const fileBrowserModal = (): m.Component<FileBrowserProps> => {
 
 export function openFileModal(title: string, fileEndings: string[] = [], onlyDirs: boolean = false) {
 	return new Promise<string>((resolve, reject) => {
-		pushPortal(fileBrowserModal, {
-			attributes: {
-				title,
-				fileEndings,
-				onlyDirs,
-				resolve,
-				reject,
-			},
-		});
+		API.exec<boolean>(API.HAS_NATIVE_FILE_PICKER)
+			.then((hasNativeFilePicker) => {
+				if (hasNativeFilePicker) {
+					return onlyDirs ? API.exec<string>(API.PICK_FOLDER) : API.exec<string>(API.PICK_FILE, fileEndings);
+				}
+
+				return new Promise<string>((modalResolve, modalReject) => {
+					pushPortal(fileBrowserModal, {
+						attributes: {
+							title,
+							fileEndings,
+							onlyDirs,
+							resolve: modalResolve,
+							reject: modalReject,
+						},
+					});
+				});
+			})
+			.then(resolve)
+			.catch(reject);
 	});
 }

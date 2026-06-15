@@ -42,10 +42,10 @@ export default (): m.Component<BaseProps> => {
 		view({ attrs, children }) {
 			return m('div.w-100.h-100.flex', [
 				m(SideNav, { className: '.flex-shrink-0', active: attrs.active }),
-				m(`div.flex-grow-1.flex.flex-column.overflow-auto${attrs.className ?? ''}`, [
+				m(`div.flex-grow-1.flex.flex-column.overflow-hidden${attrs.className ?? ''}`, { style: { minHeight: 0 } }, [
 					attrs.aboveHeader ?? null,
 					header(attrs),
-					m(`div.overflow-auto.flex-grow-1${attrs.classNameContainer ?? ''}`, children),
+					m(`div.overflow-auto.flex-grow-1${attrs.classNameContainer ?? ''}`, { style: { minHeight: 0 } }, children),
 				]),
 			]);
 		},

@@ -65,10 +65,15 @@ export default (): m.Component<ImportExportProps> => {
 			return null;
 		}
 
+		const args = state.selected.arguments ?? [];
+		if (args.length === 0) {
+			return m('div.pv2.text-muted', 'No arguments required');
+		}
+
 		return m(
 			Flex,
 			{ direction: 'column' },
-			state.selected.arguments.map((arg, i) => {
+			args.map((arg, i) => {
 				const type = (ConfigTypes as any)[arg.type] as Config | undefined;
 				if (!type) {
 					return null;
@@ -142,7 +147,7 @@ export default (): m.Component<ImportExportProps> => {
 							onInput: (key) => {
 								state.selected = state.imports.find((imp) => imp.name === key.value) ?? null;
 								if (state.selected) {
-									state.args = state.selected.arguments.map((a) => a.default);
+									state.args = (state.selected.arguments ?? []).map((a) => a.default);
 								}
 							},
 						}),

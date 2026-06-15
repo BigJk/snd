@@ -1,7 +1,7 @@
 import m from 'mithril';
 
 // @ts-ignore
-import { shell } from 'src/js/electron';
+import { inElectron, shell } from 'src/js/electron';
 
 import Details from 'js/ui/shoelace/details';
 import Divider from 'js/ui/shoelace/divider';
@@ -32,7 +32,11 @@ const typeName = (type: AdditionalInfoType) => {
 
 const openApiDocs = (e: MouseEvent) => {
 	e.preventDefault();
-	shell.openExternal('https://sales-and-dungeons.app/docs/advanced/api/');
+	if (inElectron) {
+		shell.openExternal('https://sales-and-dungeons.app/docs/advanced/api/');
+	} else {
+		window.open('https://sales-and-dungeons.app/docs/advanced/api/', '_blank');
+	}
 };
 
 const routes = (type: Exclude<AdditionalInfoType, 'source'>, id: string) => {

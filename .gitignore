@@ -29,12 +29,22 @@ cache/
 release/
 build/
 
+# Android build outputs and local machine state
+android/.gradle/
+android/local.properties
+android/**/build/
+android/app/libs/*.aar
+android/*.jks
+android/*.keystore
+!android/app/libs/.gitkeep
+
 *.db
 *.bin
 *.png
 
 !data/*.png
 !data/*.svg
+!android/app/src/main/res/**/*.png
 
 __pycache__/
 

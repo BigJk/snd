@@ -56,7 +56,7 @@ export default (): m.Component<SideMenuPagerProps> => {
 		view({ attrs, key }) {
 			return m(
 				Flex,
-				{ className: `.overflow-auto.h-100${attrs.className ?? ''}`, key: key },
+				{ className: `.overflow-hidden.h-100${attrs.className ?? ''}`, key: key, style: { minHeight: 0 } },
 				filterChildren([
 					m(
 						'div.br.b--black-10.flex-shrink-0.pa2.bg-white',
@@ -85,7 +85,7 @@ export default (): m.Component<SideMenuPagerProps> => {
 					),
 					//
 					// We wrap with additional div to prevent problems with keyed components inside the render.
-					m(`div.w-100.overflow-auto${getClassName(attrs)}`, getRender(attrs)),
+					m(`div.w-100.h-100.overflow-auto${getClassName(attrs)}`, { style: { minHeight: 0 } }, getRender(attrs)),
 				]),
 			);
 		},

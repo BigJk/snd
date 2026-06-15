@@ -89,6 +89,7 @@ export const GET_PRINTER = 'getPrinter';
 // Printing
 export const PRINT = 'print';
 export const SCREENSHOT = 'screenshot';
+export const SCREENSHOT_NATIVE = 'screenshotNative';
 export const CUT_PAPER = 'cutPaper';
 export const OPEN_CASH_DRAWER_1 = 'openCashDrawer1';
 export const OPEN_CASH_DRAWER_2 = 'openCashDrawer2';
@@ -107,6 +108,9 @@ export const AI_INVALIDATE_CACHE = 'aiInvalidateCached';
 // File Browser
 export const GET_FILES = 'getFiles';
 export const GET_DEFAULT_DIRECTORIES = 'getDefaultDirectories';
+export const HAS_NATIVE_FILE_PICKER = 'hasNativeFilePicker';
+export const PICK_FILE = 'pickFile';
+export const PICK_FOLDER = 'pickFolder';
 
 // Misc function
 export const FETCH_IMAGE = 'fetchImage';

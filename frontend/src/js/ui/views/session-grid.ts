@@ -218,12 +218,31 @@ export default (): m.Component<SessionGridProps> => {
 		]);
 	};
 
+	const emptyState = () =>
+		m(
+			Flex,
+			{
+				direction: 'column',
+				items: 'center',
+				justify: 'center',
+				gap: 3,
+				className: '.h-100.tc.text-muted',
+			},
+			m(Icon, { icon: 'apps', size: 1, className: '.o-40' }),
+			m('div', [
+				m('div.f5.fw6.mb2', gridsExist() ? 'No session grid selected' : 'No session grids yet'),
+				m(
+					'div.f7.lh-copy.mw6',
+					gridsExist()
+						? 'Choose a grid from the menu above to start using it.'
+						: 'Create a session grid to organize templates, generators, and printer commands for play.',
+				),
+			]),
+		);
+
 	const content = () => {
 		if (state.selectedGrid.length === 0 || !state.grids[state.selectedGrid]) {
-			return m(Flex, { justify: 'center', items: 'center', className: '.pa4.o-30', direction: 'column', gap: 2 }, [
-				m(Icon, { icon: 'information-circle-outline', size: 3 }),
-				m('div', 'Select a grid to start or create a new one'),
-			]);
+			return emptyState();
 		}
 
 		let columns = 4;
@@ -425,7 +444,7 @@ export default (): m.Component<SessionGridProps> => {
 							: null,
 					]),
 				},
-				m(CenterContainer, [content()]),
+				state.selectedGrid.length === 0 || !state.grids[state.selectedGrid] ? emptyState() : m(CenterContainer, [content()]),
 			);
 		},
 	};

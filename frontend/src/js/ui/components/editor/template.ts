@@ -18,6 +18,7 @@ import Label from 'js/ui/shoelace/label';
 
 import ConfigCreator from 'js/ui/components/config/creator';
 import Editor from 'js/ui/components/config/editor';
+import EditorAIActions from 'js/ui/components/editor/ai-actions';
 import BasicInfo from 'js/ui/components/editor/basic-info';
 import Images from 'js/ui/components/editor/images';
 import EntrySelect from 'js/ui/components/entry-select';
@@ -50,6 +51,10 @@ type TemplateEditorState = {
 	errorsList: PrintPreviewError[];
 	printTemplateEditor?: monaco.editor.IStandaloneCodeEditor;
 	listTemplateEditor?: monaco.editor.IStandaloneCodeEditor;
+	printTemplateHasSelection: boolean;
+	listTemplateHasSelection: boolean;
+	printTemplateSelectionDisposable?: monaco.IDisposable;
+	listTemplateSelectionDisposable?: monaco.IDisposable;
 	aiEditorLoading: '' | 'print' | 'list';
 };
 
@@ -66,10 +71,35 @@ export default (): m.Component<TemplateEditorProps> => {
 		errorsList: [],
 		printTemplateEditor: undefined,
 		listTemplateEditor: undefined,
+		printTemplateHasSelection: false,
+		listTemplateHasSelection: false,
+		printTemplateSelectionDisposable: undefined,
+		listTemplateSelectionDisposable: undefined,
 		aiEditorLoading: '',
 	};
 
 	const getEditorByTarget = (target: 'print' | 'list') => (target === 'print' ? state.printTemplateEditor : state.listTemplateEditor);
+	const editorHasSelection = (editor?: monaco.editor.IStandaloneCodeEditor) => !!editor?.getSelection() && !editor.getSelection()!.isEmpty();
+
+	const bindPrintTemplateEditor = (editor?: monaco.editor.IStandaloneCodeEditor) => {
+		state.printTemplateSelectionDisposable?.dispose();
+		state.printTemplateEditor = editor;
+		state.printTemplateHasSelection = editorHasSelection(editor);
+		state.printTemplateSelectionDisposable = editor?.onDidChangeCursorSelection(() => {
+			state.printTemplateHasSelection = editorHasSelection(editor);
+			m.redraw();
+		});
+	};
+
+	const bindListTemplateEditor = (editor?: monaco.editor.IStandaloneCodeEditor) => {
+		state.listTemplateSelectionDisposable?.dispose();
+		state.listTemplateEditor = editor;
+		state.listTemplateHasSelection = editorHasSelection(editor);
+		state.listTemplateSelectionDisposable = editor?.onDidChangeCursorSelection(() => {
+			state.listTemplateHasSelection = editorHasSelection(editor);
+			m.redraw();
+		});
+	};
 
 	const runEditorAIAction = (attrs: TemplateEditorProps, target: 'print' | 'list', mode: 'generate' | 'edit') => {
 		const editor = getEditorByTarget(target);
@@ -236,6 +266,10 @@ ${editorValue}
 	};
 
 	return {
+		onremove() {
+			state.printTemplateSelectionDisposable?.dispose();
+			state.listTemplateSelectionDisposable?.dispose();
+		},
 		oninit({ attrs }) {
 			renderListPreview(attrs.template.listTemplate, attrs);
 			state.jsonSkeleton = JSON.stringify(attrs.template.skeletonData, null, 2);
@@ -410,47 +444,33 @@ ${editorValue}
 								icon: 'code-working',
 								render: () =>
 									m(Flex, { className: '.h-100', direction: 'column' }, [
-										m(Monaco, {
-											language: 'html',
-											value: attrs.template.printTemplate,
-											className: '.flex-grow-1',
-											errors: state.errorsPrint,
-											onEditor: (editor) => {
-												state.printTemplateEditor = editor;
-											},
-											completion: createNunjucksCompletionProvider({
-												it: addEntryMeta(null, attrs.template.skeletonData),
-												images: attrs.template.images,
-												settings: settings.value,
-												sources: attrs.template.dataSources,
-												config: state.config,
+										m('div.relative.flex-grow-1.overflow-hidden', [
+											m(Monaco, {
+												language: 'html',
+												value: attrs.template.printTemplate,
+												className: '.h-100',
+												errors: state.errorsPrint,
+												onEditor: bindPrintTemplateEditor,
+												completion: createNunjucksCompletionProvider({
+													it: addEntryMeta(null, attrs.template.skeletonData),
+													images: attrs.template.images,
+													settings: settings.value,
+													sources: attrs.template.dataSources,
+													config: state.config,
+												}),
+												onChange: (value) => attrs.onChange({ ...attrs.template, printTemplate: value }),
 											}),
-											onChange: (value) => attrs.onChange({ ...attrs.template, printTemplate: value }),
-										}),
-										!settings.value.aiEnabled
-											? null
-											: m(Flex, { gap: 2, className: '.pa2.bg-white.bt.b--black-10' }, [
-													m(
-														Button,
-														{
-															size: 'sm',
-															intend: 'primary',
+											!settings.value.aiEnabled
+												? null
+												: m('div.absolute.left-0.bottom-0.ma3', { style: { zIndex: 10 } }, [
+														m(EditorAIActions, {
 															loading: state.aiEditorLoading === 'print',
-															onClick: () => runEditorAIAction(attrs, 'print', 'generate'),
-														},
-														'Generate with AI',
-													),
-													m(
-														Button,
-														{
-															size: 'sm',
-															intend: 'primary',
-															loading: state.aiEditorLoading === 'print',
-															onClick: () => runEditorAIAction(attrs, 'print', 'edit'),
-														},
-														'Edit Selection with AI',
-													),
-												]),
+															hasSelection: state.printTemplateHasSelection,
+															onGenerate: () => runEditorAIAction(attrs, 'print', 'generate'),
+															onEditSelection: () => runEditorAIAction(attrs, 'print', 'edit'),
+														}),
+													]),
+										]),
 									]),
 							},
 							//
@@ -465,17 +485,14 @@ ${editorValue}
 								className: '-delete.overflow-hidden',
 								render: () =>
 									m(Flex, { className: '.h-100', direction: 'column' }, [
-										m(
-											'div.flex-grow-1.overflow-hidden',
+										m('div.relative.flex-grow-1.overflow-hidden', [
 											m(Monaco, {
 												key: 'list-template',
 												language: 'html',
 												value: attrs.template.listTemplate,
 												className: '.h-100',
 												errors: state.errorsList,
-												onEditor: (editor) => {
-													state.listTemplateEditor = editor;
-												},
+												onEditor: bindListTemplateEditor,
 												completion: createNunjucksCompletionProvider({
 													it: attrs.template.skeletonData,
 													images: attrs.template.images,
@@ -488,35 +505,21 @@ ${editorValue}
 													renderListPreview(value, attrs);
 												},
 											}),
-										),
+											!settings.value.aiEnabled
+												? null
+												: m('div.absolute.left-0.bottom-0.ma3', { style: { zIndex: 10 } }, [
+														m(EditorAIActions, {
+															loading: state.aiEditorLoading === 'list',
+															hasSelection: state.listTemplateHasSelection,
+															onGenerate: () => runEditorAIAction(attrs, 'list', 'generate'),
+															onEditSelection: () => runEditorAIAction(attrs, 'list', 'edit'),
+														}),
+													]),
+										]),
 										m('div.pa3.flex-shrink-0.bg-white.bt.b--black-10.overflow-hidden', [
 											m('div.mb3.text-muted', 'Preview'),
 											m('div.h3.ph3.pv1.ba.br2.b--black-10.bg-paper.overflow-hidden', m.trust(state.listPreview)),
 										]),
-										!settings.value.aiEnabled
-											? null
-											: m(Flex, { gap: 2, className: '.pa2.bg-white.bt.b--black-10' }, [
-													m(
-														Button,
-														{
-															size: 'sm',
-															intend: 'primary',
-															loading: state.aiEditorLoading === 'list',
-															onClick: () => runEditorAIAction(attrs, 'list', 'generate'),
-														},
-														'Generate with AI',
-													),
-													m(
-														Button,
-														{
-															size: 'sm',
-															intend: 'primary',
-															loading: state.aiEditorLoading === 'list',
-															onClick: () => runEditorAIAction(attrs, 'list', 'edit'),
-														},
-														'Edit Selection with AI',
-													),
-												]),
 									]),
 							},
 						],

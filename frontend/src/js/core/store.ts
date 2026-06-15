@@ -85,6 +85,26 @@ const initialState: Store = {
 	dataDir: '',
 };
 
+const buildFuzzySearch = (state: Store) =>
+	new Fuse<FuseSearch>(
+		[
+			...(state.templates ?? []).map((template) => toFuseSearch('template', template)),
+			...(state.generators ?? []).map((generator) => toFuseSearch('generator', generator)),
+			...(state.sources ?? []).map((source) => toFuseSearch('source', source)),
+			...Operations.map((operation) => toFuseSearch('operation', operation)),
+		],
+		{
+			keys: FuseKeys,
+			minMatchCharLength: 2,
+			threshold: 0.4,
+		},
+	);
+
+const withUpdatedFuzzySearch = (state: Store): Store => ({
+	...state,
+	fuzzySearch: buildFuzzySearch(state),
+});
+
 const store = create(initialState, (atom) => ({
 	/**
 	 * LoadAll loads all the data from the backend.
@@ -142,12 +162,12 @@ const store = create(initialState, (atom) => ({
 	 */
 	loadGenerators() {
 		return API.exec<Generator[]>(API.GET_GENERATORS).then((res) => {
-			atom.update((state) => ({
-				...state,
-				generators: res ?? [],
-			}));
-
-			this.updateFuzzySearch();
+			atom.update((state) =>
+				withUpdatedFuzzySearch({
+					...state,
+					generators: res ?? [],
+				}),
+			);
 		});
 	},
 
@@ -156,12 +176,12 @@ const store = create(initialState, (atom) => ({
 	 */
 	loadSources() {
 		return API.exec<DataSource[]>(API.GET_SOURCES).then((res) => {
-			atom.update((state) => ({
-				...state,
-				sources: res ?? [],
-			}));
-
-			this.updateFuzzySearch();
+			atom.update((state) =>
+				withUpdatedFuzzySearch({
+					...state,
+					sources: res ?? [],
+				}),
+			);
 		});
 	},
 
@@ -206,12 +226,12 @@ const store = create(initialState, (atom) => ({
 	 */
 	loadTemplates() {
 		return API.exec<Template[]>(API.GET_TEMPLATES).then((res) => {
-			atom.update((state) => ({
-				...state,
-				templates: res ?? [],
-			}));
-
-			this.updateFuzzySearch();
+			atom.update((state) =>
+				withUpdatedFuzzySearch({
+					...state,
+					templates: res ?? [],
+				}),
+			);
 		});
 	},
 
@@ -231,22 +251,7 @@ const store = create(initialState, (atom) => ({
 	},
 
 	updateFuzzySearch() {
-		atom.update((state) => ({
-			...state,
-			fuzzySearch: new Fuse<FuseSearch>(
-				[
-					...(state.templates ?? []).map((template) => toFuseSearch('template', template)),
-					...(state.generators ?? []).map((generator) => toFuseSearch('generator', generator)),
-					...(state.sources ?? []).map((source) => toFuseSearch('source', source)),
-					...Operations.map((operation) => toFuseSearch('operation', operation)),
-				],
-				{
-					keys: FuseKeys,
-					minMatchCharLength: 2,
-					threshold: 0.4,
-				},
-			),
-		}));
+		atom.update(withUpdatedFuzzySearch);
 	},
 
 	setRandomAIToken() {

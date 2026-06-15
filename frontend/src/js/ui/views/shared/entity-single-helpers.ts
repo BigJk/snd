@@ -167,11 +167,18 @@ export const printAction = (getLastRendered: () => string) => {
  * Opens a folder picker and saves a screenshot.
  */
 export const screenshotAction = (getLastRendered: () => string, filename: string) => {
-	openFileModal('Select a save folder', [], true).then((folder) => {
-		API.exec<void>(API.SCREENSHOT, getLastRendered(), `${folder}/${filename}.png`)
-			.then(() => success('Saved screenshot'))
-			.catch(error);
-	});
+	API.exec<boolean>(API.HAS_NATIVE_FILE_PICKER)
+		.then((hasNativeFilePicker) => {
+			if (hasNativeFilePicker) {
+				return API.exec<void>(API.SCREENSHOT_NATIVE, getLastRendered(), `${filename}.png`);
+			}
+
+			return openFileModal('Select a save folder', [], true).then((folder) =>
+				API.exec<void>(API.SCREENSHOT, getLastRendered(), `${folder}/${filename}.png`),
+			);
+		})
+		.then(() => success('Saved screenshot'))
+		.catch(error);
 };
 
 /**

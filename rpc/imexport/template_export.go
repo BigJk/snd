@@ -1,6 +1,7 @@
 package imexport
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"github.com/BigJk/snd"
@@ -73,9 +74,44 @@ var templateExports = []TemplateExport{
 }
 
 // RegisterTemplateExports registers all template exports.
-func RegisterTemplateExports(route *echo.Group, db database.Database) {
+func RegisterTemplateExports(route *echo.Group, db database.Database, nativeSaver NativeFileSaver) {
 	bind.MustBind(route, "/exportsTemplate", func() ([]TemplateExport, error) {
+		if nativeSaver != nil {
+			return []TemplateExport{
+				{
+					ImExport: NewImExport("ZIP", "NativeZIP", "Export a ZIP file."),
+				},
+			}, nil
+		}
 		return templateExports, nil
+	})
+
+	bind.MustBind(route, "/exportsTemplateNativeZIP", func(id string, args []any) (string, error) {
+		if nativeSaver == nil {
+			return "", errors.New("native save dialog is not available")
+		}
+
+		template, err := db.GetTemplate(id)
+		if err != nil {
+			return "", err
+		}
+
+		entries, err := db.GetEntries(id)
+		if err != nil {
+			return "", err
+		}
+
+		buf := &bytes.Buffer{}
+		file, err := imexport.ExportTemplateZIP(template, entries, buf)
+		if err != nil {
+			return "", err
+		}
+
+		if err := nativeSaver.SaveFile(file, "application/zip", buf.Bytes()); err != nil {
+			return "", err
+		}
+
+		return fmt.Sprintf("Successfully saved '%s'", file), nil
 	})
 
 	for i := range templateExports {

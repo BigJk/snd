@@ -9,11 +9,11 @@ import { createOnMessage } from 'js/core/generator-ipc';
 import { createNunjucksCompletionProvider } from 'js/core/monaco/completion-nunjucks';
 import { settings } from 'js/core/store';
 
-import Button from 'js/ui/shoelace/button';
 import Label from 'js/ui/shoelace/label';
 
 import ConfigCreator from 'js/ui/components/config/creator';
 import Editor from 'js/ui/components/config/editor';
+import EditorAIActions from 'js/ui/components/editor/ai-actions';
 import BasicInfo from 'js/ui/components/editor/basic-info';
 import Images from 'js/ui/components/editor/images';
 import Flex from 'js/ui/components/layout/flex';
@@ -36,6 +36,8 @@ type GeneratorEditorState = {
 	config: Record<string, any>;
 	errors: PrintPreviewError[];
 	printTemplateEditor?: monaco.editor.IStandaloneCodeEditor;
+	printTemplateHasSelection: boolean;
+	printTemplateSelectionDisposable?: monaco.IDisposable;
 	aiEditorLoading: boolean;
 };
 
@@ -46,7 +48,21 @@ export default (): m.Component<GeneratorEditorProps> => {
 		config: {},
 		errors: [],
 		printTemplateEditor: undefined,
+		printTemplateHasSelection: false,
+		printTemplateSelectionDisposable: undefined,
 		aiEditorLoading: false,
+	};
+
+	const editorHasSelection = (editor?: monaco.editor.IStandaloneCodeEditor) => !!editor?.getSelection() && !editor.getSelection()!.isEmpty();
+
+	const bindPrintTemplateEditor = (editor?: monaco.editor.IStandaloneCodeEditor) => {
+		state.printTemplateSelectionDisposable?.dispose();
+		state.printTemplateEditor = editor;
+		state.printTemplateHasSelection = editorHasSelection(editor);
+		state.printTemplateSelectionDisposable = editor?.onDidChangeCursorSelection(() => {
+			state.printTemplateHasSelection = editorHasSelection(editor);
+			m.redraw();
+		});
 	};
 
 	const runGeneratorAIAction = (attrs: GeneratorEditorProps, mode: 'generate' | 'edit') => {
@@ -100,6 +116,9 @@ ${editorValue}
 	};
 
 	return {
+		onremove() {
+			state.printTemplateSelectionDisposable?.dispose();
+		},
 		oninit({ attrs }) {
 			state.config = fillConfigValues({}, attrs.generator.config);
 		},
@@ -234,49 +253,35 @@ ${editorValue}
 								icon: 'code-working',
 								render: () =>
 									m(Flex, { className: '.h-100', direction: 'column' }, [
-										m(Monaco, {
-											language: 'html',
-											value: attrs.generator.printTemplate,
-											className: '.flex-grow-1',
-											onEditor: (editor) => {
-												state.printTemplateEditor = editor;
-											},
-											completion: createNunjucksCompletionProvider({
-												config: state.config,
-												images: attrs.generator.images,
-												settings: settings.value,
-												sources: attrs.generator.dataSources,
+										m('div.relative.flex-grow-1.overflow-hidden', [
+											m(Monaco, {
+												language: 'html',
+												value: attrs.generator.printTemplate,
+												className: '.h-100',
+												onEditor: bindPrintTemplateEditor,
+												completion: createNunjucksCompletionProvider({
+													config: state.config,
+													images: attrs.generator.images,
+													settings: settings.value,
+													sources: attrs.generator.dataSources,
+												}),
+												errors: state.errors,
+												onChange: (value) => {
+													attrs.onChange({ ...attrs.generator, printTemplate: value });
+													m.redraw();
+												},
 											}),
-											errors: state.errors,
-											onChange: (value) => {
-												attrs.onChange({ ...attrs.generator, printTemplate: value });
-												m.redraw();
-											},
-										}),
-										!settings.value.aiEnabled
-											? null
-											: m(Flex, { gap: 2, className: '.pa2.bg-white.bt.b--black-10' }, [
-													m(
-														Button,
-														{
-															size: 'sm',
-															intend: 'primary',
+											!settings.value.aiEnabled
+												? null
+												: m('div.absolute.left-0.bottom-0.ma3', { style: { zIndex: 10 } }, [
+														m(EditorAIActions, {
 															loading: state.aiEditorLoading,
-															onClick: () => runGeneratorAIAction(attrs, 'generate'),
-														},
-														'Generate with AI',
-													),
-													m(
-														Button,
-														{
-															size: 'sm',
-															intend: 'primary',
-															loading: state.aiEditorLoading,
-															onClick: () => runGeneratorAIAction(attrs, 'edit'),
-														},
-														'Edit Selection with AI',
-													),
-												]),
+															hasSelection: state.printTemplateHasSelection,
+															onGenerate: () => runGeneratorAIAction(attrs, 'generate'),
+															onEditSelection: () => runGeneratorAIAction(attrs, 'edit'),
+														}),
+													]),
+										]),
 									]),
 							},
 						],

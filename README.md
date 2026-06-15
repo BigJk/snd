@@ -1,6 +1,6 @@
 ![S&D Header](./data/readme_header.png)
 
-----
+---
 
 <img align="right" width="120px" alt="Sales &amp; Dungeons" src="./data/preview.png">
 <img width="100" alt="Sales &amp; Dungeons" src="./data/round_icon.png">
@@ -30,6 +30,7 @@ or a letter that the group found to little character sheets of your players to u
   - Mac (Intel, M1)
   - Linux (x64, ARM64)
   - Raspberry Pi (ARMv6, ARMv7)
+  - Android (Experimental)
   - Anything else go can be compiled on
 - Extensive templating system through [Nunjucks](https://mozilla.github.io/nunjucks/)
 - Extensive random generator system
@@ -38,13 +39,14 @@ or a letter that the group found to little character sheets of your players to u
   - Raw USB Printing
   - CUPS (Linux, Mac)
   - Serial
+  - Android USB Printing
 - Import & Export templates and data sources
 - Fast access to external [data sources](https://sales-and-dungeons.app/docs/data-source/) like Open5e (instant access to SRD monsters, spells and more)
 - Import data from other sources:
-   - CSV
-   - [FoundryVTT](https://foundryvtt.com/) Modules
-   - Fight Club 5e XML Format
-   - 5eTools
+  - CSV
+  - [FoundryVTT](https://foundryvtt.com/) Modules
+  - Fight Club 5e XML Format
+  - 5eTools
 - Access Community Templates, Generators & Data Sources from within the App
 - AI LLM Support (OpenAI, OpenRouter, Custom Local)
   - Generate entries by prompt using the power of AI
@@ -65,6 +67,7 @@ or a letter that the group found to little character sheets of your players to u
 ## 📁 Download
 
 You can find the latest version on the release page:
+
 - https://github.com/BigJk/snd/releases
 
 ### :apple: Mac
@@ -82,16 +85,17 @@ On M1, M2, etc. it can happen that the app is reported as damaged. Just copy Sal
 ```
 xattr -d com.apple.quarantine "/Applications/Sales & Dungeons.app/"
 ```
-   
+
 ### :whale: Docker
 
 The headless version of Sales & Dungeons (using LibUSB) is also available via a docker container:
-1. ``docker pull ghcr.io/bigjk/snd:master`` ([container](https://github.com/BigJk/snd/pkgs/container/snd))
-2. ``docker run -p 7123:7123 --device=/dev/bus/usb --group-add uucp -v /some/place/to/persist:/app/userdata ghcr.io/bigjk/snd:master``
-    1. change ``/some/place/to/persist`` to a folder where the user data should be persisted to
-    2. replace `/dev/bus/usb` with the device of your usb/serial printer
-    3. replace `uucp` with a group (or gid) allowed to read the device file (use `$(stat -c "%g" /dev/bus/usb)` to get the right group)
-4. Open ``http://127.0.0.1:7123`` in your favorite browser
+
+1. `docker pull ghcr.io/bigjk/snd:master` ([container](https://github.com/BigJk/snd/pkgs/container/snd))
+2. `docker run -p 7123:7123 --device=/dev/bus/usb --group-add uucp -v /some/place/to/persist:/app/userdata ghcr.io/bigjk/snd:master`
+   1. change `/some/place/to/persist` to a folder where the user data should be persisted to
+   2. replace `/dev/bus/usb` with the device of your usb/serial printer
+   3. replace `uucp` with a group (or gid) allowed to read the device file (use `$(stat -c "%g" /dev/bus/usb)` to get the right group)
+3. Open `http://127.0.0.1:7123` in your favorite browser
 
 <details><summary>Docker Compose Example</summary>
 
@@ -117,6 +121,7 @@ services:
 At the moment Sales & Dungeons only supports the [ESC/POS](https://en.wikipedia.org/wiki/ESC/P) (Epson Standard Code) control codes, which is still one of the most used control code set. Check if a thermal printer you are interested in mentions ESC/POS or Epson in the description or manual.
 
 In general the rule of thumb is:
+
 - Most cheap chinese thermal printer found on Amazon or AliExpress support it
 - Most epson thermal printer obviously support it
 - A lot of older Serial printer (like Metapace T-1) also support it
@@ -154,12 +159,6 @@ If you want to see what printers were already tested, which settings they need, 
 <a href="https://github.com/BigJk/snd/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=BigJk/snd" />
 </a>
-
-## Thanks to JetBrains
-
-This Project is supported with a JetBrains License through the [Open Source Support Program](https://www.jetbrains.com/community/opensource).
-
-<img width="230" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.png" alt="JetBrains Logo (Main) logo.">
 
 ## Found the project useful? :smiling_face_with_three_hearts:
 

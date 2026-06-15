@@ -12,7 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func RegisterTemplate(route *echo.Group, extern *echo.Group, db database.Database) {
+func RegisterTemplate(route *echo.Group, extern *echo.Group, db database.Database, filePicker FilePicker) {
 	bind.MustBind(route, "/saveTemplate", db.SaveTemplate)
 	bind.MustBind(route, "/deleteTemplate", db.DeleteTemplate)
 	bind.MustBind(route, "/getTemplates", db.GetTemplates)
@@ -40,7 +40,7 @@ func RegisterTemplate(route *echo.Group, extern *echo.Group, db database.Databas
 		return c.Blob(http.StatusOK, "application/zip", buf.Bytes())
 	})
 
-	rpcImexport.RegisterTemplateExports(route, db)
+	rpcImexport.RegisterTemplateExports(route, db, filePicker)
 	rpcImexport.RegisterTemplateImports(route, db)
 
 	//

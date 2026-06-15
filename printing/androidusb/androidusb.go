@@ -9,6 +9,8 @@ import (
 	"image"
 )
 
+const PrinterName = "Android USB Printing"
+
 type Bridge interface {
 	AvailableEndpointsJSON() (string, error)
 	Print(endpoint string, data []byte) error
@@ -23,7 +25,7 @@ func New(bridge Bridge) *USB {
 }
 
 func (u *USB) Name() string {
-	return "Android USB Printing"
+	return PrinterName
 }
 
 func (u *USB) Description() string {

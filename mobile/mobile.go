@@ -39,6 +39,7 @@ type RendererBridge interface {
 type FilePickerBridge interface {
 	PickFile(fileEndingsJSON string) (string, error)
 	PickFolder() (string, error)
+	SaveFile(fileName string, mimeType string, data []byte) error
 }
 
 func NewServer(dataDir string, bridge USBBridge) *Server {
@@ -95,9 +96,14 @@ func (s *Server) Start(bindAddr string, debug bool) error {
 
 	rand.Seed(time.Now().UnixNano())
 
+	defaultSettings := server.DefaultSettings()
+	defaultSettings.PrinterType = androidusb.PrinterName
+	defaultSettings.PrinterEndpoint = ""
+
 	srv, err := server.New(db,
 		server.WithDataDir(s.data),
 		server.WithDebug(debug),
+		server.WithDefaultSettings(defaultSettings),
 		server.WithPrinter(androidusb.New(s.bridge)),
 		server.WithPrinter(&remote.Remote{}),
 		server.WithPrinter(&dump.Dump{}),

@@ -12,6 +12,7 @@ import (
 type FilePicker interface {
 	PickFile(fileEndingsJSON string) (string, error)
 	PickFolder() (string, error)
+	SaveFile(fileName string, mimeType string, data []byte) error
 }
 
 func RegisterFileBrowser(route *echo.Group, picker FilePicker) {
@@ -98,5 +99,13 @@ func RegisterFileBrowser(route *echo.Group, picker FilePicker) {
 		}
 
 		return picker.PickFolder()
+	})
+
+	bind.MustBind(route, "/saveFileNative", func(fileName string, mimeType string, data []byte) error {
+		if picker == nil {
+			return errors.New("native save dialog is not available")
+		}
+
+		return picker.SaveFile(fileName, mimeType, data)
 	})
 }

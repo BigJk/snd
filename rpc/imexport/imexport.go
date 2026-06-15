@@ -1,5 +1,9 @@
 package imexport
 
+type NativeFileSaver interface {
+	SaveFile(fileName string, mimeType string, data []byte) error
+}
+
 // Argument represents a function argument for import and export functions.
 type Argument struct {
 	Name        string `json:"name"`
@@ -26,6 +30,10 @@ type ImExport struct {
 }
 
 func NewImExport(name, rpcName, description string, arguments ...Argument) ImExport {
+	if arguments == nil {
+		arguments = []Argument{}
+	}
+
 	return ImExport{
 		Name:        name,
 		RPCName:     rpcName,

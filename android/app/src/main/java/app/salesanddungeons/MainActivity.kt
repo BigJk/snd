@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import java.io.File
@@ -41,15 +43,26 @@ class MainActivity : Activity() {
         webView.settings.allowContentAccess = true
         webView.settings.useWideViewPort = true
         webView.settings.loadWithOverviewMode = true
+        webView.settings.javaScriptCanOpenWindowsAutomatically = true
+        webView.settings.setSupportMultipleWindows(false)
         webView.settings.textZoom = 90
         webView.setInitialScale(75)
         webView.webViewClient =
             object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView,
+                    request: WebResourceRequest,
+                ): Boolean = openExternalUrlIfNeeded(request.url)
+
                 override fun onPageFinished(view: WebView, url: String) {
                     view.evaluateJavascript(
                         """
                         document.querySelector('meta[name="viewport"]')
                           ?.setAttribute('content', 'width=$viewportWidth, initial-scale=1');
+                        window.open = function(url) {
+                          if (url) window.location.href = url;
+                          return null;
+                        };
                         """.trimIndent(),
                         null,
                     )
@@ -135,6 +148,23 @@ class MainActivity : Activity() {
         } catch (_: Exception) {
             false
         }
+
+    private fun openExternalUrlIfNeeded(uri: Uri): Boolean {
+        if (uri.scheme == "http" && (uri.host == "127.0.0.1" || uri.host == "localhost")) {
+            return false
+        }
+
+        if (uri.scheme == "http" || uri.scheme == "https") {
+            return try {
+                startActivity(Intent(Intent.ACTION_VIEW, uri))
+                true
+            } catch (_: Exception) {
+                false
+            }
+        }
+
+        return false
+    }
 
     override fun onActivityResult(
         requestCode: Int,

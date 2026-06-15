@@ -21,6 +21,14 @@ class AndroidFilePickerBridge(private val activity: Activity) : FilePickerBridge
 
     override fun pickFolder(): String = pick(PickType.FOLDER)
 
+    override fun saveFile(
+        fileName: String,
+        mimeType: String,
+        data: ByteArray,
+    ) {
+        pick(PickType.SAVE, fileName, mimeType, data)
+    }
+
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         val active =
             synchronized(lock) {
@@ -43,8 +51,12 @@ class AndroidFilePickerBridge(private val activity: Activity) : FilePickerBridge
                 when (active.type) {
                     PickType.FILE -> copyFile(uri, File(activity.filesDir, "native-picker/files"))
                     PickType.FOLDER -> copyTree(uri, File(activity.filesDir, "native-picker/folders/${UUID.randomUUID()}"))
+                    PickType.SAVE -> {
+                        saveToUri(uri, active.data ?: ByteArray(0))
+                        null
+                    }
                 }
-            active.result.set(Result.success(copied.absolutePath))
+            active.result.set(Result.success(copied?.absolutePath.orEmpty()))
             return true
         } catch (err: Throwable) {
             active.result.set(Result.failure(err))
@@ -59,14 +71,19 @@ class AndroidFilePickerBridge(private val activity: Activity) : FilePickerBridge
         }
     }
 
-    private fun pick(type: PickType): String {
+    private fun pick(
+        type: PickType,
+        fileName: String = "file",
+        mimeType: String = "application/octet-stream",
+        data: ByteArray? = null,
+    ): String {
         val active =
             synchronized(lock) {
                 if (pending != null) {
                     throw IllegalStateException("Another file picker request is already running")
                 }
 
-                PendingPick(type = type, requestCode = nextRequestCode(), latch = CountDownLatch(1), result = AtomicReference()).also {
+                PendingPick(type = type, requestCode = nextRequestCode(), latch = CountDownLatch(1), result = AtomicReference(), data = data).also {
                     pending = it
                 }
             }
@@ -83,6 +100,13 @@ class AndroidFilePickerBridge(private val activity: Activity) : FilePickerBridge
                         Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
                             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+                        }
+                    PickType.SAVE ->
+                        Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            this.type = mimeType
+                            putExtra(Intent.EXTRA_TITLE, sanitizeName(fileName))
+                            addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                         }
                 }
 
@@ -112,6 +136,15 @@ class AndroidFilePickerBridge(private val activity: Activity) : FilePickerBridge
             target.outputStream().use { output -> input.copyTo(output) }
         }
         return target
+    }
+
+    private fun saveToUri(uri: Uri, data: ByteArray) {
+        activity.contentResolver.openOutputStream(uri).use { output ->
+            if (output == null) {
+                throw IllegalStateException("Unable to open selected save location")
+            }
+            output.write(data)
+        }
     }
 
     private fun copyTree(treeUri: Uri, targetDir: File): File {
@@ -217,6 +250,7 @@ class AndroidFilePickerBridge(private val activity: Activity) : FilePickerBridge
     private enum class PickType {
         FILE,
         FOLDER,
+        SAVE,
     }
 
     private data class PendingPick(
@@ -224,5 +258,6 @@ class AndroidFilePickerBridge(private val activity: Activity) : FilePickerBridge
         val requestCode: Int,
         val latch: CountDownLatch,
         val result: AtomicReference<Result<String>>,
+        val data: ByteArray? = null,
     )
 }

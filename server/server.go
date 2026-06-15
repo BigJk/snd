@@ -57,6 +57,7 @@ type Server struct {
 	cache            *cache.Cache
 	printers         printing.PossiblePrinter
 	filePicker       rpc.FilePicker
+	defaultSettings  snd.Settings
 	additionalRoutes []func(e *echo.Group)
 }
 
@@ -110,6 +111,14 @@ func WithFilePicker(filePicker rpc.FilePicker) Option {
 	}
 }
 
+// WithDefaultSettings overrides the settings created for a new user database.
+func WithDefaultSettings(settings snd.Settings) Option {
+	return func(s *Server) error {
+		s.defaultSettings = settings
+		return nil
+	}
+}
+
 // WithAdditionalRoutes adds additional routes to the server.
 func WithAdditionalRoutes(routes ...func(e *echo.Group)) Option {
 	return func(s *Server) error {
@@ -130,28 +139,56 @@ func (s *Server) Close() error {
 	return errDB
 }
 
+func DefaultSettings() snd.Settings {
+	return snd.Settings{
+		PrinterWidth:          384,
+		PrinterType:           "Preview Printing",
+		PrinterEndpoint:       "window",
+		SpellcheckerLanguages: []string{"en-US"},
+		AIEnabled:             false,
+		AIAlwaysAllow:         false,
+		AIProvider:            "OpenRouter.ai",
+		AICodingModel:         "",
+		AIMaxTokens:           4000,
+		AIContextWindow:       6000,
+	}
+}
+
+func (s *Server) effectiveDefaultSettings() snd.Settings {
+	if s.defaultSettings.PrinterType == "" {
+		return DefaultSettings()
+	}
+	return s.defaultSettings
+}
+
+func (s *Server) ensureSettings() error {
+	defaultSettings := s.effectiveDefaultSettings()
+
+	settings, err := s.db.GetSettings()
+	if err != nil {
+		return s.db.SaveSettings(defaultSettings)
+	}
+
+	if _, ok := s.printers[settings.PrinterType]; !ok {
+		settings.PrinterType = defaultSettings.PrinterType
+		settings.PrinterEndpoint = defaultSettings.PrinterEndpoint
+		if settings.PrinterWidth <= 0 {
+			settings.PrinterWidth = defaultSettings.PrinterWidth
+		}
+		return s.db.SaveSettings(settings)
+	}
+
+	return nil
+}
+
 // Start starts the server with the given bind address.
 //
 // Examples:
 // - ":7232" will accept all connections on port 7232
 // - "127.0.0.1:7232" will only accept local connections on port 7232
 func (s *Server) Start(bindAddr string) error {
-	// Create default settings if not existing
-	if _, err := s.db.GetSettings(); err != nil {
-		if err := s.db.SaveSettings(snd.Settings{
-			PrinterWidth:          384,
-			PrinterType:           "Preview Printing",
-			PrinterEndpoint:       "window",
-			SpellcheckerLanguages: []string{"en-US"},
-			AIEnabled:             false,
-			AIAlwaysAllow:         false,
-			AIProvider:            "OpenRouter.ai",
-			AICodingModel:         "",
-			AIMaxTokens:           4000,
-			AIContextWindow:       6000,
-		}); err != nil {
-			return err
-		}
+	if err := s.ensureSettings(); err != nil {
+		return err
 	}
 
 	// Register rpc routes
@@ -174,11 +211,11 @@ func (s *Server) Start(bindAddr string) error {
 	rpc.RegisterKeyValue(api, s.db)
 	rpc.RegisterImageUtilities(api, s.db)
 	rpc.RegisterSettings(api, s.db)
-	rpc.RegisterTemplate(api, extern, s.db)
-	rpc.RegisterGenerator(api, extern, s.db)
+	rpc.RegisterTemplate(api, extern, s.db, s.filePicker)
+	rpc.RegisterGenerator(api, extern, s.db, s.filePicker)
 	rpc.RegisterEntry(api, s.db)
-	rpc.RegisterSources(api, s.db)
-	rpc.RegisterPrint(api, extern, s.db, s.printers)
+	rpc.RegisterSources(api, s.db, s.filePicker)
+	rpc.RegisterPrint(api, extern, s.db, s.printers, s.filePicker)
 	rpc.RegisterPrintCommand(api, s.db, s.printers)
 	rpc.RegisterSync(api, s.m, s.db)
 	rpc.RegisterGit(api, s.db)

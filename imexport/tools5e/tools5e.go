@@ -45,12 +45,13 @@ func renderObject(data interface{}) interface{} {
 			if name, ok := dict["name"].(string); ok {
 				dict["name"] = renderString(name)
 			}
+		}
 
-		} else {
-			// Otherwise recurse into the leaves
-			for key, value := range dict {
-				dict[key] = renderObject(value)
-			}
+		// Recurse into the remaining leaves so sibling fields (e.g. entriesHigherLevel,
+		// footer) also get their {@tags} rendered. renderString is idempotent, so it's
+		// safe to revisit the "entry" and "name" keys we just produced above.
+		for key, value := range dict {
+			dict[key] = renderObject(value)
 		}
 		return dict
 	}
@@ -384,7 +385,6 @@ func ImportFile(path string) ([]snd.DataSource, [][]snd.Entry, error) {
 				}
 
 				entryId := makeID(entryName)
-				delete(entryData, "name")
 
 				// Render text to markdown
 				renderObject(entryData)
@@ -449,14 +449,13 @@ func ImportFile(path string) ([]snd.DataSource, [][]snd.Entry, error) {
 				continue
 			}
 
-			// Pop the entry name out of the data
+			// Capture the entry name; keep it in entryData so it's preserved in Data
 			entryName, isString := entryData["name"].(string)
 			if !isString {
 				continue
 			}
 
 			entryId := makeID(entryName)
-			delete(entryData, "name")
 
 			targetIndex := -1
 			if sourceValue, ok := entryData["source"].(string); ok {
